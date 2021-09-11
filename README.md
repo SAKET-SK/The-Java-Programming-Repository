@@ -1,6 +1,6 @@
-# My-Java-Projects
-Misc Java Programs I implemented.
-Recommended IDE :- NetBeans 8.2
+## My-Java-Projects
+### Misc Java Programs I implemented. <br>
+### Recommended IDE :- NetBeans 8.2
 1) BouncingBall.java -> A simple java program which spwans a window and a ball is seen bouncing off its inside corners. We can change size and color of the ball and also if we resize the window, the bounce will take effect as its size. In simple words a fun project.
 2) Calculator.java -> As the name suggests, it is a basic calculator program with use of some GUI.
 3) CheckInternet.java -> Program to check internet connection or availablity of certain websites.
