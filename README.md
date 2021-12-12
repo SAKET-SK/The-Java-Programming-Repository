@@ -1,4 +1,4 @@
-## My-Java-Projects
+## The-Java-Programming-Repository
 ### Misc Java Programs I implemented. <br>
 ### Recommended IDE :- NetBeans 8.2
 1) AbsClassDemo -> Demonstration of Abstarct Class.
