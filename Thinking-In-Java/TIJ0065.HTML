@@ -1,0 +1,346 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0064.html">Prev</a> | <a href="tij0066.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Inheritance
+syntax
+<P><A NAME="Index433"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inheritance
+is such an integral part of Java (and OOP languages in general) that it was
+introduced in Chapter 1 and has been used occasionally in chapters before this
+one because certain situations required it. In addition, you&#8217;re always
+doing inheritance when you create a class, because if you don&#8217;t say
+otherwise you inherit from Java&#8217;s standard root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+syntax for composition is obvious, but to perform inheritance there&#8217;s a
+distinctly different form. When you inherit, you say &#8220;This new class is
+like that old class.&#8221; You state this in code by giving the name of the
+class as usual, but before the opening brace of the class body, put the <A NAME="Index434"></A>keyword
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by the name of the <A NAME="Index435"></A><A NAME="Index436"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>base
+class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When you do this, you automatically get all the data members and methods in the
+base class. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Detergent.java</font>
+<font color="#009900">// Inheritance syntax &amp; properties</font>
+
+<font color="#0000ff">class</font> Cleanser {
+  <font color="#0000ff">private</font> String s = <font color="#0000ff">new</font> String("Cleanser");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> append(String a) { s += a; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> dilute() { append(" dilute()"); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> apply() { append(" apply()"); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> scrub() { append(" scrub()"); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> print() { System.out.println(s); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Cleanser x = <font color="#0000ff">new</font> Cleanser();
+    x.dilute(); x.apply(); x.scrub();
+    x.print();
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Detergent <font color="#0000ff">extends</font> Cleanser {
+  <font color="#009900">// Change a method:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> scrub() {
+    append(" Detergent.scrub()");
+    <font color="#0000ff">super</font>.scrub(); <font color="#009900">// Call base-class version</font>
+  }
+  <font color="#009900">// Add methods to the interface:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> foam() { append(" foam()"); }
+  <font color="#009900">// Test the new class:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Detergent x = <font color="#0000ff">new</font> Detergent();
+    x.dilute();
+    x.apply();
+    x.scrub();
+    x.foam();
+    x.print();
+    System.out.println("Testing base <font color="#0000ff">class</font>:");
+    Cleanser.main(args);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+demonstrates a number of features. First, in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are concatenated to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator, which is one of the operators (along with &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;)
+that the Java designers &#8220;overloaded&#8221; to work with <A NAME="Index437"></A><A NAME="Index438"></A><A NAME="Index439"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Second,
+both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contain a <A NAME="Index440"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. You can create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each one of your classes, and it&#8217;s often recommended to code this way
+so that your test code is wrapped in with the class. Even if you have a lot of
+classes in a program only the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class invoked on the command line will be called. (And you can have only one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class per file.) So in this case, when you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java
+Detergent
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent.main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be called. But you can also say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java
+Cleanser 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser.main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+even though 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. This technique of putting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in each class allows easy <A NAME="Index441"></A><A NAME="Index442"></A>unit
+testing for each class. And you don&#8217;t need to remove the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when you&#8217;re finished testing; you can leave it in for later testing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+you can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent.main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser.main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+explicitly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+important that all of the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Remember that if you leave off any access specifier the member defaults to
+&#8220;friendly,&#8221; which allows access only to package members. Thus,
+within this package, anyone could use those methods if there were no access
+specifier. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would have no trouble, for example. However, if a class from some other package
+were to inherit 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it could access only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">members.
+So to plan for inheritance, as a general rule make all fields 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+all methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public.
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">members
+also allow access by derived classes; you&#8217;ll learn about this later.) Of
+course, in particular cases you must make adjustments, but this is a useful
+guideline.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a set of methods in its interface: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dilute(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>apply(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>derived
+from
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(via the <A NAME="Index443"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword) it automatically gets all these methods in its interface, even though
+you don&#8217;t see them all explicitly defined in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can think of inheritance, then, as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reusing
+the interface.
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(The implementation comes along for free, but that part isn&#8217;t the primary
+point.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+seen in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s possible to take a method that&#8217;s been defined in the base
+class and modify it. In this case, you might want to call the method from the
+base class inside the new version. But inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you cannot simply call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since that would produce a recursive call, which isn&#8217;t what you want. To
+solve this problem Java has the <A NAME="Index444"></A>keyword
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that refers to the &#8220;<A NAME="Index445"></A>superclass&#8221;
+that the current class has been inherited from. Thus the expression 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls the base-class version of the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrub(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+inheriting you&#8217;re not restricted to using the methods of the base class.
+You can also add new methods to the derived class exactly the way you put any
+method in a class: just define it. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+suggests that you are going to add new methods to the base-class interface, and
+the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>foam(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an example of this.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent.main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can see that for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object you can call all the methods that are available in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well as in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Detergent
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(i.e.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>foam(&#160;))</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545308"></a><a name="_Toc408018511"></a><P></DIV>
+<A NAME="Heading183"></A><H3 ALIGN=LEFT>
+Initializing
+the base class
+<P><A NAME="Index446"></A><A NAME="Index447"></A><A NAME="Index448"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+there are now two classes involved &#8211; the base class and the <A NAME="Index449"></A><A NAME="Index450"></A>derived
+class &#8211; instead of just one, it can be a bit confusing to try to imagine
+the resulting object produced by a derived class. From the outside, it looks
+like the new class has the same interface as the base class and maybe some
+additional methods and fields. But inheritance doesn&#8217;t just copy the
+interface of the base class. When you create an object of the derived class, it
+contains within it a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>subobject</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the base class. This <A NAME="Index451"></A><A NAME="Index452"></A>subobject
+is the same as if you had created an object of the base class by itself.
+It&#8217;s just that, from the outside, the subobject of the base class is
+wrapped within the derived-class object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, it&#8217;s essential that the base-class subobject be initialized
+correctly and there&#8217;s only one way to guarantee that: perform the
+initialization in the constructor, by calling the base-class constructor, which
+has all the appropriate knowledge and privileges to perform the base-class
+initialization. Java automatically inserts calls to the base-class constructor
+in the derived-class constructor. The following example shows this working with
+three levels of inheritance:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Cartoon.java</font>
+<font color="#009900">// Constructor calls during inheritance</font>
+
+<font color="#0000ff">class</font> Art {
+  Art() {
+    System.out.println("Art constructor");
+  }
+}
+
+<font color="#0000ff">class</font> Drawing <font color="#0000ff">extends</font> Art {
+  Drawing() {
+    System.out.println("Drawing constructor");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Cartoon <font color="#0000ff">extends</font> Drawing {
+  Cartoon() {
+    System.out.println("Cartoon constructor");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Cartoon x = <font color="#0000ff">new</font> Cartoon();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program shows the automatic calls:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Art constructor
+Drawing constructor
+Cartoon constructor </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the construction happens from the base &#8220;outward,&#8221; so
+the base class is initialized before the derived-class constructors can access
+it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+if you don&#8217;t create a constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cartoon(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the compiler will <A NAME="Index453"></A>synthesize
+a default constructor for you that calls the base class constructor.
+</FONT><P></DIV>
+<A NAME="Heading184"></A><H4 ALIGN=LEFT>
+Constructors
+with arguments
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+above example has default <A NAME="Index454"></A>constructors;
+that is, they don&#8217;t have any arguments. It&#8217;s easy for the compiler
+to call these because there&#8217;s no question about what arguments to pass.
+If your class doesn&#8217;t have default arguments or if you want to call a
+base-class constructor that has an argument you must explicitly write the calls
+to the base-class constructor using the <A NAME="Index455"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword and the appropriate argument list:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Chess.java</font>
+<font color="#009900">// Inheritance, constructors and arguments</font>
+
+<font color="#0000ff">class</font> Game {
+  Game(<font color="#0000ff">int</font> i) {
+    System.out.println("Game constructor");
+  }
+}
+
+<font color="#0000ff">class</font> BoardGame <font color="#0000ff">extends</font> Game {
+  BoardGame(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("BoardGame constructor");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Chess <font color="#0000ff">extends</font> BoardGame {
+  Chess() {
+    <font color="#0000ff">super</font>(11);
+    System.out.println("Chess constructor");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Chess x = <font color="#0000ff">new</font> Chess();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you don&#8217;t call the base-class constructor in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoardGame(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the compiler will complain that it can&#8217;t find a constructor of the form 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Game(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In addition, the call to the base-class constructor 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be the first thing you do in the derived-class constructor. (The compiler will
+remind you if you get it wrong.)
+</FONT><P></DIV>
+<A NAME="Heading185"></A><H4 ALIGN=LEFT>
+Catching
+base constructor exceptions
+<P><A NAME="Index456"></A><A NAME="Index457"></A><A NAME="Index458"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+just noted, the compiler forces you to place the base-class constructor call
+first in the body of the derived-class constructor. This means nothing else can
+appear before it. As you&#8217;ll see in Chapter 9, this also prevents a
+derived-class constructor from catching any exceptions that come from a base
+class. This can be inconvenient at times.
+</FONT><a name="_Toc305593254"></a><a name="_Toc305628726"></a><a name="_Toc312374019"></a><a name="_Toc375545309"></a><a name="_Toc408018512"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0064.html">Prev</a> | <a href="tij0066.html">Next</a>
+</div>
+</body></html>
+

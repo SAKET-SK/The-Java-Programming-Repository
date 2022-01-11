@@ -1,0 +1,2169 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0043.html">Prev</a> | <a href="tij0045.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Using
+Java operators
+<P><A NAME="Index84"></A><A NAME="Index85"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+operator takes one or more arguments and produces a new value. The arguments
+are in a different form than ordinary method calls, but the effect is the same.
+You should be reasonably comfortable with the general concept of operators from
+your previous programming experience. Addition (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+subtraction and unary minus (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+multiplication (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+division (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>/</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and assignment (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+all work much the same in any programming language.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+operators produce a value from their operands. In addition, an operator can
+change the value of an operand. This is called a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>side
+effect<A NAME="Index86"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The most common use for operators that modify their operands is to generate the
+side effect, but you should keep in mind that the value produced is available
+for your use just as in operators without side effects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Almost
+all operators work only with primitives. The exceptions are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+&#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>!=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+which work with all objects (and are a point of confusion for objects). In
+addition, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+supports &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.</FONT><a name="_Toc375545248"></a><a name="_Toc408018449"></a><P></DIV>
+<A NAME="Heading101"></A><H3 ALIGN=LEFT>
+Precedence<P><A NAME="Index87"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Operator
+precedence defines how an expression evaluates when several operators are
+present. Java has specific rules that determine the order of evaluation. The
+easiest one to remember is that multiplication and division happen before
+addition and subtraction. Programmers often forget the other precedence rules,
+so you should use parentheses to make the order of evaluation explicit. For
+example:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">A
+= X + Y - 2/2 + Z;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+a very different meaning from the same statement with a particular grouping of
+parentheses:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">A
+= X + (Y - 2)/(2 + Z);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><a name="_Toc375545249"></a><a name="_Toc408018450"></a><P></DIV>
+<A NAME="Heading102"></A><H3 ALIGN=LEFT>
+Assignment<A NAME="Index88"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Assignment
+is performed with the operator =. It means &#8220;take the value of the
+right-hand side (often called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>rvalue<A NAME="Index89"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and copy it into the left-hand side (often called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lvalue<A NAME="Index90"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+An rvalue is any constant, variable or expression that can produce a value, but
+an lvalue must be a distinct, named variable. (That is, there must be a
+physical space to store a value.) For instance, you can assign a constant value
+to a variable (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A
+= 4;
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+but you cannot assign anything to constant value &#8211; it cannot be an
+lvalue. (You can&#8217;t say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>4
+= A;.
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Assignment
+of primitives is quite straightforward. Since the primitive holds the actual
+value and not a handle to an object, when you assign primitives you copy the
+contents from one place to another. For example, if you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A
+= B
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for primitives, then the contents of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is copied into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you then go on to modify 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is naturally unaffected by this modification. This is what you&#8217;ve come to
+expect as a programmer for most situations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you <A NAME="Index91"></A><A NAME="Index92"></A><A NAME="Index93"></A><A NAME="Index94"></A>assign
+objects, however, things change. Whenever you manipulate an object, what
+you&#8217;re manipulating is the handle, so when you assign &#8220;from one
+object to another&#8221; you&#8217;re actually copying a handle from one place
+to another. This means that if you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>C
+= D
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for objects, you end up with both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>C</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>D</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointing to the object that, originally, only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>D</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointed to. The following example will demonstrate this. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an aside, the first thing you see is a <A NAME="Index95"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+c03
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+indicating this book&#8217;s Chapter 3. The first code listing of each chapter
+will contain a package statement like this to establish the chapter number for
+the remaining code listings in that chapter. In Chapter 17, you&#8217;ll see
+that as a result, all the listings in chapter 3 (except those that have
+different package names) will be automatically placed in a subdirectory called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c03</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+Chapter 4&#8217;s listings will be in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c04</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and so on. All this will happen via the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program shown in Chapter 17, and in Chapter 5 the concept of packages will be
+fully explained. What you need to recognize at this point is that, for this
+book, lines of code of the form 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+c03
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are used just to establish the chapter subdirectory for the listings in the
+chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+order to run the program, you must ensure that the <A NAME="Index96"></A><A NAME="Index97"></A><A NAME="Index98"></A>classpath
+contains the root directory where you installed the source code for this book.
+(From this directory, you&#8217;ll see the subdirectories 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c02</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c03</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c04</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc.)
+</FONT><a name="Running_programs"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+later versions of Java (1.1.4 and on), when your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+inside a file with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement,
+you must give the full package name before the program name in order to run the
+program. In this case, the command line is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+c03.Assignment
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Keep
+this in mind any time you&#8217;re running a program that&#8217;s in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Assignment.java</font>
+<font color="#009900">// Assignment with objects is a bit tricky</font>
+<font color="#0000ff">package</font> c03;
+
+<font color="#0000ff">class</font> Number {
+  <font color="#0000ff">int</font> i;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Assignment {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Number n1 = <font color="#0000ff">new</font> Number();
+    Number n2 = <font color="#0000ff">new</font> Number();
+    n1.i = 9;
+    n2.i = 47;
+    System.out.println("1: n1.i: " + n1.i +
+      ", n2.i: " + n2.i);
+    n1 = n2;
+    System.out.println("2: n1.i: " + n1.i +
+      ", n2.i: " + n2.i);
+    n1.i = 27;
+    System.out.println("3: n1.i: " + n1.i +
+      ", n2.i: " + n2.i);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Number</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is simple, and two instances of it (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+are created within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value within each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Number</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is given a different value, and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is assigned to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is changed. In many programming languages you would expect 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be independent at all times, but because you&#8217;ve assigned a handle
+here&#8217;s the output you&#8217;ll see:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>1: n1.i: 9, n2.i: 47
+2: n1.i: 47, n2.i: 47
+3: n1.i: 27, n2.i: 27 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Changing
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object appears to change the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as well! This is because both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contain the same handle, which is pointing to the same object. (The original
+handle that was in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that pointed to the object holding a value of 9 was overwritten during the
+assignment and effectively lost; its object will be cleaned up by the garbage
+collector.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+phenomenon is often called <A NAME="Index99"></A><A NAME="Index100"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>aliasing</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it&#8217;s a fundamental way that Java works with objects. But what if you
+don&#8217;t want aliasing to occur in this case? You could forego the
+assignment and say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">n1.i
+= n2.i;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+retains the two separate objects instead of tossing one and tying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the same object, but you&#8217;ll soon realize that manipulating the fields
+within objects is messy and goes against good object-oriented design
+principles. This is a non-trivial topic, so it is left for Chapter 12, which is
+devoted to aliasing. In the meantime, you should keep in mind that assignment
+for objects can add surprises.
+</FONT><P></DIV>
+<A NAME="Heading103"></A><H4 ALIGN=LEFT>
+Aliasing
+during method calls
+<P><A NAME="Index101"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Aliasing
+will also occur when you pass an object into a method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PassObject.java</font>
+<font color="#009900">// Passing objects to methods can be a bit tricky</font>
+
+<font color="#0000ff">class</font> Letter {
+  <font color="#0000ff">char</font> c;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PassObject {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f(Letter y) {
+    y.c = 'z';
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Letter x = <font color="#0000ff">new</font> Letter();
+    x.c = 'a';
+    System.out.println("1: x.c: " + x.c);
+    f(x);
+    System.out.println("2: x.c: " + x.c);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+many programming languages, the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would appear to be making a copy of its argument 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Letter
+y
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the scope of the method. But once again a handle is being passed so the
+line
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">y.c
+= 'z';
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+actually changing the object outside of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The output shows this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>1: x.c: a
+2: x.c: z </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Aliasing
+and its solution is a complex issue and, although you must wait until Chapter
+12 for all the answers, you should be aware of it at this point so you can
+watch for pitfalls.
+</FONT><a name="_Toc375545250"></a><a name="_Toc408018451"></a><P></DIV>
+<A NAME="Heading104"></A><H3 ALIGN=LEFT>
+Mathematical
+operators<A NAME="Index102"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+basic mathematical operators are the same as the ones available in most
+programming languages: addition <A NAME="Index103"></A>(</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+subtraction<A NAME="Index104"></A>
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+division<A NAME="Index105"></A>
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>/</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+multiplication<A NAME="Index106"></A>
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and modulus<A NAME="Index107"></A>
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>%</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+produces the remainder from integer division). Integer division truncates,
+rather than rounds, the result.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+also uses a shorthand notation to perform an operation and an assignment at the
+same time. This is denoted by an operator followed by an equal sign, and is
+consistent with all the operators in the language (whenever it makes sense).
+For example, to add 4 to the variable 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and assign the result
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+use: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
++= 4;
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example shows the use of the mathematical operators:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MathOps.java</font>
+<font color="#009900">// Demonstrates the mathematical operators</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MathOps {
+  <font color="#009900">// Create a shorthand to save typing:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+  <font color="#009900">// shorthand to print a string and an int:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> pInt(String s, <font color="#0000ff">int</font> i) {
+    prt(s + " = " + i);
+  }
+  <font color="#009900">// shorthand to print a string and a float:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> pFlt(String s, <font color="#0000ff">float</font> f) {
+    prt(s + " = " + f);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Create a random number generator,</font>
+    <font color="#009900">// seeds with current time by default:</font>
+    Random rand = <font color="#0000ff">new</font> Random();
+    <font color="#0000ff">int</font> i, j, k;
+    <font color="#009900">// '%' limits maximum value to 99:</font>
+    j = rand.nextInt() % 100;
+    k = rand.nextInt() % 100;
+    pInt("j",j);  pInt("k",k);
+    i = j + k; pInt("j + k", i);
+    i = j - k; pInt("j - k", i);
+    i = k / j; pInt("k / j", i);
+    i = k * j; pInt("k * j", i);
+    i = k % j; pInt("k % j", i);
+    j %= k; pInt("j %= k", j);
+    <font color="#009900">// Floating-point number tests:</font>
+    <font color="#0000ff">float</font> u,v,w;  <font color="#009900">// applies to doubles, too</font>
+    v = rand.nextFloat();
+    w = rand.nextFloat();
+    pFlt("v", v); pFlt("w", w);
+    u = v + w; pFlt("v + w", u);
+    u = v - w; pFlt("v - w", u);
+    u = v * w; pFlt("v * w", u);
+    u = v / w; pFlt("v / w", u);
+    <font color="#009900">// the following also works for</font>
+    <font color="#009900">// char, byte, short, int, long,</font>
+    <font color="#009900">// and double:</font>
+    u += v; pFlt("u += v", u);
+    u -= v; pFlt("u -= v", u);
+    u *= v; pFlt("u *= v", u);
+    u /= v; pFlt("u /= v", u);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first thing you will see are some shorthand methods for printing: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>prt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method prints a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pInt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prints a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pFlt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prints a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, they all ultimately end up using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+generate numbers, the program first creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Random</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Because no arguments are passed during creation, Java uses the current
+time as a seed for the random number generator. The program generates a number
+of different types of random numbers with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Random</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object simply by calling different methods: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextInt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextLong(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+nextFloat(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+nextDouble(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+modulus operator, when used with the result of the random number generator,
+limits the result to an upper bound of the operand minus one (99 in this case).
+</FONT><P></DIV>
+<A NAME="Heading105"></A><H4 ALIGN=LEFT>
+Unary
+minus and plus operators
+<P><A NAME="Index108"></A><A NAME="Index109"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+unary minus (-)<A NAME="Index110"></A><A NAME="Index111"></A>
+and unary plus (+)<A NAME="Index112"></A><A NAME="Index113"></A>
+are the same operators as binary minus and plus. The compiler figures out which
+use is intended by the way you write the expression. For instance, the statement
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">x
+= -a;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+an obvious meaning. The compiler is able to figure out:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">x
+= a * -b;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">but
+the reader might get confused, so it is more clear to say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">x
+= a * (-b);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+unary minus produces the negative of the value. Unary plus provides symmetry
+with unary minus, although it doesn&#8217;t do much.
+</FONT><a name="_Toc375545251"></a><a name="_Toc408018452"></a><P></DIV>
+<A NAME="Heading106"></A><H3 ALIGN=LEFT>
+Auto
+increment and decrement
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java,
+like C, is full of shortcuts. Shortcuts can make code much easier to type, and
+either easier or harder to read. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Two
+of the nicer shortcuts are the increment<A NAME="Index114"></A>
+and decrement<A NAME="Index115"></A>
+operators (often referred to as the auto-increment<A NAME="Index116"></A>
+and auto-decrement<A NAME="Index117"></A>
+operators). The decrement operator is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>--</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and means &#8220;decrease by one unit.&#8221; The increment operator is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>++</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and means &#8220;increase by one unit.&#8221; If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, the expression 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>++A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is equivalent to (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A
+= A + 1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Increment and decrement operators produce the value of the variable as a result. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two versions of each type of operator, often called the prefix and postfix
+versions. Pre-increment means the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>++
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">operator
+appears before the variable or expression, and post-increment means the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>++</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator appears after the variable or expression. Similarly, pre-decrement
+means the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>--
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">operator
+appears before the variable or expression, and post-decrement means the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>--</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator appears after the variable or expression. For pre-increment and
+pre-decrement, (i.e., 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>++A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>--A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+the operation is performed and the value is produced. For post-increment and
+post-decrement (i.e. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A++
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A--</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+the value is produced, then the operation is performed. As an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AutoInc.java</font>
+<font color="#009900">// Demonstrates the ++ and -- operators</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AutoInc {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> i = 1;
+    prt("i : " + i);
+    prt("++i : " + ++i); <font color="#009900">// Pre-increment</font>
+    prt("i++ : " + i++); <font color="#009900">// Post-increment</font>
+    prt("i : " + i);
+    prt("--i : " + --i); <font color="#009900">// Pre-decrement</font>
+    prt("i-- : " + i--); <font color="#009900">// Post-decrement</font>
+    prt("i : " + i);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>i : 1
+++i : 2
+i++ : 2
+i : 3
+--i : 2
+i-- : 2
+i : 1 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that for the prefix form you get the value after the operation has been
+performed, but with the postfix form you get the value before the operation is
+performed. These are the only operators (other than those involving assignment)
+that have side effects. (That is, they change the operand rather than using
+just its value.)<A NAME="Index118"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+increment operator is one explanation for the name C++, implying &#8220;one
+step beyond C.&#8221; In an early Java speech, <A NAME="Index119"></A>Bill
+Joy (one of the creators), said that &#8220;Java=C++--&#8220; (C plus plus
+minus minus), suggesting that Java is C++ with the unnecessary hard parts
+removed and therefore a much simpler language. As you progress in this book
+you&#8217;ll see that many parts are simpler, and yet Java isn&#8217;t 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">much
+easier than <A NAME="Index120"></A>C++.
+</FONT><a name="_Toc375545252"></a><a name="_Toc408018453"></a><P></DIV>
+<A NAME="Heading107"></A><H3 ALIGN=LEFT>
+Relational
+operators
+<P><A NAME="Index121"></A><A NAME="Index122"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Relational
+operators generate a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result. They evaluate the relationship between the values of the operands. A
+relational expression produces 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if the relationship is true, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if the relationship is untrue. The relational operators are less than (&lt;)<A NAME="Index123"></A>,
+greater than (&gt;)<A NAME="Index124"></A>,
+less than or equal to (&lt;=)<A NAME="Index125"></A>,
+greater than or equal to (&gt;=)<A NAME="Index126"></A>,
+equivalent (==)<A NAME="Index127"></A>
+and not equivalent (!=)<A NAME="Index128"></A>.<A NAME="Index129"></A><A NAME="Index130"></A><A NAME="Index131"></A><A NAME="Index132"></A><A NAME="Index133"></A><A NAME="Index134"></A>
+Equivalence and nonequivalence works with all built-in data types, but the
+other comparisons won&#8217;t work with type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading108"></A><H4 ALIGN=LEFT>
+Testing
+object equivalence
+<P><A NAME="Index135"></A><A NAME="Index136"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+relational operators 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>!=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also work with all objects, but their meaning often confuses the first-time
+Java programmer. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Equivalence.java</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Equivalence {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Integer n1 = <font color="#0000ff">new</font> Integer(47);
+    Integer n2 = <font color="#0000ff">new</font> Integer(47);
+    System.out.println(n1 == n2);
+    System.out.println(n1 != n2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+expression 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(n1
+== n2)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will print out the result of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+comparison within it. Surely the output should be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">since
+both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are the same. But while the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>contents</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the objects are the same, the <A NAME="Index137"></A><A NAME="Index138"></A>handles
+are not the same and the operators 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>!=
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">compare
+object handles. So the output is actually 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Naturally, this surprises people at first.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if you want to compare the actual contents of an object for equivalence? You
+must use the special method <A NAME="Index139"></A><A NAME="Index140"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that exists for all objects (not <A NAME="Index141"></A>primitives,
+which work fine with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>!=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Here&#8217;s how it&#8217;s used:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: EqualsMethod.java</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> EqualsMethod {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Integer n1 = <font color="#0000ff">new</font> Integer(47);
+    Integer n2 = <font color="#0000ff">new</font> Integer(47);
+    System.out.println(n1.equals(n2));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+result will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as you would expect. Ah, but it&#8217;s not as simple as that. If you create
+your own class, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: EqualsMethod2.java</font>
+
+<font color="#0000ff">class</font> Value {
+  <font color="#0000ff">int</font> i;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> EqualsMethod2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Value v1 = <font color="#0000ff">new</font> Value();
+    Value v2 = <font color="#0000ff">new</font> Value();
+    v1.i = v2.i = 100;
+    System.out.println(v1.equals(v2));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you&#8217;re
+back to square one: the result is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is because the default behavior of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is to compare handles. So unless you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>override</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in your new class you won&#8217;t get the desired behavior. Unfortunately, you
+won&#8217;t learn about overriding until Chapter 7, but being aware of the way 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+behaves might save you some grief in the meantime.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the Java library classes implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it compares the contents of objects instead of their handles.
+</FONT><a name="_Toc375545253"></a><a name="_Toc408018454"></a><P></DIV>
+<A NAME="Heading109"></A><H3 ALIGN=LEFT>
+Logical
+operators<A NAME="Index142"></A><A NAME="Index143"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+logical operators AND (&amp;&amp;)<A NAME="Index144"></A><A NAME="Index145"></A>,
+OR (||)<A NAME="Index146"></A><A NAME="Index147"></A>
+and NOT (!) produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index148"></A><A NAME="Index149"></A>based
+on the logical relationship of its arguments. This example uses the relational
+and logical operators:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Bool.java</font>
+<font color="#009900">// Relational and logical operators</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Bool {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Random rand = <font color="#0000ff">new</font> Random();
+    <font color="#0000ff">int</font> i = rand.nextInt() % 100;
+    <font color="#0000ff">int</font> j = rand.nextInt() % 100;
+    prt("i = " + i);
+    prt("j = " + j);
+    prt("i &gt; j is " + (i &gt; j));
+    prt("i &lt; j is " + (i &lt; j));
+    prt("i &gt;= j is " + (i &gt;= j));
+    prt("i &lt;= j is " + (i &lt;= j));
+    prt("i == j is " + (i == j));
+    prt("i != j is " + (i != j));
+
+    <font color="#009900">// Treating an int as a boolean is </font>
+    <font color="#009900">// not legal Java</font>
+<font color="#009900">//! prt("i &amp;&amp; j is " + (i &amp;&amp; j));</font>
+<font color="#009900">//! prt("i || j is " + (i || j));</font>
+<font color="#009900">//! prt("!i is " + !i);</font>
+
+    prt("(i &lt; 10) &amp;&amp; (j &lt; 10) is "
+       + ((i &lt; 10) &amp;&amp; (j &lt; 10)) );
+    prt("(i &lt; 10) || (j &lt; 10) is "
+       + ((i &lt; 10) || (j &lt; 10)) );
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can apply AND, OR, or NOT to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values only. You can&#8217;t use a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as if it were a <A NAME="Index150"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a logical expression as you can in C and C++. You can see the failed
+attempts at doing this commented out with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>//!</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+comment marker. The subsequent expressions, however, produce 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values using relational comparisons, then use logical operations on the results.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+output listing looked like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>i = 85
+j = 4
+i &gt; j is <font color="#0000ff">true</font>
+i &lt; j is <font color="#0000ff">false</font>
+i &gt;= j is <font color="#0000ff">true</font>
+i &lt;= j is <font color="#0000ff">false</font>
+i == j is <font color="#0000ff">false</font>
+i != j is <font color="#0000ff">true</font>
+(i &lt; 10) &amp;&amp; (j &lt; 10) is <font color="#0000ff">false</font>
+(i &lt; 10) || (j &lt; 10) is <font color="#0000ff">true</font> </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value is automatically converted to an appropriate text form if it&#8217;s used
+where a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is expected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can replace the definition for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the above program with any other primitive data type except 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Be aware, however, that the comparison of floating-point numbers is very
+strict. A number that is the tiniest fraction different from another number is
+still &#8220;not equal.&#8221; A number that is the tiniest bit above zero is
+still nonzero.<A NAME="Index151"></A></FONT><P></DIV>
+<A NAME="Heading110"></A><H4 ALIGN=LEFT>
+Short-circuiting</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+dealing with <A NAME="Index152"></A><A NAME="Index153"></A>logical
+operators you run into a phenomenon called &#8220;short circuiting.&#8221; This
+means that the expression will be evaluated only until the truth or falsehood
+of the entire expression can be unambiguously determined. As a result, all the
+parts of a logical expression might not be evaluated. Here&#8217;s an example
+that demonstrates short-circuiting:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ShortCircuit.java</font>
+<font color="#009900">// Demonstrates short-circuiting behavior</font>
+<font color="#009900">// with logical operators.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ShortCircuit {
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> test1(<font color="#0000ff">int</font> val) {
+    System.out.println("test1(" + val + ")");
+    System.out.println("result: " + (val &lt; 1));
+    <font color="#0000ff">return</font> val &lt; 1;
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> test2(<font color="#0000ff">int</font> val) {
+    System.out.println("test2(" + val + ")");
+    System.out.println("result: " + (val &lt; 2));
+    <font color="#0000ff">return</font> val &lt; 2;
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> test3(<font color="#0000ff">int</font> val) {
+    System.out.println("test3(" + val + ")");
+    System.out.println("result: " + (val &lt; 3));
+    <font color="#0000ff">return</font> val &lt; 3;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(test1(0) &amp;&amp; test2(2) &amp;&amp; test3(2))
+      System.out.println("expression is <font color="#0000ff">true</font>");
+    <font color="#0000ff">else</font>
+      System.out.println("expression is <font color="#0000ff">false</font>");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+test performs a comparison against the argument and returns true or false. It
+also prints information to show you that it&#8217;s being called. The tests are
+used in the expression:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">if(test1(0)
+&amp;&amp; test2(2) &amp;&amp; test3(2))
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might naturally think that all three tests would be executed, but the output
+shows otherwise:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>test1(0)
+result: <font color="#0000ff">true</font>
+test2(2)
+result: <font color="#0000ff">false</font>
+expression is <font color="#0000ff">false</font> </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first test produced a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result, so the expression evaluation continues. However, the second test
+produced a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result. Since this means that the whole expression must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+why continue evaluating the rest of the expression? It could be expensive. The
+reason for short-circuiting, in fact, is precisely that; you can get a
+potential performance increase if all the parts of a logical expression do not
+need to be evaluated.
+</FONT><a name="_Toc375545254"></a><a name="_Toc408018455"></a><P></DIV>
+<A NAME="Heading111"></A><H3 ALIGN=LEFT>
+Bitwise
+operators<A NAME="Index154"></A><A NAME="Index155"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+bitwise operators allow you to manipulate individual bits in an integral
+primitive data type. Bitwise operators perform boolean algebra<A NAME="Index156"></A>
+on the corresponding bits in the two arguments to produce the result.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+bitwise operators come from C&#8217;s low-level orientation; you were often
+manipulating hardware directly and had to set the bits in hardware registers.
+Java was originally designed to be embedded in TV <A NAME="Index157"></A>set-top
+boxes, so this low-level orientation still made sense. However, you probably
+won&#8217;t use the bitwise operators much.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+bitwise AND operator (&amp;)<A NAME="Index158"></A><A NAME="Index159"></A>
+produces a one in the output bit if both input bits are one; otherwise it
+produces a zero. The bitwise OR operator (|)<A NAME="Index160"></A><A NAME="Index161"></A>
+produces a one in the output bit if either input bit is a one and produces a
+zero only if both input bits are zero. The bitwise, EXCLUSIVE OR, or XOR (^),<A NAME="Index162"></A><A NAME="Index163"></A><A NAME="Index164"></A>
+produces a one in the output bit if one or the other input bit is a one, but
+not both. The bitwise NOT<A NAME="Index165"></A>
+(~, also called the ones complement operator<A NAME="Index166"></A><A NAME="Index167"></A>)
+is a unary operator;<A NAME="Index168"></A><A NAME="Index169"></A>
+it takes only one argument. (All other bitwise operators are binary operators.<A NAME="Index170"></A><A NAME="Index171"></A>)
+Bitwise NOT produces the opposite of the input bit &#8211; a one if the input
+bit is zero, a zero if the input bit is one.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+bitwise operators and logical operators use the same characters, so it is
+helpful to have a mnemonic device to help you remember the meanings: since bits
+are &#8220;small,&#8221; there is only one character in the bitwise operators.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Bitwise
+operators can be combined with the = sign to unite the operation and
+assignment: &amp;=<A NAME="Index172"></A>,
+|=<A NAME="Index173"></A>
+and ^=<A NAME="Index174"></A>
+are all legitimate. (Since ~ is a unary operator it cannot be combined with the
+= sign.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+type is treated as a one-bit value so it is somewhat different. You can perform
+a bitwise AND, OR and XOR, but you can&#8217;t perform a bitwise NOT
+(presumably to prevent confusion with the logical NOT). For 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+the bitwise operators have the same effect as the logical operators except that
+they do not short circuit. Also, the bitwise operators on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+gives you a XOR logical operator that is not included under the list of
+&#8220;logical&#8221; operators. You&#8217;re prevented from using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+in shift expressions, which is described next.
+</FONT><a name="_Toc375545255"></a><a name="_Toc408018456"></a><P></DIV>
+<A NAME="Heading112"></A><H3 ALIGN=LEFT>
+Shift
+operators<A NAME="Index175"></A><A NAME="Index176"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+shift operators also manipulate bits. They can be used solely with primitive,
+integral types. The left-shift operator (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&lt;&lt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)<A NAME="Index177"></A><A NAME="Index178"></A>
+produces the operand to the left of the operator shifted to the left by the
+number of bits specified after the operator (inserting zeroes at the
+lower-order bits). The signed right-shift operator (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)<A NAME="Index179"></A><A NAME="Index180"></A>
+produces the operand to the left of the operator shifted to the right by the
+number of bits specified after the operator. The signed right shift 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">uses
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>sign
+extension
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+if the value is positive, zeroes are inserted at the higher-order bits; if the
+value is negative, ones are inserted at the higher-order bits. Java has also
+added the unsigned right shift 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;&gt;,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">uses
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>zero
+extension
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+regardless of the sign, zeroes are inserted at the higher-order bits.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+operator does not exist in C or C++.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you shift a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it will be promoted to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before the shift takes place, and the result will be an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Only the five low-order bits of the right-hand side will be used. This prevents
+you from shifting more than the number of bits in an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you&#8217;re operating on a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be the result. Only the six low-order bits of the right-hand side will be
+used so you can&#8217;t shift more than the number of bits in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+There is a problem, however, with the unsigned right shift. If you use it with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you might not get the correct results. (It&#8217;s broken in <A NAME="Index181"></A>Java
+1.0 and Java 1.1.<A NAME="Index182"></A>)
+These are promoted to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and right shifted, but the zero extension does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occur, so you get 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in those cases. The following example can be used to test your implementation:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: URShift.java</font>
+<font color="#009900">// Test of unsigned right shift</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> URShift {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> i = -1;
+    i &gt;&gt;&gt;= 10;
+    System.out.println(i);
+    <font color="#0000ff">long</font> l = -1;
+    l &gt;&gt;&gt;= 10;
+    System.out.println(l);
+    <font color="#0000ff">short</font> s = -1;
+    s &gt;&gt;&gt;= 10;
+    System.out.println(s);
+    <font color="#0000ff">byte</font> b = -1;
+    b &gt;&gt;&gt;= 10;
+    System.out.println(b);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Shifts
+can be combined with the equal sign (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&lt;&lt;=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;&gt;=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)<A NAME="Index183"></A><A NAME="Index184"></A>.
+The lvalue is replaced by the lvalue shifted by the rvalue.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that demonstrates the use of all the operators involving bits:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BitManipulation.java</font>
+<font color="#009900">// Using the bitwise operators</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BitManipulation {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Random rand = <font color="#0000ff">new</font> Random();
+    <font color="#0000ff">int</font> i = rand.nextInt();
+    <font color="#0000ff">int</font> j = rand.nextInt();
+    pBinInt("-1", -1);
+    pBinInt("+1", +1);
+    <font color="#0000ff">int</font> maxpos = 2147483647;
+    pBinInt("maxpos", maxpos);
+    <font color="#0000ff">int</font> maxneg = -2147483648;
+    pBinInt("maxneg", maxneg);
+    pBinInt("i", i);
+    pBinInt("~i", ~i);
+    pBinInt("-i", -i);
+    pBinInt("j", j);
+    pBinInt("i &amp; j", i &amp; j);
+    pBinInt("i | j", i | j);
+    pBinInt("i ^ j", i ^ j);
+    pBinInt("i &lt;&lt; 5", i &lt;&lt; 5);
+    pBinInt("i &gt;&gt; 5", i &gt;&gt; 5);
+    pBinInt("(~i) &gt;&gt; 5", (~i) &gt;&gt; 5);
+    pBinInt("i &gt;&gt;&gt; 5", i &gt;&gt;&gt; 5);
+    pBinInt("(~i) &gt;&gt;&gt; 5", (~i) &gt;&gt;&gt; 5);
+
+    <font color="#0000ff">long</font> l = rand.nextLong();
+    <font color="#0000ff">long</font> m = rand.nextLong();
+    pBinLong("-1L", -1L);
+    pBinLong("+1L", +1L);
+    <font color="#0000ff">long</font> ll = 9223372036854775807L;
+    pBinLong("maxpos", ll);
+    <font color="#0000ff">long</font> lln = -9223372036854775808L;
+    pBinLong("maxneg", lln);
+    pBinLong("l", l);
+    pBinLong("~l", ~l);
+    pBinLong("-l", -l);
+    pBinLong("m", m);
+    pBinLong("l &amp; m", l &amp; m);
+    pBinLong("l | m", l | m);
+    pBinLong("l ^ m", l ^ m);
+    pBinLong("l &lt;&lt; 5", l &lt;&lt; 5);
+    pBinLong("l &gt;&gt; 5", l &gt;&gt; 5);
+    pBinLong("(~l) &gt;&gt; 5", (~l) &gt;&gt; 5);
+    pBinLong("l &gt;&gt;&gt; 5", l &gt;&gt;&gt; 5);
+    pBinLong("(~l) &gt;&gt;&gt; 5", (~l) &gt;&gt;&gt; 5);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> pBinInt(String s, <font color="#0000ff">int</font> i) {
+    System.out.println(
+      s + ", <font color="#0000ff">int</font>: " + i + ", binary: ");
+    System.out.print("   ");
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 31; j &gt;=0; j--)
+      <font color="#0000ff">if</font>(((1 &lt;&lt; j) &amp;  i) != 0)
+        System.out.print("1");
+      <font color="#0000ff">else</font>
+        System.out.print("0");
+    System.out.println();
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> pBinLong(String s, <font color="#0000ff">long</font> l) {
+    System.out.println(
+      s + ", <font color="#0000ff">long</font>: " + l + ", binary: ");
+    System.out.print("   ");
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 63; i &gt;=0; i--)
+      <font color="#0000ff">if</font>(((1L &lt;&lt; i) &amp; l) != 0)
+        System.out.print("1");
+      <font color="#0000ff">else</font>
+        System.out.print("0");
+    System.out.println();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two methods at the end, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pBinInt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pBinLong(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+take an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+respectively, and print it out in binary format along with a descriptive
+string. You can ignore the implementation of these for now.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+note the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method does not put out a new line, so it allows you to output a line in pieces.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+well as demonstrating the effect of all the bitwise operators for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+this example also shows the minimum, maximum, +1 and -1 values for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can see what they look like. Note that the high bit represents the sign:
+0 means positive and 1 means negative. The output for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+portion looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>-1, <font color="#0000ff">int</font>: -1, binary: 
+   11111111111111111111111111111111
++1, <font color="#0000ff">int</font>: 1, binary: 
+   00000000000000000000000000000001
+maxpos, <font color="#0000ff">int</font>: 2147483647, binary: 
+   01111111111111111111111111111111
+maxneg, <font color="#0000ff">int</font>: -2147483648, binary: 
+   10000000000000000000000000000000
+i, <font color="#0000ff">int</font>: 59081716, binary: 
+   00000011100001011000001111110100
+~i, <font color="#0000ff">int</font>: -59081717, binary: 
+   11111100011110100111110000001011
+-i, <font color="#0000ff">int</font>: -59081716, binary: 
+   11111100011110100111110000001100
+j, <font color="#0000ff">int</font>: 198850956, binary: 
+   00001011110110100011100110001100
+i &amp; j, <font color="#0000ff">int</font>: 58720644, binary: 
+   00000011100000000000000110000100
+i | j, <font color="#0000ff">int</font>: 199212028, binary: 
+   00001011110111111011101111111100
+i ^ j, <font color="#0000ff">int</font>: 140491384, binary: 
+   00001000010111111011101001111000
+i &lt;&lt; 5, <font color="#0000ff">int</font>: 1890614912, binary: 
+   01110000101100000111111010000000
+i &gt;&gt; 5, <font color="#0000ff">int</font>: 1846303, binary: 
+   00000000000111000010110000011111
+(~i) &gt;&gt; 5, <font color="#0000ff">int</font>: -1846304, binary: 
+   11111111111000111101001111100000
+i &gt;&gt;&gt; 5, <font color="#0000ff">int</font>: 1846303, binary: 
+   00000000000111000010110000011111
+(~i) &gt;&gt;&gt; 5, <font color="#0000ff">int</font>: 132371424, binary: 
+   00000111111000111101001111100000 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+binary representation of the numbers is referred to as <A NAME="Index185"></A><A NAME="Index186"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>signed
+two&#8217;s complement
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545256"></a><a name="_Toc408018457"></a><P></DIV>
+<A NAME="Heading113"></A><H3 ALIGN=LEFT>
+Ternary
+if-else operator<A NAME="Index187"></A><A NAME="Index188"></A><A NAME="Index189"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+operator is unusual because it has three operands. It is truly an operator
+because it produces a value, unlike the ordinary if-else statement that
+you&#8217;ll see in the next section of this chapter<A NAME="Index190"></A>.
+The expression is of the form 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>boolean-exp</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+? 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>value0</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>value1</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>boolean-exp</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+evaluates to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>value0</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is evaluated and its result becomes the value produced by the operator. If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>boolean-exp</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>value1</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is evaluated and its result becomes the value produced by the operator.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, you could use an ordinary 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if-else
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+(described later), but the ternary operator is much terser. Although C prides
+itself on being a terse language, and the ternary operator might have been
+introduced partly for efficiency, you should be somewhat wary of using it on an
+everyday basis &#8211; it&#8217;s easy to produce unreadable code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+conditional operator can be used for its side effects or for the value it
+produces, but in general you want the value since that&#8217;s what makes the
+operator distinct from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if-else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> <font color="#0000ff">int</font> ternary(<font color="#0000ff">int</font> i) {
+  <font color="#0000ff">return</font> i &lt; 10 ? i * 100 : i * 10;
+} </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that this code is more compact than what you&#8217;d need to write
+without the ternary operator:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> <font color="#0000ff">int</font> alternative(<font color="#0000ff">int</font> i) {
+  <font color="#0000ff">if</font> (i &lt; 10)
+    <font color="#0000ff">return</font> i * 100;
+  <font color="#0000ff">return</font> i * 10;
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second form is easier to understand, and doesn&#8217;t require a lot more
+typing. So be sure to ponder your reasons when choosing the ternary operator.
+</FONT><a name="_Toc375545257"></a><a name="_Toc408018458"></a><P></DIV>
+<A NAME="Heading114"></A><H3 ALIGN=LEFT>
+The
+comma operator
+<P><A NAME="Index191"></A><A NAME="Index192"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+comma is used in C and C++ not only as a separator in function argument lists,
+but also as an operator for sequential evaluation. The sole place that the comma 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>operator</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used in Java is in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loops, which will be described later in this chapter.
+</FONT><a name="_Toc375545258"></a><a name="_Toc408018459"></a><P></DIV>
+<A NAME="Heading115"></A><H3 ALIGN=LEFT>
+String
+operator +
+<P><A NAME="Index193"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+one special usage of an operator in Java: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator can be used to <A NAME="Index194"></A>concatenate
+strings, as you&#8217;ve already seen. It seems a natural use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+even though it doesn&#8217;t fit with the traditional way that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used. This capability seemed like a good idea in C++, so <A NAME="Index195"></A><A NAME="Index196"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>operator
+overloading
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was added to C++ to allow the C++ programmer to add meanings to almost any
+operator. Unfortunately, operator overloading combined with some of the other
+restrictions in C++ turns out to be a fairly complicated feature for
+programmers to design into their classes. Although operator overloading would
+have been much simpler to implement in Java than it was in C++, this feature
+was still considered too complex, so Java programmers cannot implement their
+own overloaded operators as C++ programmers can.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
++
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has some interesting behavior. If an expression begins with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then all operands that follow must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int
+x = 0, y = 1, z = 2;
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+sString = "x, y, z ";
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println(sString
++ x + y + z);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+the Java compiler will convert 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>z</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into their 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representations instead of adding them together first. However, if you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println(x
++ sString);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">earlier
+versions of Java will signal an error. (Later versions, however, will turn 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">into
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+So if you&#8217;re putting together a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(using an earlier version of Java) with addition, make sure the first element
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or a quoted sequence of characters, which the compiler recognizes as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><a name="_Toc375545259"></a><a name="_Toc408018460"></a><P></DIV>
+<A NAME="Heading116"></A><H3 ALIGN=LEFT>
+Common
+pitfalls when using operators<A NAME="Index197"></A><A NAME="Index198"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the pitfalls when using operators is trying to get away without parentheses
+when you are even the least bit uncertain about how an expression will
+evaluate. This is still true in Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+extremely common error in C and C++ looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">while</font>(x = y) {
+    <font color="#009900">// ....</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+programmer was trying to test for equivalence (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+rather than do an assignment. In C and C++ the result of this assignment will
+always be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+nonzero, and you&#8217;ll probably get an infinite loop. In Java, the result of
+this expression is not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the compiler expects a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and won&#8217;t convert from an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it will conveniently give you a compile-time error and catch the problem
+before you ever try to run the program. So the pitfall never happens in <A NAME="Index199"></A>Java.
+(The only time you won&#8217;t get a compile-time error is when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in which case 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
+= y
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a legal expression, and in the above case, probably an error.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+similar problem in C and C++ is using bitwise AND and OR instead of logical.
+Bitwise AND and OR use one of the characters (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>|</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+while logical AND and OR use two (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>||</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Just as with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s easy to type just one character instead of two.<A NAME="Index200"></A><A NAME="Index201"></A><A NAME="Index202"></A><A NAME="Index203"></A><A NAME="Index204"></A><A NAME="Index205"></A>
+In Java, the compiler again prevents this because it won&#8217;t let you
+cavalierly use one type where it doesn&#8217;t belong.
+</FONT><a name="_Toc375545260"></a><a name="_Toc408018461"></a><P></DIV>
+<A NAME="Heading117"></A><H3 ALIGN=LEFT>
+Casting
+operators<A NAME="Index206"></A><A NAME="Index207"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+word 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>cast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used in the sense of &#8220;casting into a mold.&#8221; Java will
+automatically change one type of data into another when appropriate. For
+instance, if you assign an integral value to a floating-point variable, the
+compiler will automatically convert the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Casting allows you to make this type conversion explicit, or to force it when
+it wouldn&#8217;t normally happen.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+perform a cast, put the desired data type (including all modifiers) inside
+parentheses to the left of any value. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">void</font> casts() {
+  <font color="#0000ff">int</font> i = 200;
+  <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)i;
+  <font color="#0000ff">long</font> l2 = (<font color="#0000ff">long</font>)200;
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see, it&#8217;s possible to perform a cast on a numeric value as well
+as on a variable. In both casts shown here, however, the cast is superfluous,
+since the compiler will automatically promote an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when necessary. You can still put a cast in to make a point or to make your
+code more clear. In other situations, a cast is essential just to get the code
+to compile.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+C and C++, casting can cause some headaches. In Java, casting is safe, with the
+exception that when you perform a so-called <A NAME="Index208"></A><A NAME="Index209"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>narrowing
+conversion
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(that is, when you go from a data type that can hold more information to one
+that doesn&#8217;t hold as much) you run the risk of losing information.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+the compiler forces you to do a cast, in effect saying &#8220;this can be a
+dangerous thing to do &#8211; if you want me to do it anyway you must make the
+cast explicit.&#8221; With a <A NAME="Index210"></A><A NAME="Index211"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>widening
+conversion
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an explicit cast is not needed because the new type will more than hold the
+information from the old type so that no information is ever lost.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+allows you to cast any primitive type to any other primitive type, except for <A NAME="Index212"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which doesn&#8217;t allow any casting at all. Class types do not allow casting.
+To convert one to the other there must be special methods. (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a special case, and you&#8217;ll find out later in the book that objects can
+be cast within a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>family</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of types; an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Oak</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be cast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and vice-versa, but not to a foreign type such as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Rock.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV>
+<A NAME="Heading118"></A><H4 ALIGN=LEFT>
+Literals<P><A NAME="Index213"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Ordinarily
+when you insert a literal value into a program the compiler knows exactly what
+type to make it. Sometimes, however, the type is ambiguous. When this happens
+you must guide the compiler by adding some extra information in the form of
+characters associated with the literal value. The following code shows these
+characters:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Literals.java</font>
+
+<font color="#0000ff">class</font> Literals {
+  <font color="#0000ff">char</font> c = 0xffff; <font color="#009900">// max char hex value</font>
+  <font color="#0000ff">byte</font> b = 0x7f; <font color="#009900">// max byte hex value</font>
+  <font color="#0000ff">short</font> s = 0x7fff; <font color="#009900">// max short hex value</font>
+  <font color="#0000ff">int</font> i1 = 0x2f; <font color="#009900">// Hexadecimal (lowercase)</font>
+  <font color="#0000ff">int</font> i2 = 0X2F; <font color="#009900">// Hexadecimal (uppercase)</font>
+  <font color="#0000ff">int</font> i3 = 0177; <font color="#009900">// Octal (leading zero)</font>
+  <font color="#009900">// Hex and Oct also work with long.</font>
+  <font color="#0000ff">long</font> n1 = 200L; <font color="#009900">// long suffix</font>
+  <font color="#0000ff">long</font> n2 = 200l; <font color="#009900">// long suffix</font>
+  <font color="#0000ff">long</font> n3 = 200;
+  <font color="#009900">//! long l6(200); // not allowed</font>
+  <font color="#0000ff">float</font> f1 = 1;
+  <font color="#0000ff">float</font> f2 = 1F; <font color="#009900">// float suffix</font>
+  <font color="#0000ff">float</font> f3 = 1f; <font color="#009900">// float suffix</font>
+  <font color="#0000ff">float</font> f4 = 1e-45f; <font color="#009900">// 10 to the power</font>
+  <font color="#0000ff">float</font> f5 = 1e+9f; <font color="#009900">// float suffix</font>
+  <font color="#0000ff">double</font> d1 = 1d; <font color="#009900">// double suffix</font>
+  <font color="#0000ff">double</font> d2 = 1D; <font color="#009900">// double suffix</font>
+  <font color="#0000ff">double</font> d3 = 47e47d; <font color="#009900">// 10 to the power</font>
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index214"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Hexadecimal
+(<A NAME="Index215"></A>base
+16), which works with all the integral data types, is denoted by a leading 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>0x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>0X</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by 0&#8211;9 and a&#8211;f either in upper or lower case. If you try
+to initialize a variable with a value bigger than it can hold (regardless of
+the numerical form of the value), the compiler will give you an error message.
+Notice in the above code the maximum possible hexadecimal values for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you exceed these, the compiler will automatically make the value an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and tell you that you need a narrowing cast for the assignment. You&#8217;ll
+know you&#8217;ve stepped over the line.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index216"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Octal
+(<A NAME="Index217"></A>base
+8) is denoted by a leading zero in the number and digits from 0-7. There is no
+literal representation for <A NAME="Index218"></A><A NAME="Index219"></A>binary
+numbers in C, C++ or Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+trailing character after a literal value establishes its type. Upper or
+lowercase 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>L
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">means
+<A NAME="Index220"></A><A NAME="Index221"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+upper or lowercase 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>F</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means <A NAME="Index222"></A><A NAME="Index223"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and upper or lowercase 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>D</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means <A NAME="Index224"></A><A NAME="Index225"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index226"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Exponents
+use a notation that I&#8217;ve always found rather dismaying: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>1.39
+e-47f
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In science and engineering, &#8216;e&#8217; refers to the base of <A NAME="Index227"></A><A NAME="Index228"></A>natural
+logarithms, approximately 2.718. (A more precise 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">value
+is available in Java as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.E.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+This is used in exponentiation expressions such as 1.39 x e
+</FONT><SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-47</FONT></SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means 1.39 x 2.718
+</FONT><SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-47</FONT></SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, when <A NAME="Index229"></A>FORTRAN
+was invented they decided that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>e</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would naturally mean &#8220;ten to the power,&#8221; which is an odd decision
+because FORTRAN was designed for science and engineering and one would think
+its designers would be sensitive about introducing such an ambiguity.
+</FONT><A NAME="fnB16" HREF="#fn16">[16]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+At any rate, this custom was followed in C, C++ and now Java. So if
+you&#8217;re used to thinking in terms of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>e</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the base of natural logarithms, you must do a mental translation when you
+see an expression such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>1.39
+e-47f
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java; it means 1.39 x 10
+</FONT><SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-47</FONT></SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that you don&#8217;t need to use the trailing character when the compiler can
+figure out the appropriate type. With
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">long
+n3 = 200;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">there&#8217;s
+no ambiguity, so an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>L</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+after the 200 would be superfluous. However, with
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">float
+f4 = 1e-47f; // 10 to the power
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+compiler normally takes exponential numbers as doubles, so without the trailing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it will give you an error telling you that you must use a cast to convert 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading119"></A><H4 ALIGN=LEFT>
+Promotion</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+discover that if you perform any mathematical or bitwise operations on
+primitive data types that are smaller than an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(that is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+those values will be <A NAME="Index230"></A>promoted
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before performing the operations, and the resulting value will be of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So if you want to assign back into the smaller type, you must use a cast. (And,
+since you&#8217;re assigning back into a smaller type, you might be losing
+information.) In general, the largest data type in an expression is the one
+that determines the size of the result of that expression; if you multiply a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the result will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+if you add an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the result will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545261"></a><a name="_Toc408018462"></a><P></DIV>
+<A NAME="Heading120"></A><H3 ALIGN=LEFT>
+Java
+has no &#8220;sizeof&#8221; 
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+C and C++, the <A NAME="Index231"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sizeof(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator satisfies a specific need: it tells you the number of bytes allocated
+for data items. The most compelling need for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sizeof(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in C and C++ is <A NAME="Index232"></A>portability.
+Different data types might be different sizes on different machines, so the
+programmer must find out how big those types are when performing operations
+that are sensitive to size. For example, one computer might store integers in
+32 bits, whereas another might store integers as 16 bits. Programs could store
+larger values in integers on the first machine. As you might imagine,
+portability is a huge headache for C and C++ programmers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+does not need a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sizeof(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator for this purpose because all the data types are the same size on all
+machines. You do not need to think about portability on this level &#8211; it
+is designed into the language.
+</FONT><a name="_Toc375545262"></a><a name="_Toc408018463"></a><P></DIV>
+<A NAME="Heading121"></A><H3 ALIGN=LEFT>
+Precedence
+revisited
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Upon
+hearing me complain about the complexity of remembering <A NAME="Index233"></A><A NAME="Index234"></A>operator
+precedence during one of my seminars, a student suggested a mnemonic that is
+simultaneously a commentary: &#8220;Ulcer Addicts Really Like C A lot.&#8221;
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="63">
+      <COL width="112">
+      <COL width="157">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Mnemonic</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Operator
+type
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Operators</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Ulcer</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Unary</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">+
+- ++ &#8211;  [[ rest...]]
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Addicts</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Arithmetic
+(and shift)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*
+/ % + -  &lt;&lt; &gt;&gt;
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Really</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Relational</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&gt;
+&lt; &gt;= &lt;= == !=
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Logical
+(and bitwise)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&amp;&amp;
+||  &amp;  |  ^ 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">C</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Conditional
+(ternary)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+&gt; B ? X : Y
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+Lot
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=112 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Assignment</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">=
+(and compound assignment like *=)
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, with the shift and bitwise operators distributed around the table it is
+not a perfect mnemonic, but for non-bit operations it works.
+</FONT><a name="_Toc375545263"></a><a name="_Toc408018464"></a><P></DIV>
+<A NAME="Heading122"></A><H3 ALIGN=LEFT>
+A
+compendium of operators
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example shows which <A NAME="Index235"></A><A NAME="Index236"></A><A NAME="Index237"></A>primitive
+data types can be used with particular operators. Basically, it is the same
+example repeated over and over, but using different primitive data types. The
+file will compile without error because the lines that would cause errors are
+commented out with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>//!</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AllOps.java</font>
+<font color="#009900">// Tests all the operators on all the</font>
+<font color="#009900">// primitive data types to show which</font>
+<font color="#009900">// ones are accepted by the Java compiler.</font>
+
+<font color="#0000ff">class</font> AllOps {
+  <font color="#009900">// To accept the results of a boolean test:</font>
+  <font color="#0000ff">void</font> f(<font color="#0000ff">boolean</font> b) {}
+  <font color="#0000ff">void</font> boolTest(<font color="#0000ff">boolean</font> x, <font color="#0000ff">boolean</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    <font color="#009900">//! x = x * y;</font>
+    <font color="#009900">//! x = x / y;</font>
+    <font color="#009900">//! x = x % y;</font>
+    <font color="#009900">//! x = x + y;</font>
+    <font color="#009900">//! x = x - y;</font>
+    <font color="#009900">//! x++;</font>
+    <font color="#009900">//! x--;</font>
+    <font color="#009900">//! x = +y;</font>
+    <font color="#009900">//! x = -y;</font>
+    <font color="#009900">// Relational and logical:</font>
+    <font color="#009900">//! f(x &gt; y);</font>
+    <font color="#009900">//! f(x &gt;= y);</font>
+    <font color="#009900">//! f(x &lt; y);</font>
+    <font color="#009900">//! f(x &lt;= y);</font>
+    f(x == y);
+    f(x != y);
+    f(!y);
+    x = x &amp;&amp; y;
+    x = x || y;
+    <font color="#009900">// Bitwise operators:</font>
+    <font color="#009900">//! x = ~y;</font>
+    x = x &amp; y;
+    x = x | y;
+    x = x ^ y;
+    <font color="#009900">//! x = x &lt;&lt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt;&gt; 1;</font>
+    <font color="#009900">// Compound assignment:</font>
+    <font color="#009900">//! x += y;</font>
+    <font color="#009900">//! x -= y;</font>
+    <font color="#009900">//! x *= y;</font>
+    <font color="#009900">//! x /= y;</font>
+    <font color="#009900">//! x %= y;</font>
+    <font color="#009900">//! x &lt;&lt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;&gt;= 1;</font>
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! char c = (char)x;</font>
+    <font color="#009900">//! byte B = (byte)x;</font>
+    <font color="#009900">//! short s = (short)x;</font>
+    <font color="#009900">//! int i = (int)x;</font>
+    <font color="#009900">//! long l = (long)x;</font>
+    <font color="#009900">//! float f = (float)x;</font>
+    <font color="#009900">//! double d = (double)x;</font>
+  }
+  <font color="#0000ff">void</font> charTest(<font color="#0000ff">char</font> x, <font color="#0000ff">char</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = (<font color="#0000ff">char</font>)(x * y);
+    x = (<font color="#0000ff">char</font>)(x / y);
+    x = (<font color="#0000ff">char</font>)(x % y);
+    x = (<font color="#0000ff">char</font>)(x + y);
+    x = (<font color="#0000ff">char</font>)(x - y);
+    x++;
+    x--;
+    x = (<font color="#0000ff">char</font>)+y;
+    x = (<font color="#0000ff">char</font>)-y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    x= (<font color="#0000ff">char</font>)~y;
+    x = (<font color="#0000ff">char</font>)(x &amp; y);
+    x  = (<font color="#0000ff">char</font>)(x | y);
+    x = (<font color="#0000ff">char</font>)(x ^ y);
+    x = (<font color="#0000ff">char</font>)(x &lt;&lt; 1);
+    x = (<font color="#0000ff">char</font>)(x &gt;&gt; 1);
+    x = (<font color="#0000ff">char</font>)(x &gt;&gt;&gt; 1);
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    x &lt;&lt;= 1;
+    x &gt;&gt;= 1;
+    x &gt;&gt;&gt;= 1;
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> byteTest(<font color="#0000ff">byte</font> x, <font color="#0000ff">byte</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = (<font color="#0000ff">byte</font>)(x* y);
+    x = (<font color="#0000ff">byte</font>)(x / y);
+    x = (<font color="#0000ff">byte</font>)(x % y);
+    x = (<font color="#0000ff">byte</font>)(x + y);
+    x = (<font color="#0000ff">byte</font>)(x - y);
+    x++;
+    x--;
+    x = (<font color="#0000ff">byte</font>)+ y;
+    x = (<font color="#0000ff">byte</font>)- y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    x = (<font color="#0000ff">byte</font>)~y;
+    x = (<font color="#0000ff">byte</font>)(x &amp; y);
+    x = (<font color="#0000ff">byte</font>)(x | y);
+    x = (<font color="#0000ff">byte</font>)(x ^ y);
+    x = (<font color="#0000ff">byte</font>)(x &lt;&lt; 1);
+    x = (<font color="#0000ff">byte</font>)(x &gt;&gt; 1);
+    x = (<font color="#0000ff">byte</font>)(x &gt;&gt;&gt; 1);
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    x &lt;&lt;= 1;
+    x &gt;&gt;= 1;
+    x &gt;&gt;&gt;= 1;
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> shortTest(<font color="#0000ff">short</font> x, <font color="#0000ff">short</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = (<font color="#0000ff">short</font>)(x * y);
+    x = (<font color="#0000ff">short</font>)(x / y);
+    x = (<font color="#0000ff">short</font>)(x % y);
+    x = (<font color="#0000ff">short</font>)(x + y);
+    x = (<font color="#0000ff">short</font>)(x - y);
+    x++;
+    x--;
+    x = (<font color="#0000ff">short</font>)+y;
+    x = (<font color="#0000ff">short</font>)-y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    x = (<font color="#0000ff">short</font>)~y;
+    x = (<font color="#0000ff">short</font>)(x &amp; y);
+    x = (<font color="#0000ff">short</font>)(x | y);
+    x = (<font color="#0000ff">short</font>)(x ^ y);
+    x = (<font color="#0000ff">short</font>)(x &lt;&lt; 1);
+    x = (<font color="#0000ff">short</font>)(x &gt;&gt; 1);
+    x = (<font color="#0000ff">short</font>)(x &gt;&gt;&gt; 1);
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    x &lt;&lt;= 1;
+    x &gt;&gt;= 1;
+    x &gt;&gt;&gt;= 1;
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> intTest(<font color="#0000ff">int</font> x, <font color="#0000ff">int</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x++;
+    x--;
+    x = +y;
+    x = -y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    x = ~y;
+    x = x &amp; y;
+    x = x | y;
+    x = x ^ y;
+    x = x &lt;&lt; 1;
+    x = x &gt;&gt; 1;
+    x = x &gt;&gt;&gt; 1;
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    x &lt;&lt;= 1;
+    x &gt;&gt;= 1;
+    x &gt;&gt;&gt;= 1;
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> longTest(<font color="#0000ff">long</font> x, <font color="#0000ff">long</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x++;
+    x--;
+    x = +y;
+    x = -y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    x = ~y;
+    x = x &amp; y;
+    x = x | y;
+    x = x ^ y;
+    x = x &lt;&lt; 1;
+    x = x &gt;&gt; 1;
+    x = x &gt;&gt;&gt; 1;
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    x &lt;&lt;= 1;
+    x &gt;&gt;= 1;
+    x &gt;&gt;&gt;= 1;
+    x &amp;= y;
+    x ^= y;
+    x |= y;
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> floatTest(<font color="#0000ff">float</font> x, <font color="#0000ff">float</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x++;
+    x--;
+    x = +y;
+    x = -y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    <font color="#009900">//! x = ~y;</font>
+    <font color="#009900">//! x = x &amp; y;</font>
+    <font color="#009900">//! x = x | y;</font>
+    <font color="#009900">//! x = x ^ y;</font>
+    <font color="#009900">//! x = x &lt;&lt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt;&gt; 1;</font>
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    <font color="#009900">//! x &lt;&lt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;&gt;= 1;</font>
+    <font color="#009900">//! x &amp;= y;</font>
+    <font color="#009900">//! x ^= y;</font>
+    <font color="#009900">//! x |= y;</font>
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">double</font> d = (<font color="#0000ff">double</font>)x;
+  }
+  <font color="#0000ff">void</font> doubleTest(<font color="#0000ff">double</font> x, <font color="#0000ff">double</font> y) {
+    <font color="#009900">// Arithmetic operators:</font>
+    x = x * y;
+    x = x / y;
+    x = x % y;
+    x = x + y;
+    x = x - y;
+    x++;
+    x--;
+    x = +y;
+    x = -y;
+    <font color="#009900">// Relational and logical:</font>
+    f(x &gt; y);
+    f(x &gt;= y);
+    f(x &lt; y);
+    f(x &lt;= y);
+    f(x == y);
+    f(x != y);
+    <font color="#009900">//! f(!x);</font>
+    <font color="#009900">//! f(x &amp;&amp; y);</font>
+    <font color="#009900">//! f(x || y);</font>
+    <font color="#009900">// Bitwise operators:</font>
+    <font color="#009900">//! x = ~y;</font>
+    <font color="#009900">//! x = x &amp; y;</font>
+    <font color="#009900">//! x = x | y;</font>
+    <font color="#009900">//! x = x ^ y;</font>
+    <font color="#009900">//! x = x &lt;&lt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt; 1;</font>
+    <font color="#009900">//! x = x &gt;&gt;&gt; 1;</font>
+    <font color="#009900">// Compound assignment:</font>
+    x += y;
+    x -= y;
+    x *= y;
+    x /= y;
+    x %= y;
+    <font color="#009900">//! x &lt;&lt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;= 1;</font>
+    <font color="#009900">//! x &gt;&gt;&gt;= 1;</font>
+    <font color="#009900">//! x &amp;= y;</font>
+    <font color="#009900">//! x ^= y;</font>
+    <font color="#009900">//! x |= y;</font>
+    <font color="#009900">// Casting:</font>
+    <font color="#009900">//! boolean b = (boolean)x;</font>
+    <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)x;
+    <font color="#0000ff">byte</font> B = (<font color="#0000ff">byte</font>)x;
+    <font color="#0000ff">short</font> s = (<font color="#0000ff">short</font>)x;
+    <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)x;
+    <font color="#0000ff">long</font> l = (<font color="#0000ff">long</font>)x;
+    <font color="#0000ff">float</font> f = (<font color="#0000ff">float</font>)x;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that <A NAME="Index238"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite limited. You can assign to it the values 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you can test it for truth or falsehood, but you cannot add booleans or
+perform any other type of operation on them.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see the effect of <A NAME="Index239"></A>promotion
+with the arithmetic operators. Each arithmetic operation on any of those types
+results in an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result, which must be explicitly cast back to the original type (a narrowing
+conversion that might lose information) to assign back to that type. With 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values, however, you do not need to cast, because everything is already an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Don&#8217;t be lulled into thinking everything is safe, though. If you multiply
+two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+that are big enough, you&#8217;ll <A NAME="Index240"></A>overflow
+the result. The following example demonstrates this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Overflow.java</font>
+<font color="#009900">// Surprise! Java lets you overflow.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Overflow {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> big = 0x7fffffff; <font color="#009900">// max int value</font>
+    prt("big = " + big);
+    <font color="#0000ff">int</font> bigger = big * 4;
+    prt("bigger = " + bigger);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output of this is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>big = 2147483647
+bigger = -4 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+you get no errors or warnings from the compiler, and no exceptions at run-time.
+Java is good, but it&#8217;s not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+good.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Compound
+assignments do 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+require casts for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+even though they are performing promotions that have the same results as the
+direct arithmetic operations. On the other hand, the lack of the cast certainly
+simplifies the code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that, with the exception of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+any <A NAME="Index241"></A>primitive
+type can be cast to any other primitive type. Again, you must be aware of the
+effect of a narrowing conversion when casting to a smaller type, otherwise you
+might unknowingly lose information during the cast.
+</FONT><a name="_Toc375545264"></a><a name="_Toc408018465"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn16" HREF="#fnB16">[16]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+John Kirkham writes, &#8220;I started computing in 1962 using FORTRAN II on an
+IBM 1620. At that time, and throughout the 1960s and into the 1970s, FORTRAN
+was an all uppercase language. This probably started because many of the early
+input devices were old teletype units that used 5 bit Baudot code, which had no
+lowercase capability. The &#8216;E&#8217; in the exponential notation was also
+always upper case and was never confused with the natural logarithm base
+&#8216;e&#8217;, which is always lower case. The &#8216;E&#8217; simply stood
+for exponential, which was for the base of the number system used &#8211;
+usually 10. At the time octal was also widely used by programmers. Although I
+never saw it used, if I had seen an octal number in exponential notation I
+would have considered it to be base 8. The first time I remember seeing an
+exponential using a lower case &#8216;e&#8217; was in the late 1970s and I also
+found it confusing. The problem arose as lowercase crept into FORTRAN, not at
+its beginning. We actually had functions to use if you really wanted to use the
+natural logarithm base, but they were all uppercase.&#8221;
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0043.html">Prev</a> | <a href="tij0045.html">Next</a>
+</div>
+</body></html>
+

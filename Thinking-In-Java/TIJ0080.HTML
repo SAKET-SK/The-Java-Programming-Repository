@@ -1,0 +1,655 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0079.html">Prev</a> | <a href="tij0081.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Interfaces</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index588"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword takes the abstract
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">concept
+one step further. You could think of it as a &#8220;pure&#8221; abstract
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class.
+It allows the creator to establish the form for a class: method names, argument
+lists and return types, but no method bodies. An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can also contain data members of primitive types, but these are implicitly <A NAME="Index589"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index590"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides only a form, but no <A NAME="Index591"></A>implementation.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+says: &#8220;This is what all classes that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>implement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+this particular interface will look like.&#8221; Thus, any code that uses a
+particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+knows what methods might be called for that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that&#8217;s all. So the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to establish a &#8220;protocol&#8221; between classes. (Some
+object-oriented programming languages have a keyword called <A NAME="Index592"></A><A NAME="Index593"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>protocol</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to do the same thing.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword instead of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. Like a class, you can add the <A NAME="Index594"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword before the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+(but only if that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is defined in a file of the same name) or leave it off to give &#8220;<A NAME="Index595"></A>friendly&#8221;
+status.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+make a class that conforms to a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or group of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s)
+use the <A NAME="Index596"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. You&#8217;re saying &#8220;The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is what it looks like and here&#8217;s how it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>works</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+Other than that, it bears a strong resemblance to inheritance. The diagram for
+the instrument example shows this:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you&#8217;ve implemented an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+that implementation becomes an ordinary class that can be extended in the
+regular way.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can choose to explicitly declare the method declarations in an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But they are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+even if you don&#8217;t say it. So when you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the methods from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be defined as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Otherwise they would default to &#8220;friendly&#8221; and you&#8217;d be
+restricting the accessibility of a method during inheritance, which is not
+allowed by the Java compiler.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see this in the modified version of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example. Note that every method in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is strictly a declaration, which is the only thing the compiler allows. In
+addition, none of the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are declared as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but they&#8217;re automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+anyway:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Music5.java</font>
+<font color="#009900">// Interfaces</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">interface</font> Instrument5 {
+  <font color="#009900">// Compile-time constant:</font>
+  <font color="#0000ff">int</font> i = 5; <font color="#009900">// static &amp; final</font>
+  <font color="#009900">// Cannot have method definitions:</font>
+  <font color="#0000ff">void</font> play(); <font color="#009900">// Automatically public</font>
+  String what();
+  <font color="#0000ff">void</font> adjust();
+}
+
+<font color="#0000ff">class</font> Wind5 <font color="#0000ff">implements</font> Instrument5 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Wind5.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Wind5"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Percussion5 <font color="#0000ff">implements</font> Instrument5 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Percussion5.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Percussion5"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Stringed5 <font color="#0000ff">implements</font> Instrument5 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Stringed5.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Stringed5"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Brass5 <font color="#0000ff">extends</font> Wind5 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Brass5.play()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() { 
+    System.out.println("Brass5.adjust()");
+  }
+}
+
+<font color="#0000ff">class</font> Woodwind5 <font color="#0000ff">extends</font> Wind5 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Woodwind5.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Woodwind5"; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Music5 {
+  <font color="#009900">// Doesn't care about type, so new types</font>
+  <font color="#009900">// added to the system still work right:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument5 i) {
+    <font color="#009900">// ...</font>
+    i.play();
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tuneAll(Instrument5[] e) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; e.length; i++)
+      tune(e[i]);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Instrument5[] orchestra = <font color="#0000ff">new</font> Instrument5[5];
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#009900">// Upcasting during addition to the array:</font>
+    orchestra[i++] = <font color="#0000ff">new</font> Wind5();
+    orchestra[i++] = <font color="#0000ff">new</font> Percussion5();
+    orchestra[i++] = <font color="#0000ff">new</font> Stringed5();
+    orchestra[i++] = <font color="#0000ff">new</font> Brass5();
+    orchestra[i++] = <font color="#0000ff">new</font> Woodwind5();
+    tuneAll(orchestra);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of the code works the same. It doesn&#8217;t matter if you are <A NAME="Index597"></A>upcasting
+to a &#8220;regular&#8221; class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or to an <A NAME="Index598"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The behavior is the same. In fact, you can see in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that there isn&#8217;t any evidence about whether 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a &#8220;regular&#8221; class, an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class or an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the intent: Each approach gives the programmer different control over
+the way objects are created and used.
+</FONT><a name="_Toc375545336"></a><a name="_Toc408018539"></a><P></DIV>
+<A NAME="Heading217"></A><H3 ALIGN=LEFT>
+&#8220;Multiple
+inheritance&#8221; in Java
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t simply a &#8220;more pure&#8221; form of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. It has a higher purpose than that. Because an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has no implementation at all &#8211; that is, there is no storage associated
+with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">there&#8217;s
+nothing to prevent many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+from being combined. This is valuable because there are times when you need to
+say &#8220;An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+In C++, this act of combining multiple class interfaces is called <A NAME="Index599"></A><A NAME="Index600"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multiple
+inheritance
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it carries some rather sticky baggage because each class can have an
+implementation. In Java, you can perform the same act, but only one of the
+classes can have an implementation, so the problems seen in C++ do not occur
+with Java when combining multiple interfaces:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+a derived class, you aren&#8217;t forced to have a base class that is either an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or &#8220;concrete&#8221; (one with no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods). If you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>do</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inherit from a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can inherit from only one. All the rest of the base elements must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+You place all the interface names after the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+and separate them with commas. You can have as many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+as you want and each one becomes an independent type that you can upcast to.
+The following example shows a concrete class combined with several 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to produce a new class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Adventure.java</font>
+<font color="#009900">// Multiple interfaces</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">interface</font> CanFight {
+  <font color="#0000ff">void</font> fight();
+}
+
+<font color="#0000ff">interface</font> CanSwim {
+  <font color="#0000ff">void</font> swim();
+}
+
+<font color="#0000ff">interface</font> CanFly {
+  <font color="#0000ff">void</font> fly();
+}
+
+<font color="#0000ff">class</font> ActionCharacter {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> fight() {}
+}
+
+<font color="#0000ff">class</font> Hero <font color="#0000ff">extends</font> ActionCharacter 
+    <font color="#0000ff">implements</font> CanFight, CanSwim, CanFly {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> swim() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> fly() {}
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Adventure {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> t(CanFight x) { x.fight(); }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> u(CanSwim x) { x.swim(); }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> v(CanFly x) { x.fly(); }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> w(ActionCharacter x) { x.fight(); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Hero i = <font color="#0000ff">new</font> Hero();
+    t(i); <font color="#009900">// Treat it as a CanFight</font>
+    u(i); <font color="#009900">// Treat it as a CanSwim</font>
+    v(i); <font color="#009900">// Treat it as a CanFly</font>
+    w(i); <font color="#009900">// Treat it as an ActionCharacter</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hero</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+combines the concrete class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionCharacter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the interfaces 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CanFight</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CanSwim</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CanFly</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When you combine a concrete class with interfaces this way, the concrete class
+must come first, then the interfaces. (The compiler gives an error otherwise.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the signature for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fight(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the same in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+CanFight
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionCharacter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fight(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provided with a definition in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hero</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The rule for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that you can inherit from it (as you will see shortly), but then
+you&#8217;ve got another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you want to create an object of the new type, it must be a class with all
+definitions provided. Even though 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hero</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not explicitly provide a definition for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fight(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the definition comes along with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionCharacter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so it is automatically provided and it&#8217;s possible to create objects of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hero</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adventure</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see that there are four methods that take as arguments the various
+interfaces and the concrete class. When a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hero</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created, it can be passed to any of these methods, which means it is
+being upcast to each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in turn. Because of the way interfaces are designed in Java, this works without
+a hitch and without any particular effort on the part of the programmer.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Keep
+in mind that the core reason for interfaces is shown in the above example: to
+be able to upcast to more than one base type. However, a second reason for
+using interfaces is the same as using an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">base
+class: to prevent the client programmer from making an object of this class and
+to establish that it is only an interface. This brings up a question: Should
+you use an <A NAME="Index601"></A><A NAME="Index602"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class? An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+gives you the benefits of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the benefits of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so if it&#8217;s possible to create your base class without any method
+definitions or member variables you should always prefer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. In fact, if you know something is going to be a base class, your first
+choice should be to make it an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only if you&#8217;re forced to have method definitions or member variables
+should you change to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class.
+</FONT><a name="_Toc375545337"></a><a name="_Toc408018540"></a><P></DIV>
+<A NAME="Heading218"></A><H3 ALIGN=LEFT>
+Extending
+an interface 
+<P>with
+inheritance
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can easily add new method declarations to an <A NAME="Index603"></A><A NAME="Index604"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using inheritance, and you can also combine several 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+into a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with inheritance. In both cases you get a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as seen in this example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: HorrorShow.java</font>
+<font color="#009900">// Extending an interface with inheritance</font>
+
+<font color="#0000ff">interface</font> Monster {
+  <font color="#0000ff">void</font> menace();
+}
+
+<font color="#0000ff">interface</font> DangerousMonster <font color="#0000ff">extends</font> Monster {
+  <font color="#0000ff">void</font> destroy();
+}
+
+<font color="#0000ff">interface</font> Lethal {
+  <font color="#0000ff">void</font> kill();
+}
+
+<font color="#0000ff">class</font> DragonZilla <font color="#0000ff">implements</font> DangerousMonster {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> menace() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> destroy() {}
+}
+
+<font color="#0000ff">interface</font> Vampire 
+    <font color="#0000ff">extends</font> DangerousMonster, Lethal {
+  <font color="#0000ff">void</font> drinkBlood();
+}
+
+<font color="#0000ff">class</font> HorrorShow {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> u(Monster b) { b.menace(); }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> v(DangerousMonster d) {
+    d.menace();
+    d.destroy();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    DragonZilla if2 = <font color="#0000ff">new</font> DragonZilla();
+    u(if2);
+    v(if2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DangerousMonster</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a simple extension to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Monster</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that produces a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is implemented in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DragonZilla</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+syntax used in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vampire</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when inheriting interfaces. Normally, you can use <A NAME="Index605"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with only a single class, but since an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be made from multiple other interfaces, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can refer to multiple base interfaces when building a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As you can see, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+names are simply separated with commas.
+</FONT><a name="_Toc408018541"></a><a name="_Toc375545338"></a><P></DIV>
+<A NAME="Heading219"></A><H3 ALIGN=LEFT>
+Grouping
+constants
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+any fields you put into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a convenient tool for <A NAME="Index606"></A><A NAME="Index607"></A>creating
+groups of constant values, much as you would with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in C or C++. For example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Months.java</font>
+<font color="#009900">// Using interfaces to create groups of constants</font>
+<font color="#0000ff">package</font> c07;
+
+<font color="#0000ff">public</font> <font color="#0000ff">interface</font> Months {
+  <font color="#0000ff">int</font>
+    JANUARY = 1, FEBRUARY = 2, MARCH = 3, 
+    APRIL = 4, MAY = 5, JUNE = 6, JULY = 7, 
+    AUGUST = 8, SEPTEMBER = 9, OCTOBER = 10,
+    NOVEMBER = 11, DECEMBER = 12;
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the Java style of using all uppercase letters (with underscores to separate
+multiple words in a single identifier) for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+primitives that have constant initializers &#8211; that is, for compile-time
+constants.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fields in an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it&#8217;s unnecessary to specify that.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can use the constants from outside the package by importing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c07.*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c07.Months</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+just as you would with any other package, and referencing the values with
+expressions like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Months.JANUARY</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, what you get is just an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so there isn&#8217;t the extra type safety that C++&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has, but this (commonly-used) technique is certainly an improvement over
+hard-coding numbers into your programs. (This is often referred to as using
+&#8220;magic numbers&#8221; and it produces very difficult-to-maintain code.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you do want extra type safety, you can build a class like this:
+</FONT><A NAME="fnB28" HREF="#fn28">[28]</A><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Month2.java</font>
+<font color="#009900">// A more robust enumeration system</font>
+<font color="#0000ff">package</font> c07;
+
+<font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">class</font> Month2 {
+  <font color="#0000ff">private</font> String name;
+  <font color="#0000ff">private</font> Month2(String nm) { name = nm; }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> name; }
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> Month2
+    JAN = <font color="#0000ff">new</font> Month2("January"), 
+    FEB = <font color="#0000ff">new</font> Month2("February"),
+    MAR = <font color="#0000ff">new</font> Month2("March"),
+    APR = <font color="#0000ff">new</font> Month2("April"),
+    MAY = <font color="#0000ff">new</font> Month2("May"),
+    JUN = <font color="#0000ff">new</font> Month2("June"),
+    JUL = <font color="#0000ff">new</font> Month2("July"),
+    AUG = <font color="#0000ff">new</font> Month2("August"),
+    SEP = <font color="#0000ff">new</font> Month2("September"),
+    OCT = <font color="#0000ff">new</font> Month2("October"),
+    NOV = <font color="#0000ff">new</font> Month2("November"),
+    DEC = <font color="#0000ff">new</font> Month2("December");
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> Month2[] month =  {
+    JAN, JAN, FEB, MAR, APR, MAY, JUN,
+    JUL, AUG, SEP, OCT, NOV, DEC
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Month2 m = Month2.JAN;
+    System.out.println(m);
+    m = Month2.month[12];
+    System.out.println(m);
+    System.out.println(m == Month2.DEC);
+    System.out.println(m.equals(Month2.DEC));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Month2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since there&#8217;s already a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Month</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the standard Java library. It&#8217;s a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor so no one can inherit from it or make any instances of it. The only
+instances are the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final
+static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ones created in the class itself: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JAN</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FEB</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MAR</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. These objects are also used in the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>month</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which lets you choose months by number instead of by name. (Notice the extra 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JAN</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the array to provide an offset by one, so that December is month 12.) In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see the <A NAME="Index608"></A>type
+safety: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>m</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Month2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object so it can be assigned only to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Month2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The previous example 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Months.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">provided
+only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values, so an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variable intended to represent a month could actually be given any integer
+value, which wasn&#8217;t too safe.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach also allows you to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interchangeably, as shown at the end of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018542"></a><P></DIV>
+<A NAME="Heading220"></A><H3 ALIGN=LEFT>
+Initializing
+fields in interfaces
+<P><A NAME="Index609"></A><A NAME="Index610"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Fields
+defined in interfaces are automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These cannot be &#8220;blank finals,&#8221; but they can be initialized with
+non-constant expressions. For example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RandVals.java</font>
+<font color="#009900">// Initializing interface fields with </font>
+<font color="#009900">// non-constant initializers</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">interface</font> RandVals {
+  <font color="#0000ff">int</font> rint = (<font color="#0000ff">int</font>)(Math.random() * 10);
+  <font color="#0000ff">long</font> rlong = (<font color="#0000ff">long</font>)(Math.random() * 10);
+  <font color="#0000ff">float</font> rfloat = (<font color="#0000ff">float</font>)(Math.random() * 10);
+  <font color="#0000ff">double</font> rdouble = Math.random() * 10;
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+the fields are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+they are initialized when the class is first loaded, upon first access of any
+of the fields. Here&#8217;s a simple test:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TestRandVals.java</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TestRandVals {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println(RandVals.rint);
+    System.out.println(RandVals.rlong);
+    System.out.println(RandVals.rfloat);
+    System.out.println(RandVals.rdouble);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fields, of course, are not part of the interface but instead are stored in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+storage area for that interface.
+</FONT><a name="_Toc408018543"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn28" HREF="#fnB28">[28]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This approach was inspired by an e-mail from Rich Hoffarth.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0079.html">Prev</a> | <a href="tij0081.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,1061 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0044.html">Prev</a> | <a href="tij0046.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Execution
+control
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+uses all of C&#8217;s execution control statements, so if you&#8217;ve
+programmed with C or C++ then most of what you see will be familiar. Most
+procedural programming languages have some kind of control statements, and
+there is often overlap among languages. In Java, the keywords include 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if-else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and a selection statement called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Java does not, however, support the much-maligned 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which can still be the most expedient way to solve certain types of problems).
+You can still do a goto-like jump, but it is much more constrained than a
+typical 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545265"></a><a name="_Toc408018466"></a><P></DIV>
+<A NAME="Heading124"></A><H3 ALIGN=LEFT>
+true
+and false
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+conditional statements use the truth or falsehood of a conditional expression
+to determine the execution path. An example of a conditional expression is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A
+== B
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This uses the conditional operator 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to see if the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is equivalent to the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+The expression returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Any of the relational operators you&#8217;ve seen earlier in this chapter can
+be used to produce a conditional statement. Note that Java doesn&#8217;t allow
+you to use a number as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+even though it&#8217;s allowed in C and C++ (where truth is nonzero and
+falsehood is zero). If you want to use a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+test, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if(a)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must first convert it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value using a conditional expression, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if(a
+!= 0)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545266"></a><a name="_Toc408018467"></a><P></DIV>
+<A NAME="Heading125"></A><H3 ALIGN=LEFT>
+if-else<P><A NAME="Index242"></A><A NAME="Index243"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if-else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement is probably the most basic way to control program flow. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is optional, so you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in two forms:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>else</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+conditional must produce a Boolean result. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means either a simple statement terminated by a semicolon or a compound
+statement, which is a group of simple statements enclosed in braces. Anytime
+the word &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+is used, it always implies that the statement can be simple or compound. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an example of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if-else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+here is a
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+test(&#160;) 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+that will tell you whether a guess is above, below, or equivalent to a target
+number:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> <font color="#0000ff">int</font> test(<font color="#0000ff">int</font> testval) {
+  <font color="#0000ff">int</font> result = 0;
+  <font color="#0000ff">if</font>(testval &gt; target)
+    result = -1;
+  <font color="#0000ff">else</font> <font color="#0000ff">if</font>(testval &lt; target)
+    result = +1;
+  <font color="#0000ff">else</font>
+    result = 0; <font color="#009900">// match</font>
+  <font color="#0000ff">return</font> result;
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is conventional to indent the body of a control flow statement so the reader
+might easily determine where it begins and ends.
+</FONT><P></DIV>
+<A NAME="Heading126"></A><H4 ALIGN=LEFT>
+return</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword has two purposes: it specifies what value a method will return (if it
+doesn&#8217;t have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+return value) and it causes that value to be returned immediately. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>test(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method above can be rewritten to take advantage of this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> <font color="#0000ff">int</font> test2(<font color="#0000ff">int</font> testval) {
+  <font color="#0000ff">if</font>(testval &gt; target)
+    <font color="#0000ff">return</font> -1;
+  <font color="#0000ff">if</font>(testval &lt; target)
+    <font color="#0000ff">return</font> +1;
+  <font color="#0000ff">return</font> 0; <font color="#009900">// match</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+There&#8217;s no need for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because the method will not continue after executing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545267"></a><a name="_Toc408018468"></a><P></DIV>
+<A NAME="Heading127"></A><H3 ALIGN=LEFT>
+Iteration
+<A NAME="Index244"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+control looping and are sometimes classified as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>iteration
+statements
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+repeats until the controlling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+evaluates to false. The form for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop is
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is evaluated once at the beginning of the loop and again before each further
+iteration of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple example that generates random numbers until a particular condition is
+met:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: WhileTest.java</font>
+<font color="#009900">// Demonstrates the while loop</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WhileTest {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">double</font> r = 0;
+    <font color="#0000ff">while</font>(r &lt; 0.99d) {
+      r = Math.random();
+      System.out.println(r);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+library, which generates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">value
+between 0 and 1. (It includes 0, but not 1.) The conditional expression for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+says &#8220;keep doing this loop until the number is 0.99 or greater.&#8221;
+Each time you run this program you&#8217;ll get a different-sized list of
+numbers.
+</FONT><a name="_Toc375545268"></a><a name="_Toc408018469"></a><P></DIV>
+<A NAME="Heading128"></A><H3 ALIGN=LEFT>
+do-while<A NAME="Index245"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+form for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>);</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+sole difference between 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that the statement of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+always executes at least once, even if the expression evaluates to false the
+first time. In a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+if the conditional is false the first time the statement never executes. In
+practice, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>do-while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is less common than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545269"></a><a name="_Toc408018470"></a><P></DIV>
+<A NAME="Heading129"></A><H3 ALIGN=LEFT>
+for<P><A NAME="Index246"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop performs initialization before the first iteration. Then it performs
+conditional testing and, at the end of each iteration, some form of
+&#8220;stepping.&#8221; The form of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop is:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>initialization</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#160;</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#160;</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>step</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Any
+of the expressions 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>initialization</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Boolean-expression</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>step</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be empty. The expression is tested before each iteration, and as soon as it
+evaluates to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+execution will continue at the line following the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement. At the end of each loop, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>step</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+executes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loops are usually used for &#8220;counting&#8221; tasks:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ListCharacters.java</font>
+<font color="#009900">// Demonstrates "for" loop by listing</font>
+<font color="#009900">// all the ASCII characters.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ListCharacters {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+  <font color="#0000ff">for</font>( <font color="#0000ff">char</font> c = 0; c &lt; 128; c++)
+    <font color="#0000ff">if</font> (c != 26 )  <font color="#009900">// ANSI Clear screen</font>
+      System.out.println(
+        "value: " + (<font color="#0000ff">int</font>)c +
+        " character: " + c);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the variable 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is defined at the point where it is used, inside the control expression of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop, rather than at the beginning of the block denoted by the open curly
+brace. The scope of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+the expression controlled by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Traditional
+procedural languages like C require that all <A NAME="Index247"></A>variables
+be defined at the beginning of a block so when the compiler creates a block it
+can allocate space for those variables. In Java and C++ you can spread your
+variable declarations throughout the block, defining them at the point that you
+need them. This allows a more natural coding style and makes code easier to
+understand.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can define multiple variables within a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, but they must be of the same type:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0, j = 1;
+    i &lt; 10 &amp;&amp; j != 11;
+    i++, j++)
+ <font color="#009900">/* body of for loop */</font>; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">definition
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+covers both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>j</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+ability to define variables in the control expression is limited to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop. You cannot use this approach with any of the other selection or iteration
+statements.
+</FONT><a name="_Toc375545270"></a><P></DIV>
+<A NAME="Heading130"></A><H4 ALIGN=LEFT>
+The
+comma operator
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Earlier
+in this chapter I stated that the <A NAME="Index248"></A><A NAME="Index249"></A>comma
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>operator</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(not the comma 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>separator</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used to separate function arguments) has only one use in Java: in the
+control expression of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop. In both the initialization and step portions of the control expression
+you can have a number of statements separated by commas, and those statements
+will be evaluated sequentially. The previous bit of code uses this ability.
+Here&#8217;s another example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CommaOperator.java</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CommaOperator {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 1, j = i + 10; i &lt; 5;
+        i++, j = i * 2) {
+      System.out.println("i= " + i + " j= " + j);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the output:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>i= 1 j= 11
+i= 2 j= 4
+i= 3 j= 6
+i= 4 j= 8 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that in both the initialization and step portions the statements are
+evaluated in sequential order. Also, the initialization portion can have any
+number of definitions 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>of
+one type
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018471"></a><P></DIV>
+<A NAME="Heading131"></A><H3 ALIGN=LEFT>
+break
+and continue
+<P><A NAME="Index250"></A><A NAME="Index251"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inside
+the body of any of the iteration statements you can also control the flow of
+the loop by using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+quits the loop without executing the rest of the statements in the loop. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+stops the execution of the current iteration and goes back to the beginning of
+the loop to begin a new iteration.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program shows examples of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loops:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BreakAndContinue.java</font>
+<font color="#009900">// Demonstrates break and continue keywords</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BreakAndContinue {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 100; i++) {
+      <font color="#0000ff">if</font>(i == 74) <font color="#0000ff">break</font>; <font color="#009900">// Out of for loop</font>
+      <font color="#0000ff">if</font>(i % 9 != 0) <font color="#0000ff">continue</font>; <font color="#009900">// Next iteration</font>
+      System.out.println(i);
+    }
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#009900">// An "infinite loop":</font>
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      i++;
+      <font color="#0000ff">int</font> j = i * 27;
+      <font color="#0000ff">if</font>(j == 1269) <font color="#0000ff">break</font>; <font color="#009900">// Out of loop</font>
+      <font color="#0000ff">if</font>(i % 10 != 0) <font color="#0000ff">continue</font>; <font color="#009900">// Top of loop</font>
+      System.out.println(i);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never gets to 100 because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement breaks out of the loop when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 74. Normally, you&#8217;d use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like this only if you didn&#8217;t know when the terminating condition was
+going to occur. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement causes execution to go back to the top of the iteration loop (thus
+incrementing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+whenever 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not evenly divisible by 9. When it is, the value is printed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second portion shows an &#8220;infinite loop&#8221; that would, in theory,
+continue forever. However, inside the loop there is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement that will break out of the loop. In addition, you&#8217;ll see that
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+moves back to the top of the loop without completing the remainder. (Thus
+printing happens only when the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is divisible by 9.) The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>0
+9
+18
+27
+36
+45
+54
+63
+72
+10
+20
+30
+40</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+value 0 is printed because 0 % 9 produces 0.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+second form of the infinite loop is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for(;;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The compiler treats both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for(;;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the same way so whichever one you use is a matter of programming taste.
+</FONT><P></DIV>
+<A NAME="Heading132"></A><H4 ALIGN=LEFT>
+The
+infamous &#8220;goto&#8221;
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index252"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+has been present in programming languages from the beginning. Indeed, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was the genesis of program control in assembly language: &#8220;if condition A,
+then jump here, otherwise jump there.&#8221; If you read the assembly code that
+is ultimately generated by virtually any compiler, you&#8217;ll see that
+program control contains many jumps. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">jumps
+at the source-code level, and that&#8217;s what brought it into disrepute. If a
+program will always jump from one point to another, isn&#8217;t there some way
+to reorganize the code so the flow of control is not so jumpy? 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">fell
+into true disfavor with the publication of the famous &#8220;Goto considered
+harmful&#8221; paper by Edsger Dijkstra, and since then goto-bashing has been a
+popular sport, with advocates of the cast-out keyword scurrying for cover.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+is typical in situations like this, the middle ground is the most fruitful. The
+problem is not the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but the overuse of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and in rare situations 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the best way to structure control flow.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+a reserved word in Java, it is not used in the language; Java has no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, it does have something that looks a bit like a jump tied in with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keywords. It&#8217;s not a jump but rather a way to break out of an iteration
+statement. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason it&#8217;s often thrown in with discussions of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is because it uses the same mechanism: a label.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index253"></A>label
+is an identifier followed by a colon, like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">label1:</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+place a label is useful in Java is right before an iteration statement. And
+that means 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>right</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before &#8211; it does no good to put any other statement between the label and
+the iteration. And the sole reason to put a label before an iteration is if
+you&#8217;re going to nest another iteration or a switch inside it.
+That&#8217;s because the <A NAME="Index254"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index255"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keywords will normally interrupt only the current loop, but when used with a
+label they&#8217;ll interrupt the loops up to where the label exists:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>label1:
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>outer-iteration</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>{</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>inner-iteration</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>{</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   //...
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   break; // 1
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   //...
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   continue;  // 2
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   //...
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   continue label1; // 3
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   //...
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+   break label1;  // 4
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ }
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>}</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+case 1, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+breaks out of the inner iteration and you end up in the outer iteration. In
+case 2, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+moves back to the beginning of the inner iteration. But in case 3, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue
+label1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+breaks out of the inner iteration 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the outer iteration, all the way back to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>label1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then it does in fact continue the iteration, but starting at the outer
+iteration. In case 4, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break
+label1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also breaks all the way out to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>label1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it does not re-enter the iteration. It actually does break out of both
+iterations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is an example using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loops:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: LabeledFor.java</font>
+<font color="#009900">// Java&#8217;s "labeled for loop"</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> LabeledFor {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> i = 0;
+    outer: <font color="#009900">// Can't have statements here</font>
+    <font color="#0000ff">for</font>(; <font color="#0000ff">true</font> ;) { <font color="#009900">// infinite loop</font>
+      inner: <font color="#009900">// Can't have statements here</font>
+      <font color="#0000ff">for</font>(; i &lt; 10; i++) {
+        prt("i = " + i);
+        <font color="#0000ff">if</font>(i == 2) {
+          prt("<font color="#0000ff">continue</font>");
+          <font color="#0000ff">continue</font>;
+        }
+        <font color="#0000ff">if</font>(i == 3) {
+          prt("<font color="#0000ff">break</font>");
+          i++; <font color="#009900">// Otherwise i never</font>
+               <font color="#009900">// gets incremented.</font>
+          <font color="#0000ff">break</font>;
+        }
+        <font color="#0000ff">if</font>(i == 7) {
+          prt("<font color="#0000ff">continue</font> outer");
+          i++; <font color="#009900">// Otherwise i never</font>
+               <font color="#009900">// gets incremented.</font>
+          <font color="#0000ff">continue</font> outer;
+        }
+        <font color="#0000ff">if</font>(i == 8) {
+          prt("<font color="#0000ff">break</font> outer");
+          <font color="#0000ff">break</font> outer;
+        }
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> k = 0; k &lt; 5; k++) {
+          <font color="#0000ff">if</font>(k == 3) {
+            prt("<font color="#0000ff">continue</font> inner");
+            <font color="#0000ff">continue</font> inner;
+          }
+        }
+      }
+    }
+    <font color="#009900">// Can't break or continue</font>
+    <font color="#009900">// to labels here</font>
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>prt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that has been defined in the other examples.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+breaks out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop, and that the increment-expression doesn&#8217;t occur until the end of
+the pass through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+skips the increment expression, the increment is performed directly in the case
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+== 3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue
+outer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement in the case of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>I
+== 7 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">also
+goes to the top of the loop and also skips the increment, so it too is
+incremented directly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the output:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>i = 0
+<font color="#0000ff">continue</font> inner
+i = 1
+<font color="#0000ff">continue</font> inner
+i = 2
+<font color="#0000ff">continue</font>
+i = 3
+<font color="#0000ff">break</font>
+i = 4
+<font color="#0000ff">continue</font> inner
+i = 5
+<font color="#0000ff">continue</font> inner
+i = 6
+<font color="#0000ff">continue</font> inner
+i = 7
+<font color="#0000ff">continue</font> outer
+i = 8
+<font color="#0000ff">break</font> outer </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+not for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break
+outer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, there would be no way to get out of the outer loop from within an
+inner loop, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by itself can break out of only the innermost loop. (The same is true for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, in the cases where breaking out of a loop will also exit the method,
+you can simply use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is a demonstration of labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loops:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: LabeledWhile.java</font>
+<font color="#009900">// Java's "labeled while" loop</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> LabeledWhile {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> i = 0;
+    outer:
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      prt("Outer <font color="#0000ff">while</font> loop");
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        i++;
+        prt("i = " + i);
+        <font color="#0000ff">if</font>(i == 1) {
+          prt("<font color="#0000ff">continue</font>");
+          <font color="#0000ff">continue</font>;
+        }
+        <font color="#0000ff">if</font>(i == 3) {
+          prt("<font color="#0000ff">continue</font> outer");
+          <font color="#0000ff">continue</font> outer;
+        }
+        <font color="#0000ff">if</font>(i == 5) {
+          prt("<font color="#0000ff">break</font>");
+          <font color="#0000ff">break</font>;
+        }
+        <font color="#0000ff">if</font>(i == 7) {
+          prt("<font color="#0000ff">break</font> outer");
+          <font color="#0000ff">break</font> outer;
+        }
+      }
+    }
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+same rules hold true for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+plain 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+goes to the top of the innermost loop and continues.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+goes to the label and re-enters the loop right after that label.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;drops out of the bottom&#8221; of the loop.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+drops out of the bottom of the end of the loop denoted by the label. 
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output of this method makes it clear:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Outer <font color="#0000ff">while</font> loop
+i = 1
+<font color="#0000ff">continue</font>
+i = 2
+i = 3
+<font color="#0000ff">continue</font> outer
+Outer <font color="#0000ff">while</font> loop
+i = 4
+i = 5
+<font color="#0000ff">break</font>
+Outer <font color="#0000ff">while</font> loop
+i = 6
+i = 7
+<font color="#0000ff">break</font> outer </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+important to remember that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reason to use labels in Java is when you have nested loops and you want to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+through more than one nested level.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Dijkstra&#8217;s &#8220;goto considered harmful&#8221; paper, what he
+specifically objected to was the labels, not the goto. He observed that the
+number of bugs seems to increase with the number of labels in a program. Labels
+and gotos make programs difficult to analyze statically, since it introduces
+cycles in the program execution graph. Note that Java labels don&#8217;t suffer
+from this problem, since they are constrained in their placement and
+can&#8217;t be used to transfer control in an ad hoc manner. It&#8217;s also
+interesting to note that this is a case where a language feature is made more
+useful by restricting the power of the statement.
+</FONT><a name="_Toc375545271"></a><a name="_Toc408018472"></a><P></DIV>
+<A NAME="Heading133"></A><H3 ALIGN=LEFT>
+switch<P><A NAME="Index256"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is sometimes classified as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>selection
+statement
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+selects from among pieces of code based on the value of an integral expression.
+Its form is:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch(</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>integral-selector</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)
+{
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>integral-value1</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+:
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+integral-value2
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break;</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>integral-value3</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break;</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>integral-value4
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break;</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+integral-value5
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break;</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+         // ...
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>default:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>;</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>}</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Integral-selector</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an expression that produces an integral value. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+compares the result of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>integral-selector</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to each
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+integral-value
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If it finds a match, the corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(simple or compound) executes. If no match occurs, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>default</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index257"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>statement</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+executes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+will notice in the above definition that each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case<A NAME="Index258"></A></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ends with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which causes execution to jump to the end of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+body. This is the conventional way to build a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is optional. If it is missing, the code for the following case statements
+execute until a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is encountered. Although you don&#8217;t usually want this kind of behavior, it
+can be useful to an experienced programmer. Note the last statement, for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>default</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+doesn&#8217;t have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because the execution just falls through to where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would have taken it anyway. You could put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at the end of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>default</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement with no harm if you considered it important for style&#8217;s sake.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement is a clean way to implement multi-way selection (i.e., selecting from
+among a number of different execution paths), but it requires a selector that
+evaluates to an integral value such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you want to use, for example, a string or a floating-point number as a
+selector, it won&#8217;t work in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement. For non-integral types, you must use a series of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that creates letters randomly and determines whether they&#8217;re
+vowels or consonants:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VowelsAndConsonants.java</font>
+<font color="#009900">// Demonstrates the switch statement</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VowelsAndConsonants {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 100; i++) {
+      <font color="#0000ff">char</font> c = (<font color="#0000ff">char</font>)(Math.random() * 26 + 'a');
+      System.out.print(c + ": ");
+      <font color="#0000ff">switch</font>(c) {
+      <font color="#0000ff">case</font> 'a':
+      <font color="#0000ff">case</font> 'e':
+      <font color="#0000ff">case</font> 'i':
+      <font color="#0000ff">case</font> 'o':
+      <font color="#0000ff">case</font> 'u':
+                System.out.println("vowel");
+                <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> 'y':
+      <font color="#0000ff">case</font> 'w':
+                System.out.println(
+                  "Sometimes a vowel");
+                <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+                System.out.println("consonant");
+      }
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+generates a value between 0 and 1, you need only multiply it by the upper bound
+of the range of numbers you want to produce (26 for the letters in the
+alphabet) and add an offset to establish the lower bound. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+it appears you&#8217;re switching on a character here, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement is actually using the integral value of the character. The
+singly-quoted characters in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements also produce integral values that are used for comparison.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can be &#8220;stacked&#8221; on top of each other to provide multiple matches
+for a particular piece of code. You should also be aware that it&#8217;s
+essential to put the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement at the end of a particular case, otherwise control will simply drop
+through and continue processing on the next case.
+</FONT><P></DIV>
+<A NAME="Heading134"></A><H4 ALIGN=LEFT>
+Calculation
+details
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">char
+c = (char)(Math.random() * 26 + 'a');
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">deserves
+a closer look. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the value 26 is converted to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform the multiplication, which also produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;a&#8217;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be converted to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform the addition. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result is turned back into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a cast.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+what does the cast to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+do? That is, if you have the value 29.7 and you cast it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is the resulting value 30 or 29? The answer to this can be seen in this example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CastingNumbers.java</font>
+<font color="#009900">// What happens when you cast a float or double</font>
+<font color="#009900">// to an integral value?</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CastingNumbers {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">double</font>
+      above = 0.7,
+      below = 0.4;
+    System.out.println("above: " + above);
+    System.out.println("below: " + below);
+    System.out.println(
+      "(<font color="#0000ff">int</font>)above: " + (<font color="#0000ff">int</font>)above);
+    System.out.println(
+      "(<font color="#0000ff">int</font>)below: " + (<font color="#0000ff">int</font>)below);
+    System.out.println(
+      "(<font color="#0000ff">char</font>)('a' + above): " +
+      (<font color="#0000ff">char</font>)('a' + above));
+    System.out.println(
+      "(<font color="#0000ff">char</font>)('a' + below): " +
+      (<font color="#0000ff">char</font>)('a' + below));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>above: 0.7
+below: 0.4
+(<font color="#0000ff">int</font>)above: 0
+(<font color="#0000ff">int</font>)below: 0
+(<font color="#0000ff">char</font>)('a' + above): a
+(<font color="#0000ff">char</font>)('a' + below): a </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+the answer is that <A NAME="Index259"></A>casting
+from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to an integral value always truncates.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second question has to do with <A NAME="Index260"></A><A NAME="Index261"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Does it produce a value from zero to one, inclusive or exclusive of the value
+&#8216;1&#8217;? In math lingo, is it (0,1), or [0,1], or (0,1] or [0,1)? (The
+square bracket means &#8220;includes&#8221; whereas the parenthesis means
+&#8220;doesn&#8217;t include.&#8221;) Again, a test program provides the answer:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RandomBounds.java</font>
+<font color="#009900">// Does Math.random() produce 0.0 and 1.0?</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RandomBounds {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> usage() {
+    System.err.println("Usage: \n\t" +
+      "RandomBounds lower\n\t" +
+      "RandomBounds upper");
+    System.exit(1);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length != 1) usage();
+    <font color="#0000ff">if</font>(args[0].equals("lower")) {
+      <font color="#0000ff">while</font>(Math.random() != 0.0)
+        ; <font color="#009900">// Keep trying</font>
+      System.out.println("Produced 0.0!");
+    } 
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(args[0].equals("upper")) {
+      <font color="#0000ff">while</font>(Math.random() != 1.0)
+        ; <font color="#009900">// Keep trying</font>
+      System.out.println("Produced 1.0!");
+    } 
+    <font color="#0000ff">else</font> 
+      usage();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+run the program, you type a command line of either:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+RandomBounds lower
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+RandomBounds upper
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+both cases you are forced to break out of the program manually, so it would 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>appear</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never produces either 0.0 or 1.0. But this is where such an experiment can be
+deceiving. If you consider that there are 2
+</FONT><SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">128</FONT></SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+different double fractions between 0 and 1, the likelihood of reaching any one
+value experimentally might exceed the lifetime of one computer, or even one
+experimenter. It turns out that 0.0 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+included in the output of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Or, in math lingo, it is [0,1).
+</FONT><a name="_Toc375545272"></a><a name="_Toc408018473"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0044.html">Prev</a> | <a href="tij0046.html">Next</a>
+</div>
+</body></html>
+

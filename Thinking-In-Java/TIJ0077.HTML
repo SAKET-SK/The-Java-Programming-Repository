@@ -1,0 +1,404 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0076.html">Prev</a> | <a href="tij0078.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+twist
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+difficulty with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Music</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be seen by running the program. The output is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind.play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is clearly the desired output, but it doesn&#8217;t seem to make sense
+that it would work that way. Look at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument i) {
+    <font color="#009900">// ...</font>
+    i.play(Note.middleC);
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+receives an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. So how can the compiler possibly know that this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle points to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in this case and not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Brass
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stringed</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+The compiler can&#8217;t. To get a deeper understanding of the issue,
+it&#8217;s useful to examine the subject of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>binding</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc312374042"></a><a name="_Toc375545330"></a><a name="_Toc408018533"></a><P></DIV>
+<A NAME="Heading211"></A><H3 ALIGN=LEFT>
+Method
+call binding
+<P><A NAME="Index562"></A><A NAME="Index563"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Connecting
+a method call to a method body is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>binding</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When binding is performed before the program is run (by the compiler and
+linker, if there is one), it&#8217;s called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>early
+binding<A NAME="Index564"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You might not have heard the term before because it has never been an option
+with procedural languages. C compilers have only one kind of method call, and
+that&#8217;s early binding.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+confusing part of the above program revolves around early binding because the
+compiler cannot know the correct method to call when it has only an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+solution is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>late
+binding<A NAME="Index565"></A><A NAME="Index566"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that the binding occurs at run-time based on the type of object.
+Late binding is also called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>dynamic
+binding<A NAME="Index567"></A><A NAME="Index568"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>run-time
+binding<A NAME="Index569"></A><A NAME="Index570"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When a language implements late binding, there must be some mechanism to
+determine the type of the object at run-time and to call the appropriate
+method. That is, the compiler still doesn&#8217;t know the object type, but the
+method-call mechanism finds out and calls the correct method body. The
+late-binding mechanism varies from language to language, but you can imagine
+that some sort of type information must be installed in the objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+method binding in Java uses late binding unless a method has been declared <A NAME="Index571"></A><A NAME="Index572"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that you ordinarily don&#8217;t need to make any decisions about
+whether late binding will occur &#8211; it happens automatically.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Why
+would you declare a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+As noted in the last chapter, it prevents anyone from overriding that method.
+Perhaps more importantly, it effectively &#8220;turns off&#8221; dynamic
+binding, or rather it tells the compiler that dynamic binding isn&#8217;t
+necessary. This allows the compiler to generate more efficient code for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method calls.
+</FONT><a name="_Toc375545331"></a><a name="_Toc408018534"></a><P></DIV>
+<A NAME="Heading212"></A><H3 ALIGN=LEFT>
+Producing
+the right behavior
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you know that all method binding in Java happens polymorphically via late
+binding, you can write your code to talk to the base-class and know that all
+the derived-class cases will work correctly using the same code. Or to put it
+another way, you &#8220;send a message to an object and let the object figure
+out the right thing to do.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+classic example in OOP is the &#8220;<A NAME="Index573"></A>shape&#8221;
+example. This is commonly used because it is easy to visualize, but
+unfortunately it can confuse novice programmers into thinking that OOP is just
+for graphics programming, which is of course not the case.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+shape example has a base class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+various derived types: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. The reason the example works so well is that it&#8217;s easy to say
+&#8220;a circle is a type of shape&#8221; and be understood.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inheritance diagram shows the relationships:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+upcast could occur in a statement as simple as:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Shape
+s = new Circle();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created and the resulting handle is immediately assigned to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which would seem to be an error (assigning one type to another) and yet
+it&#8217;s fine because a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by inheritance. So the compiler agrees with the statement and doesn&#8217;t
+issue an error message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you call one of the base class methods (that have been overridden in the
+derived classes):
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">s.draw();</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Again,
+you might expect that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called because this is, after all, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle, so how could the compiler know to do anything else? And yet the proper 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle.draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called because of late binding (polymorphism).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example puts it a slightly different way:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Shapes.java</font>
+<font color="#009900">// Polymorphism in Java</font>
+
+<font color="#0000ff">class</font> Shape { 
+  <font color="#0000ff">void</font> draw() {}
+  <font color="#0000ff">void</font> erase() {} 
+}
+
+<font color="#0000ff">class</font> Circle <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">void</font> draw() { 
+    System.out.println("Circle.draw()"); 
+  }
+  <font color="#0000ff">void</font> erase() { 
+    System.out.println("Circle.erase()"); 
+  }
+}
+
+<font color="#0000ff">class</font> Square <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">void</font> draw() { 
+    System.out.println("Square.draw()"); 
+  }
+  <font color="#0000ff">void</font> erase() { 
+    System.out.println("Square.erase()"); 
+  }
+}
+
+<font color="#0000ff">class</font> Triangle <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">void</font> draw() { 
+    System.out.println("Triangle.draw()"); 
+  }
+  <font color="#0000ff">void</font> erase() { 
+    System.out.println("Triangle.erase()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Shapes {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Shape randShape() {
+    <font color="#0000ff">switch</font>((<font color="#0000ff">int</font>)(Math.random() * 3)) {
+      <font color="#0000ff">default</font>: <font color="#009900">// To quiet the compiler</font>
+      <font color="#0000ff">case</font> 0: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Circle();
+      <font color="#0000ff">case</font> 1: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Square();
+      <font color="#0000ff">case</font> 2: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Triangle();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Shape[] s = <font color="#0000ff">new</font> Shape[9];
+    <font color="#009900">// Fill up the array with shapes:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i] = randShape();
+    <font color="#009900">// Make polymorphic method calls:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i].draw();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+establishes the common interface to anything inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; that is, all shapes can be drawn and erased. The derived classes
+override these definitions to provide unique behavior for each specific type of
+shape.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+main class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shapes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>randShape(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that produces a handle to a randomly-selected 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object each time you call it. Note that the upcasting happens in each of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements, which take a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and send it out of the method as the return type, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So whenever you call this method you never get a chance to see what specific
+type it is, since you always get back a plain 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles filled through calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>randShape(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+At this point you know you have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+but you don&#8217;t know anything more specific than that (and neither does the
+compiler). However, when you step through this array and call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each one, the correct type-specific behavior magically occurs, as you can
+see from one output example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Circle.draw()
+Triangle.draw()
+Circle.draw()
+Circle.draw()
+Circle.draw()
+Square.draw()
+Triangle.draw()
+Square.draw()
+Square.draw()</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, since the shapes are all chosen randomly each time, your runs will have
+different results. The point of choosing the shapes randomly is to drive home
+the understanding that the compiler can have no special knowledge that allows
+it to make the correct calls at compile time. All the calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are made through dynamic binding.
+</FONT><a name="_Toc375545332"></a><a name="_Toc408018535"></a><P></DIV>
+<A NAME="Heading213"></A><H3 ALIGN=LEFT>
+Extensibility</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+let&#8217;s return to the musical instrument example. Because of polymorphism,
+you can add as many new types as you want to the system without changing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. In a well-designed OOP program, most or all of your methods will follow
+the model of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and communicate only with the base-class interface<A NAME="Index574"></A><A NAME="Index575"></A>.
+Such a program is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>extensible<A NAME="Index576"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because you can add new functionality by inheriting new data types from the
+common base class. The methods that manipulate the base-class interface will
+not need to be changed at all to accommodate the new classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+what happens if you take the instrument example and add more methods in the
+base class and a number of new classes. Here&#8217;s the diagram:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+these new classes work correctly with the old, unchanged 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Even if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in a separate file and new methods are added to the interface of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works correctly without recompilation. Here is the implementation of the above
+diagram:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Music3.java</font>
+<font color="#009900">// An extensible program</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Instrument3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Instrument3.play()");
+  }
+  <font color="#0000ff">public</font> String what() {
+    <font color="#0000ff">return</font> "Instrument3";
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Wind3 <font color="#0000ff">extends</font> Instrument3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Wind3.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Wind3"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Percussion3 <font color="#0000ff">extends</font> Instrument3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Percussion3.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Percussion3"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Stringed3 <font color="#0000ff">extends</font> Instrument3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Stringed3.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Stringed3"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Brass3 <font color="#0000ff">extends</font> Wind3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Brass3.play()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {
+    System.out.println("Brass3.adjust()");
+  }
+}
+
+<font color="#0000ff">class</font> Woodwind3 <font color="#0000ff">extends</font> Wind3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Woodwind3.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Woodwind3"; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Music3 {
+  <font color="#009900">// Doesn't care about type, so new types</font>
+  <font color="#009900">// added to the system still work right:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument3 i) {
+    <font color="#009900">// ...</font>
+    i.play();
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tuneAll(Instrument3[] e) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; e.length; i++)
+      tune(e[i]);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Instrument3[] orchestra = <font color="#0000ff">new</font> Instrument3[5];
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#009900">// Upcasting during addition to the array:</font>
+    orchestra[i++] = <font color="#0000ff">new</font> Wind3();
+    orchestra[i++] = <font color="#0000ff">new</font> Percussion3();
+    orchestra[i++] = <font color="#0000ff">new</font> Stringed3();
+    orchestra[i++] = <font color="#0000ff">new</font> Brass3();
+    orchestra[i++] = <font color="#0000ff">new</font> Woodwind3();
+    tuneAll(orchestra);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new methods are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>what(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle with a description of the class, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>adjust(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which provides some way to adjust each instrument.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+when you place something inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">array
+you automatically upcast to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is blissfully ignorant of all the code changes that have happened around
+it, and yet it works correctly. This is exactly what polymorphism is supposed
+to provide. Your code changes don&#8217;t cause damage to parts of the program
+that should not be affected. Put another way, polymorphism is one of the most
+important techniques that allow the programmer to &#8220;separate the things
+that change from the things that stay the same.&#8221;
+</FONT><a name="_Toc375545333"></a><a name="_Toc408018536"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0076.html">Prev</a> | <a href="tij0078.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,231 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0059.html">Prev</a> | <a href="tij0061.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Class
+access
+<P><A NAME="Index411"></A><A NAME="Index412"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java, the access specifiers can also be used to determine which classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>within</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a library will be available to the users of that library. If you want a class
+to be available to a client programmer, you place the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword somewhere before the opening brace of the class body. This controls
+whether the client programmer can even create an object of the class. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+control the access of a class, the specifier must appear before the keyword 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus
+you can say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">public
+class Widget {
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, if the name of your library is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mylib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+any client programmer can access 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Widget</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by saying
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+mylib.Widget;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+mylib.*;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+there&#8217;s an extra pair of constraints:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There
+can be only one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class per compilation unit (file). The idea is that each compilation unit has a
+single public interface represented by that public class. It can have as many
+supporting &#8220;friendly&#8221; classes as you want. If you have more than one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class inside a compilation unit, the compiler will give you an error message.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+name of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class must exactly match the name of the file containing the compilation unit,
+including capitalization. So for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Widget</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the name of the file must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Widget.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>widget.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WIDGET.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Again, you&#8217;ll get a compile-time error if they don&#8217;t agree.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+is possible, though not typical, to have a compilation unit with no public
+class at all. In this case, you can name the file whatever you like.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if you&#8217;ve got a class inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mylib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you&#8217;re 
+<a name="just"></a>just
+using to accomplish the tasks performed by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Widget</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or some other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mylib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+You don&#8217;t want to go to the bother of creating documentation for the
+client programmer, and you think that sometime later you might want to
+completely change things and rip out your class altogether, substituting a
+different one. To give you this flexibility, you need to ensure that no client
+programmers become dependent on your particular implementation details hidden
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mylib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To accomplish this, you just leave the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword off the class, in which case it becomes friendly. (That class can be
+used only within that package.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that a class cannot be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(that
+would make it accessible to no one but the class), or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><A NAME="fnB26" HREF="#fn26">[26]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+So you have only two choices for class access: &#8220;friendly&#8221; or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you don&#8217;t want anyone else to have access to that class, you can make
+all the constructors 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+thereby preventing anyone but you, inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of the class, from creating an object of that class.
+</FONT><A NAME="fnB27" HREF="#fn27">[27]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Lunch.java</font>
+<font color="#009900">// Demonstrates class access specifiers.</font>
+<font color="#009900">// Make a class effectively private</font>
+<font color="#009900">// with private constructors:</font>
+
+<font color="#0000ff">class</font> Soup {
+  <font color="#0000ff">private</font> Soup() {}
+  <font color="#009900">// (1) Allow creation via static method:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Soup makeSoup() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Soup();
+  }
+  <font color="#009900">// (2) Create a static object and</font>
+  <font color="#009900">// return a reference upon request.</font>
+  <font color="#009900">// (The "Singleton" pattern):</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Soup ps1 = <font color="#0000ff">new</font> Soup();
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Soup access() {
+    <font color="#0000ff">return</font> ps1;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> f() {}
+}
+
+<font color="#0000ff">class</font> Sandwich { <font color="#009900">// Uses Lunch</font>
+  <font color="#0000ff">void</font> f() { <font color="#0000ff">new</font> Lunch(); }
+}
+
+<font color="#009900">// Only one public class allowed per file:</font>
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Lunch {
+  <font color="#0000ff">void</font> test() {
+    <font color="#009900">// Can't do this! Private constructor:</font>
+    <font color="#009900">//! Soup priv1 = new Soup();</font>
+    Soup priv2 = Soup.makeSoup();
+    Sandwich f1 = <font color="#0000ff">new</font> Sandwich();
+    Soup.access().f();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Up
+to now, most of the methods have been returning either 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a primitive type so the definition:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Soup access() {
+    <font color="#0000ff">return</font> ps1;
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">might
+look a little confusing at first. The word before the method name (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>access</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+tells what the method returns. So far this has most often been 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which means it returns nothing. But you can also return a handle to an object,
+which is what happens here. This method returns a handle to an object of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+Soup
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows how to prevent direct creation of a class by making all the constructors 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Remember that if you don&#8217;t explicitly create at least one constructor,
+the default constructor (a constructor with no arguments) will be created for
+you. By writing the default constructor, it won&#8217;t be created
+automatically. By making it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+no one can create an object of that class. But now how does anyone use this
+class? The above example shows two options. First, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is created that creates a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and returns a handle to it. This could be useful if you want to do some extra
+operations on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before returning it, or if you want to keep count of how many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to create (perhaps to restrict their population).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second option uses what&#8217;s called a <A NAME="Index413"></A><A NAME="Index414"></A><A NAME="Index415"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>design
+pattern
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which will be discussed later in this book. This particular pattern is called a
+&#8220;<A NAME="Index416"></A>singleton&#8221;
+because it allows only a single object to ever be created. The object of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">member
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Soup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so there&#8217;s one and only one, and you can&#8217;t get at it except through
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>access(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+previously mentioned, if you don&#8217;t put an access specifier for class
+access it defaults to &#8220;friendly.&#8221; This means that an object of that
+class can be created by any other class in the package, but not outside the
+package. (Remember, all the files within the same directory that don&#8217;t
+have explicit 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">declarations
+are implicitly part of the default package for that directory.) However, if a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of that class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the client programmer can still access that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member even though they cannot create an object of that class.
+</FONT><a name="_Toc375545303"></a><a name="_Toc408018506"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn26" HREF="#fnB26">[26]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Actually, a Java 1.1 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>inner
+class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+can be private or protected, but that&#8217;s a special case. These will be
+introduced in Chapter 7.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn27" HREF="#fnB27">[27]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+You can also do it by inheriting (Chapter 6) from that class.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0059.html">Prev</a> | <a href="tij0061.html">Next</a>
+</div>
+</body></html>
+

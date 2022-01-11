@@ -1,0 +1,387 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0050.html">Prev</a> | <a href="tij0052.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Cleanup:
+finalization and 
+<P>garbage
+collection
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Programmers
+know about the importance of initialization, but often forget the importance of
+cleanup. After all, who needs to clean up an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+But with libraries, simply &#8220;letting go&#8221; of an object once
+you&#8217;re done with it is not always safe. Of course, Java has the <A NAME="Index294"></A>garbage
+collector to reclaim the memory of objects that are no longer used. Now
+consider a very special and unusual case. Suppose your object allocates
+&#8220;special&#8221; memory without using <A NAME="Index295"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The garbage collector knows only how to release memory allocated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>with</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it won&#8217;t know how to release the object&#8217;s &#8220;special&#8221;
+memory. To handle this case, Java provides a method called <A NAME="Index296"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you can define for your class. Here&#8217;s how it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>supposed</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to work. When the garbage collector is ready to release the storage used for
+your object, it will first call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only on the next garbage-collection pass will it reclaim the object&#8217;s
+memory. So if you choose to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it gives you the ability to perform some important cleanup 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>at
+the time of garbage collection
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a potential programming pitfall because some programmers, especially C++
+programmers, might initially mistake 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the <A NAME="Index297"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>destructor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in C++, which is a function that is always called when an object is destroyed.
+But it is important to distinguish between C++ and Java here, because in C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>objects
+always get destroyed
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(in a bug-free program), whereas in Java objects do not always get
+garbage-collected. Or, put another way:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Garbage
+collection is not destruction.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you remember this, you will stay out of trouble. What it means is that if there
+is some activity that must be performed before you no longer need an object,
+you must perform that activity yourself. Java has no destructor or similar
+concept, so you must create an ordinary method to perform this cleanup. For
+example, suppose in the process of creating your object it draws itself on the
+screen. If you don&#8217;t explicitly erase its image from the screen, it might
+never get cleaned up. If you put some kind of erasing functionality inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then if an object is garbage-collected, the image will first be removed from
+the screen, but if it isn&#8217;t, the image will remain. So a second point to
+remember is:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Your
+objects might not get garbage collected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might find that the storage for an object never gets released because your
+program never nears the point of running out of storage. If your program
+completes and the garbage collector never gets around to releasing the storage
+for any of your objects, that storage will be returned to the operating system 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>en
+masse
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the program exits. This is a good thing, because garbage collection has some
+overhead, and if you never do it you never incur that expense.
+</FONT><a name="_Toc375545282"></a><a name="_Toc408018484"></a><P></DIV>
+<A NAME="Heading148"></A><H3 ALIGN=LEFT>
+What
+is finalize(&#160;) for?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might believe at this point that you should not use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a general-purpose cleanup method. What good is it?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+third point to remember is:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Garbage
+collection is only about memory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, the sole reason for the existence of the garbage collector is to recover
+memory that your program is no longer using. So any activity that is associated
+with garbage collection, most notably your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, must also be only about memory and its deallocation. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Does
+this mean that if your object contains other objects 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should explicitly release those objects? Well, no &#8211; the garbage collector
+takes care of the release of all object memory regardless of how the object is
+created. It turns out that the need for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is limited to special cases, in which your object can allocate some storage in
+some way other than creating an object. But, you might observe, everything in
+Java is an object so how can this be?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+would seem that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in place because of the possibility that you&#8217;ll do something C-like by
+allocating memory using a mechanism other than the normal one in Java. This can
+happen primarily through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>native
+methods
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are a way to call non-Java code from Java. (Native methods are discussed
+in Appendix A.) C and C++ are the only languages currently supported by native
+methods, but since they can call subprograms in other languages, you can
+effectively call anything. Inside the non-Java code, C&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>malloc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+family of functions might be called to allocate storage, and unless you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>free(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that storage will not be released, causing a memory leak. Of course, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>free(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a C and C++ function, so you&#8217;d need call it in a native method inside
+your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+reading this, you probably get the idea that you won&#8217;t use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+much. You&#8217;re correct; it is not the appropriate place for normal cleanup
+to occur. So where should normal cleanup be performed?
+</FONT><a name="_Toc375545283"></a><a name="_Toc408018485"></a><a name="_Toc312373857"></a><P></DIV>
+<A NAME="Heading149"></A><H3 ALIGN=LEFT>
+You
+must perform cleanup
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+clean up an object, the user of that object must call a <A NAME="Index298"></A>cleanup
+method at the point the cleanup is desired. This sounds pretty straightforward,
+but it collides a bit with the C++ concept of the <A NAME="Index299"></A>destructor.
+In C++, all objects are destroyed. Or rather, all objects 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>should
+be
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+destroyed. If the C++ object is created as a local, i.e. on the stack (not
+possible in Java), then the destruction happens at the closing curly brace of
+the scope in which the object was created. If the object was created using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(like in Java) the destructor is called when the programmer calls the C++
+operator 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>delete</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which doesn&#8217;t exist in Java). If the programmer forgets, the destructor
+is never called and you have a memory leak, plus the other parts of the object
+never get cleaned up.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+contrast, Java doesn&#8217;t allow you to create local objects &#8211; you must
+always use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But in Java, there&#8217;s no &#8220;delete&#8221; to call for releasing the
+object since the garbage collector releases the storage for you. So from a
+simplistic standpoint you could say that because of garbage collection, Java
+has no destructor. You&#8217;ll see as this book progresses, however, that the
+presence of a <A NAME="Index300"></A>garbage
+collector does not remove the need or utility of destructors. (And you should
+never call <A NAME="Index301"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directly, so that&#8217;s not an appropriate avenue for a solution.) If you
+want some kind of cleanup performed other than storage release you must 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>still</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+call a method in Java, which is the equivalent of a C++ destructor without the
+convenience.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the things 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be useful for is observing the process of garbage collection. The following
+example shows you what&#8217;s going on and summarizes the previous
+descriptions of garbage collection:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Garbage.java</font>
+<font color="#009900">// Demonstration of the garbage</font>
+<font color="#009900">// collector and finalization</font>
+
+<font color="#0000ff">class</font> Chair {
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> gcrun = <font color="#0000ff">false</font>;
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> f = <font color="#0000ff">false</font>;
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> created = 0;
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> finalized = 0;
+  <font color="#0000ff">int</font> i;
+  Chair() {
+    i = ++created;
+    <font color="#0000ff">if</font>(created == 47) 
+      System.out.println("Created 47");
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    <font color="#0000ff">if</font>(!gcrun) {
+      gcrun = <font color="#0000ff">true</font>;
+      System.out.println(
+        "Beginning to finalize after " +
+        created + " Chairs have been created");
+    }
+    <font color="#0000ff">if</font>(i == 47) {
+      System.out.println(
+        "Finalizing Chair #47, " +
+        "Setting flag to stop Chair creation");
+      f = <font color="#0000ff">true</font>;
+    }
+    finalized++;
+    <font color="#0000ff">if</font>(finalized &gt;= created)
+      System.out.println(
+        "All " + finalized + " finalized");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Garbage {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length == 0) {
+      System.err.println("Usage: \n" +
+        "java Garbage before\n  or:\n" +
+        "java Garbage after");
+      <font color="#0000ff">return</font>;
+    }
+    <font color="#0000ff">while</font>(!Chair.f) {
+      <font color="#0000ff">new</font> Chair();
+      <font color="#0000ff">new</font> String("To take up space");
+    }
+    System.out.println(
+      "After all Chairs have been created:\n" +
+      "total created = " + Chair.created +
+      ", total finalized = " + Chair.finalized);
+    <font color="#0000ff">if</font>(args[0].equals("before")) {
+      System.out.println("gc():");
+      System.gc();
+      System.out.println("runFinalization():");
+      System.runFinalization();
+    }
+    System.out.println("bye!");
+    <font color="#0000ff">if</font>(args[0].equals("after"))
+      System.runFinalizersOnExit(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+above program creates many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, and at some point after the garbage collector begins running, the
+program stops creating 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Since the garbage collector can run at any time, you don&#8217;t know exactly
+when it will start up, so there&#8217;s a flag called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gcrun</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to indicate whether the garbage collector has started running yet. A second flag 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a way for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to tell the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop that it should stop making objects. Both of these flags are set within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is called during garbage collection.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Two
+other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variables, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>created</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+keep track of the number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>obj</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+created versus the number that get finalized by the garbage collector. Finally,
+each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has its own (non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so it can keep track of what number it is. When 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+number 47 is finalized, the flag is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to bring the process of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">creation
+to a stop.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+this happens in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in the loop
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">while</font>(!Chair.f) {
+      <font color="#0000ff">new</font> Chair();
+      <font color="#0000ff">new</font> String("To take up space");
+    } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might wonder how this loop could ever finish, since there&#8217;s nothing
+inside that changes the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Chair.f</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+process will, eventually, when it finalizes number 47.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+The creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object during each iteration is simply extra garbage being created to encourage
+the garbage collector to kick in, which it will do when it starts to get
+nervous about the amount of memory available.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run the program, you provide a command-line argument of
+&#8220;before&#8221; or &#8220;after.&#8221; The &#8220;before&#8221; argument
+will call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.gc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method (to force execution of the garbage collector) along with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.runFinalization(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to run the finalizers. These methods were available in <A NAME="Index302"></A>Java
+1.0, but the <A NAME="Index303"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFinalizersOnExit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that is invoked by using the &#8220;after&#8221; argument is available
+only in Java 1.1<A NAME="Index304"></A></FONT><A NAME="fnB19" HREF="#fn19">[19]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and beyond. (Note you can call this method any time during program execution,
+and the execution of the finalizers is independent of whether the garbage
+collector runs).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+preceding program shows that, in Java 1.1, the promise that finalizers will
+always be run holds true, but only if you explicitly force it to happen
+yourself. If you use an argument that isn&#8217;t &#8220;before&#8221; or
+&#8220;after&#8221; (such as &#8220;none&#8221;), then neither finalization
+process will occur, and you&#8217;ll get an output like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Created 47
+Beginning to finalize after 8694 Chairs have been created
+Finalizing Chair #47, Setting flag to stop Chair creation
+After all Chairs have been created:
+total created = 9834, total finalized = 108
+bye!</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+not all finalizers get called by the time the program completes.
+</FONT><A NAME="fnB20" HREF="#fn20">[20]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+To force finalization to happen, you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.gc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.runFinalization(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This will destroy all the objects that are no longer in use up to that point.
+The odd thing about this is that you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFinalization(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which seems to contradict the Sun documentation, which claims that finalizers
+are run first, and then the storage is released. However, if you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFinalization(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+first, and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the finalizers will not be executed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+reason that Java 1.1<A NAME="Index305"></A>
+might default to skipping finalization for all objects is because it seems to
+be expensive. When you use either of the approaches that force garbage
+collection you might notice longer delays than you would without the extra
+finalization.
+</FONT><a name="_Toc375545284"></a><a name="_Toc408018486"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn19" HREF="#fnB19">[19]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">Unfortunately,
+the implementations of the garbage collector in Java 1.0 would never call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+correctly. As a result, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+methods that were essential (such as those to close a file) often didn&#8217;t
+get called. The documentation claimed that all finalizers would be called at
+the exit of a program, even if the garbage collector hadn&#8217;t been run on
+those objects by the time the program terminated. This wasn&#8217;t true, so as
+a result you couldn&#8217;t reliably expect 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+to be called for all objects. Effectively, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+was useless in Java 1.0.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><A NAME="fn20" HREF="#fnB20">[20]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+By the time you read this, some Java Virtual Machines may show different
+behavior.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0050.html">Prev</a> | <a href="tij0052.html">Next</a>
+</div>
+</body></html>
+

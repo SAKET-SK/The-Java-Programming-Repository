@@ -1,0 +1,130 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0048.html">Prev</a> | <a href="tij0050.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Guaranteed
+initialization 
+<P>with
+the constructor
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can imagine creating a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>initialize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for every class you write. The name is a hint that it should be called before
+using the object. Unfortunately, this means the user must remember to call the
+method. In Java, the class designer can guarantee initialization of every
+object by providing a special method called a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>constructor<A NAME="Index262"></A><A NAME="Index263"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If a class has a constructor, Java automatically calls that constructor when an
+object is created, before users can even get their hands on it. So
+initialization is guaranteed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next challenge is what to name this method. There are two issues. The first is
+that any name you use could clash with a name you might like to use as a member
+in the class. The second is that because the compiler is responsible for
+calling the constructor, it must always know which method to call. The C++
+solution seems the easiest and most logical, so it&#8217;s also used in Java:
+The name of the constructor <A NAME="Index264"></A>is
+the same as the name of the class. It makes sense that such a method will be
+called automatically on initialization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple class with a constructor: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SimpleConstructor.java</font>
+<font color="#009900">// Demonstration of a simple constructor</font>
+<font color="#0000ff">package</font> c04;
+
+<font color="#0000ff">class</font> Rock {
+  Rock() { <font color="#009900">// This is the constructor</font>
+    System.out.println("Creating Rock");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SimpleConstructor {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      <font color="#0000ff">new</font> Rock();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now,
+when an <A NAME="Index265"></A>object
+is created:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Rock();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">storage
+is allocated and the constructor is called. It is guaranteed that the object
+will be properly initialized before you can get your hands on it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the coding style of making the first letter of all methods lower case does
+not apply to constructors, since the name of the constructor must match the
+name of the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exactly</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+any method, the constructor can have arguments<A NAME="Index266"></A><A NAME="Index267"></A>
+to allow you to specify 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>how</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an object is created. The above example can easily be changed so the
+constructor takes an argument:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Rock {
+  Rock(<font color="#0000ff">int</font> i) {
+    System.out.println(
+      "Creating Rock number " + i);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SimpleConstructor {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      <font color="#0000ff">new</font> Rock(i);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor
+arguments provide you with a way to provide parameters for the initialization
+of an object. For example, if the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a constructor that takes a single integer argument denoting the height of
+the tree, you would create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Tree
+t = new Tree(12);  // 12-foot tree
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree(int)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is your only constructor, then the compiler won&#8217;t let you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object any other way. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructors
+eliminate a large class of problems and make the code easier to read. In the
+preceding code fragment, for example, you don&#8217;t see an explicit call to
+some 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>initialize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that is conceptually separate from definition. In Java, definition and
+initialization are unified concepts &#8211; you can&#8217;t have one without
+the other.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor is an unusual type of method because it has no return value<A NAME="Index268"></A><A NAME="Index269"></A>.
+This is distinctly different from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+return value, in which the method returns nothing but you still have the option
+to make it return something else. Constructors return nothing and you
+don&#8217;t have an option. If there were a return value, and if you could
+select your own, the compiler would somehow need to know what to do with that
+return value.
+</FONT><a name="_Toc375545276"></a><a name="_Toc408018477"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0048.html">Prev</a> | <a href="tij0050.html">Next</a>
+</div>
+</body></html>
+

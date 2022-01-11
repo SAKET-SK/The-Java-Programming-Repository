@@ -1,0 +1,67 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0067.html">Prev</a> | <a href="tij0069.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+protected</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+that you&#8217;ve been introduced to inheritance, the keyword 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected<A NAME="Index488"></A></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+finally has meaning. In an ideal world, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members would always be hard-and-fast 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but in real projects there are times when you want to make something hidden
+from the world at large and yet allow access for members of derived classes. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword is a nod to pragmatism. It says &#8220;This is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as far as the class user is concerned, but available to anyone who inherits
+from this class or anyone else in the same 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+That is, <A NAME="Index489"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java is automatically &#8220;friendly.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+best tack to take is to leave the data members <A NAME="Index490"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; you should always preserve your right to change the underlying
+implementation. You can then allow controlled access to inheritors of your
+class through <A NAME="Index491"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Orc.java</font>
+<font color="#009900">// The protected keyword</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Villain {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">protected</font> <font color="#0000ff">int</font> read() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> set(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> Villain(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> value(<font color="#0000ff">int</font> m) { <font color="#0000ff">return</font> m*i; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Orc <font color="#0000ff">extends</font> Villain {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> j;
+  <font color="#0000ff">public</font> Orc(<font color="#0000ff">int</font> jj) { <font color="#0000ff">super</font>(jj); j = jj; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> change(<font color="#0000ff">int</font> x) { set(x); }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>change(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has access to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>set(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc305593258"></a><a name="_Toc305628730"></a><a name="_Toc312374030"></a><a name="_Toc375545314"></a><a name="_Toc408018517"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0067.html">Prev</a> | <a href="tij0069.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,124 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0077.html">Prev</a> | <a href="tij0079.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Overriding
+vs. overloading
+<P><A NAME="Index577"></A><A NAME="Index578"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let&#8217;s
+take a different look at the first example in this chapter. In the following
+program, the interface of the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is changed in the process of overriding it, which means that you haven&#8217;t 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>overridden</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the method, but instead 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>overloaded
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it.
+The compiler allows you to overload methods so it gives no complaint. But the
+behavior is probably not what you want. Here&#8217;s the example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: WindError.java </font>
+<font color="#009900">// Accidentally changing the interface</font>
+
+<font color="#0000ff">class</font> NoteX {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font>
+    MIDDLE_C = 0, C_SHARP = 1, C_FLAT = 2;
+}
+
+<font color="#0000ff">class</font> InstrumentX {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(<font color="#0000ff">int</font> NoteX) {
+    System.out.println("InstrumentX.play()");
+  }
+}
+
+<font color="#0000ff">class</font> WindX <font color="#0000ff">extends</font> InstrumentX {
+  <font color="#009900">// OOPS! Changes the method interface:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(NoteX n) {
+    System.out.println("WindX.play(NoteX n)");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WindError {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(InstrumentX i) {
+    <font color="#009900">// ...</font>
+    i.play(NoteX.MIDDLE_C);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    WindX flute = <font color="#0000ff">new</font> WindX();
+    tune(flute); <font color="#009900">// Not the desired behavior!</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+another confusing aspect thrown in here. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InstrumentX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method takes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that has the identifier 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NoteX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That is, even though 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NoteX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a class name, it can also be used as an identifier without complaint. But in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NoteX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle that has an identifier 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Although you could even say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(NoteX
+NoteX)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without an error.) Thus it appears that the programmer intended to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but mistyped the method a bit. The compiler, however, assumed that an overload
+and not an override was intended. Note that if you follow the standard Java
+naming convention, the argument identifier would be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>noteX,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which would distinguish it from the class name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InstrumentX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is sent the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+message, with one of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NoteX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+members (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MIDDLE_C</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+as an argument. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NoteX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+definitions, this means that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+version of the now-overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called, and since that has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+been overridden the base-class version is used.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">InstrumentX.play()</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+certainly doesn&#8217;t appear to be a polymorphic method call. Once you
+understand what&#8217;s happening, you can fix the problem fairly easily, but
+imagine how difficult it might be to find the bug if it&#8217;s buried in a
+program of significant size.
+</FONT><a name="_Toc375545334"></a><a name="_Toc408018537"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0077.html">Prev</a> | <a href="tij0079.html">Next</a>
+</div>
+</body></html>
+

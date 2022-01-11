@@ -1,0 +1,338 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0065.html">Prev</a> | <a href="tij0067.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Combining
+composition 
+<P>and
+inheritance
+<P><A NAME="Index459"></A><A NAME="Index460"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is very common to use composition and inheritance together. The following
+example shows the creation of a more complex class, using both inheritance and
+composition, along with the necessary <A NAME="Index461"></A><A NAME="Index462"></A>constructor
+initialization:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PlaceSetting.java</font>
+<font color="#009900">// Combining composition &amp; inheritance</font>
+
+<font color="#0000ff">class</font> Plate {
+  Plate(<font color="#0000ff">int</font> i) {
+    System.out.println("Plate constructor");
+  }
+}
+
+<font color="#0000ff">class</font> DinnerPlate <font color="#0000ff">extends</font> Plate {
+  DinnerPlate(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println(
+      "DinnerPlate constructor");
+  }
+}
+
+<font color="#0000ff">class</font> Utensil {
+  Utensil(<font color="#0000ff">int</font> i) {
+    System.out.println("Utensil constructor");
+  }
+}
+
+<font color="#0000ff">class</font> Spoon <font color="#0000ff">extends</font> Utensil {
+  Spoon(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("Spoon constructor");
+  }
+}
+
+<font color="#0000ff">class</font> Fork <font color="#0000ff">extends</font> Utensil {
+  Fork(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("Fork constructor");
+  }
+}
+
+<font color="#0000ff">class</font> Knife <font color="#0000ff">extends</font> Utensil {
+  Knife(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("Knife constructor");
+  }
+}
+
+<font color="#009900">// A cultural way of doing something:</font>
+<font color="#0000ff">class</font> Custom {
+  Custom(<font color="#0000ff">int</font> i) {
+    System.out.println("Custom constructor");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PlaceSetting <font color="#0000ff">extends</font> Custom {
+  Spoon sp;
+  Fork frk;
+  Knife kn;
+  DinnerPlate pl;
+  PlaceSetting(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i + 1);
+    sp = <font color="#0000ff">new</font> Spoon(i + 2);
+    frk = <font color="#0000ff">new</font> Fork(i + 3);
+    kn = <font color="#0000ff">new</font> Knife(i + 4);
+    pl = <font color="#0000ff">new</font> DinnerPlate(i + 5);
+    System.out.println(
+      "PlaceSetting constructor");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    PlaceSetting x = <font color="#0000ff">new</font> PlaceSetting(9);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">While
+the compiler forces you to initialize the base classes, and requires that you
+do it right at the beginning of the constructor, it doesn&#8217;t watch over
+you to make sure that you initialize the member objects, so you must remember
+to pay attention to that.
+</FONT><a name="_Toc375545310"></a><a name="_Toc408018513"></a><P></DIV>
+<A NAME="Heading187"></A><H3 ALIGN=LEFT>
+Guaranteeing
+proper cleanup
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+doesn&#8217;t have the C++ concept of a <A NAME="Index463"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>destructor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a method that is automatically called when an object is destroyed. The reason
+is probably that in Java the practice is simply to forget about objects rather
+than to destroy them, allowing the <A NAME="Index464"></A><A NAME="Index465"></A>garbage
+collector to reclaim the memory as necessary.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Often
+this is fine, but there are times when your class might perform some activities
+during its lifetime that require cleanup. As mentioned in Chapter 4, you
+can&#8217;t know when the garbage collector will be called, or if it will be
+called. So if you want something cleaned up for a class, you must write a
+special method to do it explicitly, and make sure that the client programmer
+knows that they must call this method. On top of this, as described in Chapter
+9 (<A NAME="Index466"></A>exception
+handling), you must guard against an exception by putting such cleanup in a <A NAME="Index467"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+an example of a computer-aided design system that draws pictures on the screen:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CADSystem.java</font>
+<font color="#009900">// Ensuring proper cleanup</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Shape {
+  Shape(<font color="#0000ff">int</font> i) {
+    System.out.println("Shape constructor");
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    System.out.println("Shape cleanup");
+  }
+}
+
+<font color="#0000ff">class</font> Circle <font color="#0000ff">extends</font> Shape {
+  Circle(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("Drawing a Circle");
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    System.out.println("Erasing a Circle");
+    <font color="#0000ff">super</font>.cleanup();
+  }
+}
+
+<font color="#0000ff">class</font> Triangle <font color="#0000ff">extends</font> Shape {
+  Triangle(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i);
+    System.out.println("Drawing a Triangle");
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    System.out.println("Erasing a Triangle");
+    <font color="#0000ff">super</font>.cleanup();
+  }
+}
+
+<font color="#0000ff">class</font> Line <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> start, end;
+  Line(<font color="#0000ff">int</font> start, <font color="#0000ff">int</font> end) {
+    <font color="#0000ff">super</font>(start);
+    <font color="#0000ff">this</font>.start = start;
+    <font color="#0000ff">this</font>.end = end;
+    System.out.println("Drawing a Line: " +
+           start + ", " + end);
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    System.out.println("Erasing a Line: " +
+           start + ", " + end);
+    <font color="#0000ff">super</font>.cleanup();
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CADSystem <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">private</font> Circle c;
+  <font color="#0000ff">private</font> Triangle t;
+  <font color="#0000ff">private</font> Line[] lines = <font color="#0000ff">new</font> Line[10];
+  CADSystem(<font color="#0000ff">int</font> i) {
+    <font color="#0000ff">super</font>(i + 1);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; 10; j++)
+      lines[j] = <font color="#0000ff">new</font> Line(j, j*j);
+    c = <font color="#0000ff">new</font> Circle(1);
+    t = <font color="#0000ff">new</font> Triangle(1);
+    System.out.println("Combined constructor");
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    System.out.println("CADSystem.cleanup()");
+    t.cleanup();
+    c.cleanup();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; lines.length; i++)
+      lines[i].cleanup();
+    <font color="#0000ff">super</font>.cleanup();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    CADSystem x = <font color="#0000ff">new</font> CADSystem(47);
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Code and exception handling...</font>
+    } <font color="#0000ff">finally</font> {
+      x.cleanup();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Everything
+in this system is some kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is itself a kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since it&#8217;s implicitly inherited from the root class). Each class redefines 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in addition to calling the base-class version of that method using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The specific 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Line</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+all have constructors that &#8220;draw,&#8221; although any method called
+during the lifetime of the object could be responsible for doing something that
+needs cleanup. Each class has its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to restore non-memory things back to the way they were before the object
+existed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see two keywords that are new, and won&#8217;t officially be introduced
+until Chapter 9: <A NAME="Index468"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index469"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword indicates that the block that follows (delimited by curly braces) is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>guarded
+region
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that it is given special treatment. One of these special treatments
+is that the code in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause following this guarded region is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>always</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+executed, no matter how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block exits. (With exception handling, it&#8217;s possible to leave a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block in a number of non-ordinary ways.) Here, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause is saying &#8220;always call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+no matter what happens.&#8221; These keywords will be explained thoroughly in
+Chapter 9.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that in your cleanup method you must also pay attention to the calling order
+for the base-class and member-object cleanup methods in case one subobject
+depends on another. In general, you should follow the same form that is imposed
+by a C++ compiler on its destructors: First perform all of the work specific to
+your class (which might require that base-class elements still be viable) then
+call the base-class cleanup method, as demonstrated here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+can be many cases in which the cleanup issue is not a problem; you just let the
+garbage collector do the work. But when you must do it explicitly, diligence
+and attention is required.
+</FONT><a name="_Toc312374020"></a><P></DIV>
+<A NAME="Heading188"></A><H4 ALIGN=LEFT>
+Order
+of garbage collection
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+not much you can rely on when it comes to <A NAME="Index470"></A>garbage
+collection. The garbage collector might never be called. If it is, it can
+reclaim objects in any order it wants. In addition, implementations of the
+garbage collector in Java 1.0<A NAME="Index471"></A>
+often don&#8217;t call the <A NAME="Index472"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. It&#8217;s best to not rely on garbage collection for anything but
+memory reclamation. If you want cleanup to take place, make your own cleanup
+methods and don&#8217;t rely on <A NAME="Index473"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(As mentioned earlier, Java 1.1<A NAME="Index474"></A>
+can be forced to call all the finalizers.)
+</FONT><a name="_Toc312374021"></a><a name="_Toc375545311"></a><a name="_Toc408018514"></a><P></DIV>
+<A NAME="Heading189"></A><H3 ALIGN=LEFT>
+Name
+hiding
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Only
+C++ programmers might be surprised by name hiding, since it works differently
+in that language. <A NAME="Index475"></A><A NAME="Index476"></A><A NAME="Index477"></A><A NAME="Index478"></A>If
+a Java base class has a method name that&#8217;s overloaded several times,
+redefining that method name in the derived class will 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">hide
+any of the base-class versions. Thus overloading works regardless of whether
+the method was defined at this level or in a base class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Hide.java</font>
+<font color="#009900">// Overloading a base-class method name</font>
+<font color="#009900">// in a derived class does not hide the</font>
+<font color="#009900">// base-class versions</font>
+
+<font color="#0000ff">class</font> Homer {
+  <font color="#0000ff">char</font> doh(<font color="#0000ff">char</font> c) {
+    System.out.println("doh(<font color="#0000ff">char</font>)");
+    <font color="#0000ff">return</font> 'd';
+  }
+  <font color="#0000ff">float</font> doh(<font color="#0000ff">float</font> f) {
+    System.out.println("doh(<font color="#0000ff">float</font>)");
+    <font color="#0000ff">return</font> 1.0f;
+  }
+}
+
+<font color="#0000ff">class</font> Milhouse {}
+
+<font color="#0000ff">class</font> Bart <font color="#0000ff">extends</font> Homer {
+  <font color="#0000ff">void</font> doh(Milhouse m) {}
+}
+
+<font color="#0000ff">class</font> Hide {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Bart b = <font color="#0000ff">new</font> Bart();
+    b.doh(1); <font color="#009900">// doh(float) used</font>
+    b.doh('x');
+    b.doh(1.0f);
+    b.doh(<font color="#0000ff">new</font> Milhouse());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you&#8217;ll see in the next chapter, it&#8217;s far more common to override
+methods of the same name using exactly the same signature and return type as in
+the base class. It can be confusing otherwise (which is why C++ disallows it,
+to prevent you from making what is probably a mistake).
+</FONT><a name="_Toc305593255"></a><a name="_Toc305628727"></a><a name="_Toc312374023"></a><a name="_Toc375545312"></a><a name="_Toc408018515"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0065.html">Prev</a> | <a href="tij0067.html">Next</a>
+</div>
+</body></html>
+

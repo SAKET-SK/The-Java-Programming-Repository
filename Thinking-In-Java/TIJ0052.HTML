@@ -1,0 +1,623 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0051.html">Prev</a> | <a href="tij0053.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Member
+initialization
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+goes out of its way to guarantee that any variable is properly initialized
+before it is used. In the case of variables that are defined locally to a
+method, this guarantee comes in the form of a compile-time error. So if you say:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">void</font> f() {
+    <font color="#0000ff">int</font> i;
+    i++;
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+get an error message that says that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+might not have been initialized. Of course, the compiler could have given 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a default value, but it&#8217;s more likely that this is a programmer error and
+a default value would have covered that up. Forcing the programmer to provide
+an initialization value is more likely to catch a bug<A NAME="Index306"></A><A NAME="Index307"></A><A NAME="Index308"></A>.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+a <A NAME="Index309"></A><A NAME="Index310"></A><A NAME="Index311"></A>primitive
+is a data member of a class, however, things are a bit different. Since any
+method can initialize or use that data, it might not be practical to force the
+user to initialize it to its appropriate value before the data is used.
+However, it&#8217;s unsafe to leave it with a garbage value, so each primitive
+data member of a class is guaranteed to get an initial value. Those values can
+be seen here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: InitialValues.java</font>
+<font color="#009900">// Shows default initial values</font>
+
+<font color="#0000ff">class</font> Measurement {
+  <font color="#0000ff">boolean</font> t;
+  <font color="#0000ff">char</font> c;
+  <font color="#0000ff">byte</font> b;
+  <font color="#0000ff">short</font> s;
+  <font color="#0000ff">int</font> i;
+  <font color="#0000ff">long</font> l;
+  <font color="#0000ff">float</font> f;
+  <font color="#0000ff">double</font> d;
+  <font color="#0000ff">void</font> print() {
+    System.out.println(
+      "Data type      Inital value\n" +
+      "<font color="#0000ff">boolean</font>        " + t + "\n" +
+      "<font color="#0000ff">char</font>           " + c + "\n" +
+      "<font color="#0000ff">byte</font>           " + b + "\n" +
+      "<font color="#0000ff">short</font>          " + s + "\n" +
+      "<font color="#0000ff">int</font>            " + i + "\n" +
+      "<font color="#0000ff">long</font>           " + l + "\n" +
+      "<font color="#0000ff">float</font>          " + f + "\n" +
+      "<font color="#0000ff">double</font>         " + d);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> InitialValues {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Measurement d = <font color="#0000ff">new</font> Measurement();
+    d.print();
+    <font color="#009900">/* In this case you could also say:
+    new Measurement().print();
+    */</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output of this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Data type      Inital value
+<font color="#0000ff">boolean</font>        <font color="#0000ff">false</font>
+<font color="#0000ff">char</font>
+<font color="#0000ff">byte</font>           0
+<font color="#0000ff">short</font>          0
+<font color="#0000ff">int</font>            0
+<font color="#0000ff">long</font>           0
+<font color="#0000ff">float</font>          0.0
+<font color="#0000ff">double</font>         0.0 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value is a null, which doesn&#8217;t print.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+see later that when you define an object handle inside a class without
+initializing it to a new object, that handle is given a value of null.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that even though the values are not specified, they automatically get
+initialized. So at least there&#8217;s no threat of working with uninitialized
+variables.
+</FONT><a name="_Toc375545285"></a><a name="_Toc408018487"></a><P></DIV>
+<A NAME="Heading151"></A><H3 ALIGN=LEFT>
+Specifying
+initialization
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens if you want to give a variable an initial value? One direct way to do
+this is simply to assign the value at the point you define the variable in the
+class. (Notice you cannot do this in C++, although C++ novices always try.)
+Here the field definitions in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Measurement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are changed to provide initial values: <A NAME="Index312"></A><A NAME="Index313"></A></FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Measurement {
+  <font color="#0000ff">boolean</font> b = <font color="#0000ff">true</font>;
+  <font color="#0000ff">char</font> c = 'x';
+  <font color="#0000ff">byte</font> B = 47;
+  <font color="#0000ff">short</font> s = 0xff;
+  <font color="#0000ff">int</font> i = 999;
+  <font color="#0000ff">long</font> l = 1;
+  <font color="#0000ff">float</font> f = 3.14f;
+  <font color="#0000ff">double</font> d = 3.14159; </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">  <font color="#009900">//. . . </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also initialize non-primitive objects in this same way. If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Depth</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a class, you can insert a variable and initialize it like so:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Measurement {
+  Depth o = <font color="#0000ff">new</font> Depth();
+  <font color="#0000ff">boolean</font> b = <font color="#0000ff">true</font>; </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">  <font color="#009900">// . . . </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you haven&#8217;t given 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>o</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an initial value and you go ahead and try to use it anyway, you&#8217;ll get a
+run-time error called an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(covered in Chapter 9).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can even call a method to provide an initialization value:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> CInit {
+  <font color="#0000ff">int</font> i = f();
+  <font color="#009900">//...</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+method can have arguments, of course, but those arguments cannot be other class
+members that haven&#8217;t been initialized yet. Thus, you can do this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> CInit {
+  <font color="#0000ff">int</font> i = f();
+  <font color="#0000ff">int</font> j = g(i);
+  <font color="#009900">//...</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+you cannot do this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> CInit {
+  <font color="#0000ff">int</font> j = g(i);
+  <font color="#0000ff">int</font> i = f();
+  <font color="#009900">//...</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is one place in which the compiler, appropriately, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+complain about <A NAME="Index314"></A><A NAME="Index315"></A>forward
+referencing, since this has to do with the order of initialization and not the
+way the program is compiled.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach to initialization is simple and straightforward. It has the limitation
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>every</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Measurement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will get these same initialization values. Sometimes this is exactly what you
+need, but at other times you need more flexibility.
+</FONT><a name="_Toc375545286"></a><a name="_Toc408018488"></a><P></DIV>
+<A NAME="Heading152"></A><H3 ALIGN=LEFT>
+Constructor
+initialization
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor can be used to perform initialization, and this gives you greater
+flexibility in your programming since you can call methods and perform actions
+at run time to determine the initial values. There&#8217;s one thing to keep in
+mind, however: you aren&#8217;t precluding the automatic initialization, which
+happens before the constructor is entered. So, for example, if you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">class
+Counter {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ int i;
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ Counter() { i = 7; }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ // . . .
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">then
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+first be initialized to zero, then to 7. This is true with all the primitive
+types and with object handles, including those that are given explicit
+initialization at the point of definition. For this reason, the compiler
+doesn&#8217;t try to force you to initialize elements in the constructor at any
+particular place, or before they are used &#8211; initialization is already
+guaranteed.
+</FONT><A NAME="fnB21" HREF="#fn21">[21]</A><P></DIV>
+<A NAME="Heading153"></A><H4 ALIGN=LEFT>
+Order
+of initialization
+<P><A NAME="Index316"></A><A NAME="Index317"></A><A NAME="Index318"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Within
+a class, the order of initialization is determined by the order that the
+variables are defined within the class. Even if the variable definitions are
+scattered throughout in between method definitions, the variables are
+initialized before any methods can be called &#8211; even the constructor. For
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: OrderOfInitialization.java</font>
+<font color="#009900">// Demonstrates initialization order.</font>
+
+<font color="#009900">// When the constructor is called, to create a</font>
+<font color="#009900">// Tag object, you'll see a message:</font>
+<font color="#0000ff">class</font> Tag {
+  Tag(<font color="#0000ff">int</font> marker) {
+    System.out.println("Tag(" + marker + ")");
+  }
+}
+
+<font color="#0000ff">class</font> Card {
+  Tag t1 = <font color="#0000ff">new</font> Tag(1); <font color="#009900">// Before constructor</font>
+  Card() {
+    <font color="#009900">// Indicate we're in the constructor:</font>
+    System.out.println("Card()");
+    t3 = <font color="#0000ff">new</font> Tag(33); <font color="#009900">// Re-initialize t3</font>
+  }
+  Tag t2 = <font color="#0000ff">new</font> Tag(2); <font color="#009900">// After constructor</font>
+  <font color="#0000ff">void</font> f() {
+    System.out.println("f()");
+  }
+  Tag t3 = <font color="#0000ff">new</font> Tag(3); <font color="#009900">// At end</font>
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> OrderOfInitialization {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Card t = <font color="#0000ff">new</font> Card();
+    t.f(); <font color="#009900">// Shows that construction is done</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Card</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the definitions of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tag</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are intentionally scattered about to prove that they&#8217;ll all get
+initialized before the constructor is entered or anything else can happen. In
+addition, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is re-initialized inside the constructor. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Tag(1)
+Tag(2)
+Tag(3)
+Card()
+Tag(33)
+f()</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle gets initialized twice, once before and once during the constructor
+call. (The first object is dropped, so it can be garbage-collected later.) This
+might not seem efficient at first, but it guarantees proper initialization
+&#8211; what would happen if an overloaded constructor were defined that did 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialize 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and there wasn&#8217;t a &#8220;default&#8221; initialization for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in its definition?
+</FONT><P></DIV>
+<A NAME="Heading154"></A><H4 ALIGN=LEFT>
+Static
+data initialization
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the <A NAME="Index319"></A><A NAME="Index320"></A>data
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the same thing happens; if it&#8217;s a primitive and you don&#8217;t
+initialize it, it gets the standard primitive initial values. If it&#8217;s a
+handle to an object, it&#8217;s null unless you create a new object and attach
+your handle to it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to place initialization at the point of definition, it looks the same
+as for non-statics. But since there&#8217;s only a single piece of storage for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+regardless of how many objects are created the question of when that storage
+gets initialized arises. An example makes this question clear:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: StaticInitialization.java</font>
+<font color="#009900">// Specifying initial values in a</font>
+<font color="#009900">// class definition.</font>
+
+<font color="#0000ff">class</font> Bowl {
+  Bowl(<font color="#0000ff">int</font> marker) {
+    System.out.println("Bowl(" + marker + ")");
+  }
+  <font color="#0000ff">void</font> f(<font color="#0000ff">int</font> marker) {
+    System.out.println("f(" + marker + ")");
+  }
+}
+
+<font color="#0000ff">class</font> Table {
+  <font color="#0000ff">static</font> Bowl b1 = <font color="#0000ff">new</font> Bowl(1);
+  Table() {
+    System.out.println("Table()");
+    b2.f(1);
+  }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">int</font> marker) {
+    System.out.println("f2(" + marker + ")");
+  }
+  <font color="#0000ff">static</font> Bowl b2 = <font color="#0000ff">new</font> Bowl(2);
+}
+
+<font color="#0000ff">class</font> Cupboard {
+  Bowl b3 = <font color="#0000ff">new</font> Bowl(3);
+  <font color="#0000ff">static</font> Bowl b4 = <font color="#0000ff">new</font> Bowl(4);
+  Cupboard() {
+    System.out.println("Cupboard()");
+    b4.f(2);
+  }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">int</font> marker) {
+    System.out.println("f3(" + marker + ")");
+  }
+  <font color="#0000ff">static</font> Bowl b5 = <font color="#0000ff">new</font> Bowl(5);
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> StaticInitialization {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println(
+      "Creating <font color="#0000ff">new</font> Cupboard() in main");
+    <font color="#0000ff">new</font> Cupboard();
+    System.out.println(
+      "Creating <font color="#0000ff">new</font> Cupboard() in main");
+    <font color="#0000ff">new</font> Cupboard();
+    t2.f2(1);
+    t3.f3(1);
+  }
+  <font color="#0000ff">static</font> Table t2 = <font color="#0000ff">new</font> Table();
+  <font color="#0000ff">static</font> Cupboard t3 = <font color="#0000ff">new</font> Cupboard();
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bowl</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to view the creation of a class, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cupboard</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+create 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bowl</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+scattered through their class definitions. Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cupboard</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bowl
+b3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prior to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+definitions. The output shows what happens:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Bowl(1)
+Bowl(2)
+Table()
+f(1)
+Bowl(4)
+Bowl(5)
+Bowl(3)
+Cupboard()
+f(2)
+Creating <font color="#0000ff">new</font> Cupboard() in main
+Bowl(3)
+Cupboard()
+f(2)
+Creating <font color="#0000ff">new</font> Cupboard() in main
+Bowl(3)
+Cupboard()
+f(2)
+f2(1)
+f3(1)</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization occurs only if it&#8217;s necessary. If you don&#8217;t create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+and you never refer to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table.b1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table.b2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+Bowl b1 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+never be created. However, they are created only when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>first
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+is created (or the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+access occurs). After that, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is not re-initialized.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+order of initialization is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+first, if they haven&#8217;t already been initialized by a previous object
+creation, and then the non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. You can see the evidence of this in the output.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+helpful to summarize the <A NAME="Index321"></A>process
+of creating an object. Consider a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+first time an object of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>or</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the first time a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">field
+of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is accessed, the Java interpreter must locate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which it does by searching through the classpath.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	As
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is loaded (which creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which you&#8217;ll learn about later), all of its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initializers are run. Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">initialization
+takes place only once, as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is loaded for the first time.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new
+Dog(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the construction process for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object first allocates enough storage for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object on the heap.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	This
+storage is wiped to zero, automatically setting all the primitives in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to their default values (zero for numbers and the equivalent for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Any
+initializations that occur at the point of field definition are executed.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Constructors
+are executed. As you shall see in Chapter 6, this might actually involve a fair
+amount of activity, especially when inheritance is involved.
+</FONT></OL><A NAME="Heading155"></A><H4 ALIGN=LEFT>
+Explicit
+static initialization
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+allows you to group other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initializations inside a special &#8220;<A NAME="Index322"></A><A NAME="Index323"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+construction clause&#8221; (sometimes called a <A NAME="Index324"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>static
+block
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+a class. It looks like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">class
+Spoon {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ static int i;
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ static {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   i = 47;
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ // . . .
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+it looks like a method, but it&#8217;s just the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword followed by a method body. This code, like the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization, is executed only once, the first time you make an object of
+that class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>or</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you access a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of that class (even if you never make an object of that class). For
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ExplicitStatic.java</font>
+<font color="#009900">// Explicit static initialization</font>
+<font color="#009900">// with the "static" clause.</font>
+
+<font color="#0000ff">class</font> Cup {
+  Cup(<font color="#0000ff">int</font> marker) {
+    System.out.println("Cup(" + marker + ")");
+  }
+  <font color="#0000ff">void</font> f(<font color="#0000ff">int</font> marker) {
+    System.out.println("f(" + marker + ")");
+  }
+}
+
+<font color="#0000ff">class</font> Cups {
+  <font color="#0000ff">static</font> Cup c1;
+  <font color="#0000ff">static</font> Cup c2;
+  <font color="#0000ff">static</font> {
+    c1 = <font color="#0000ff">new</font> Cup(1);
+    c2 = <font color="#0000ff">new</font> Cup(2);
+  }
+  Cups() {
+    System.out.println("Cups()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ExplicitStatic {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println("Inside main()");
+    Cups.c1.f(99);  <font color="#009900">// (1)</font>
+  }
+  <font color="#0000ff">static</font> Cups x = <font color="#0000ff">new</font> Cups();  <font color="#009900">// (2)</font>
+  <font color="#0000ff">static</font> Cups y = <font color="#0000ff">new</font> Cups();  <font color="#009900">// (2)  </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">} ///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initializers for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cups</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be run when either the access of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occurs on the line marked (1), or if line (1) is commented out and the lines
+marked (2) are uncommented. If both (1) and (2) are commented out, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cups</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never occurs.
+</FONT><P></DIV>
+<A NAME="Heading156"></A><H4 ALIGN=LEFT>
+Non-static
+instance initialization
+<P><A NAME="Index325"></A><A NAME="Index326"></A><A NAME="Index327"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index328"></A>
+provides a similar syntax for initializing non-static variables for each
+object. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Mugs.java</font>
+<font color="#009900">// Java 1.1 "Instance Initialization"</font>
+
+<font color="#0000ff">class</font> Mug {
+  Mug(<font color="#0000ff">int</font> marker) {
+    System.out.println("Mug(" + marker + ")");
+  }
+  <font color="#0000ff">void</font> f(<font color="#0000ff">int</font> marker) {
+    System.out.println("f(" + marker + ")");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Mugs {
+  Mug c1;
+  Mug c2;
+  {
+    c1 = <font color="#0000ff">new</font> Mug(1);
+    c2 = <font color="#0000ff">new</font> Mug(2);
+    System.out.println("c1 &amp; c2 initialized");
+  }
+  Mugs() {
+    System.out.println("Mugs()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println("Inside main()");
+    Mugs x = <font color="#0000ff">new</font> Mugs();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the instance initialization clause:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  {
+    c1 = <font color="#0000ff">new</font> Mug(1);
+    c2 = <font color="#0000ff">new</font> Mug(2);
+    System.out.println("c1 &amp; c2 initialized");
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">looks
+exactly like the static initialization clause except for the missing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. This syntax is necessary to support the initialization of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>anonymous
+inner classes
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(see Chapter 7).
+</FONT><a name="_Toc375545287"></a><a name="_Toc408018489"></a><a name="_Toc312373861"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn21" HREF="#fnB21">[21]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+In contrast, C++ has the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>constructor
+initializer list
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+that causes initialization to occur before entering the constructor body, and
+is enforced for objects. See 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Thinking
+in C++
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">.</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0051.html">Prev</a> | <a href="tij0053.html">Next</a>
+</div>
+</body></html>
+

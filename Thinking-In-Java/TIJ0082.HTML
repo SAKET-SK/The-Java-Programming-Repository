@@ -1,0 +1,502 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0081.html">Prev</a> | <a href="tij0083.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Constructors
+and polymorphism
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+usual, <A NAME="Index675"></A><A NAME="Index676"></A>constructors
+are different from other kinds of methods. This is also true when polymorphism
+is involved. Even though constructors are not polymorphic (although you can
+have a kind of &#8220;virtual constructor,&#8221; as you will see in Chapter
+11), it&#8217;s important to understand the way constructors work in complex
+hierarchies and with polymorphism. This understanding will help you avoid
+unpleasant entanglements.
+</FONT><a name="_Toc375545339"></a><a name="_Toc408018554"></a><P></DIV>
+<A NAME="Heading232"></A><H3 ALIGN=LEFT>
+Order
+of constructor calls
+<P><A NAME="Index677"></A><A NAME="Index678"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+order of constructor calls was briefly discussed in Chapter 4, but that was
+before inheritance and polymorphism were introduced. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+constructor for the base class is always called in the constructor for a
+derived class, chaining upward so that a constructor for every base class is
+called. This makes sense because the constructor has a special job: to see that
+the object is built properly. A derived class has access to its own members
+only, and not to those of the base class (whose members are typically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Only the base-class constructor has the proper knowledge and access to
+initialize its own elements. Therefore, it&#8217;s essential that all
+constructors get called, otherwise the entire object wouldn&#8217;t be
+constructed properly. That&#8217;s why the compiler enforces a constructor call
+for every portion of a derived class. It will silently call the default
+constructor if you don&#8217;t explicitly call a base-class constructor in the
+derived-class constructor body. If there is no default constructor, the
+compiler will complain. (In the case where a class has no constructors, the
+compiler will automatically synthesize a default constructor.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let&#8217;s
+take a look at an example that shows the effects of composition, inheritance,
+and polymorphism on the order of construction:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Sandwich.java</font>
+<font color="#009900">// Order of constructor calls</font>
+
+<font color="#0000ff">class</font> Meal {
+  Meal() { System.out.println("Meal()"); }
+}
+
+<font color="#0000ff">class</font> Bread {
+  Bread() { System.out.println("Bread()"); }
+}
+
+<font color="#0000ff">class</font> Cheese {
+  Cheese() { System.out.println("Cheese()"); }
+}
+
+<font color="#0000ff">class</font> Lettuce {
+  Lettuce() { System.out.println("Lettuce()"); }
+}
+
+<font color="#0000ff">class</font> Lunch <font color="#0000ff">extends</font> Meal {
+  Lunch() { System.out.println("Lunch()");}
+}
+
+<font color="#0000ff">class</font> PortableLunch <font color="#0000ff">extends</font> Lunch {
+  PortableLunch() {
+    System.out.println("PortableLunch()");
+  }
+}
+
+<font color="#0000ff">class</font> Sandwich <font color="#0000ff">extends</font> PortableLunch {
+  Bread b = <font color="#0000ff">new</font> Bread();
+  Cheese c = <font color="#0000ff">new</font> Cheese();
+  Lettuce l = <font color="#0000ff">new</font> Lettuce();
+  Sandwich() { 
+    System.out.println("Sandwich()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">new</font> Sandwich();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example creates a complex class out of other classes, and each class has a
+constructor that announces itself. The important class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sandwich</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which reflects three levels of inheritance (four, if you count the implicit
+inheritance from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and three member objects. When a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sandwich</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Meal()
+Lunch()
+PortableLunch()
+Bread()
+Cheese()
+Lettuce()
+Sandwich()</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+means that the order of constructor calls for a complex object is as follows:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+<A NAME="Index679"></A><A NAME="Index680"></A>base-class
+constructor is called. This step is repeated recursively such that the root of
+the hierarchy is constructed first, followed by the next-derived class, etc.,
+until the most-derived class is reached.
+</FONT><LI><A NAME="Index681"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index682"></A>Member
+initializers are called in the order of declaration.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+body of the derived-class constructor is called.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+order of the constructor calls is important. When you inherit, you know all
+about the base class and can access any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members of the base class. This means that you must be able to assume that all
+the members of the base class are valid when you&#8217;re in the derived class.
+In a normal method, construction has already taken place, so all the members of
+all parts of the object have been built. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">I</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">nside
+the constructor, however, you must be able to assume that all members that you
+use have been built. The only way to guarantee this is for the base-class
+constructor to be called first. Then when you&#8217;re in the derived-class
+constructor, all the members you can access in the base class have been
+initialized. &#8220;Knowing that all members are valid&#8221; inside the
+constructor is also the reason that, whenever possible, you should initialize
+all member objects (that is, objects placed in the class using composition) at
+their point of definition in the class (e.g.: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>l</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the example above). If you follow this practice, you will help ensure that
+all base class members 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member objects of the current object have been initialized. Unfortunately, this
+doesn&#8217;t handle every case, as you will see in the next section.
+</FONT><a name="_Toc408018555"></a><P></DIV>
+<A NAME="Heading233"></A><H3 ALIGN=LEFT>
+Inheritance
+and finalize(&#160;)
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you use composition to create a new class, you never worry about finalizing the
+member objects of that class. Each member is an independent object and thus is <A NAME="Index683"></A>garbage
+collected and finalized regardless of whether it happens to be a member of your
+class. With inheritance, however, you must override <A NAME="Index684"></A><A NAME="Index685"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the derived class if you have any special cleanup that must happen as part
+of garbage collection. When you override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in an inherited class, it&#8217;s important to remember to call the base-class
+version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since otherwise the base-class finalization will not happen. The following
+example proves this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Frog.java</font>
+<font color="#009900">// Testing finalize with inheritance</font>
+
+<font color="#0000ff">class</font> DoBaseFinalization {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> flag = <font color="#0000ff">false</font>;
+}
+
+<font color="#0000ff">class</font> Characteristic {
+  String s;
+  Characteristic(String c) {
+    s = c;
+    System.out.println(
+      "Creating Characteristic " + s);
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    System.out.println(
+      "finalizing Characteristic " + s);
+  }
+}
+
+<font color="#0000ff">class</font> LivingCreature {
+  Characteristic p = 
+    <font color="#0000ff">new</font> Characteristic("is alive");
+  LivingCreature() {
+    System.out.println("LivingCreature()");
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    System.out.println(
+      "LivingCreature finalize");
+    <font color="#009900">// Call base-class version LAST!</font>
+    <font color="#0000ff">if</font>(DoBaseFinalization.flag)
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">super</font>.finalize();
+      } <font color="#0000ff">catch</font>(Throwable t) {}
+  }
+}
+
+<font color="#0000ff">class</font> Animal <font color="#0000ff">extends</font> LivingCreature {
+  Characteristic p = 
+    <font color="#0000ff">new</font> Characteristic("has heart");
+  Animal() {
+    System.out.println("Animal()");
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    System.out.println("Animal finalize");
+    <font color="#0000ff">if</font>(DoBaseFinalization.flag)
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">super</font>.finalize();
+      } <font color="#0000ff">catch</font>(Throwable t) {}
+  }
+}
+
+<font color="#0000ff">class</font> Amphibian <font color="#0000ff">extends</font> Animal {
+  Characteristic p = 
+    <font color="#0000ff">new</font> Characteristic("can live in water");
+  Amphibian() {
+    System.out.println("Amphibian()");
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    System.out.println("Amphibian finalize");
+    <font color="#0000ff">if</font>(DoBaseFinalization.flag)
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">super</font>.finalize();
+      } <font color="#0000ff">catch</font>(Throwable t) {}
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Frog <font color="#0000ff">extends</font> Amphibian {
+  Frog() {
+    System.out.println("Frog()");
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> finalize() {
+    System.out.println("Frog finalize");
+    <font color="#0000ff">if</font>(DoBaseFinalization.flag)
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">super</font>.finalize();
+      } <font color="#0000ff">catch</font>(Throwable t) {}
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length != 0 &amp;&amp; 
+       args[0].equals("finalize"))
+       DoBaseFinalization.flag = <font color="#0000ff">true</font>;
+    <font color="#0000ff">else</font>
+      System.out.println("not finalizing bases");
+    <font color="#0000ff">new</font> Frog(); <font color="#009900">// Instantly becomes garbage</font>
+    System.out.println("bye!");
+    <font color="#009900">// Must do this to guarantee that all </font>
+    <font color="#009900">// finalizers will be called:</font>
+    System.runFinalizersOnExit(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DoBaseFinalization</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+simply holds a flag that indicates to each class in the hierarchy whether to
+call <A NAME="Index686"></A><A NAME="Index687"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This flag is set based on a command-line argument, so you can view the behavior
+with and without base-class finalization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+class in the hierarchy also contains a member object of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Characteristic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You will see that regardless of whether the base class finalizers are called,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Characteristic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member objects are always finalized.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">must
+have access to at least 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">members
+since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the compiler will not allow you to reduce the access during inheritance.
+(&#8220;Friendly&#8221; is less accessible than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog.main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DoBaseFinalization
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">flag
+is configured and a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+is created. Remember that garbage collection and in particular finalization
+might not happen for any particular object so to enforce this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.<A NAME="Index688"></A>runFinalizersOnExit(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+adds the extra overhead to guarantee that finalization takes place. Without
+base-class finalization, the output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>not finalizing bases
+Creating Characteristic is alive
+LivingCreature()
+Creating Characteristic has heart
+Animal()
+Creating Characteristic can live in water
+Amphibian()
+Frog()
+bye!
+Frog finalize
+finalizing Characteristic is alive
+finalizing Characteristic has heart
+finalizing Characteristic can live in water </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that, indeed, no finalizers are called for the base classes of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But if you add the &#8220;finalize&#8221; argument on the command line, you get:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Creating Characteristic is alive
+LivingCreature()
+Creating Characteristic has heart
+Animal()
+Creating Characteristic can live in water
+Amphibian()
+Frog()
+bye!
+Frog finalize
+Amphibian finalize
+Animal finalize
+LivingCreature finalize
+finalizing Characteristic is alive
+finalizing Characteristic has heart
+finalizing Characteristic can live in water </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+the order the member objects are finalized is the same order that they are
+created, technically the <A NAME="Index689"></A><A NAME="Index690"></A><A NAME="Index691"></A>order
+of finalization of objects is unspecified. With base classes, however, you have
+control over the order of finalization. The best order to use is the one
+that&#8217;s shown here, which is the reverse of the order of initialization.
+Following the form that&#8217;s used in C++ for destructors, you should perform
+the derived-class finalization first, then the base-class finalization.
+That&#8217;s because the derived-class finalization could call some methods in
+the base class that require that the base-class components are still alive, so
+you must not destroy them prematurely.
+</FONT><a name="_Toc312374057"></a><a name="_Toc375545340"></a><a name="_Toc408018556"></a><P></DIV>
+<A NAME="Heading234"></A><H3 ALIGN=LEFT>
+Behavior
+of polymorphic methods 
+<P>inside
+constructors
+<P><A NAME="Index692"></A><A NAME="Index693"></A><A NAME="Index694"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+hierarchy of constructor calls brings up an interesting dilemma. What happens
+if you&#8217;re inside a constructor and you call a dynamically-bound method of
+the object being constructed? Inside an ordinary method you can imagine what
+will happen &#8211; the dynamically-bound call is resolved at run-time because
+the object cannot know whether it belongs to the class the method is in or some
+class derived from it. For consistency, you might think this is what should
+happen inside constructors.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is not exactly the case. If you call a dynamically-bound method inside a
+constructor, the overridden definition for that method is used. However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>effect</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be rather unexpected, and can conceal some difficult-to-find bugs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Conceptually,
+the constructor&#8217;s job is to bring the object into existence (which is
+hardly an ordinary feat). Inside any constructor, the entire object might be
+only partially formed &#8211; you can know only that the base-class objects
+have been initialized, but you cannot know which classes are inherited from
+you. A dynamically-bound method call, however, reaches &#8220;forward&#8221; or
+&#8220;outward&#8221; into the inheritance hierarchy. It calls a method in a
+derived class. If you do this inside a constructor, you call a method that
+might manipulate members that haven&#8217;t been initialized yet &#8211; a sure
+recipe for disaster.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the problem in the following example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PolyConstructors.java</font>
+<font color="#009900">// Constructors and polymorphism</font>
+<font color="#009900">// don't produce what you might expect.</font>
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Glyph {
+  <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> draw();
+  Glyph() {
+    System.out.println("Glyph() before draw()");
+    draw(); 
+    System.out.println("Glyph() after draw()");
+  }
+}
+
+<font color="#0000ff">class</font> RoundGlyph <font color="#0000ff">extends</font> Glyph {
+  <font color="#0000ff">int</font> radius = 1;
+  RoundGlyph(<font color="#0000ff">int</font> r) {
+    radius = r;
+    System.out.println(
+      "RoundGlyph.RoundGlyph(), radius = "
+      + radius);
+  }
+  <font color="#0000ff">void</font> draw() { 
+    System.out.println(
+      "RoundGlyph.draw(), radius = " + radius);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PolyConstructors {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">new</font> RoundGlyph(5);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glyph</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it is designed to be overridden. Indeed, you are forced to override it in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RoundGlyph</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glyph</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor calls this method, and the call ends up in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RoundGlyph.draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which would seem to be the intent. But look at the output:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Glyph() before draw()
+RoundGlyph.draw(), radius = 0
+Glyph() after draw()
+RoundGlyph.RoundGlyph(), radius = 5 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glyph</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+constructor calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>radius</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t even the default initial value 1. It&#8217;s zero. This would
+probably result in either a dot or nothing at all being drawn on the screen,
+and you&#8217;d be staring, trying to figure out why the program won&#8217;t
+work.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index695"></A><A NAME="Index696"></A>order
+of initialization described in the previous section isn&#8217;t quite complete,
+and that&#8217;s the key to solving the mystery. The actual process of
+initialization is:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+storage allocated for the object is initialized to binary zero before anything
+else happens.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+base-class constructors are called as described previously. At this point, the
+overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called, (yes, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RoundGlyph
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">constructor
+is called), which discovers a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>radius</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value of zero, due to step 1.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Member
+initializers are called in the order of declaration.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+body of the derived-class constructor is called.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+an upside to this, which is that everything is at least initialized to zero (or
+whatever zero means for that particular data type) and not just left as
+garbage. This includes object handles that are embedded inside a class via
+composition. So if you forget to initialize that handle you&#8217;ll get an
+exception at run time. Everything else gets zero, which is usually a telltale
+value when looking at output.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">On
+the other hand, you should be pretty horrified at the outcome of this program.
+You&#8217;ve done a perfectly logical thing and yet the behavior is
+mysteriously wrong, with no complaints from the compiler. (C++ produces more
+rational behavior in this situation.) Bugs like this could easily be buried and
+take a long time to discover.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a result, a good guideline for constructors is, &#8220;Do as little as possible
+to set the object into a good state, and if you can possibly avoid it,
+don&#8217;t call any methods.&#8221; The only safe methods to call inside a
+constructor are those that are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the base class. (This also applies to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, which are automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+These cannot be overridden and thus cannot produce this kind of surprise.
+</FONT><a name="_Toc375545341"></a><a name="_Toc408018557"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0081.html">Prev</a> | <a href="tij0083.html">Next</a>
+</div>
+</body></html>
+

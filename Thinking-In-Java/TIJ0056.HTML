@@ -1,0 +1,77 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0055.html">Prev</a> | <a href="tij0057.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+5:
+Hiding the implementation
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">A
+primary consideration in object-oriented design is &#8220;separating the things
+that change from the things that stay the same.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is particularly important for libraries. The user (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>client
+programmer
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+of that library must be able to rely on the part they use, and know that they
+won&#8217;t need to rewrite code if a new version of the library comes out. On
+the flip side, the library creator must have the freedom to make modifications
+and improvements with the certainty that the client programmer&#8217;s code
+won&#8217;t be affected by those changes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+can be achieved through convention. For example, the library programmer must
+agree to not remove existing methods when modifying a class in the library,
+since that would break the client programmer&#8217;s code. The reverse
+situation is thornier, however. In the case of a data member, how can the
+library creator know which data members have been accessed by client
+programmers? This is also true with methods that are only part of the
+implementation of a class, and not meant to be used directly by the client
+programmer. But what if the library creator wants to rip out an old
+implementation and put in a new one? Changing any of those members might break
+a client programmer&#8217;s code. Thus the library creator is in a strait
+jacket and can&#8217;t change anything.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+solve this problem, Java provides <A NAME="Index344"></A><A NAME="Index345"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>access
+specifiers
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to allow the library creator to say what is available to the client programmer
+and what is not. The levels of <A NAME="Index346"></A>access
+control from &#8220;most access&#8221; to &#8220;least access&#8221; are <A NAME="Index347"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+&#8220;<A NAME="Index348"></A>friendly&#8221;
+(which has no keyword), <A NAME="Index349"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index350"></A>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+From the previous paragraph you might think that, as a <A NAME="Index351"></A><A NAME="Index352"></A>library
+designer, you&#8217;ll want to keep everything as &#8220;private&#8221; as
+possible, and expose only the methods that you want the client programmer to
+use. This is exactly right, even though it&#8217;s often counterintuitive for
+people who program in other languages (especially C) and are used to accessing
+everything without restriction. By the end of this chapter you should be
+convinced of the value of access control in Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+concept of a library of components and the control over who can access the
+components of that library is not complete, however. There&#8217;s still the
+question of how the components are bundled together into a cohesive library
+unit. This is controlled with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword in Java, and the access specifiers are affected by whether a class is
+in the same package or in a separate package. So to begin this chapter,
+you&#8217;ll learn how library components are placed into packages. Then
+you&#8217;ll be able to understand the complete meaning of the access specifiers.
+</FONT><a name="_Toc375545291"></a><a name="_Toc408018494"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0055.html">Prev</a> | <a href="tij0057.html">Next</a>
+</div>
+</body></html>
+

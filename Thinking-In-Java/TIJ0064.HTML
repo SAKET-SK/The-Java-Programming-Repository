@@ -1,0 +1,216 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0063.html">Prev</a> | <a href="tij0065.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Composition
+syntax
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Until
+now, composition has been used quite frequently. You simply place object
+handles inside new classes. For example, suppose you&#8217;d like an object
+that holds several 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, a couple of primitives and an object of another class. For the
+non-primitive objects, just put handles inside your new class, and for the
+primitives just define them inside your class: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SprinklerSystem.java</font>
+<font color="#009900">// Composition for code reuse</font>
+<font color="#0000ff">package</font> c06;
+
+<font color="#0000ff">class</font> WaterSource {
+  <font color="#0000ff">private</font> String s;
+  WaterSource() {
+    System.out.println("WaterSource()");
+    s = <font color="#0000ff">new</font> String("Constructed");
+  }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> s; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SprinklerSystem {
+  <font color="#0000ff">private</font> String valve1, valve2, valve3, valve4;
+  WaterSource source;
+  <font color="#0000ff">int</font> i;
+  <font color="#0000ff">float</font> f;
+  <font color="#0000ff">void</font> print() {
+    System.out.println("valve1 = " + valve1);
+    System.out.println("valve2 = " + valve2);
+    System.out.println("valve3 = " + valve3);
+    System.out.println("valve4 = " + valve4);
+    System.out.println("i = " + i);
+    System.out.println("f = " + f);
+    System.out.println("source = " + source);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    SprinklerSystem x = <font color="#0000ff">new</font> SprinklerSystem();
+    x.print();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the methods defined in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WaterSource
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+special: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You will learn later that every non-primitive object has a <A NAME="Index427"></A><A NAME="Index428"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and it&#8217;s called in special situations when the compiler wants a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but it&#8217;s got one of these objects. So in the expression:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println("source
+= " + source);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+compiler sees you trying to add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;source
+= &#8220;
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WaterSource</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This doesn&#8217;t make sense to it, because you can only &#8220;add&#8221; a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it says &#8220;I&#8217;ll turn 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>source</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">!&#8221;
+After doing this it can combine the two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and pass the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Any time you want to allow this behavior with a class you create you need only
+write a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. <A NAME="Index429"></A><A NAME="Index430"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+first glance, you might assume &#8211; Java being as safe and careful as it is
+&#8211; that the compiler would automatically construct objects for each of the
+handles in the above code, for example calling the default constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WaterSource</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to initialize 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>source</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The output of the print statement is in fact:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>valve1 = <font color="#0000ff">null</font>
+valve2 = <font color="#0000ff">null</font>
+valve3 = <font color="#0000ff">null</font>
+valve4 = <font color="#0000ff">null</font>
+i = 0
+f = 0.0
+source = <font color="#0000ff">null</font> </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Primitives
+that are fields in a class are automatically <A NAME="Index431"></A><A NAME="Index432"></A>initialized
+to zero, as noted in Chapter 2. But the object handles are initialized to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if you try to call methods for any of them you&#8217;ll get an exception.
+It&#8217;s actually pretty good (and useful) that you can still print them out
+without throwing an exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+makes sense that the compiler doesn&#8217;t just create a default object for
+every handle because that would incur unnecessary overhead in many cases. If
+you want the handles initialized, you can do it:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	At
+the point the objects are defined. This means that they&#8217;ll always be
+initialized before the constructor is called.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	In
+the constructor for that class
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Right
+before you actually need to use the object. This can reduce overhead, if there
+are situations where the object doesn&#8217;t need to be created.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+three approaches are shown here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Bath.java</font>
+<font color="#009900">// Constructor initialization with composition</font>
+
+<font color="#0000ff">class</font> Soap {
+  <font color="#0000ff">private</font> String s;
+  Soap() {
+    System.out.println("Soap()");
+    s = <font color="#0000ff">new</font> String("Constructed");
+  }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> s; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Bath {
+  <font color="#0000ff">private</font> String 
+    <font color="#009900">// Initializing at point of definition:</font>
+    s1 = <font color="#0000ff">new</font> String("Happy"), 
+    s2 = "Happy", 
+    s3, s4;
+  Soap castille;
+  <font color="#0000ff">int</font> i;
+  <font color="#0000ff">float</font> toy;
+  Bath() {
+    System.out.println("Inside Bath()");
+    s3 = <font color="#0000ff">new</font> String("Joy");
+    i = 47;
+    toy = 3.14f;
+    castille = <font color="#0000ff">new</font> Soap();
+  }
+  <font color="#0000ff">void</font> print() {
+    <font color="#009900">// Delayed initialization:</font>
+    <font color="#0000ff">if</font>(s4 == <font color="#0000ff">null</font>)
+      s4 = <font color="#0000ff">new</font> String("Joy");
+    System.out.println("s1 = " + s1);
+    System.out.println("s2 = " + s2);
+    System.out.println("s3 = " + s3);
+    System.out.println("s4 = " + s4);
+    System.out.println("i = " + i);
+    System.out.println("toy = " + toy);
+    System.out.println("castille = " + castille);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Bath b = <font color="#0000ff">new</font> Bath();
+    b.print();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bath
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">constructor
+a statement is executed before any of the initializations take place. When you
+don&#8217;t initialize at the point of definition, there&#8217;s still no
+guarantee that you&#8217;ll perform any initialization before you send a
+message to an object handle &#8211; except for the inevitable run-time exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the output for the program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Inside Bath()
+Soap()
+s1 = Happy
+s2 = Happy
+s3 = Joy
+s4 = Joy
+i = 47
+toy = 3.14
+castille = Constructed </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called it fills in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that all the fields are properly initialized by the time they are used.
+</FONT><a name="_Toc305593252"></a><a name="_Toc305628724"></a><a name="_Toc312374015"></a><a name="_Toc375545307"></a><a name="_Toc408018510"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0063.html">Prev</a> | <a href="tij0065.html">Next</a>
+</div>
+</body></html>
+

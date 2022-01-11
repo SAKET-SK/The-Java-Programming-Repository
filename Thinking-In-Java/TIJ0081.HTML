@@ -1,0 +1,1641 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0080.html">Prev</a> | <a href="tij0082.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Inner
+classes
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java 1.1<A NAME="Index611"></A>
+it&#8217;s possible to place a class definition within another class
+definition. This is called an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>inner
+class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The <A NAME="Index612"></A><A NAME="Index613"></A>inner
+class is a useful feature because it allows you to group classes that logically
+belong together and to control the visibility of one within the other. However,
+it&#8217;s important to understand that inner classes are distinctly different
+from composition.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Often,
+while you're learning about them, the need for inner classes isn&#8217;t
+immediately obvious. At the end of this section, after all of the syntax and
+semantics of inner classes have been described, you&#8217;ll find an example
+that should make clear the benefits of inner classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+create an inner class just as you&#8217;d expect: by placing the class
+definition inside a surrounding class: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel1.java</font>
+<font color="#009900">// Creating inner classes</font>
+<font color="#0000ff">package</font> c07.parcel1;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel1 {
+  <font color="#0000ff">class</font> Contents {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+  }
+  <font color="#0000ff">class</font> Destination {
+    <font color="#0000ff">private</font> String label;
+    Destination(String whereTo) {
+      label = whereTo;
+    }
+    String readLabel() { <font color="#0000ff">return</font> label; }
+  }
+  <font color="#009900">// Using inner classes looks just like</font>
+  <font color="#009900">// using any other class, within Parcel1:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> ship(String dest) {
+    Contents c = <font color="#0000ff">new</font> Contents();
+    Destination d = <font color="#0000ff">new</font> Destination(dest);
+  }  
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel1 p = <font color="#0000ff">new</font> Parcel1();
+    p.ship("Tanzania");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inner classes, when used inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ship(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+look just like the use of any other classes. Here, the only practical
+difference is that the names are nested within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll see in a while that this isn&#8217;t the only difference.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">More
+typically, an outer class will have a method that returns a handle to an inner
+class, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel2.java</font>
+<font color="#009900">// Returning a handle to an inner class</font>
+<font color="#0000ff">package</font> c07.parcel2;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel2 {
+  <font color="#0000ff">class</font> Contents {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+  }
+  <font color="#0000ff">class</font> Destination {
+    <font color="#0000ff">private</font> String label;
+    Destination(String whereTo) {
+      label = whereTo;
+    }
+    String readLabel() { <font color="#0000ff">return</font> label; }
+  }
+  <font color="#0000ff">public</font> Destination to(String s) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Destination(s);
+  }
+  <font color="#0000ff">public</font> Contents cont() { 
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Contents(); 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> ship(String dest) {
+    Contents c = cont();
+    Destination d = to(dest);
+  }  
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel2 p = <font color="#0000ff">new</font> Parcel2();
+    p.ship("Tanzania");
+    Parcel2 q = <font color="#0000ff">new</font> Parcel2();
+    <font color="#009900">// Defining handles to inner classes:</font>
+    Parcel2.Contents c = q.cont();
+    Parcel2.Destination d = q.to("Borneo");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to make an object of the inner class anywhere except from within a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of the outer class, you must specify the type of that object as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>OuterClassName.InnerClassName</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as seen in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018544"></a><P></DIV>
+<A NAME="Heading222"></A><H3 ALIGN=LEFT>
+Inner
+classes and upcasting
+<P><A NAME="Index614"></A><A NAME="Index615"></A><A NAME="Index616"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far, inner classes don&#8217;t seem that dramatic. After all, if it&#8217;s
+hiding you&#8217;re after, Java already has a perfectly good hiding mechanism
+&#8211; just allow the class to be &#8220;<A NAME="Index617"></A>friendly&#8221;
+(visible only within a <A NAME="Index618"></A><A NAME="Index619"></A>package)
+rather than creating it as an inner class.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index620"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+inner classes really come into their own when you start upcasting to a base
+class, and in particular to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(The effect of producing an interface handle from an object that implements it
+is essentially the same as upcasting to a base class.) That&#8217;s because the
+inner class can then be completely unseen and unavailable to anyone, which is
+convenient for hiding the implementation. All you get back is a handle to the
+base class or the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it&#8217;s possible that you can&#8217;t even find out the exact type, as
+shown here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel3.java</font>
+<font color="#009900">// Returning a handle to an inner class</font>
+<font color="#0000ff">package</font> c07.parcel3;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Contents {
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">int</font> value();
+}
+
+<font color="#0000ff">interface</font> Destination {
+  String readLabel();
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel3 {
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> PContents <font color="#0000ff">extends</font> Contents {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">class</font> PDestination
+      <font color="#0000ff">implements</font> Destination {
+    <font color="#0000ff">private</font> String label;
+    <font color="#0000ff">private</font> PDestination(String whereTo) {
+      label = whereTo;
+    }
+    <font color="#0000ff">public</font> String readLabel() { <font color="#0000ff">return</font> label; }
+  }
+  <font color="#0000ff">public</font> Destination dest(String s) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> PDestination(s);
+  }
+  <font color="#0000ff">public</font> Contents cont() { 
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> PContents(); 
+  }
+}
+
+<font color="#0000ff">class</font> Test {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel3 p = <font color="#0000ff">new</font> Parcel3();
+    Contents c = p.cont();
+    Destination d = p.dest("Tanzania");
+    <font color="#009900">// Illegal -- can't access private class:</font>
+    <font color="#009900">//! Parcel3.PContents c = p.new PContents();</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Destination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represent interfaces available to the client programmer. (The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+remember, automatically makes all of its members 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+For convenience, these are placed inside a single file, but ordinarily 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Destination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would each be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+their own files.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+something new has been added: the inner class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PContents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">so
+no one but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can access it. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so no one but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+classes in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+package (since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also gives package access; that is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is also &#8220;friendly&#8221;), and the inheritors of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">can
+access 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that the client programmer has restricted knowledge and access to
+these members. In fact, you can&#8217;t even downcast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class (or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class unless you&#8217;re an inheritor), because you can&#8217;t access
+the name, as you can see in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+Test
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class provides a way for the class designer to completely prevent any
+type-coding dependencies and to completely hide details about implementation.
+In addition, extension of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is useless from the client programmer&#8217;s perspective since the client
+programmer cannot access any additional methods that aren&#8217;t part of the
+public 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. This also provides an opportunity for the Java compiler to generate more
+efficient code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Normal
+(non-inner) classes cannot be made 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or &#8220;friendly.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t need to be an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. You could use an ordinary class here as well, but the most typical
+starting point for such a design is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018545"></a><P></DIV>
+<A NAME="Heading223"></A><H3 ALIGN=LEFT>
+Inner
+classes in methods and scopes
+<P><A NAME="Index621"></A><A NAME="Index622"></A><A NAME="Index623"></A><A NAME="Index624"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+you&#8217;ve seen so far encompasses the typical use for inner classes. In
+general, the code that you&#8217;ll write and read involving inner classes will
+be &#8220;plain&#8221; inner classes that are simple and easy to understand.
+However, the design for inner classes is quite complete and there are a number
+of other, more obscure, ways that you can use them if you choose: inner classes
+can be created within a method or even an arbitrary scope. There are two
+reasons for doing this:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	As
+shown previously, you&#8217;re implementing an interface of some kind so that
+you can create and return a handle.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You&#8217;re
+solving a complicated problem and you want to create a class to aid in your
+solution, but you don&#8217;t want it publicly available.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following examples, the previous code will be modified to use:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+class defined within a method 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+class defined within a scope inside a method
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+<A NAME="Index625"></A><A NAME="Index626"></A>anonymous
+class implementing an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+anonymous class extending a class that has a non-default constructor
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+anonymous class that performs field initialization
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+anonymous class that performs <A NAME="Index627"></A>construction
+using instance initialization (anonymous inner classes cannot have constructors)
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+will all take place within the package 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>innerscopes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+First, the common interfaces from the previous code will be defined in their
+own files so they can be used in all the examples:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Destination.java</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">interface</font> Destination {
+  String readLabel();
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+point has been made that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could be an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, so here it will be in a more natural form, as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Contents.java</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">interface</font> Contents {
+  <font color="#0000ff">int</font> value();
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+it&#8217;s an ordinary class with an implementation, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wrapping</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is also being used as a common &#8220;interface&#8221; to its derived classes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Wrapping.java</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Wrapping {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> Wrapping(<font color="#0000ff">int</font> x) { i = x; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice above that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wrapping</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a constructor that requires an argument, to make things a bit more
+interesting.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first example shows the creation of an entire class within the scope of a
+method (instead of the scope of another class):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel4.java</font>
+<font color="#009900">// Nesting a class within a method</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel4 {
+  <font color="#0000ff">public</font> Destination dest(String s) {
+    <font color="#0000ff">class</font> PDestination
+        <font color="#0000ff">implements</font> Destination {
+      <font color="#0000ff">private</font> String label;
+      <font color="#0000ff">private</font> PDestination(String whereTo) {
+        label = whereTo;
+      }
+      <font color="#0000ff">public</font> String readLabel() { <font color="#0000ff">return</font> label; }
+    }
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> PDestination(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel4 p = <font color="#0000ff">new</font> Parcel4();
+    Destination d = p.dest("Tanzania");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rather than being part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel4.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Also notice that you could use the class identifier 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+an inner class inside each class in the same subdirectory without a name
+clash.) Therefore, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">cannot
+be accessed outside of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the upcasting that occurs in the return statement &#8211; nothing comes out of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+except a handle to the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Destination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, the fact that the name of the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is placed inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t mean that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PDestination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not a valid object once 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next example shows how you can nest an <A NAME="Index628"></A><A NAME="Index629"></A><A NAME="Index630"></A>inner
+class within any arbitrary scope:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel5.java</font>
+<font color="#009900">// Nesting a class within a scope</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel5 {
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> internalTracking(<font color="#0000ff">boolean</font> b) {
+    <font color="#0000ff">if</font>(b) {
+      <font color="#0000ff">class</font> TrackingSlip {
+        <font color="#0000ff">private</font> String id;
+        TrackingSlip(String s) {
+          id = s;
+        }
+        String getSlip() { <font color="#0000ff">return</font> id; }
+      }
+      TrackingSlip ts = <font color="#0000ff">new</font> TrackingSlip("slip");
+      String s = ts.getSlip();
+    }
+    <font color="#009900">// Can't use it here! Out of scope:</font>
+    <font color="#009900">//! TrackingSlip ts = new TrackingSlip("x");</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> track() { internalTracking(<font color="#0000ff">true</font>); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel5 p = <font color="#0000ff">new</font> Parcel5();
+    p.track();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrackingSlip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is nested inside the scope of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement. This does not mean that the class is conditionally created &#8211;
+it gets compiled along with everything else. However, it&#8217;s not available
+outside the scope in which it is defined.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Other
+than that, it looks just like an ordinary class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next example looks a little strange:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel6.java</font>
+<font color="#009900">// A method that returns an anonymous inner class</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel6 {
+  <font color="#0000ff">public</font> Contents cont() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Contents() {
+      <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+      <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+    }; <font color="#009900">// Semicolon required in this case</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel6 p = <font color="#0000ff">new</font> Parcel6();
+    Contents c = p.cont();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cont(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method combines the creation of the return value with the definition of the
+class that represents that return value! In addition, the class is anonymous
+&#8211; it has no name. To make matters a bit worse, it looks like you&#8217;re
+starting out to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">return
+new Contents()
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">but
+then, before you get to the semicolon, you say, &#8220;But wait, I think
+I&#8217;ll slip in a class definition&#8221;:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">return</font> <font color="#0000ff">new</font> Contents() {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+};</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+this strange syntax means is &#8220;create an object of an anonymous class
+that&#8217;s inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+The handle returned by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expression is automatically upcast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. The anonymous inner class syntax is a shorthand for:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> MyContents <font color="#0000ff">extends</font> Contents {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+}
+<font color="#0000ff">return</font> <font color="#0000ff">new</font> MyContents(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the anonymous inner class, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created using a default constructor. The following code shows what to do if
+your base class needs a constructor with an argument:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel7.java</font>
+<font color="#009900">// An anonymous inner class that calls the </font>
+<font color="#009900">// base-class constructor</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel7 {
+  <font color="#0000ff">public</font> Wrapping wrap(<font color="#0000ff">int</font> x) {
+    <font color="#009900">// Base constructor call:</font>
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Wrapping(x) { 
+      <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() {
+        <font color="#0000ff">return</font> <font color="#0000ff">super</font>.value() * 47;
+      }
+    }; <font color="#009900">// Semicolon required</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel7 p = <font color="#0000ff">new</font> Parcel7();
+    Wrapping w = p.wrap(10);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, you simply pass the appropriate argument to the base-class constructor,
+seen here as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">passed
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new
+Wrapping(x)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+An anonymous class cannot have a constructor where you would normally call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+both of the previous examples, the semicolon doesn&#8217;t mark the end of the
+class body (as it does in C++). Instead, it marks the end of the expression
+that happens to contain the anonymous class. Thus, it&#8217;s identical to the
+use of the semicolon everywhere else.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens if you need to perform some kind of initialization for an object of an <A NAME="Index631"></A><A NAME="Index632"></A><A NAME="Index633"></A>anonymous
+inner class? Since it&#8217;s anonymous, there&#8217;s no name to give the
+constructor so you can&#8217;t have a constructor. You can, however, perform
+initialization at the point of definition of your fields:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel8.java</font>
+<font color="#009900">// An anonymous inner class that performs </font>
+<font color="#009900">// initialization. A briefer version</font>
+<font color="#009900">// of Parcel5.java.</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel8 {
+  <font color="#009900">// Argument must be final to use inside </font>
+  <font color="#009900">// anonymous inner class:</font>
+  <font color="#0000ff">public</font> Destination dest(<font color="#0000ff">final</font> String dest) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Destination() {
+      <font color="#0000ff">private</font> String label = dest;
+      <font color="#0000ff">public</font> String readLabel() { <font color="#0000ff">return</font> label; }
+    };
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel8 p = <font color="#0000ff">new</font> Parcel8();
+    Destination d = p.dest("Tanzania");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re defining an anonymous inner class and want to use an object
+that&#8217;s defined outside the anonymous inner class, the compiler requires
+that the outside object be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is why the argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dest(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you forget, you&#8217;ll get a compile-time error message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+long as you&#8217;re simply assigning a field, the above approach is fine. But
+what if you need to perform some constructor-like activity? With Java 1.1<A NAME="Index634"></A>
+<A NAME="Index635"></A><A NAME="Index636"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>instance
+initialization
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can, in effect, create a constructor for an anonymous inner class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel9.java</font>
+<font color="#009900">// Using "instance initialization" to perform </font>
+<font color="#009900">// construction on an anonymous inner class</font>
+<font color="#0000ff">package</font> c07.innerscopes;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel9 {
+  <font color="#0000ff">public</font> Destination 
+  dest(<font color="#0000ff">final</font> String dest, <font color="#0000ff">final</font> <font color="#0000ff">float</font> price) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Destination() {
+      <font color="#0000ff">private</font> <font color="#0000ff">int</font> cost;
+      <font color="#009900">// Instance initialization for each object:</font>
+      {
+        cost = Math.round(price);
+        <font color="#0000ff">if</font>(cost &gt; 100)
+          System.out.println("Over budget!");
+      }
+      <font color="#0000ff">private</font> String label = dest;
+      <font color="#0000ff">public</font> String readLabel() { <font color="#0000ff">return</font> label; }
+    };
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel9 p = <font color="#0000ff">new</font> Parcel9();
+    Destination d = p.dest("Tanzania", 101.395F);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inside
+the instance initializer you can see code that couldn&#8217;t be executed as
+part of a field initializer (that is, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement). So in effect, an instance initializer is the constructor for an
+anonymous inner class. Of course, it&#8217;s limited; you can&#8217;t overload
+instance initializers so you can have only one of these constructors.
+</FONT><a name="_Toc408018546"></a><P></DIV>
+<A NAME="Heading224"></A><H3 ALIGN=LEFT>
+The
+link to the outer class
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far, it appears that inner classes are just a name-hiding and code-organization
+scheme, which is helpful but not totally compelling. However, there&#8217;s
+another twist. When you create an inner class, objects of that inner class have
+a link to the enclosing object that made them, and so they can access the
+members of that enclosing object &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">any
+special qualifications. In addition, <A NAME="Index637"></A><A NAME="Index638"></A><A NAME="Index639"></A>inner
+classes have access rights to all the elements in the enclosing class.
+</FONT><A NAME="fnB29" HREF="#fn29">[29]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+The following example demonstrates this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Sequence.java</font>
+<font color="#009900">// Holds a sequence of Objects</font>
+
+<font color="#0000ff">interface</font> Selector {
+  <font color="#0000ff">boolean</font> end();
+  Object current();
+  <font color="#0000ff">void</font> next();
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Sequence {
+  <font color="#0000ff">private</font> Object[] o;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> next = 0;
+  <font color="#0000ff">public</font> Sequence(<font color="#0000ff">int</font> size) {
+    o = <font color="#0000ff">new</font> Object[size];
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> add(Object x) {
+    <font color="#0000ff">if</font>(next &lt; o.length) {
+      o[next] = x;
+      next++;
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> SSelector <font color="#0000ff">implements</font> Selector {
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> end() {
+      <font color="#0000ff">return</font> i == o.length;
+    }
+    <font color="#0000ff">public</font> Object current() {
+      <font color="#0000ff">return</font> o[i];
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> next() {
+      <font color="#0000ff">if</font>(i &lt; o.length) i++;
+    }
+  }
+  <font color="#0000ff">public</font> Selector getSelector() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> SSelector();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Sequence s = <font color="#0000ff">new</font> Sequence(10);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      s.add(Integer.toString(i));
+    Selector sl = s.getSelector();    
+    <font color="#0000ff">while</font>(!sl.end()) {
+      System.out.println((String)sl.current());
+      sl.next();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simply a fixed-sized array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a class wrapped around it. You call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to add a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the end of the sequence (if there&#8217;s room left). To fetch each of the
+objects in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there&#8217;s an interface called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Selector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which allows you to see if you&#8217;re at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>end(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to look at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>current(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and to move to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Selector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+many other classes can implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in their own ways, and many methods can take the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an argument, in order to create generic code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SSelector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a private class that provides 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Selector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functionality. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see the creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+followed by the addition of a number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. Then, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Selector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is produced with a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getSelector(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and this is used to move through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and select each item.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+first, the creation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SSelector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+looks like just another inner class. But examine it closely. Note that each of
+the methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>end(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>current(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+refer to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>o</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a handle that isn&#8217;t part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SSelector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but is instead a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">field
+in the enclosing class. However, the inner class can access methods and fields
+from the enclosing class as if they owned them. This turns out to be very
+convenient, as you can see in the above example.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+an inner class has access to the members of the enclosing class. How can this
+happen? The <A NAME="Index640"></A>inner
+class must keep a reference to the particular object of the enclosing class
+that was responsible for creating it. Then when you refer to a member of the
+enclosing class, that (hidden) reference is used to select that member.
+Fortunately, the compiler takes care of all these details for you, but you can
+also understand now that an object of an inner class can be created only in
+association with an object of the enclosing class. The process of construction
+requires the initialization of the handle to the object of the enclosing class,
+and the compiler will complain if it cannot access the handle. Most of the time
+this occurs without any intervention on the part of the programmer.
+</FONT><a name="_Toc408018547"></a><P></DIV>
+<A NAME="Heading225"></A><H3 ALIGN=LEFT>
+static
+inner classes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+understand the meaning of <A NAME="Index641"></A><A NAME="Index642"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when applied to inner classes, you must remember that the object of the inner
+class implicitly keeps a handle to the object of the enclosing class that
+created it. This is not true, however, when you say an inner class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inner
+class means:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+don&#8217;t need an outer-class object in order to create an object of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+can&#8217;t access an outer-class object from an object of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are some restrictions: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members can be at only the outer level of a class, so inner classes cannot have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index643"></A><A NAME="Index644"></A><A NAME="Index645"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you don&#8217;t need to create an object of the outer class in order to create
+an object of the inner class, you can make everything 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For this to work, you must also make the inner classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel10.java</font>
+<font color="#009900">// Static inner classes</font>
+<font color="#0000ff">package</font> c07.parcel10;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Contents {
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">int</font> value();
+}
+
+<font color="#0000ff">interface</font> Destination {
+  String readLabel();
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel10 {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> PContents 
+  <font color="#0000ff">extends</font> Contents {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> PDestination
+      <font color="#0000ff">implements</font> Destination {
+    <font color="#0000ff">private</font> String label;
+    <font color="#0000ff">private</font> PDestination(String whereTo) {
+      label = whereTo;
+    }
+    <font color="#0000ff">public</font> String readLabel() { <font color="#0000ff">return</font> label; }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Destination dest(String s) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> PDestination(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Contents cont() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> PContents();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Contents c = cont();
+    Destination d = dest("Tanzania");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+no object of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel10</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is necessary; instead you use the normal syntax for selecting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member to call the methods that return handles to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Destination</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Normally
+you can't put any code inside an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class can be part of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since the class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it
+doesn't violate the rules for interfaces &#8211; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inner
+class is only placed inside the namespace of the interface:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: IInterface.java</font>
+<font color="#009900">// Static inner classes inside interfaces</font>
+
+<font color="#0000ff">class</font> IInterface {
+  <font color="#0000ff">static</font> <font color="#0000ff">class</font> Inner {
+    <font color="#0000ff">int</font> i, j, k;
+    <font color="#0000ff">public</font> Inner() {}
+    <font color="#0000ff">void</font> f() {}
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Earlier
+in the book I suggested putting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+every class to act as a test<A NAME="Index646"></A>
+bed for that class. One drawback to this is the amount of extra code you must
+carry around. If this is a problem, you can use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class to hold your test code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TestBed.java</font>
+<font color="#009900">// Putting test code in a static inner class</font>
+
+<font color="#0000ff">class</font> TestBed {
+  TestBed() {}
+  <font color="#0000ff">void</font> f() { System.out.println("f()"); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> Tester {
+    <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+      TestBed t = <font color="#0000ff">new</font> TestBed();
+      t.f();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+generates a separate class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestBed$Tester</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(to run the program you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java
+TestBed$Tester
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+You can use this class for testing, but you don't need to include it in your
+shipping product.
+</FONT><a name="_Toc408018548"></a><P></DIV>
+<A NAME="Heading226"></A><H3 ALIGN=LEFT>
+Referring
+to the outer class object
+<P><A NAME="Index647"></A><A NAME="Index648"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you need to produce the handle to the outer class object, you name the outer
+class followed by a dot and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For example, in the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence.SSelector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+any of its methods can produce the stored handle to the outer class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by saying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence.this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The resulting handle is automatically the correct type. (This is known and
+checked at compile time, so there is no run-time overhead.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sometimes
+you want to tell some other object to create an object of one of its inner
+classes. To do this you must provide a handle to the other outer class object
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expression, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Parcel11.java</font>
+<font color="#009900">// Creating inner classes</font>
+<font color="#0000ff">package</font> c07.parcel11;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Parcel11 {
+  <font color="#0000ff">class</font> Contents {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 11;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> value() { <font color="#0000ff">return</font> i; }
+  }
+  <font color="#0000ff">class</font> Destination {
+    <font color="#0000ff">private</font> String label;
+    Destination(String whereTo) {
+      label = whereTo;
+    }
+    String readLabel() { <font color="#0000ff">return</font> label; }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Parcel11 p = <font color="#0000ff">new</font> Parcel11();
+    <font color="#009900">// Must use instance of outer class</font>
+    <font color="#009900">// to create an instances of the inner class:</font>
+    Parcel11.Contents c = p.<font color="#0000ff">new</font> Contents();
+    Parcel11.Destination d =
+      p.<font color="#0000ff">new</font> Destination("Tanzania");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create an object of the inner class directly, you don&#8217;t follow the same
+form and refer to the outer class name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Parcel11</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as you might expect, but instead you must use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>object</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the outer class to make an object of the inner class:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Parcel11.Contents
+c = p.new Contents();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+it&#8217;s not possible to create an object of the inner class unless you
+already have an object of the outer class. This is because the object of the
+inner class is quietly connected to the object of the outer class that it was
+made from. However, if you make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class, then it doesn&#8217;t need a handle to the outer class object.
+</FONT><a name="_Toc408018549"></a><P></DIV>
+<A NAME="Heading227"></A><H3 ALIGN=LEFT>
+Inheriting
+from inner classes
+<P><A NAME="Index649"></A><A NAME="Index650"></A><A NAME="Index651"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+the inner class constructor must attach to a handle of the enclosing class
+object, things are slightly complicated when you inherit from an inner class.
+The problem is that the &#8220;secret&#8221; handle to the enclosing class
+object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be initialized, and yet in the derived class there&#8217;s no longer a default
+object to attach to. The answer is to use a syntax provided to make the
+association explicit:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: InheritInner.java</font>
+<font color="#009900">// Inheriting an inner class</font>
+
+<font color="#0000ff">class</font> WithInner {
+  <font color="#0000ff">class</font> Inner {}
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> InheritInner 
+    <font color="#0000ff">extends</font> WithInner.Inner {
+  <font color="#009900">//! InheritInner() {} // Won't compile</font>
+  InheritInner(WithInner wi) {
+    wi.<font color="#0000ff">super</font>();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    WithInner wi = <font color="#0000ff">new</font> WithInner();
+    InheritInner ii = <font color="#0000ff">new</font> InheritInner(wi);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InheritInner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is extending only the inner class, not the outer one. But when it comes time to
+create a constructor, the default one is no good and you can&#8217;t just pass
+a handle to an enclosing object. In addition, you must use the syntax
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">enclosingClassHandle.super();</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index652"></A><A NAME="Index653"></A><A NAME="Index654"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inside
+the constructor. This provides the necessary handle and the program will then
+compile.
+</FONT><a name="_Toc408018550"></a><P></DIV>
+<A NAME="Heading228"></A><H3 ALIGN=LEFT>
+Can
+inner classes be overridden?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens when you create an inner class, then inherit from the enclosing class
+and redefine the inner class? That is, is it possible to override an inner
+class? This seems like it would be a powerful concept, but <A NAME="Index655"></A><A NAME="Index656"></A><A NAME="Index657"></A>&#8220;overriding&#8221;
+an inner class as if it were another method of the outer class doesn&#8217;t
+really do anything:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BigEgg.java</font>
+<font color="#009900">// An inner class cannot be overriden </font>
+<font color="#009900">// like a method</font>
+
+<font color="#0000ff">class</font> Egg {
+  <font color="#0000ff">protected</font> <font color="#0000ff">class</font> Yolk {
+    <font color="#0000ff">public</font> Yolk() {
+      System.out.println("Egg.Yolk()");
+    }
+  }
+  <font color="#0000ff">private</font> Yolk y;
+  <font color="#0000ff">public</font> Egg() {
+    System.out.println("New Egg()");
+    y = <font color="#0000ff">new</font> Yolk();
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BigEgg <font color="#0000ff">extends</font> Egg {
+  <font color="#0000ff">public</font> <font color="#0000ff">class</font> Yolk {
+    <font color="#0000ff">public</font> Yolk() {
+      System.out.println("BigEgg.Yolk()");
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">new</font> BigEgg();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+default constructor is synthesized automatically by the compiler, and this
+calls the base-class default constructor. You might think that since a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BigEgg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is being created, the &#8220;overridden&#8221; version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Yolk</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would be used, but this is not the case. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>New Egg()
+Egg.Yolk()</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example simply shows that there isn&#8217;t any extra inner class magic going
+on when you inherit from the outer class. However, it&#8217;s still possible to
+explicitly inherit from the inner class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BigEgg2.java</font>
+<font color="#009900">// Proper inheritance of an inner class</font>
+
+<font color="#0000ff">class</font> Egg2 {
+  <font color="#0000ff">protected</font> <font color="#0000ff">class</font> Yolk {
+    <font color="#0000ff">public</font> Yolk() {
+      System.out.println("Egg2.Yolk()");
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> f() {
+      System.out.println("Egg2.Yolk.f()");
+    }
+  }
+  <font color="#0000ff">private</font> Yolk y = <font color="#0000ff">new</font> Yolk();
+  <font color="#0000ff">public</font> Egg2() {
+    System.out.println("New Egg2()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> insertYolk(Yolk yy) { y = yy; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> g() { y.f(); }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BigEgg2 <font color="#0000ff">extends</font> Egg2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">class</font> Yolk <font color="#0000ff">extends</font> Egg2.Yolk {
+    <font color="#0000ff">public</font> Yolk() {
+      System.out.println("BigEgg2.Yolk()");
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> f() {
+      System.out.println("BigEgg2.Yolk.f()");
+    }
+  }
+  <font color="#0000ff">public</font> BigEgg2() { insertYolk(<font color="#0000ff">new</font> Yolk()); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Egg2 e2 = <font color="#0000ff">new</font> BigEgg2();
+    e2.g();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BiggEgg2.Yolk</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+explicitly 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Egg2.Yolk</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and overrides its methods. The method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>insertYolk(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">allows
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BigEgg2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+upcast one of its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Yolk
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Egg2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y.f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the overridden version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Egg2.Yolk()
+New Egg2()
+Egg2.Yolk()
+BigEgg2.Yolk()
+BigEgg2.Yolk.f()</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Egg2.Yolk(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the base-class constructor call of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BigEgg2.Yolk</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. You can see that the overridden version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called.
+</FONT><a name="_Toc408018551"></a><P></DIV>
+<A NAME="Heading229"></A><H3 ALIGN=LEFT>
+Inner
+class identifiers
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+every class produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+that holds all the information about how to create objects of this type (this
+information produces a meta-class called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object),
+you might guess that <A NAME="Index658"></A><A NAME="Index659"></A>inner
+classes must also produce 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files to contain the information for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>their</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. The names of these files/classes have a strict formula: the name of
+the enclosing class, followed by a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>$</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+followed by the name of the inner class. For example, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files created by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InheritInner.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+include:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>InheritInner.<font color="#0000ff">class</font>
+WithInner$Inner.<font color="#0000ff">class</font>
+WithInner.<font color="#0000ff">class</font></PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+inner classes are anonymous, the compiler simply starts generating numbers as
+inner class identifiers. If inner classes are nested within inner classes,
+their names are simply appended after a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>$</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and the outer class identifier(s).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+this scheme of generating internal names is simple and straightforward,
+it&#8217;s also robust and handles most situations.
+</FONT><A NAME="fnB30" HREF="#fn30">[30]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Since it is the standard naming scheme for Java, the generated files are
+automatically platform-independent. (Note that the Java compiler is changing
+your inner classes in all sorts of other ways in order to make them work.)
+</FONT><a name="_Toc408018552"></a><P></DIV>
+<A NAME="Heading230"></A><H3 ALIGN=LEFT>
+Why
+inner classes: control frameworks
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point you&#8217;ve seen a lot of syntax and semantics describing the way
+inner classes work, but this doesn&#8217;t answer the question of why they
+exist. Why did Sun go to so much trouble to add such a fundamental language
+feature in Java 1.1<A NAME="Index660"></A>?
+The answer is something that I will refer to here as a <A NAME="Index661"></A><A NAME="Index662"></A><A NAME="Index663"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>control
+framework
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+<A NAME="Index664"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>application
+framework
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a class or a set of classes that&#8217;s designed to solve a particular type
+of problem. To apply an application framework, you inherit from one or more
+classes and override some of the methods. The code you write in the overridden
+methods customizes the general solution provided by that application framework
+to solve your specific problem. The control framework is a particular type of
+application
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">framework
+dominated by the need to respond to events; a system that primarily responds to
+events is called an <A NAME="Index665"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>event-driven</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>system</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+One of the most important problems in application programming is the <A NAME="Index666"></A><A NAME="Index667"></A><A NAME="Index668"></A>graphical
+user interface (GUI), which is almost entirely event-driven. As you will see in
+Chapter 13, the Java 1.1 AWT is a control framework that elegantly solves the
+GUI problem using inner classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+see how inner classes allow the simple creation and use of control frameworks,
+consider a control framework whose job is to execute events whenever those
+events are &#8220;ready.&#8221; Although &#8220;ready&#8221; could mean
+anything, in this case the default will be based on clock time. What follows is
+a control framework that contains no specific information about what it&#8217;s
+controlling. First, here is the interface that describes any control event.
+It&#8217;s an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class instead of an actual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because the default behavior is control based on time, so some of the
+implementation can be included here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Event.java</font>
+<font color="#009900">// The common methods for any control event</font>
+<font color="#0000ff">package</font> c07.controller;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">class</font> Event {
+  <font color="#0000ff">private</font> <font color="#0000ff">long</font> evtTime;
+  <font color="#0000ff">public</font> Event(<font color="#0000ff">long</font> eventTime) {
+    evtTime = eventTime;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> ready() {
+    <font color="#0000ff">return</font> System.currentTimeMillis() &gt;= evtTime;
+  }
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">void</font> action();
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> String description();
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor simply captures the time when you want the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to run, while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ready(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tells you when it&#8217;s time to run it. Of course, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ready(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could be overridden in a derived class to base the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on something other than time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the method that&#8217;s called when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ready(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>description(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+gives textual information about the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next file contains the actual control framework that manages and fires events.
+The first class is really just a &#8220;helper&#8221; class whose job is to hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. You could replace it with any appropriate collection, and in Chapter 8
+you&#8217;ll discover other collections that will do the trick without
+requiring you to write this extra code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Controller.java</font>
+<font color="#009900">// Along with Event, the generic</font>
+<font color="#009900">// framework for all control systems:</font>
+<font color="#0000ff">package</font> c07.controller;
+
+<font color="#009900">// This is just a way to hold Event objects.</font>
+<font color="#0000ff">class</font> EventSet {
+  <font color="#0000ff">private</font> Event[] events = <font color="#0000ff">new</font> Event[100];
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> index = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> next = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> add(Event e) {
+    <font color="#0000ff">if</font>(index &gt;= events.length)
+      <font color="#0000ff">return</font>; <font color="#009900">// (In real life, throw exception)</font>
+    events[index++] = e;
+  }
+  <font color="#0000ff">public</font> Event getNext() {
+    <font color="#0000ff">boolean</font> looped = <font color="#0000ff">false</font>;
+    <font color="#0000ff">int</font> start = next;
+    <font color="#0000ff">do</font> {
+      next = (next + 1) % events.length;
+      <font color="#009900">// See if it has looped to the beginning:</font>
+      <font color="#0000ff">if</font>(start == next) looped = <font color="#0000ff">true</font>;
+      <font color="#009900">// If it loops past start, the list </font>
+      <font color="#009900">// is empty:</font>
+      <font color="#0000ff">if</font>((next == (start + 1) % events.length)
+         &amp;&amp; looped)
+        <font color="#0000ff">return</font> <font color="#0000ff">null</font>;
+    } <font color="#0000ff">while</font>(events[next] == <font color="#0000ff">null</font>);
+    <font color="#0000ff">return</font> events[next];
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeCurrent() {
+    events[next] = <font color="#0000ff">null</font>;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Controller {
+  <font color="#0000ff">private</font> EventSet es = <font color="#0000ff">new</font> EventSet();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addEvent(Event c) { es.add(c); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    Event e;
+    <font color="#0000ff">while</font>((e = es.getNext()) != <font color="#0000ff">null</font>) {
+      <font color="#0000ff">if</font>(e.ready()) {
+        e.action();
+        System.out.println(e.description());
+        es.removeCurrent();
+      }
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+arbitrarily holds 100 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(If a &#8220;real&#8221; collection from Chapter 8 is used here you don&#8217;t
+need to worry about its maximum size, since it will resize itself). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>index</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to keep track of the next available space, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used when you&#8217;re looking for the next 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the list, to see whether you&#8217;ve looped around. This is important
+during a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getNext(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are removed from the list (using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeCurrent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">once
+they&#8217;re run, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getNext(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will encounter holes in the list as it moves through it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeCurrent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t just set some flag indicating that the object is no longer in
+use. Instead, it sets the handle to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is important because if the <A NAME="Index669"></A>garbage
+collector sees a handle that&#8217;s still in use then it can&#8217;t clean up
+the object. If you think your handles might hang around (as they would here),
+then it&#8217;s a good idea to set them to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to give the garbage collector permission to clean them up.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Controller</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is where the actual work goes on. It uses an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to hold its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to add new events to this list. But the important method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This method loops through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+hunting for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ready(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to run. For each one it finds 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ready(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it
+calls the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, prints out the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>description(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then removes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the list. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that so far in this design you know nothing about exactly 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>what</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does. And this is the crux of the design; how it &#8220;separates the things
+that change from the things that stay the same.&#8221; Or, to use my term, the
+&#8220;<A NAME="Index670"></A><A NAME="Index671"></A>vector
+of change&#8221; is the different actions of the various kinds of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, and you express different actions by creating different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subclasses.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is where inner classes come into play. They allow two things:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	To
+express the entire implementation of a control-framework application in a
+single class, thereby encapsulating everything that&#8217;s unique about that
+implementation. Inner classes are used to express the many different kinds of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+necessary to solve the problem. In addition, the following example uses <A NAME="Index672"></A><A NAME="Index673"></A><A NAME="Index674"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner classes so the implementation is completely hidden and can be changed
+with impunity.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Inner
+classes keep this implementation from becoming awkward, since you&#8217;re able
+to easily access any of the members in the outer class. Without this ability
+the code might become unpleasant enough that you&#8217;d end up seeking an
+alternative.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+a particular implementation of the control framework designed to control
+greenhouse functions.
+</FONT><A NAME="fnB31" HREF="#fn31">[31]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Each action is entirely different: turning lights, water, and thermostats on
+and off, ringing bells, and restarting the system. But the control framework is
+designed to easily isolate this different code. For each type of action you
+inherit a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class, and write the control code inside of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+is typical with an application framework, the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Controller</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GreenhouseControls.java</font>
+<font color="#009900">// This produces a specific application of the</font>
+<font color="#009900">// control system, all in a single class. Inner</font>
+<font color="#009900">// classes allow you to encapsulate different</font>
+<font color="#009900">// functionality for each type of event.</font>
+<font color="#0000ff">package</font> c07.controller;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> GreenhouseControls 
+    <font color="#0000ff">extends</font> Controller {
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> light = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> water = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> String thermostat = "Day";
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> LightOn <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> LightOn(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here to </font>
+      <font color="#009900">// physically turn on the light.</font>
+      light = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Light is on";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> LightOff <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> LightOff(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here to </font>
+      <font color="#009900">// physically turn off the light.</font>
+      light = <font color="#0000ff">false</font>;
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Light is off";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> WaterOn <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> WaterOn(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here</font>
+      water = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Greenhouse water is on";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> WaterOff <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> WaterOff(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here</font>
+      water = <font color="#0000ff">false</font>;
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Greenhouse water is off";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> ThermostatNight <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> ThermostatNight(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here</font>
+      thermostat = "Night";
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Thermostat on night setting";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> ThermostatDay <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> ThermostatDay(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Put hardware control code here</font>
+      thermostat = "Day";
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Thermostat on day setting";
+    }
+  }
+  <font color="#009900">// An example of an action() that inserts a </font>
+  <font color="#009900">// new one of itself into the event list:</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> rings;
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> Bell <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> Bell(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#009900">// Ring bell every 2 seconds, rings times:</font>
+      System.out.println("Bing!");
+      <font color="#0000ff">if</font>(--rings &gt; 0)
+        addEvent(<font color="#0000ff">new</font> Bell(
+          System.currentTimeMillis() + 2000));
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Ring bell";
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> Restart <font color="#0000ff">extends</font> Event {
+    <font color="#0000ff">public</font> Restart(<font color="#0000ff">long</font> eventTime) {
+      <font color="#0000ff">super</font>(eventTime);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> action() {
+      <font color="#0000ff">long</font> tm = System.currentTimeMillis();
+      <font color="#009900">// Instead of hard-wiring, you could parse</font>
+      <font color="#009900">// configuration information from a text</font>
+      <font color="#009900">// file here:</font>
+      rings = 5;
+      addEvent(<font color="#0000ff">new</font> ThermostatNight(tm));
+      addEvent(<font color="#0000ff">new</font> LightOn(tm + 1000));
+      addEvent(<font color="#0000ff">new</font> LightOff(tm + 2000));
+      addEvent(<font color="#0000ff">new</font> WaterOn(tm + 3000));
+      addEvent(<font color="#0000ff">new</font> WaterOff(tm + 8000));
+      addEvent(<font color="#0000ff">new</font> Bell(tm + 9000));
+      addEvent(<font color="#0000ff">new</font> ThermostatDay(tm + 10000));
+      <font color="#009900">// Can even add a Restart object!</font>
+      addEvent(<font color="#0000ff">new</font> Restart(tm + 20000));
+    }
+    <font color="#0000ff">public</font> String description() {
+      <font color="#0000ff">return</font> "Restarting system";
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    GreenhouseControls gc = 
+      <font color="#0000ff">new</font> GreenhouseControls();
+    <font color="#0000ff">long</font> tm = System.currentTimeMillis();
+    gc.addEvent(gc.<font color="#0000ff">new</font> Restart(tm));
+    gc.run();
+  } 
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>light</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>water</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>thermostat,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rings</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+all belong to the outer class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and yet the inner classes have no problem accessing those fields. Also, most of
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods also involve some sort of hardware control, which would most likely
+involve calls to non-Java code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes look similar, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bell</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are special. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bell</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rings, and if it hasn&#8217;t yet rung enough times it adds a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bell</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to the event list, so it will ring again later. Notice how inner classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>almost</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+look like multiple inheritance: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Bell</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has all the methods of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it also appears to have all the methods of the outer class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is responsible for initializing the system, so it adds all the appropriate
+events. Of course, a more flexible way to accomplish this is to avoid
+hard-coding the events and instead read them from a file. (An exercise in
+Chapter 10 asks you to modify this example to do just that.) Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, you can also add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart.action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that the system regularly restarts itself. And all you need to do in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Restart</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to get it going.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example should move you a long way toward appreciating the value of inner
+classes, especially when used within a control framework. However, in the
+latter half of Chapter 13 you&#8217;ll see how elegantly inner classes are used
+to describe the actions of a graphical user interface. By the time you finish
+that section you should be fully convinced.
+</FONT><a name="_Toc408018553"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn29" HREF="#fnB29">[29]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This is very different from the design of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>nested
+classes
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+in C++, which is simply a name-hiding mechanism. There is no link to an
+enclosing object and no implied permissions in C++.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn30" HREF="#fnB30">[30]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+On the other hand, &#8216;$&#8217; is a meta-character to the Unix shell and so
+you&#8217;ll sometimes have trouble when listing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+files. This is a bit strange coming from Sun, a Unix-based company. My guess is
+that they weren&#8217;t considering this issue, but instead thought you&#8217;d
+naturally focus on the source-code files.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn31" HREF="#fnB31">[31]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+For some reason this has always been a pleasing problem for me to solve; it
+came from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>C++
+Inside &amp; Out
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+but Java allows a much more elegant solution.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0080.html">Prev</a> | <a href="tij0082.html">Next</a>
+</div>
+</body></html>
+

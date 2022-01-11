@@ -1,0 +1,256 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0082.html">Prev</a> | <a href="tij0084.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Designing
+with inheritance
+<P><A NAME="Index697"></A><A NAME="Index698"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you learn about polymorphism, it can seem that everything ought to be inherited
+because polymorphism is such a clever tool. This can burden your designs; in
+fact if you choose inheritance first when you&#8217;re using an existing class
+to make a new class things can become needlessly complicated.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+better approach is to choose <A NAME="Index699"></A><A NAME="Index700"></A>composition
+first, when it&#8217;s not obvious which one you should use. Composition does
+not force a design into an inheritance hierarchy. But composition is also more
+flexible since it&#8217;s possible to dynamically choose a type (and thus
+behavior) when using composition, whereas inheritance requires an exact type to
+be known at compile time. The following example illustrates this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Transmogrify.java</font>
+<font color="#009900">// Dynamically changing the behavior of</font>
+<font color="#009900">// an object via composition.</font>
+
+<font color="#0000ff">interface</font> Actor {
+  <font color="#0000ff">void</font> act();
+}
+
+<font color="#0000ff">class</font> HappyActor <font color="#0000ff">implements</font> Actor {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> act() { 
+    System.out.println("HappyActor"); 
+  }
+}
+
+<font color="#0000ff">class</font> SadActor <font color="#0000ff">implements</font> Actor {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> act() { 
+    System.out.println("SadActor");
+  }
+}
+
+<font color="#0000ff">class</font> Stage {
+  Actor a = <font color="#0000ff">new</font> HappyActor();
+  <font color="#0000ff">void</font> change() { a = <font color="#0000ff">new</font> SadActor(); }
+  <font color="#0000ff">void</font> go() { a.act(); }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Transmogrify {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Stage s = <font color="#0000ff">new</font> Stage();
+    s.go(); <font color="#009900">// Prints "HappyActor"</font>
+    s.change();
+    s.go(); <font color="#009900">// Prints "SadActor"</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object contains a handle to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Actor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is initialized to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HappyActor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This means 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a particular behavior. But since a handle can be re-bound to a
+different object at run time, a handle for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SadActor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object can be substituted in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then the behavior produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+changes. Thus you gain dynamic flexibility at run time. In contrast, you
+can&#8217;t decide to inherit differently at run time; that must be completely
+determined at compile time. <A NAME="Index701"></A><A NAME="Index702"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+general guideline is &#8220;Use inheritance to express differences in behavior,
+and member variables to express variations in state.&#8221; In the above
+example, both are used: two different classes are inherited to express the
+difference in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>act(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses composition to allow its state to be changed. In this case, that change in
+state happens to produce a change in behavior.
+</FONT><a name="_Toc375545342"></a><a name="_Toc408018558"></a><P></DIV>
+<A NAME="Heading236"></A><H3 ALIGN=LEFT>
+Pure
+inheritance vs. extension
+<P><A NAME="Index703"></A><A NAME="Index704"></A><A NAME="Index705"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+studying inheritance, it would seem that the cleanest way to create an
+inheritance hierarchy is to take the &#8220;pure&#8221; approach. That is, only
+methods that have been established in the base class or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are to be overridden in the derived class, as seen in this diagram:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+can be termed a pure &#8220;<A NAME="Index706"></A>is-a&#8221;
+relationship because the interface of a class establishes what it is.
+Inheritance guarantees that any derived class will have the interface of the
+base class and nothing less. If you follow the above diagram, derived classes
+will also have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>no
+more
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+than the base class interface.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+can be thought of as <A NAME="Index707"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>pure
+substitution
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+because derived class objects can be perfectly substituted for the base class,
+and you never need to know any extra information about the subclasses when
+you&#8217;re using them:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, the base class can receive any message you can send to the derived class
+because the two have exactly the same interface. All you need to do is upcast
+from the derived class and never look back to see what exact type of object
+you&#8217;re dealing with. Everything is handled through polymorphism.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you see it this way, it seems like a pure &#8220;is-a&#8221; relationship is
+the only sensible way to do things, and any other <A NAME="Index708"></A>design
+indicates muddled thinking and is by definition broken. This too is a trap. As
+soon as you start thinking this way, you&#8217;ll turn around and discover that
+extending the interface (which, unfortunately, the keyword <A NAME="Index709"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+seems to promote) is the perfect solution to a particular problem. This could
+be termed an <A NAME="Index710"></A>&#8220;is-like-a&#8221;
+relationship because the derived class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>like</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the base class &#8211; it has the same fundamental interface &#8211; but it has
+other features that require additional methods to implement:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">While
+this is also a useful and sensible approach (depending on the situation) it has
+a drawback. The extended part of the interface in the derived class is not
+available from the base class, so once you upcast you can&#8217;t call the new
+methods:
+</FONT><P></DIV><DIV ALIGN=CENTER><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re not upcasting in this case, it won&#8217;t bother you, but often
+you&#8217;ll get into a situation in which you need to rediscover the exact
+type of the object so you can access the extended methods of that type. The
+following sections show how this is done.
+</FONT><a name="_Toc375545343"></a><a name="_Toc408018559"></a><P></DIV>
+<A NAME="Heading237"></A><H3 ALIGN=LEFT>
+Downcasting
+and run-time 
+<P>type
+identification
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+you lose the specific type information via an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>upcast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(moving up the inheritance hierarchy), it makes sense that to retrieve the type
+information &#8211; that is, to move back down the inheritance hierarchy
+&#8211; you use a <A NAME="Index711"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>downcast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, you know an upcast is always safe; the base class cannot have a bigger
+interface than the derived class, therefore every message you send through the
+base class interface is guaranteed to be accepted. But with a downcast, you
+don&#8217;t really know that a shape (for example) is actually a circle. It
+could instead be a triangle or square or some other type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+solve this problem there must be some way to guarantee that a downcast is
+correct, so you won&#8217;t accidentally cast to the wrong type and then send a
+message that the object can&#8217;t accept. This would be quite unsafe.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+some languages (like C++) you must perform a special operation in order to get
+a type-safe downcast, but in Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>every
+cast
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is checked! So even though it looks like you&#8217;re just performing an
+ordinary parenthesized cast, at run time this cast is checked to ensure that it
+is in fact the type you think it is. If it isn&#8217;t, you get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassCastException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This act of checking types at run time is called <A NAME="Index712"></A><A NAME="Index713"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>run-time
+type identification 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(RTTI).
+The following example demonstrates the behavior of RTTI:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RTTI.java</font>
+<font color="#009900">// Downcasting &amp; Run-Time Type</font>
+<font color="#009900">// Identification (RTTI)</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Useful {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> f() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> g() {}
+}
+
+<font color="#0000ff">class</font> MoreUseful <font color="#0000ff">extends</font> Useful {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> f() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> g() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> u() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> v() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> w() {}
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RTTI {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Useful[] x = {
+      <font color="#0000ff">new</font> Useful(),
+      <font color="#0000ff">new</font> MoreUseful()
+    };
+    x[0].f();
+    x[1].g();
+    <font color="#009900">// Compile-time: method not found in Useful:</font>
+    <font color="#009900">//! x[1].u();</font>
+    ((MoreUseful)x[1]).u(); <font color="#009900">// Downcast/RTTI</font>
+    ((MoreUseful)x[0]).u(); <font color="#009900">// Exception thrown</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+in the diagram, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MoreUseful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+extends the interface of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Useful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But since it&#8217;s inherited, it can also be upcast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Useful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can see this happening in the initialization of the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since both objects in the array are of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Useful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can send the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods to both, and if you try to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>u(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which exists only in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MoreUseful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+you&#8217;ll get a compile-time error message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to access the extended interface of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MoreUseful</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, you can try to downcast. If it&#8217;s the correct type, it will be
+successful. Otherwise, you&#8217;ll get a <A NAME="Index714"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassCastException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You don&#8217;t need to write any special code for this exception, since it
+indicates a programmer error that could happen anywhere in a program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+more to RTTI than a simple cast. For example, there&#8217;s a way to see what
+type you&#8217;re dealing with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you try to downcast it. All of Chapter 11 is devoted to the study of different
+aspects of Java run-time type identification.
+</FONT><a name="_Toc375545344"></a><a name="_Toc408018560"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0082.html">Prev</a> | <a href="tij0084.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,100 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0066.html">Prev</a> | <a href="tij0068.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Choosing
+composition 
+<P>vs.
+inheritance
+<P><A NAME="Index479"></A><A NAME="Index480"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+composition and inheritance allow you to place subobjects<A NAME="Index481"></A>
+inside your new class. You might wonder about the difference between the two,
+and when to choose one over the other.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Composition
+is generally used when you want the features of an existing class inside your
+new class, but not its interface. That is, you embed an object so that you can
+use it to implement features of your new class, but the user of your new class
+sees the interface you&#8217;ve defined rather than the interface from the
+embedded object. For this effect, you embed 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects of existing classes inside your new class. <A NAME="Index482"></A><A NAME="Index483"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sometimes
+it makes sense to allow the class user to directly access the composition of
+your new class; that is, to make the member objects 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The member objects use implementation hiding themselves, so this is a safe
+thing to do and when the user knows you&#8217;re assembling a bunch of parts,
+it makes the interface easier to understand. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>car</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is a good example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Car.java</font>
+<font color="#009900">// Composition with public objects</font>
+
+<font color="#0000ff">class</font> Engine {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> start() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> rev() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> stop() {}
+}
+
+<font color="#0000ff">class</font> Wheel {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> inflate(<font color="#0000ff">int</font> psi) {}
+}
+
+<font color="#0000ff">class</font> Window {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> rollup() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> rolldown() {}
+}
+
+<font color="#0000ff">class</font> Door {
+  <font color="#0000ff">public</font> Window window = <font color="#0000ff">new</font> Window();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> open() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> close() {}
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Car {
+  <font color="#0000ff">public</font> Engine engine = <font color="#0000ff">new</font> Engine();
+  <font color="#0000ff">public</font> Wheel[] wheel = <font color="#0000ff">new</font> Wheel[4];
+  <font color="#0000ff">public</font> Door left = <font color="#0000ff">new</font> Door(),
+       right = <font color="#0000ff">new</font> Door(); <font color="#009900">// 2-door</font>
+  Car() {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      wheel[i] = <font color="#0000ff">new</font> Wheel();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Car car = <font color="#0000ff">new</font> Car();
+    car.left.window.rollup();
+    car.wheel[0].inflate(72);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+the composition of a car is part of the analysis of the problem (and not simply
+part of the underlying design), making the members public assists the client
+programmer&#8217;s understanding of how to use the class and requires less code
+complexity for the creator of the class.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index484"></A><A NAME="Index485"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you inherit, you take an existing class and make a special version of it. In
+general, this means that you&#8217;re taking a general-purpose class and
+specializing it for a particular need. With a little thought, you&#8217;ll see
+that it would make no sense to compose a car using a vehicle object &#8211; a
+car doesn&#8217;t contain a vehicle, it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a vehicle. The <A NAME="Index486"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is-a</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+relationship is expressed with inheritance, and the <A NAME="Index487"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>has-a</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+relationship is expressed with composition.
+</FONT><a name="this5"></a><a name="_Toc305593256"></a><a name="_Toc305628728"></a><a name="_Toc312374027"></a><a name="_Toc375545313"></a><a name="_Toc408018516"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0066.html">Prev</a> | <a href="tij0068.html">Next</a>
+</div>
+</body></html>
+

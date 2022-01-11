@@ -1,0 +1,45 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0072.html">Prev</a> | <a href="tij0074.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+inheritance and composition allow you to create a new type from existing types.
+Typically, however, you use composition to reuse existing types as part of the
+underlying implementation of the new type and inheritance when you want to
+reuse the interface. Since the derived class has the base-class interface, it
+can be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>upcast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the base, which is critical for polymorphism, as you&#8217;ll see in the
+next chapter. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Despite
+the strong emphasis on inheritance in object-oriented programming, when you
+start a design you should generally prefer composition during the first cut and
+use inheritance only when it is clearly necessary. (As you&#8217;ll see in the
+next chapter.) Composition tends to be more flexible. In addition, by using the
+added artifice of inheritance with your member type, you can change the exact
+type, and thus the behavior, of those member objects at run-time. Therefore,
+you can change the behavior of the composed object at run-time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+code reuse through composition and inheritance is helpful for rapid project
+development, you&#8217;ll generally want to <A NAME="Index547"></A>redesign
+your class hierarchy before allowing other programmers to become dependent on
+it. Your goal is a hierarchy in which each class has a specific use and is
+neither too big (encompassing so much functionality that it&#8217;s unwieldy to
+reuse) nor annoyingly small (you can&#8217;t use it by itself or without adding
+functionality). Your finished classes should be easily <A NAME="Index548"></A>reused.</FONT><a name="_Toc375545325"></a><a name="_Toc408018528"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0072.html">Prev</a> | <a href="tij0074.html">Next</a>
+</div>
+</body></html>
+

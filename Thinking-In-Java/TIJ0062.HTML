@@ -1,0 +1,70 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0061.html">Prev</a> | <a href="tij0063.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exercises</H2>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a class with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and &#8220;friendly&#8221; data members and method members. Create an object of
+this class and see what kind of compiler messages you get when you try to
+access all the class members. Be aware that classes in the same directory are
+part of the &#8220;default&#8221; package.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a class with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data. Create a second class in the same file with a method that manipulates the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data in the first class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a new directory and edit your CLASSPATH to include that new directory. Copy the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file to your new directory and then change the names of the file, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class inside and the method names. (You might also want to add additional
+output to watch how it works.) Create another program in a different directory
+that uses your new class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+the following file in the c05 directory (presumably in your CLASSPATH):
+</FONT></OL>
+<font color="#990000"><PRE><font color="#009900">//: PackagedClass.java</font>
+<font color="#0000ff">package</font> c05;
+<font color="#0000ff">class</font> PackagedClass {
+  <font color="#0000ff">public</font> PackagedClass() {
+    System.out.println(
+      "Creating a packaged <font color="#0000ff">class</font>");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Then
+create the following file in a directory other than c05:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Foreign.java</font>
+<font color="#0000ff">package</font> c05.foreign;
+<font color="#0000ff">import</font> c05.*;
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Foreign {
+   <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main (String[] args) {
+      PackagedClass pc = <font color="#0000ff">new</font> PackagedClass();
+   }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Explain
+why the compiler generates an error. Would making the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Foreign</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class part of the c05 package change anything?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">k</FONT><a name="Chapter_6"></a><a name="_Toc375545305"></a><a name="_Toc407441450"></a><a name="_Toc408018508"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0061.html">Prev</a> | <a href="tij0063.html">Next</a>
+</div>
+</body></html>
+

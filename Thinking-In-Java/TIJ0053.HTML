@@ -1,0 +1,445 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0052.html">Prev</a> | <a href="tij0054.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Array
+initialization
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Initializing
+arrays in C is error-prone and tedious. C++ uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>aggregate
+initialization
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to make it much safer.
+</FONT><A NAME="fnB22" HREF="#fn22">[22]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Java has no &#8220;aggregates&#8221; like C++, since everything is an object in
+Java. It does have arrays, and these are supported with <A NAME="Index329"></A><A NAME="Index330"></A>array
+initialization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+array is simply a sequence of either objects or primitives, all the same type
+and packaged together under one identifier name. Arrays are defined and used
+with the square-brackets <A NAME="Index331"></A><A NAME="Index332"></A><A NAME="Index333"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>indexing
+operator
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>[&#160;]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To define an array you simply follow your type name with empty square brackets:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int[]
+a1;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also put the square brackets after the identifier to produce exactly the
+same meaning:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int
+a1[];
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+conforms to expectations from C and C++ programmers. The former style, however,
+is probably a more sensible syntax, since it says that the type is &#8220;an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array.&#8221; That style will be used in this book.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+compiler doesn&#8217;t allow you to tell it how big the array is. This brings
+us back to that issue of &#8220;handles.&#8221; All that you have at this point
+is a handle to an array, and there&#8217;s been no space allocated for the
+array. To create storage for the array you must write an initialization
+expression. For arrays, initialization can appear anywhere in your code, but
+you can also use a special kind of initialization expression that must occur at
+the point where the array is created. This special initialization is a set of
+values surrounded by curly braces. The storage allocation (the equivalent of
+using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is taken care of by the compiler in this case. For example:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int[]
+a1 = { 1, 2, 3, 4, 5 };
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+why would you ever define an array handle without an array?
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int[]
+a2;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Well,
+it&#8217;s possible to assign one array to another in Java, so you can say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">a2
+= a1;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+you&#8217;re really doing is copying a handle, as demonstrated here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Arrays.java</font>
+<font color="#009900">// Arrays of primitives.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Arrays {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font>[] a1 = { 1, 2, 3, 4, 5 };
+    <font color="#0000ff">int</font>[] a2;
+    a2 = a1;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a2.length; i++)
+      a2[i]++;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a1.length; i++)
+      prt("a1[" + i + "] = " + a1[i]);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is given an initialization value while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is assigned later &#8211; in this case, to another array. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+something new here: all arrays have an intrinsic member (whether they&#8217;re
+arrays of objects or arrays of primitives) that you can query &#8211; but not
+change &#8211; to tell you how many elements there are in the array. This
+member is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since arrays in Java, like C and C++, start counting from element zero, the
+largest element you can index is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length
+- 1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you go out of <A NAME="Index334"></A><A NAME="Index335"></A>bounds,
+C and C++ quietly accept this and allow you to stomp all over your memory,
+which is the source of many infamous bugs. However, Java protects you against
+such problems by causing a run-time error (an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the subject of Chapter 9) if you step out of bounds. Of course, checking every
+array access costs time and code and there&#8217;s no way to turn it off, which
+means that array accesses might be a source of inefficiency in your program if
+they occur at a critical juncture. For Internet security and programmer
+productivity, the Java designers thought that this was a worthwhile tradeoff.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if you don&#8217;t know how many elements you&#8217;re going to need in your
+array while you&#8217;re writing the program? You simply use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create the elements in the array. Here, <A NAME="Index336"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works even though it&#8217;s creating an array of primitives (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+won&#8217;t create a non-array primitive):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ArrayNew.java</font>
+<font color="#009900">// Creating arrays with new.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ArrayNew {
+  <font color="#0000ff">static</font> Random rand = <font color="#0000ff">new</font> Random();
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> pRand(<font color="#0000ff">int</font> mod) {
+    <font color="#0000ff">return</font> Math.abs(rand.nextInt()) % mod;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font>[] a;
+    a = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(20)];
+    prt("length of a = " + a.length);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++)
+      prt("a[" + i + "] = " + a[i]);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+the size of the array is chosen at random (using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pRand(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method defined earlier), it&#8217;s clear that array creation is actually
+happening at run-time. In addition, you&#8217;ll see from the output of this
+program that array elements of primitive types are automatically initialized to
+&#8221;empty&#8221; values. (For numerics, this is zero, for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it's 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, the array could also have been defined and initialized in the same
+statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int[]
+a = new int[pRand(20)];
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re dealing with an array of non-primitive objects, you must always use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, the handle issue comes up again because what you create is an array of
+handles. Consider the wrapper type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is a class and not a primitive:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ArrayClassObj.java</font>
+<font color="#009900">// Creating an array of non-primitive objects.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ArrayClassObj {
+  <font color="#0000ff">static</font> Random rand = <font color="#0000ff">new</font> Random();
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> pRand(<font color="#0000ff">int</font> mod) {
+    <font color="#0000ff">return</font> Math.abs(rand.nextInt()) % mod;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Integer[] a = <font color="#0000ff">new</font> Integer[pRand(20)];
+    prt("length of a = " + a.length);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++) {
+      a[i] = <font color="#0000ff">new</font> Integer(pRand(500));
+      prt("a[" + i + "] = " + a[i]);
+    }
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+even after 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called to create the array:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Integer[]
+a = new Integer[pRand(20)];
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it&#8217;s
+only an array of handles, and not until the handle itself is initialized by
+creating a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is the initialization complete:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">a[i]
+= new Integer(pRand(500));
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you forget to create the object, however, you&#8217;ll get an exception at
+run-time when you try to read the empty array location.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Take
+a look at the formation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+inside the print statements. You can see that the handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is automatically converted to produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">representing
+the value inside the object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+also possible to initialize arrays of objects using the curly-brace-enclosed
+list. There are two forms, the first of which is the only one allowed in Java 1.0<A NAME="Index337"></A>.
+The second (equivalent) form is allowed starting with Java 1.1<A NAME="Index338"></A>:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ArrayInit.java</font>
+<font color="#009900">// Array initialization</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ArrayInit {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Integer[] a = {
+      <font color="#0000ff">new</font> Integer(1),
+      <font color="#0000ff">new</font> Integer(2),
+      <font color="#0000ff">new</font> Integer(3),
+    };
+
+    <font color="#009900">// Java 1.1 only:</font>
+    Integer[] b = <font color="#0000ff">new</font> Integer[] {
+      <font color="#0000ff">new</font> Integer(1),
+      <font color="#0000ff">new</font> Integer(2),
+      <font color="#0000ff">new</font> Integer(3),
+    };
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is useful at times, but it&#8217;s more limited since the size of the array is
+determined at compile time. The final comma in the list of initializers is
+optional. (This feature makes for easier maintenance of long lists.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second form of array initialization, added in Java 1.1<A NAME="Index339"></A>,
+provides a convenient syntax to create and call methods that can produce the
+same effect as C&#8217;s <A NAME="Index340"></A><A NAME="Index341"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>variable
+argument lists
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(known as &#8220;varargs&#8221; in C). These included, if you choose, unknown
+quantity of arguments as well as unknown type. Since all classes are ultimately
+inherited from the common root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can create a method that takes an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and call it like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VarArgs.java</font>
+<font color="#009900">// Using the Java 1.1 array syntax to create</font>
+<font color="#009900">// variable argument lists</font>
+
+<font color="#0000ff">class</font> A { <font color="#0000ff">int</font> i; }
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VarArgs {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f(Object[] x) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; x.length; i++)
+      System.out.println(x[i]);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    f(<font color="#0000ff">new</font> Object[] { 
+        <font color="#0000ff">new</font> Integer(47), <font color="#0000ff">new</font> VarArgs(), 
+        <font color="#0000ff">new</font> Float(3.14), <font color="#0000ff">new</font> Double(11.11) });
+    f(<font color="#0000ff">new</font> Object[] {"one", "two", "three" });
+    f(<font color="#0000ff">new</font> Object[] {<font color="#0000ff">new</font> A(), <font color="#0000ff">new</font> A(), <font color="#0000ff">new</font> A()});
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, there&#8217;s not much you can do with these unknown objects, and
+this program uses the automatic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+conversion to do something useful with each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In Chapter 11 (run-time type identification or RTTI) you&#8217;ll learn how to
+discover the exact type of such objects so that you can do something more
+interesting with them.
+</FONT><a name="_Toc408018490"></a><P></DIV>
+<A NAME="Heading158"></A><H3 ALIGN=LEFT>
+Multidimensional
+arrays
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+allows you to easily create <A NAME="Index342"></A><A NAME="Index343"></A>multidimensional
+arrays:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MultiDimArray.java</font>
+<font color="#009900">// Creating multidimensional arrays.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MultiDimArray {
+  <font color="#0000ff">static</font> Random rand = <font color="#0000ff">new</font> Random();
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> pRand(<font color="#0000ff">int</font> mod) {
+    <font color="#0000ff">return</font> Math.abs(rand.nextInt()) % mod;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font>[][] a1 = {
+      { 1, 2, 3, },
+      { 4, 5, 6, },
+    };
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a1.length; i++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a1[i].length; j++)
+        prt("a1[" + i + "][" + j +
+            "] = " + a1[i][j]);
+    <font color="#009900">// 3-D array with fixed length:</font>
+    <font color="#0000ff">int</font>[][][] a2 = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[2][2][4];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a2.length; i++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a2[i].length; j++)
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> k = 0; k &lt; a2[i][j].length;
+            k++)
+          prt("a2[" + i + "][" +
+              j + "][" + k +
+              "] = " + a2[i][j][k]);
+    <font color="#009900">// 3-D array with varied-length vectors:</font>
+    <font color="#0000ff">int</font>[][][] a3 = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(7)][][];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a3.length; i++) {
+      a3[i] = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(5)][];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a3[i].length; j++)
+        a3[i][j] = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(5)];
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a3.length; i++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a3[i].length; j++)
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> k = 0; k &lt; a3[i][j].length;
+            k++)
+          prt("a3[" + i + "][" +
+              j + "][" + k +
+              "] = " + a3[i][j][k]);
+    <font color="#009900">// Array of non-primitive objects:</font>
+    Integer[][] a4 = {
+      { <font color="#0000ff">new</font> Integer(1), <font color="#0000ff">new</font> Integer(2)},
+      { <font color="#0000ff">new</font> Integer(3), <font color="#0000ff">new</font> Integer(4)},
+      { <font color="#0000ff">new</font> Integer(5), <font color="#0000ff">new</font> Integer(6)},
+    };
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a4.length; i++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a4[i].length; j++)
+        prt("a4[" + i + "][" + j +
+            "] = " + a4[i][j]);
+    Integer[][] a5;
+    a5 = <font color="#0000ff">new</font> Integer[3][];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a5.length; i++) {
+      a5[i] = <font color="#0000ff">new</font> Integer[3];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a5[i].length; j++)
+        a5[i][j] = <font color="#0000ff">new</font> Integer(i*j);
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a5.length; i++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a5[i].length; j++)
+        prt("a5[" + i + "][" + j +
+            "] = " + a5[i][j]);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+code used for printing uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it doesn&#8217;t depend on fixed array sizes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first example shows a multidimensional array of primitives. You delimit each
+vector in the array with curly braces:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">int</font>[][] a1 = {
+      { 1, 2, 3, },
+      { 4, 5, 6, },
+    }; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+set of square brackets moves you into the next level of the array.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second example shows a three-dimensional array allocated with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, the whole array is allocated at once:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int[][][]
+a2 = new int[2][2][4];
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+the third example shows that each vector in the arrays that make up the matrix
+can be of any length:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">int</font>[][][] a3 = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(7)][][];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a3.length; i++) {
+      a3[i] = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(5)][];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a3[i].length; j++)
+        a3[i][j] = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[pRand(5)];
+    } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates an array with a random-length first element and the rest undetermined.
+The second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the for loop fills out the elements but leaves the third index
+undetermined until you hit the third 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+will see from the output that array values are automatically initialized to
+zero if you don&#8217;t give them an explicit initialization value.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can deal with arrays of non-primitive objects in a similar fashion, which is
+shown in the fourth example, demonstrating the ability to collect many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions with curly braces:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    Integer[][] a4 = {
+      { <font color="#0000ff">new</font> Integer(1), <font color="#0000ff">new</font> Integer(2)},
+      { <font color="#0000ff">new</font> Integer(3), <font color="#0000ff">new</font> Integer(4)},
+      { <font color="#0000ff">new</font> Integer(5), <font color="#0000ff">new</font> Integer(6)},
+    }; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fifth example shows how an array of non-primitive objects can be built up piece
+by piece:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    Integer[][] a5;
+    a5 = <font color="#0000ff">new</font> Integer[3][];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a5.length; i++) {
+      a5[i] = <font color="#0000ff">new</font> Integer[3];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a5[i].length; j++)
+        a5[i][j] = <font color="#0000ff">new</font> Integer(i*j);
+    } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i*j</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just to put an interesting value into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545288"></a><a name="_Toc408018491"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn22" HREF="#fnB22">[22]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+See 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Thinking
+in C++
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+for a complete description of aggregate initialization.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0052.html">Prev</a> | <a href="tij0054.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,198 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0075.html">Prev</a> | <a href="tij0077.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Upcasting</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Chapter 6 you saw how an object can be used as its own type or as an object of
+its base type. Taking an object handle and treating it as the handle of the
+base type is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>upcasting<A NAME="Index557"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because of the way inheritance trees are drawn with the base class at the top.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+also saw a problem arise, which is embodied in the following: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Music.java </font>
+<font color="#009900">// Inheritance &amp; upcasting</font>
+<font color="#0000ff">package</font> c07;
+
+<font color="#0000ff">class</font> Note {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> value;
+  <font color="#0000ff">private</font> Note(<font color="#0000ff">int</font> val) { value = val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Note
+    middleC = <font color="#0000ff">new</font> Note(0), 
+    cSharp = <font color="#0000ff">new</font> Note(1),
+    cFlat = <font color="#0000ff">new</font> Note(2);
+} <font color="#009900">// Etc.</font>
+
+<font color="#0000ff">class</font> Instrument {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note n) {
+    System.out.println("Instrument.play()");
+  }
+}
+
+<font color="#009900">// Wind objects are instruments</font>
+<font color="#009900">// because they have the same interface:</font>
+<font color="#0000ff">class</font> Wind <font color="#0000ff">extends</font> Instrument {
+  <font color="#009900">// Redefine interface method:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note n) {
+    System.out.println("Wind.play()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Music {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument i) {
+    <font color="#009900">// ...</font>
+    i.play(Note.middleC);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Wind flute = <font color="#0000ff">new</font> Wind();
+    tune(flute); <font color="#009900">// Upcasting</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Music.tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+accepts an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">handle,
+but also anything derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see this happening as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is passed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+with no cast necessary. This is acceptable; the interface in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must exist in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Upcasting from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+may &#8220;narrow&#8221; that interface, but it cannot make it anything less
+than the full interface to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545328"></a><a name="_Toc408018531"></a><P></DIV>
+<A NAME="Heading209"></A><H3 ALIGN=LEFT>
+Why
+upcast?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program might seem strange to you. Why should anyone intentionally 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>forget</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the type of an object? This is what happens when you upcast, and it seems like
+it could be much more straightforward if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+simply takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle as its argument. This brings up an essential point: If you did that,
+you&#8217;d need to write a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for every type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in your system. Suppose we follow this reasoning and add 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stringed</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Brass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instruments:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Music2.java </font>
+<font color="#009900">// Overloading instead of upcasting</font>
+
+<font color="#0000ff">class</font> Note2 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> value;
+  <font color="#0000ff">private</font> Note2(<font color="#0000ff">int</font> val) { value = val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Note2
+    middleC = <font color="#0000ff">new</font> Note2(0), 
+    cSharp = <font color="#0000ff">new</font> Note2(1),
+    cFlat = <font color="#0000ff">new</font> Note2(2);
+} <font color="#009900">// Etc.</font>
+
+<font color="#0000ff">class</font> Instrument2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note2 n) {
+    System.out.println("Instrument2.play()");
+  }
+}
+
+<font color="#0000ff">class</font> Wind2 <font color="#0000ff">extends</font> Instrument2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note2 n) {
+    System.out.println("Wind2.play()");
+  }
+}
+
+<font color="#0000ff">class</font> Stringed2 <font color="#0000ff">extends</font> Instrument2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note2 n) {
+    System.out.println("Stringed2.play()");
+  }
+}
+
+<font color="#0000ff">class</font> Brass2 <font color="#0000ff">extends</font> Instrument2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play(Note2 n) {
+    System.out.println("Brass2.play()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Music2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Wind2 i) {
+    i.play(Note2.middleC);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Stringed2 i) {
+    i.play(Note2.middleC);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Brass2 i) {
+    i.play(Note2.middleC);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Wind2 flute = <font color="#0000ff">new</font> Wind2();
+    Stringed2 violin = <font color="#0000ff">new</font> Stringed2();
+    Brass2 frenchHorn = <font color="#0000ff">new</font> Brass2();
+    tune(flute); <font color="#009900">// No upcasting</font>
+    tune(violin);
+    tune(frenchHorn);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+works, but there&#8217;s a major drawback: You must write type-specific methods
+for each new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class you add. This means more programming in the first place, but it also
+means that if you want to add a new method like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ve got a lot of work to do. Add the fact that the compiler
+won&#8217;t give you any error messages if you forget to overload one of your
+methods and the whole process of working with types becomes unmanageable.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Wouldn&#8217;t
+it be much nicer if you could just write a single method that takes the <A NAME="Index558"></A><A NAME="Index559"></A>base
+class as its argument, and not any of the specific derived classes? That is,
+wouldn&#8217;t it be nice if you could forget that there are <A NAME="Index560"></A><A NAME="Index561"></A>derived
+classes, and write your code to talk only to the base class?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That&#8217;s
+exactly what polymorphism allows you to do. However, most programmers (who come
+from a procedural programming background) have a bit of trouble with the way
+polymorphism works.
+</FONT><a name="_Toc305593264"></a><a name="_Toc305628736"></a><a name="_Toc312374041"></a><a name="_Toc375545329"></a><a name="_Toc408018532"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0075.html">Prev</a> | <a href="tij0077.html">Next</a>
+</div>
+</body></html>
+

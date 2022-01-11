@@ -1,0 +1,86 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0060.html">Prev</a> | <a href="tij0062.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+any relationship it&#8217;s important to have boundaries that are respected by
+all parties involved. When you create a library, you establish a relationship
+with the user of that library &#8211; the client programmer &#8211; who is
+another programmer, but one putting together an application or using your
+library to build a bigger library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Without
+rules, client programmers can do anything they want with all the members of a
+class, even if you might prefer they don&#8217;t directly manipulate some of
+the members. Everything&#8217;s naked to the world.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+chapter looked at how classes are built to form libraries; first, the way a
+group of classes is packaged within a library, and second, the way the class
+controls access to its members.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is estimated that a C programming project begins to break down somewhere
+between 50K and 100K lines of code because C has a single &#8220;name
+space&#8221; so names begin to collide, causing an extra management overhead.
+In Java, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, the package naming scheme and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword give you complete control over names, so the issue of name collision is
+easily avoided.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two reasons for controlling access <A NAME="Index417"></A><A NAME="Index418"></A>to
+members. The first is to keep users&#8217; hands off tools that they
+shouldn&#8217;t touch; tools that are necessary for the internal machinations
+of the data type, but not part of the interface that users need to solve their
+particular problems. So making methods and fields private is a service to users
+because they can easily see what&#8217;s important to them and what they can
+ignore. It simplifies their understanding of the class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second and most important reason for access control is to allow the library
+designer to change the internal workings of the class without worrying about
+how it will affect the client programmer. You might build a class one way at
+first, and then discover that restructuring your code will provide much greater
+speed. If the interface and implementation are clearly separated and protected,
+you can accomplish this without forcing the user to rewrite their code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Access
+specifiers in Java give valuable control to the creator of a class. The users
+of the class can clearly see exactly what they can use and what to ignore. More
+important, though, is the ability to ensure that no user becomes dependent on
+any part of the underlying implementation of a class. If you know this as the
+creator of the class, you can change the underlying implementation with the
+knowledge that no client programmer will be affected by the changes because
+they can&#8217;t access that part of the class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you have the ability to change the underlying implementation, you can not only
+improve your design <A NAME="Index419"></A>later,
+but you also have the freedom to make mistakes<A NAME="Index420"></A>.
+No matter how carefully you plan and design you&#8217;ll make mistakes. Knowing
+that it&#8217;s relatively safe to make these mistakes means you&#8217;ll be
+more experimental, you&#8217;ll learn faster and you&#8217;ll finish your
+project sooner.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+public interface to a class is what the user 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+see, so that is the most important part of the class to get &#8220;right&#8221;
+during analysis and design. Even that allows you some leeway for change. If you
+don&#8217;t get the interface right the first time, you can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>add</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+more methods<A NAME="Index421"></A><A NAME="Index422"></A>,
+as long as you don&#8217;t remove any that client programmers have already used
+in their code.
+</FONT><a name="_Toc375545304"></a><a name="_Toc408018507"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0060.html">Prev</a> | <a href="tij0062.html">Next</a>
+</div>
+</body></html>
+

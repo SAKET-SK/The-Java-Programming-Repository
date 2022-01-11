@@ -1,0 +1,763 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0056.html">Prev</a> | <a href="tij0058.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+package:
+the library unit
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index353"></A>package
+is what you get when you use the <A NAME="Index354"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword to bring in an entire library, such as
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+java.util.*;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+brings in the entire utility <A NAME="Index355"></A>library
+that&#8217;s part of the standard Java distribution. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can now either specify the full name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util.Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which you can do without the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement), or you can simply say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(because of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to bring in a single class, you can name that class in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+java.util.Vector;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with no qualification. However, none of the other classes in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are available.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason for all this importing is to provide a mechanism to manage &#8220;<A NAME="Index356"></A>name
+spaces.&#8221; The names of all your class members are insulated from each
+other. A method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside a class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will not <A NAME="Index357"></A>clash
+with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that has the same signature (argument list) in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But what about the class names? Suppose you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that is installed on a machine that already has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that&#8217;s written by someone else? With Java on the Internet, this can
+happen without the user knowing it since classes can get downloaded
+automatically in the process of running a Java program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+potential clashing of names is why it&#8217;s important to have complete
+control over the name spaces in Java, and to be able to create a completely
+unique name regardless of the constraints of the Internet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far, most of the examples in this book have existed in a single file and have
+been designed for local use, and haven&#8217;t bothered with package names. (In
+this case the class name is placed in the &#8220;default package.&#8221;) This
+is certainly an option, and for simplicity&#8217;s sake this approach will be
+used whenever possible throughout the rest of the book. If you&#8217;re
+planning to create a program that is &#8220;Internet friendly,&#8221; however,
+you must think about preventing class name clashes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you create a source-code file for Java, it&#8217;s commonly called a <A NAME="Index358"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>compilation
+unit
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(sometimes a <A NAME="Index359"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>translation
+unit
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Each compilation unit must have a name ending in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and inside the compilation unit there can be a public class that must have the
+same name as the file (including capitalization, but excluding the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+filename extension). If you don&#8217;t do this, the compiler will complain.
+There can be only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+one
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index360"></A><A NAME="Index361"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in each compilation unit (again, the compiler will complain). The rest of
+the classes in that compilation unit, if there are any, are hidden from the
+world outside that package because they&#8217;re 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and they comprise &#8220;support&#8221; classes for the main 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you compile a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file you get an output file with exactly the same name but an extension of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>for
+each class in the 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file. Thus you can end up with quite a few 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files from a small number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files. If you&#8217;ve programmed with a compiled language, you might be used
+to the compiler spitting out an intermediate form (usually an &#8220;obj&#8221;
+file) that is then packaged together with others of its kind using a linker (to
+create an executable file) or a librarian (to create a library). That&#8217;s
+not how Java works. A working program is a bunch of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files, which can be packaged and compressed into a <A NAME="Index362"></A><A NAME="Index363"></A>JAR
+file (using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">utility
+in Java 1.1<A NAME="Index364"></A>).
+The Java interpreter is responsible for finding, loading and interpreting these
+files.
+</FONT><A NAME="fnB23" HREF="#fn23">[23]</A><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+library is also a bunch of these class files. Each file has one class that is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(you&#8217;re not forced to have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, but it&#8217;s typical), so there&#8217;s one component for each file.
+If you want to say that all these components (that are in their own separate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">files)
+belong together, that&#8217;s where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword comes in.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">package
+mypackage;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">at
+the beginning of a file, where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">appear
+as the first non-comment in the file, you&#8217;re stating that this
+compilation unit is part of a library named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mypackage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Or, put another way, you&#8217;re saying that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class name within this compilation unit is under the umbrella of the name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mypackage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if anyone wants to use the name they must either fully specify the name or
+use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword in combination with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mypackage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(using the choices given previously). Note that the convention for Java
+packages is to use all lowercase letters, even for intermediate words.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+example, suppose the name of the file is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyClass.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means there can be one and only one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in that file, and the name of that class must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyClass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(including the capitalization):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">package</font> mypackage;
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MyClass { </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">  <font color="#009900">// . . . </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now,
+if someone wants to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyClass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or, for that matter, any of the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mypackage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+they must use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword to make the name or names in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mypackage</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+available. The alternative is to give the fully-qualified name:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">mypackage.MyClass
+m = new mypackage.MyClass();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword can make this much cleaner:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> mypackage.*;
+<font color="#009900">// . . . </font>
+MyClass m = <font color="#0000ff">new</font> MyClass(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+worth keeping in mind that what the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keywords allow you to do, as a library designer, is to divide up the single
+global name space so you won&#8217;t have clashing names, no matter how many
+people get on the Internet and start writing classes in Java.
+</FONT><a name="_Toc375545292"></a><a name="_Toc408018495"></a><P></DIV>
+<A NAME="Heading163"></A><H3 ALIGN=LEFT>
+Creating
+unique package names
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might observe that, since a package never really gets &#8220;packaged&#8221;
+into a single file, a package could be made up of many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files, and things could get a bit cluttered. To prevent this, a logical thing
+to do is to place all the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files for a particular package into a single directory; that is, use the
+hierarchical file structure of the operating system to your advantage. This is
+how Java handles the problem of clutter. <A NAME="Index365"></A><A NAME="Index366"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+also solves two other problems: creating unique package names and finding those
+classes that might be buried in a directory structure someplace. This is
+accomplished, as was introduced in Chapter 2, by encoding the path of the
+location of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file into the name of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The compiler enforces this, but by convention, the first part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+name is the Internet domain name of the creator of the class, reversed. Since
+Internet domain names are guaranteed to be unique (by InterNIC,
+</FONT><A NAME="fnB24" HREF="#fn24">[24]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+who controls their assignment) 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>if</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you follow this convention it&#8217;s guaranteed that your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+name will be unique and thus you&#8217;ll never have a name clash. (That is,
+until you lose the domain name to someone else who starts writing Java code
+with the same path names as you did.) Of course, if you don&#8217;t have your
+own domain name then you must fabricate an unlikely combination (such as your
+first and last name) to create unique package names. If you&#8217;ve decided to
+start publishing Java code it&#8217;s worth the relatively small effort to get
+a domain name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second part of this trick is resolving the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+name into a directory on your machine, so when the Java program runs and it
+needs to <A NAME="Index367"></A><A NAME="Index368"></A>load
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+(which it does dynamically, at the point in the program where it needs to
+create an object of that particular class, or the first time you access a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">member
+of the class), it can locate the directory where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+resides.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java interpreter proceeds as follows. First, it finds the environment variable <A NAME="Index369"></A>CLASSPATH
+(set via the operating system when Java, or a tool like a Java-enabled browser,
+is installed on a machine). CLASSPATH contains one or more directories that are
+used as roots for a search for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files. Starting at that root, the interpreter will take the package name and
+replace each dot with a slash to generate a path name from the CLASSPATH root
+(so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+foo.bar.baz
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+becomes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>foo\bar\baz
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>foo/bar/baz
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">depending
+on your operating system). This is then concatenated to the various entries in
+the CLASSPATH. That&#8217;s where it looks for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file with the name corresponding to the class you&#8217;re trying to create.
+(It also searches some standard directories relative to where the Java
+interpreter resides).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+understand this, consider my domain name, which is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bruceeckel.com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+By reversing this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+establishes my unique global name for my classes. (The com, edu, org, etc.
+extension was formerly capitalized in Java packages, but this was changed in
+Java 1.2<A NAME="Index370"></A>
+so the entire package name is lowercase.) I can further subdivide this by
+deciding that I want to create a library named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so I&#8217;ll end up with a package name:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">package
+com.bruceeckel.util;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+this package name can be used as an umbrella name space for the following two
+files:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Vector.java</font>
+<font color="#009900">// Creating a package</font>
+<font color="#0000ff">package</font> com.bruceeckel.util;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Vector {
+  <font color="#0000ff">public</font> Vector() {
+    System.out.println(
+      "com.bruceeckel.util.Vector");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you create your own packages, you&#8217;ll discover that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement must be the first non-comment code in the file. The second file looks
+much the same:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: List.java</font>
+<font color="#009900">// Creating a package </font>
+<font color="#0000ff">package</font> com.bruceeckel.util;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> List {
+  <font color="#0000ff">public</font> List() {
+    System.out.println(
+      "com.bruceeckel.util.List");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+of these files are placed in the subdirectory on my system:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">C:\DOC\JavaT\com\bruceeckel\util</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you walk back through this, you can see the package name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but what about the first portion of the path? That&#8217;s taken care of in the
+CLASSPATH environment variable, which is, on my machine:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">CLASSPATH=.;D:\JAVA\LIB;C:\DOC\JavaT</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the CLASSPATH can contain a number of alternative search paths.
+There&#8217;s a variation when using JAR files, however. You must put the name
+of the JAR file in the classpath, not just the path where it&#8217;s located.
+So for a <A NAME="Index371"></A>JAR
+named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grape.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+your classpath would include:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">CLASSPATH=.;D:\JAVA\LIB;C:\flavors\grape.jar</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the classpath is set up properly, the following file can be placed in any
+directory: (See page 
+<a name="_Hlt406577867"></a><A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: LibTest.java</font>
+<font color="#009900">// Uses the library</font>
+<font color="#0000ff">package</font> c05;
+<font color="#0000ff">import</font> com.bruceeckel.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> LibTest {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    List l = <font color="#0000ff">new</font> List();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the compiler encounters the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, it begins searching at the directories specified by CLASSPATH,
+looking for subdirectory com\bruceeckel\util, then seeking the compiled files
+of the appropriate names (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Note that both the classes and the desired methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading164"></A><H4 ALIGN=LEFT>
+Automatic
+compilation
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first time you create an object of an imported class (or you access a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of a class), the compiler will hunt for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file of the same name (so if you&#8217;re creating an object of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it looks for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+in the appropriate directory. If it finds only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+X.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+that&#8217;s what it must use. However, if it also finds an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the same directory, the compiler will compare the date stamp on the two
+files, and if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is more recent than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it will <A NAME="Index372"></A><A NAME="Index373"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>automatically
+recompile 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B><I>.</I></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to generate an up-to-date 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+a class is not in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file of the same name as that class, this behavior will not occur for that class.
+</FONT><P></DIV>
+<A NAME="Heading165"></A><H4 ALIGN=LEFT>
+Collisions<a name="collisions_name"></a></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens if two libraries are imported via * and they include the same <A NAME="Index374"></A><A NAME="Index375"></A>names?
+For example, suppose a program does this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> com.bruceeckel.util.*;
+<font color="#0000ff">import</font> java.util.*; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util.*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, this causes a potential collision. However, as long as the collision
+doesn&#8217;t actually occur, everything is OK &#8211; this is good because
+otherwise you might end up doing a lot of typing to prevent collisions that
+would never happen.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+collision 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occur if you now try to make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Vector
+v = new Vector();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Which
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class does this refer to? The compiler can&#8217;t know, and the reader
+can&#8217;t know either. So the compiler complains and forces you to be
+explicit. If I want the standard Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, I must say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java.util.Vector
+v = new java.util.Vector();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+this (along with the CLASSPATH) completely specifies the location of that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there&#8217;s no need for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import
+java.util.*
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement unless I&#8217;m using something else from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545293"></a><a name="_Toc408018496"></a><P></DIV>
+<A NAME="Heading166"></A><H3 ALIGN=LEFT>
+A
+custom tool library
+<a name="COM_EckelObjects_tools"></a></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+this knowledge, you can now create your own libraries of tools to reduce or
+eliminate duplicate code. Consider, for example, creating an alias for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to reduce typing. This can be part of a package called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: P.java</font>
+<font color="#009900">// The P.rint &amp; P.rintln shorthand</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> P {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(Object obj) {
+    System.out.print(obj);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(String s) {
+    System.out.print(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">char</font>[] s) {
+    System.out.print(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">char</font> c) {
+    System.out.print(c);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">int</font> i) {
+    System.out.print(i);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">long</font> l) {
+    System.out.print(l);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">float</font> f) {
+    System.out.print(f);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">double</font> d) {
+    System.out.print(d);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rint(<font color="#0000ff">boolean</font> b) {
+    System.out.print(b);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln() {
+    System.out.println();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(Object obj) {
+    System.out.println(obj);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(String s) {
+    System.out.println(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">char</font>[] s) {
+    System.out.println(s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">char</font> c) {
+    System.out.println(c);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">int</font> i) {
+    System.out.println(i);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">long</font> l) {
+    System.out.println(l);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">float</font> f) {
+    System.out.println(f);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">double</font> d) {
+    System.out.println(d);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> rintln(<font color="#0000ff">boolean</font> b) {
+    System.out.println(b);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+the different data types can now be printed out either with a newline (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.rintln(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+or without a newline (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.rint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).<a name="AAASpellcheck"></a></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can guess that the location of this file must be in a directory that starts at
+one of the CLASSPATH locations, then continues 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com/bruceeckel/tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+After compiling, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file can be used anywhere on your system with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ToolTest.java</font>
+<font color="#009900">// Uses the tools library</font>
+<font color="#0000ff">import</font> com.bruceeckel.tools.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ToolTest {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    P.rintln("Available from now on!");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+from now on, whenever you come up with a useful new utility, you can add it to
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directory. (Or to your own personal 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directory.)
+</FONT><P></DIV>
+<A NAME="Heading167"></A><H4 ALIGN=LEFT>
+Classpath
+pitfall
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file brought up an interesting pitfall. Especially with early implementations
+of Java, setting the classpath correctly is generally quite a headache. During
+the development of this book, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file was introduced and seemed to work fine, but at some point it began
+breaking. For a long time I was certain that this was the fault of one
+implementation of Java or another, but finally I discovered that at one point I
+had introduced a program (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+shown in Chapter 17)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+used a different class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because it was used as a tool, it was 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>sometimes</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+placed in the classpath, and other times it wasn&#8217;t. When it was, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">was
+found first by Java when executing a program in which it was looking for the
+class in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel.tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the compiler would say that a particular method couldn&#8217;t be found.
+This was frustrating because you can see the method in the above class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and no further diagnostics were reported to give you a clue that it was finding
+a completely different class. (That wasn&#8217;t even 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+first this could seem like a compiler bug, but if you look at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement it says only &#8220;here&#8217;s where you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>might</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+find 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+However, the compiler is supposed to look anywhere in its classpath, so if it
+finds a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+there it will use it, and if it finds the &#8220;wrong&#8221; one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>first</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+during a search then it will stop looking. This is slightly different from the
+case described on page 
+<A HREF=" PAGE#collisions_name">196</A>
+because there the offending classes were both in packages, and here there was a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>P</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that was not in a package, but could still be found during a normal classpath
+search.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re having an experience like this, check to make sure that
+there&#8217;s only one class of each name anywhere in your <A NAME="Index376"></A>classpath.</FONT><a name="_Toc408018497"></a><a name="_Toc375545294"></a><P></DIV>
+<A NAME="Heading168"></A><H3 ALIGN=LEFT>
+Using
+imports to change behavior
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+feature that is missing from Java is C&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>conditional
+compilation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which allows you to change a switch and get different behavior without changing
+any other code. The reason such a feature was left out of Java is probably
+because it is most often used in C to solve cross-platform issues: different
+portions of the code are compiled depending on the platform that the code is
+being compiled for. Since Java is intended to be automatically cross-platform,
+such a feature should not be necessary.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+there are other valuable uses for conditional compilation. A very common use is
+for debugging code. The debugging features are enabled during development, and
+disabled for a shipping product. Allen Holub (www.holub.com) came up with the
+idea of using packages to mimic conditional compilation. He used this to create
+a Java version of C&#8217;s very useful 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>assertion
+mechanism
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whereby you can say &#8220;this should be true&#8221; or &#8220;this should be
+false&#8221; and if the statement doesn&#8217;t agree with your assertion
+you&#8217;ll find out about it. Such a tool is quite helpful during debugging.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the class that you&#8217;ll use for debugging:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Assert.java</font>
+<font color="#009900">// Assertion tool for debugging</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools.debug;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Assert {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> perr(String msg) {
+    System.err.println(msg);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> is_true(<font color="#0000ff">boolean</font> exp) {
+    <font color="#0000ff">if</font>(!exp) perr("Assertion failed");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> is_false(<font color="#0000ff">boolean</font> exp){
+    <font color="#0000ff">if</font>(exp) perr("Assertion failed");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  is_true(<font color="#0000ff">boolean</font> exp, String msg) {
+    <font color="#0000ff">if</font>(!exp) perr("Assertion failed: " + msg);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  is_false(<font color="#0000ff">boolean</font> exp, String msg) {
+    <font color="#0000ff">if</font>(exp) perr("Assertion failed: " + msg);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+class simply encapsulates boolean tests, which print error messages if they
+fail. In Chapter 9, you&#8217;ll learn about a more sophisticated tool for
+dealing with errors called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception
+handling
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>perr(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method will work fine in the meantime.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you want to use this class, you add a line in your program:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+com.bruceeckel.tools.debug.*;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+remove the assertions so you can ship the code, a second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Assert</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is created, but in a different package:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Assert.java</font>
+<font color="#009900">// Turning off the assertion output </font>
+<font color="#009900">// so you can ship the program.</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Assert {
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> is_true(<font color="#0000ff">boolean</font> exp){}
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> is_false(<font color="#0000ff">boolean</font> exp){}
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  is_true(<font color="#0000ff">boolean</font> exp, String msg) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  is_false(<font color="#0000ff">boolean</font> exp, String msg) {}
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+if you change the previous 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement to:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">import
+com.bruceeckel.tools.*;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+program will no longer print out assertions. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TestAssert.java</font>
+<font color="#009900">// Demonstrating the assertion tool</font>
+<font color="#0000ff">package</font> c05;
+<font color="#009900">// Comment the following, and uncomment the</font>
+<font color="#009900">// subsequent line to change assertion behavior:</font>
+<font color="#0000ff">import</font> com.bruceeckel.tools.debug.*;
+<font color="#009900">// import com.bruceeckel.tools.*;</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TestAssert {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Assert.is_true((2 + 2) == 5);
+    Assert.is_false((1 + 1) == 2);
+    Assert.is_true((2 + 2) == 5, "2 + 2 == 5");
+    Assert.is_false((1 + 1) == 2, "1 +1 != 2");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+changing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s imported, you change your code from the debug version to the
+production version. This technique can be used for any kind of conditional code.
+</FONT><a name="_Toc408018498"></a><P></DIV>
+<A NAME="Heading169"></A><H3 ALIGN=LEFT>
+Package
+caveat
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+worth remembering that anytime you create a package, you implicitly specify a <A NAME="Index377"></A><A NAME="Index378"></A>directory
+structure when you give the package a name. The package 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+live in the directory indicated by its name, which must be a directory that is
+searchable starting from the CLASSPATH. Experimenting with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword can be a bit frustrating at first, because unless you adhere to the
+package-name to directory-path rule, you&#8217;ll get a lot of mysterious
+run-time messages about not being able to find a particular class, even if that
+class is sitting there in the same directory. If you get a message like this,
+try commenting out the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, and if it runs you&#8217;ll know where the problem lies.
+</FONT><a name="_Toc375545295"></a><a name="_Toc408018499"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn23" HREF="#fnB23">[23]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+There&#8217;s nothing in Java that forces the use of an interpreter. There
+exist native-code Java compilers that generate a single executable file.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn24" HREF="#fnB24">[24]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+ftp://ftp.internic.net
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0056.html">Prev</a> | <a href="tij0058.html">Next</a>
+</div>
+</body></html>
+

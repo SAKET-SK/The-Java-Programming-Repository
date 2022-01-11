@@ -1,0 +1,1044 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij.html">Prev</a> | <a href="tij_t.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1>Title Pages - Contents </H1>
+<H2><A HREF="tij_t.html">Title Pages - Title Page </A></H2>
+<UL>
+<A HREF="tij0001.html">  </A><P>
+<b><A HREF="tij0002.html">Foreword</A></b><P>
+<br><b><A HREF="tij0003.html">Introduction</A></b><P>
+<UL>
+<A HREF="tij0004.html">Prerequisites</A><P>
+<A HREF="tij0005.html">Learning Java</A><P>
+<A HREF="tij0006.html">Goals</A><P>
+<A HREF="tij0007.html">Online documentation</A><P>
+<A HREF="tij0008.html">Chapters</A><P>
+<A HREF="tij0009.html">Exercises</A><P>
+<A HREF="tij0010.html">Multimedia CD ROM</A><P>
+<A HREF="tij0011.html">Source code</A><P>
+<UL>
+<A HREF="tij0011.html#Heading12">Coding standards</A><P>
+</UL>
+<A HREF="tij0012.html">Java versions</A><P>
+<A HREF="tij0013.html">Seminars and mentoring</A><P>
+<A HREF="tij0014.html">Errors</A><P>
+<A HREF="tij0015.html">Note on the cover design</A><P>
+<A HREF="tij0016.html">Acknowledgements</A><P>
+</UL>
+<br><b><A HREF="tij0017.html">1: Introduction  to objects</A></b><P>
+<UL>
+<A HREF="tij0018.html">The progress of abstraction</A><P>
+<A HREF="tij0019.html">An object has an interface</A><P>
+<A HREF="tij0020.html">The hidden implementation</A><P>
+<A HREF="tij0021.html">Reusing  the implementation</A><P>
+<A HREF="tij0022.html">Inheritance:  reusing the interface</A><P>
+<UL>
+<A HREF="tij0022.html#Heading24">Overriding base-class functionality</A><P>
+<A HREF="tij0022.html#Heading25">Is-a vs. is-like-a relationships</A><P>
+</UL>
+<A HREF="tij0023.html">Interchangeable objects  with polymorphism</A><P>
+<UL>
+<A HREF="tij0023.html#Heading27">Dynamic binding</A><P>
+<A HREF="tij0023.html#Heading28">Abstract base classes and interfaces</A><P>
+</UL>
+<A HREF="tij0024.html">Object landscapes  and lifetimes</A><P>
+<UL>
+<A HREF="tij0024.html#Heading30">Collections and iterators</A><P>
+<A HREF="tij0024.html#Heading31">The singly-rooted hierarchy</A><P>
+<A HREF="tij0024.html#Heading32">Collection libraries and support  for easy collection use</A><P>
+<UL>
+<A HREF="tij0024.html#Heading33">Downcasting vs. templates/generics</A><P>
+</UL>
+<A HREF="tij0024.html#Heading34">The housekeeping dilemma:  who should clean up?</A><P>
+<UL>
+<A HREF="tij0024.html#Heading35">Garbage collectors  vs. efficiency and flexibility</A><P>
+</UL>
+</UL>
+<A HREF="tij0025.html">Exception handling:  dealing with errors</A><P>
+<A HREF="tij0026.html">Multithreading</A><P>
+<A HREF="tij0027.html">Persistence</A><P>
+<A HREF="tij0028.html">Java and the Internet</A><P>
+<UL>
+<A HREF="tij0028.html#Heading40">What is the Web?</A><P>
+<UL>
+<A HREF="tij0028.html#Heading41">Client/Server computing</A><P>
+<A HREF="tij0028.html#Heading42">The Web as a giant server</A><P>
+</UL>
+<A HREF="tij0028.html#Heading43">Client-side programming</A><P>
+<UL>
+<A HREF="tij0028.html#Heading44">Plug-ins</A><P>
+<A HREF="tij0028.html#Heading45">Scripting languages</A><P>
+<A HREF="tij0028.html#Heading46">Java</A><P>
+<A HREF="tij0028.html#Heading47">ActiveX</A><P>
+<A HREF="tij0028.html#Heading48">Security</A><P>
+<A HREF="tij0028.html#Heading49">Internet vs. Intranet</A><P>
+</UL>
+<A HREF="tij0028.html#Heading50">Server-side programming</A><P>
+<A HREF="tij0028.html#Heading51">A separate arena: applications</A><P>
+</UL>
+<A HREF="tij0029.html">Analysis and Design</A><P>
+<UL>
+<A HREF="tij0029.html#Heading53">Staying on course</A><P>
+<A HREF="tij0029.html#Heading54">Phase 0: Let&#8217;s make a plan</A><P>
+<A HREF="tij0029.html#Heading55">Phase 1: What are we making?</A><P>
+<A HREF="tij0029.html#Heading56">Phase 2: How will we build it?</A><P>
+<A HREF="tij0029.html#Heading57">Phase 3: Let&#8217;s build it!</A><P>
+<A HREF="tij0029.html#Heading58">Phase 4: Iteration</A><P>
+<A HREF="tij0029.html#Heading59">Plans pay off</A><P>
+</UL>
+<A HREF="tij0030.html">Java vs. C++?</A><P>
+</UL>
+<br><b><A HREF="tij0031.html">2: Everything is an object</A></b><P>
+<UL>
+<A HREF="tij0032.html">You manipulate objects  with handles </A><P>
+<A HREF="tij0033.html">You must create  all the objects</A><P>
+<UL>
+<A HREF="tij0033.html#Heading64">Where storage lives</A><P>
+<A HREF="tij0033.html#Heading65">Special case: primitive types</A><P>
+<UL>
+<A HREF="tij0033.html#Heading66">High-precision numbers</A><P>
+</UL>
+<A HREF="tij0033.html#Heading67">Arrays in Java</A><P>
+</UL>
+<A HREF="tij0034.html">You never need to  destroy an object</A><P>
+<UL>
+<A HREF="tij0034.html#Heading69">Scoping</A><P>
+<A HREF="tij0034.html#Heading70">Scope of objects</A><P>
+</UL>
+<A HREF="tij0035.html">Creating new  data types: class</A><P>
+<UL>
+<A HREF="tij0035.html#Heading72">Fields and methods</A><P>
+<UL>
+<A HREF="tij0035.html#Heading73">Default values for primitive members</A><P>
+</UL>
+</UL>
+<A HREF="tij0036.html">Methods, arguments  and return values</A><P>
+<UL>
+<A HREF="tij0036.html#Heading75">The argument list</A><P>
+</UL>
+<A HREF="tij0037.html">Building a Java program</A><P>
+<UL>
+<A HREF="tij0037.html#Heading77">Name visibility</A><P>
+<A HREF="tij0037.html#Heading78">Using other components</A><P>
+<A HREF="tij0037.html#Heading79">The static keyword</A><P>
+</UL>
+<A HREF="tij0038.html">Your first Java program</A><P>
+<A HREF="tij0039.html">Comments and embedded documentation</A><P>
+<UL>
+<A HREF="tij0039.html#Heading82">Comment documentation</A><P>
+<A HREF="tij0039.html#Heading83">Syntax</A><P>
+<A HREF="tij0039.html#Heading84">Embedded HTML</A><P>
+<A HREF="tij0039.html#Heading85">@see: referring to other classes</A><P>
+<A HREF="tij0039.html#Heading86">Class documentation tags</A><P>
+<UL>
+<A HREF="tij0039.html#Heading87">@version</A><P>
+<A HREF="tij0039.html#Heading88">@author</A><P>
+</UL>
+<A HREF="tij0039.html#Heading89">Variable documentation tags</A><P>
+<A HREF="tij0039.html#Heading90">Method documentation tags</A><P>
+<UL>
+<A HREF="tij0039.html#Heading91">@param</A><P>
+<A HREF="tij0039.html#Heading92">@return</A><P>
+<A HREF="tij0039.html#Heading93">@exception</A><P>
+<A HREF="tij0039.html#Heading94">@deprecated</A><P>
+</UL>
+<A HREF="tij0039.html#Heading95">Documentation example</A><P>
+</UL>
+<A HREF="tij0040.html">Coding style</A><P>
+<A HREF="tij0041.html">Summary</A><P>
+<A HREF="tij0042.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0043.html">3: Controlling program flow</A></b><P>
+<UL>
+<A HREF="tij0044.html">Using Java operators</A><P>
+<UL>
+<A HREF="tij0044.html#Heading101">Precedence</A><P>
+<A HREF="tij0044.html#Heading102">Assignment</A><P>
+<UL>
+<A HREF="tij0044.html#Heading103">Aliasing during method calls</A><P>
+</UL>
+<A HREF="tij0044.html#Heading104">Mathematical operators</A><P>
+<UL>
+<A HREF="tij0044.html#Heading105">Unary minus and plus operators</A><P>
+</UL>
+<A HREF="tij0044.html#Heading106">Auto increment and decrement</A><P>
+<A HREF="tij0044.html#Heading107">Relational operators</A><P>
+<UL>
+<A HREF="tij0044.html#Heading108">Testing object equivalence</A><P>
+</UL>
+<A HREF="tij0044.html#Heading109">Logical operators</A><P>
+<UL>
+<A HREF="tij0044.html#Heading110">Short-circuiting</A><P>
+</UL>
+<A HREF="tij0044.html#Heading111">Bitwise operators</A><P>
+<A HREF="tij0044.html#Heading112">Shift operators</A><P>
+<A HREF="tij0044.html#Heading113">Ternary if-else operator</A><P>
+<A HREF="tij0044.html#Heading114">The comma operator</A><P>
+<A HREF="tij0044.html#Heading115">String operator +</A><P>
+<A HREF="tij0044.html#Heading116">Common pitfalls when using operators</A><P>
+<A HREF="tij0044.html#Heading117">Casting operators</A><P>
+<UL>
+<A HREF="tij0044.html#Heading118">Literals</A><P>
+<A HREF="tij0044.html#Heading119">Promotion</A><P>
+</UL>
+<A HREF="tij0044.html#Heading120">Java has no &#8220;sizeof&#8221; </A><P>
+<A HREF="tij0044.html#Heading121">Precedence revisited</A><P>
+<A HREF="tij0044.html#Heading122">A compendium of operators</A><P>
+</UL>
+<A HREF="tij0045.html">Execution control</A><P>
+<UL>
+<A HREF="tij0045.html#Heading124">true and false</A><P>
+<A HREF="tij0045.html#Heading125">if-else</A><P>
+<UL>
+<A HREF="tij0045.html#Heading126">return</A><P>
+</UL>
+<A HREF="tij0045.html#Heading127">Iteration </A><P>
+<A HREF="tij0045.html#Heading128">do-while</A><P>
+<A HREF="tij0045.html#Heading129">for</A><P>
+<UL>
+<A HREF="tij0045.html#Heading130">The comma operator</A><P>
+</UL>
+<A HREF="tij0045.html#Heading131">break and continue</A><P>
+<UL>
+<A HREF="tij0045.html#Heading132">The infamous &#8220;goto&#8221;</A><P>
+</UL>
+<A HREF="tij0045.html#Heading133">switch</A><P>
+<UL>
+<A HREF="tij0045.html#Heading134">Calculation details</A><P>
+</UL>
+</UL>
+<A HREF="tij0046.html">Summary</A><P>
+<A HREF="tij0047.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0048.html">4: Initialization  and cleanup</A></b><P>
+<UL>
+<A HREF="tij0049.html">Guaranteed initialization  with the constructor</A><P>
+<A HREF="tij0050.html">Method overloading</A><P>
+<UL>
+<A HREF="tij0050.html#Heading140">Distinguishing overloaded methods</A><P>
+<A HREF="tij0050.html#Heading141">Overloading with primitives</A><P>
+<A HREF="tij0050.html#Heading142">Overloading on return values</A><P>
+<A HREF="tij0050.html#Heading143">Default constructors</A><P>
+<A HREF="tij0050.html#Heading144">The this keyword</A><P>
+<UL>
+<A HREF="tij0050.html#Heading145">Calling constructors from constructors</A><P>
+<A HREF="tij0050.html#Heading146">The meaning of static</A><P>
+</UL>
+</UL>
+<A HREF="tij0051.html">Cleanup: finalization and  garbage collection</A><P>
+<UL>
+<A HREF="tij0051.html#Heading148">What is finalize(&#160;) for?</A><P>
+<A HREF="tij0051.html#Heading149">You must perform cleanup</A><P>
+</UL>
+<A HREF="tij0052.html">Member initialization</A><P>
+<UL>
+<A HREF="tij0052.html#Heading151">Specifying initialization</A><P>
+<A HREF="tij0052.html#Heading152">Constructor initialization</A><P>
+<UL>
+<A HREF="tij0052.html#Heading153">Order of initialization</A><P>
+<A HREF="tij0052.html#Heading154">Static data initialization</A><P>
+<A HREF="tij0052.html#Heading155">Explicit static initialization</A><P>
+<A HREF="tij0052.html#Heading156">Non-static instance initialization</A><P>
+</UL>
+</UL>
+<A HREF="tij0053.html">Array initialization</A><P>
+<UL>
+<A HREF="tij0053.html#Heading158">Multidimensional arrays</A><P>
+</UL>
+<A HREF="tij0054.html">Summary</A><P>
+<A HREF="tij0055.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0056.html">5: Hiding the implementation</A></b><P>
+<UL>
+<A HREF="tij0057.html">package: the library unit</A><P>
+<UL>
+<A HREF="tij0057.html#Heading163">Creating unique package names</A><P>
+<UL>
+<A HREF="tij0057.html#Heading164">Automatic compilation</A><P>
+<A HREF="tij0057.html#Heading165">Collisions</A><P>
+</UL>
+<A HREF="tij0057.html#Heading166">A custom tool library</A><P>
+<UL>
+<A HREF="tij0057.html#Heading167">Classpath pitfall</A><P>
+</UL>
+<A HREF="tij0057.html#Heading168">Using imports to change behavior</A><P>
+<A HREF="tij0057.html#Heading169">Package caveat</A><P>
+</UL>
+<A HREF="tij0058.html">Java access specifiers</A><P>
+<UL>
+<A HREF="tij0058.html#Heading171">&#8220;Friendly&#8221;</A><P>
+<A HREF="tij0058.html#Heading172">public: interface access</A><P>
+<UL>
+<A HREF="tij0058.html#Heading173">The default package</A><P>
+</UL>
+<A HREF="tij0058.html#Heading174">private: you can&#8217;t touch that!</A><P>
+<A HREF="tij0058.html#Heading175">protected: &#8220;sort of friendly&#8221;</A><P>
+</UL>
+<A HREF="tij0059.html">Interface and implementation</A><P>
+<A HREF="tij0060.html">Class access</A><P>
+<A HREF="tij0061.html">Summary</A><P>
+<A HREF="tij0062.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0063.html">6: Reusing classes</A></b><P>
+<UL>
+<A HREF="tij0064.html">Composition syntax</A><P>
+<A HREF="tij0065.html">Inheritance syntax</A><P>
+<UL>
+<A HREF="tij0065.html#Heading183">Initializing the base class</A><P>
+<UL>
+<A HREF="tij0065.html#Heading184">Constructors with arguments</A><P>
+<A HREF="tij0065.html#Heading185">Catching base constructor exceptions</A><P>
+</UL>
+</UL>
+<A HREF="tij0066.html">Combining composition  and inheritance</A><P>
+<UL>
+<A HREF="tij0066.html#Heading187">Guaranteeing proper cleanup</A><P>
+<UL>
+<A HREF="tij0066.html#Heading188">Order of garbage collection</A><P>
+</UL>
+<A HREF="tij0066.html#Heading189">Name hiding</A><P>
+</UL>
+<A HREF="tij0067.html">Choosing composition  vs. inheritance</A><P>
+<A HREF="tij0068.html">protected</A><P>
+<A HREF="tij0069.html">Incremental development</A><P>
+<A HREF="tij0070.html">Upcasting</A><P>
+<UL>
+<A HREF="tij0070.html#Heading194">Why &#8220;upcasting&#8221;?</A><P>
+<UL>
+<A HREF="tij0070.html#Heading195">Composition vs. inheritance revisited</A><P>
+</UL>
+</UL>
+<A HREF="tij0071.html">The final keyword</A><P>
+<UL>
+<A HREF="tij0071.html#Heading197">Final data</A><P>
+<UL>
+<A HREF="tij0071.html#Heading198">Blank finals</A><P>
+<A HREF="tij0071.html#Heading199">Final arguments</A><P>
+</UL>
+<A HREF="tij0071.html#Heading200">Final methods</A><P>
+<A HREF="tij0071.html#Heading201">Final classes</A><P>
+<A HREF="tij0071.html#Heading202">Final caution</A><P>
+</UL>
+<A HREF="tij0072.html">Initialization and  class loading</A><P>
+<UL>
+<A HREF="tij0072.html#Heading204">Initialization with inheritance</A><P>
+</UL>
+<A HREF="tij0073.html">Summary</A><P>
+<A HREF="tij0074.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0075.html">7: Polymorphism</A></b><P>
+<UL>
+<A HREF="tij0076.html">Upcasting</A><P>
+<UL>
+<A HREF="tij0076.html#Heading209">Why upcast?</A><P>
+</UL>
+<A HREF="tij0077.html">The twist</A><P>
+<UL>
+<A HREF="tij0077.html#Heading211">Method call binding</A><P>
+<A HREF="tij0077.html#Heading212">Producing the right behavior</A><P>
+<A HREF="tij0077.html#Heading213">Extensibility</A><P>
+</UL>
+<A HREF="tij0078.html">Overriding vs. overloading</A><P>
+<A HREF="tij0079.html">Abstract classes  and methods</A><P>
+<A HREF="tij0080.html">Interfaces</A><P>
+<UL>
+<A HREF="tij0080.html#Heading217">&#8220;Multiple inheritance&#8221; in Java</A><P>
+<A HREF="tij0080.html#Heading218">Extending an interface  with inheritance</A><P>
+<A HREF="tij0080.html#Heading219">Grouping constants</A><P>
+<A HREF="tij0080.html#Heading220">Initializing fields in interfaces</A><P>
+</UL>
+<A HREF="tij0081.html">Inner classes</A><P>
+<UL>
+<A HREF="tij0081.html#Heading222">Inner classes and upcasting</A><P>
+<A HREF="tij0081.html#Heading223">Inner classes in methods and scopes</A><P>
+<A HREF="tij0081.html#Heading224">The link to the outer class</A><P>
+<A HREF="tij0081.html#Heading225">static inner classes</A><P>
+<A HREF="tij0081.html#Heading226">Referring to the outer class object</A><P>
+<A HREF="tij0081.html#Heading227">Inheriting from inner classes</A><P>
+<A HREF="tij0081.html#Heading228">Can inner classes be overridden?</A><P>
+<A HREF="tij0081.html#Heading229">Inner class identifiers</A><P>
+<A HREF="tij0081.html#Heading230">Why inner classes: control frameworks</A><P>
+</UL>
+<A HREF="tij0082.html">Constructors and polymorphism</A><P>
+<UL>
+<A HREF="tij0082.html#Heading232">Order of constructor calls</A><P>
+<A HREF="tij0082.html#Heading233">Inheritance and finalize(&#160;)</A><P>
+<A HREF="tij0082.html#Heading234">Behavior of polymorphic methods  inside constructors</A><P>
+</UL>
+<A HREF="tij0083.html">Designing with inheritance</A><P>
+<UL>
+<A HREF="tij0083.html#Heading236">Pure inheritance vs. extension</A><P>
+<A HREF="tij0083.html#Heading237">Downcasting and run-time  type identification</A><P>
+</UL>
+<A HREF="tij0084.html">Summary</A><P>
+<A HREF="tij0085.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0086.html">8: Holding  your objects</A></b><P>
+<UL>
+<A HREF="tij0087.html">Arrays</A><P>
+<UL>
+<A HREF="tij0087.html#Heading242">Arrays are first-class objects</A><P>
+<UL>
+<A HREF="tij0087.html#Heading243">Collections of primitives</A><P>
+</UL>
+<A HREF="tij0087.html#Heading244">Returning an array</A><P>
+</UL>
+<A HREF="tij0088.html">Collections</A><P>
+<UL>
+<A HREF="tij0088.html#Heading246">Disadvantage: unknown type</A><P>
+<UL>
+<A HREF="tij0088.html#Heading247">Sometimes it works right anyway</A><P>
+<A HREF="tij0088.html#Heading248">Making a type-conscious Vector</A><P>
+<A HREF="tij0088.html#Heading249">Parameterized types</A><P>
+</UL>
+</UL>
+<A HREF="tij0089.html">Enumerators (iterators)</A><P>
+<A HREF="tij0090.html">Types of collections</A><P>
+<UL>
+<A HREF="tij0090.html#Heading252">Vector</A><P>
+<UL>
+<A HREF="tij0090.html#Heading253">Crashing Java</A><P>
+</UL>
+<A HREF="tij0090.html#Heading254">BitSet</A><P>
+<A HREF="tij0090.html#Heading255">Stack</A><P>
+<A HREF="tij0090.html#Heading256">Hashtable</A><P>
+<UL>
+<A HREF="tij0090.html#Heading257">Creating &#8220;key&#8221; classes</A><P>
+<A HREF="tij0090.html#Heading258">Properties: a type of Hashtable</A><P>
+</UL>
+<A HREF="tij0090.html#Heading259">Enumerators revisited</A><P>
+</UL>
+<A HREF="tij0091.html">Sorting</A><P>
+<A HREF="tij0092.html">The generic collection library</A><P>
+<A HREF="tij0093.html">The new collections</A><P>
+<UL>
+<A HREF="tij0093.html#Heading263">Using Collections</A><P>
+<A HREF="tij0093.html#Heading264">Using Lists</A><P>
+<A HREF="tij0093.html#Heading265">Using Sets</A><P>
+<A HREF="tij0093.html#Heading266">Using Maps</A><P>
+<A HREF="tij0093.html#Heading267">Choosing an implementation</A><P>
+<UL>
+<A HREF="tij0093.html#Heading268">Choosing between Lists</A><P>
+<A HREF="tij0093.html#Heading269">Choosing between Sets</A><P>
+<A HREF="tij0093.html#Heading270">Choosing between Maps</A><P>
+</UL>
+<A HREF="tij0093.html#Heading271">Unsupported operations</A><P>
+<A HREF="tij0093.html#Heading272">Sorting and searching</A><P>
+<UL>
+<A HREF="tij0093.html#Heading273">Arrays</A><P>
+<A HREF="tij0093.html#Heading274">Comparable and Comparator</A><P>
+<A HREF="tij0093.html#Heading275">Lists</A><P>
+</UL>
+<A HREF="tij0093.html#Heading276">Utilities</A><P>
+<UL>
+<A HREF="tij0093.html#Heading277">Making a Collection or Map unmodifiable</A><P>
+<A HREF="tij0093.html#Heading278">Synchronizing a Collection or Map</A><P>
+</UL>
+</UL>
+<A HREF="tij0094.html">Summary</A><P>
+<A HREF="tij0095.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0096.html">9: Error handling  with exceptions</A></b><P>
+<UL>
+<A HREF="tij0097.html">Basic exceptions</A><P>
+<UL>
+<A HREF="tij0097.html#Heading283">Exception arguments</A><P>
+</UL>
+<A HREF="tij0098.html">Catching an exception</A><P>
+<UL>
+<A HREF="tij0098.html#Heading285">The try block</A><P>
+<A HREF="tij0098.html#Heading286">Exception handlers</A><P>
+<UL>
+<A HREF="tij0098.html#Heading287">Termination vs. resumption</A><P>
+</UL>
+<A HREF="tij0098.html#Heading288">The exception specification</A><P>
+<A HREF="tij0098.html#Heading289">Catching any exception</A><P>
+<A HREF="tij0098.html#Heading290">Rethrowing an exception</A><P>
+</UL>
+<A HREF="tij0099.html">Standard Java exceptions</A><P>
+<UL>
+<A HREF="tij0099.html#Heading292">The special case of RuntimeException</A><P>
+</UL>
+<A HREF="tij0100.html">Creating your own exceptions</A><P>
+<A HREF="tij0101.html">Exception restrictions</A><P>
+<A HREF="tij0102.html">Performing cleanup  with finally</A><P>
+<UL>
+<A HREF="tij0102.html#Heading296">What&#8217;s finally for?</A><P>
+<A HREF="tij0102.html#Heading297">Pitfall: the lost exception</A><P>
+</UL>
+<A HREF="tij0103.html">Constructors</A><P>
+<A HREF="tij0104.html">Exception matching</A><P>
+<UL>
+<A HREF="tij0104.html#Heading300">Exception guidelines</A><P>
+</UL>
+<A HREF="tij0105.html">Summary</A><P>
+<A HREF="tij0106.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0107.html">10: The Java  IO system</A></b><P>
+<UL>
+<A HREF="tij0108.html">Input and output</A><P>
+<UL>
+<A HREF="tij0108.html#Heading305">Types of InputStream</A><P>
+<A HREF="tij0108.html#Heading306">Types of OutputStream</A><P>
+</UL>
+<A HREF="tij0109.html">Adding attributes  and useful interfaces</A><P>
+<UL>
+<A HREF="tij0109.html#Heading308">Reading from an InputStream  with FilterInputStream</A><P>
+<A HREF="tij0109.html#Heading309">Writing to an OutputStream  with FilterOutputStream</A><P>
+</UL>
+<A HREF="tij0110.html">Off by itself:  RandomAccessFile</A><P>
+<A HREF="tij0111.html">The File class</A><P>
+<UL>
+<A HREF="tij0111.html#Heading312">A directory lister</A><P>
+<UL>
+<A HREF="tij0111.html#Heading313">Anonymous inner classes</A><P>
+<A HREF="tij0111.html#Heading314">A sorted directory listing</A><P>
+</UL>
+<A HREF="tij0111.html#Heading315">Checking for and creating directories</A><P>
+</UL>
+<A HREF="tij0112.html">Typical uses of IO streams</A><P>
+<UL>
+<A HREF="tij0112.html#Heading317">Input streams</A><P>
+<UL>
+<A HREF="tij0112.html#Heading318">1. Buffered input file</A><P>
+<A HREF="tij0112.html#Heading319">2. Input from memory</A><P>
+<A HREF="tij0112.html#Heading320">3. Formatted memory input</A><P>
+<A HREF="tij0112.html#Heading321">4. Line numbering and file output</A><P>
+</UL>
+<A HREF="tij0112.html#Heading322">Output streams</A><P>
+<UL>
+<A HREF="tij0112.html#Heading323">5. Storing and recovering data</A><P>
+<A HREF="tij0112.html#Heading324">6. Reading and writing random access files</A><P>
+</UL>
+<A HREF="tij0112.html#Heading325">Shorthand for file manipulation</A><P>
+<UL>
+<A HREF="tij0112.html#Heading326">7. File input shorthand</A><P>
+<A HREF="tij0112.html#Heading327">8. Formatted file output shorthand</A><P>
+<A HREF="tij0112.html#Heading328">9. Data file output shorthand</A><P>
+</UL>
+<A HREF="tij0112.html#Heading329">Reading from standard input</A><P>
+<A HREF="tij0112.html#Heading330">Piped streams</A><P>
+</UL>
+<A HREF="tij0113.html">StreamTokenizer</A><P>
+<UL>
+<A HREF="tij0113.html#Heading332">StringTokenizer</A><P>
+</UL>
+<A HREF="tij0114.html">Java 1.1 IO streams</A><P>
+<UL>
+<A HREF="tij0114.html#Heading334">Sources and sinks of data</A><P>
+<A HREF="tij0114.html#Heading335">Modifying stream behavior</A><P>
+<A HREF="tij0114.html#Heading336">Unchanged Classes</A><P>
+<A HREF="tij0114.html#Heading337">An example</A><P>
+<A HREF="tij0114.html#Heading338">Redirecting standard IO</A><P>
+</UL>
+<A HREF="tij0115.html">Compression</A><P>
+<UL>
+<A HREF="tij0115.html#Heading340">Simple compression with GZIP</A><P>
+<A HREF="tij0115.html#Heading341">Multi-file storage with Zip</A><P>
+<A HREF="tij0115.html#Heading342">The Java archive (jar) utility</A><P>
+</UL>
+<A HREF="tij0116.html">Object serialization</A><P>
+<UL>
+<A HREF="tij0116.html#Heading344">Finding the class</A><P>
+<A HREF="tij0116.html#Heading345">Controlling serialization</A><P>
+<UL>
+<A HREF="tij0116.html#Heading346">The transient keyword</A><P>
+<A HREF="tij0116.html#Heading347">An alternative to Externalizable</A><P>
+<A HREF="tij0116.html#Heading348">Versioning</A><P>
+</UL>
+<A HREF="tij0116.html#Heading349">Using persistence</A><P>
+</UL>
+<A HREF="tij0117.html">Summary</A><P>
+<A HREF="tij0118.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0119.html">11: Run-time type identification</A></b><P>
+<UL>
+<A HREF="tij0120.html">The need for RTTI</A><P>
+<UL>
+<A HREF="tij0120.html#Heading354">The Class object</A><P>
+<UL>
+<A HREF="tij0120.html#Heading355">Class literals</A><P>
+</UL>
+<A HREF="tij0120.html#Heading356">Checking before a cast</A><P>
+<UL>
+<A HREF="tij0120.html#Heading357">Using class literals</A><P>
+<A HREF="tij0120.html#Heading358">A dynamic instanceof</A><P>
+</UL>
+</UL>
+<A HREF="tij0121.html">RTTI syntax</A><P>
+<A HREF="tij0122.html">Reflection: run-time  class information</A><P>
+<UL>
+<A HREF="tij0122.html#Heading361">A class method extractor</A><P>
+</UL>
+<A HREF="tij0123.html">Summary</A><P>
+<A HREF="tij0124.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0125.html">12: Passing and returning objects</A></b><P>
+<UL>
+<A HREF="tij0126.html">Passing handles around</A><P>
+<UL>
+<A HREF="tij0126.html#Heading366">Aliasing</A><P>
+</UL>
+<A HREF="tij0127.html">Making local copies</A><P>
+<UL>
+<A HREF="tij0127.html#Heading368">Pass by value</A><P>
+<A HREF="tij0127.html#Heading369">Cloning objects</A><P>
+<A HREF="tij0127.html#Heading370">Adding cloneability to a class</A><P>
+<UL>
+<A HREF="tij0127.html#Heading371">Using a trick with protected</A><P>
+<A HREF="tij0127.html#Heading372">Implementing the Cloneable interface</A><P>
+</UL>
+<A HREF="tij0127.html#Heading373">Successful cloning</A><P>
+<A HREF="tij0127.html#Heading374">The effect of Object.clone(&#160;)</A><P>
+<A HREF="tij0127.html#Heading375">Cloning a composed object</A><P>
+<A HREF="tij0127.html#Heading376">A deep copy with Vector</A><P>
+<A HREF="tij0127.html#Heading377">Deep copy via serialization</A><P>
+<A HREF="tij0127.html#Heading378">Adding cloneability  further down a hierarchy</A><P>
+<A HREF="tij0127.html#Heading379">Why this strange design?</A><P>
+</UL>
+<A HREF="tij0128.html">Controlling cloneability</A><P>
+<UL>
+<A HREF="tij0128.html#Heading381">The copy-constructor</A><P>
+<UL>
+<A HREF="tij0128.html#Heading382">Why does it work in C++ and not Java?</A><P>
+</UL>
+</UL>
+<A HREF="tij0129.html">Read-only classes</A><P>
+<UL>
+<A HREF="tij0129.html#Heading384">Creating read-only classes</A><P>
+<A HREF="tij0129.html#Heading385">The drawback to immutability</A><P>
+<A HREF="tij0129.html#Heading386">Immutable Strings</A><P>
+<UL>
+<A HREF="tij0129.html#Heading387">Implicit constants</A><P>
+<A HREF="tij0129.html#Heading388">Overloading &#8216;+&#8217; and the StringBuffer</A><P>
+</UL>
+<A HREF="tij0129.html#Heading389">The String and StringBuffer classes</A><P>
+<A HREF="tij0129.html#Heading390">Strings are special</A><P>
+</UL>
+<A HREF="tij0130.html">Summary</A><P>
+<A HREF="tij0131.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0132.html">13: Creating windows  and applets</A></b><P>
+<UL>
+<A HREF="tij0133.html">Why use the AWT?</A><P>
+<A HREF="tij0134.html">The basic applet</A><P>
+<UL>
+<A HREF="tij0134.html#Heading396">Testing applets</A><P>
+<A HREF="tij0134.html#Heading397">A more graphical example</A><P>
+<A HREF="tij0134.html#Heading398">Demonstrating  the framework methods</A><P>
+</UL>
+<A HREF="tij0135.html">Making a button</A><P>
+<A HREF="tij0136.html">Capturing an event</A><P>
+<A HREF="tij0137.html">Text fields</A><P>
+<A HREF="tij0138.html">Text areas</A><P>
+<A HREF="tij0139.html">Labels</A><P>
+<A HREF="tij0140.html">Check boxes</A><P>
+<A HREF="tij0141.html">Radio buttons</A><P>
+<A HREF="tij0142.html">Drop-down lists</A><P>
+<A HREF="tij0143.html">List boxes</A><P>
+<UL>
+<A HREF="tij0143.html#Heading408">handleEvent(&#160;)</A><P>
+</UL>
+<A HREF="tij0144.html">Controlling layout</A><P>
+<UL>
+<A HREF="tij0144.html#Heading410">FlowLayout</A><P>
+<A HREF="tij0144.html#Heading411">BorderLayout</A><P>
+<A HREF="tij0144.html#Heading412">GridLayout</A><P>
+<A HREF="tij0144.html#Heading413">CardLayout</A><P>
+<UL>
+<A HREF="tij0144.html#Heading414">Combining layouts</A><P>
+</UL>
+<A HREF="tij0144.html#Heading415">GridBagLayout</A><P>
+</UL>
+<A HREF="tij0145.html">Alternatives to action</A><P>
+<A HREF="tij0146.html">Applet restrictions</A><P>
+<UL>
+<A HREF="tij0146.html#Heading418">Applet advantages</A><P>
+</UL>
+<A HREF="tij0147.html">Windowed applications</A><P>
+<UL>
+<A HREF="tij0147.html#Heading420">Menus</A><P>
+<A HREF="tij0147.html#Heading421">Dialog boxes</A><P>
+<UL>
+<A HREF="tij0147.html#Heading422">File dialogs</A><P>
+</UL>
+</UL>
+<A HREF="tij0148.html">The new AWT</A><P>
+<UL>
+<A HREF="tij0148.html#Heading424">The new event model</A><P>
+<A HREF="tij0148.html#Heading425">Event and listener types</A><P>
+<UL>
+<A HREF="tij0148.html#Heading426">Using listener adapters for simplicity</A><P>
+</UL>
+<A HREF="tij0148.html#Heading427">Making windows and applets  with the Java 1.1 AWT</A><P>
+<UL>
+<A HREF="tij0148.html#Heading428">Making the window listener an anonymous class</A><P>
+<A HREF="tij0148.html#Heading429">Packaging the applet into a JAR file</A><P>
+</UL>
+<A HREF="tij0148.html#Heading430">Revisiting the earlier examples</A><P>
+<UL>
+<A HREF="tij0148.html#Heading431">Text fields</A><P>
+<A HREF="tij0148.html#Heading432">Text areas</A><P>
+<A HREF="tij0148.html#Heading433">Check boxes and radio buttons</A><P>
+<A HREF="tij0148.html#Heading434">Drop-down lists</A><P>
+<A HREF="tij0148.html#Heading435">Lists</A><P>
+<A HREF="tij0148.html#Heading436">Menus</A><P>
+<A HREF="tij0148.html#Heading437">Dialog boxes</A><P>
+<A HREF="tij0148.html#Heading438">File dialogs</A><P>
+</UL>
+<A HREF="tij0148.html#Heading439">Binding events dynamically</A><P>
+<A HREF="tij0148.html#Heading440">Separating business logic  from UI logic</A><P>
+<A HREF="tij0148.html#Heading441">Recommended coding approaches</A><P>
+<UL>
+<A HREF="tij0148.html#Heading442">Baseline: the good way to do it</A><P>
+<A HREF="tij0148.html#Heading443">Implementing the main class as a listener</A><P>
+<A HREF="tij0148.html#Heading444">Mixing the approaches</A><P>
+<A HREF="tij0148.html#Heading445">Inheriting a component</A><P>
+<A HREF="tij0148.html#Heading446">Ugly component inheritance</A><P>
+</UL>
+</UL>
+<A HREF="tij0149.html">Java 1.1 UI APIs</A><P>
+<UL>
+<A HREF="tij0149.html#Heading448">Desktop colors</A><P>
+<A HREF="tij0149.html#Heading449">Printing</A><P>
+<UL>
+<A HREF="tij0149.html#Heading450">Printing text</A><P>
+<A HREF="tij0149.html#Heading451">Printing graphics</A><P>
+<A HREF="tij0149.html#Heading452">Running Frames within applets</A><P>
+</UL>
+<A HREF="tij0149.html#Heading453">The clipboard</A><P>
+</UL>
+<A HREF="tij0150.html">Visual programming  and Beans</A><P>
+<UL>
+<A HREF="tij0150.html#Heading455">What is a Bean?</A><P>
+<A HREF="tij0150.html#Heading456">Extracting BeanInfo  with the Introspector</A><P>
+<A HREF="tij0150.html#Heading457">A more sophisticated Bean</A><P>
+<A HREF="tij0150.html#Heading458">Packaging a Bean</A><P>
+<A HREF="tij0150.html#Heading459">More complex Bean support</A><P>
+<A HREF="tij0150.html#Heading460">More to Beans</A><P>
+</UL>
+<A HREF="tij0151.html">Introduction to Swing</A><P>
+<UL>
+<A HREF="tij0151.html#Heading462">Benefits of Swing</A><P>
+<A HREF="tij0151.html#Heading463">Easy conversion</A><P>
+<A HREF="tij0151.html#Heading464">A display framework</A><P>
+<A HREF="tij0151.html#Heading465">Tool tips</A><P>
+<A HREF="tij0151.html#Heading466">Borders</A><P>
+<A HREF="tij0151.html#Heading467">Buttons</A><P>
+<A HREF="tij0151.html#Heading468">Button groups</A><P>
+<A HREF="tij0151.html#Heading469">Icons</A><P>
+<A HREF="tij0151.html#Heading470">Menus</A><P>
+<A HREF="tij0151.html#Heading471">Popup menus</A><P>
+<A HREF="tij0151.html#Heading472">List boxes and combo boxes</A><P>
+<A HREF="tij0151.html#Heading473">Sliders and progress bars</A><P>
+<A HREF="tij0151.html#Heading474">Trees</A><P>
+<A HREF="tij0151.html#Heading475">Tables</A><P>
+<A HREF="tij0151.html#Heading476">Tabbed Panes</A><P>
+<A HREF="tij0151.html#Heading477">The Swing message box</A><P>
+<A HREF="tij0151.html#Heading478">More to Swing</A><P>
+</UL>
+<A HREF="tij0152.html">Summary</A><P>
+<A HREF="tij0153.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0154.html">14: Multiple threads</A></b><P>
+<UL>
+<A HREF="tij0155.html">Responsive user interfaces</A><P>
+<UL>
+<A HREF="tij0155.html#Heading483">Inheriting from Thread</A><P>
+<A HREF="tij0155.html#Heading484">Threading for a responsive interface</A><P>
+<UL>
+<A HREF="tij0155.html#Heading485">Improving the code with an inner class</A><P>
+</UL>
+<A HREF="tij0155.html#Heading486">Combining the thread  with the main class</A><P>
+<A HREF="tij0155.html#Heading487">Making many threads</A><P>
+<A HREF="tij0155.html#Heading488">Daemon threads</A><P>
+</UL>
+<A HREF="tij0156.html">Sharing limited resources</A><P>
+<UL>
+<A HREF="tij0156.html#Heading490">Improperly accessing resources</A><P>
+<A HREF="tij0156.html#Heading491">How Java shares resources</A><P>
+<UL>
+<A HREF="tij0156.html#Heading492">Synchronizing the counters</A><P>
+<A HREF="tij0156.html#Heading493">Synchronized efficiency</A><P>
+</UL>
+<A HREF="tij0156.html#Heading494">Java Beans revisited</A><P>
+</UL>
+<A HREF="tij0157.html">Blocking </A><P>
+<UL>
+<A HREF="tij0157.html#Heading496">Becoming blocked</A><P>
+<UL>
+<A HREF="tij0157.html#Heading497">Sleeping</A><P>
+<A HREF="tij0157.html#Heading498">Suspending and resuming</A><P>
+<A HREF="tij0157.html#Heading499">Wait and notify</A><P>
+<A HREF="tij0157.html#Heading500">Blocking on IO</A><P>
+<A HREF="tij0157.html#Heading501">Testing</A><P>
+</UL>
+<A HREF="tij0157.html#Heading502">Deadlock</A><P>
+<UL>
+<A HREF="tij0157.html#Heading503">The deprecation of stop(&#160;), suspend(&#160;),  resume(&#160;), and destroy(&#160;) in Java 1.2</A><P>
+</UL>
+</UL>
+<A HREF="tij0158.html">Priorities</A><P>
+<UL>
+<A HREF="tij0158.html#Heading505">Thread groups</A><P>
+<UL>
+<A HREF="tij0158.html#Heading506">Controlling thread groups</A><P>
+</UL>
+</UL>
+<A HREF="tij0159.html">Runnable revisited</A><P>
+<UL>
+<A HREF="tij0159.html#Heading508">Too many threads</A><P>
+</UL>
+<A HREF="tij0160.html">Summary</A><P>
+<A HREF="tij0161.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0162.html">15: Network programming</A></b><P>
+<UL>
+<A HREF="tij0163.html">Identifying a machine</A><P>
+<UL>
+<A HREF="tij0163.html#Heading513">Servers and clients</A><P>
+<UL>
+<A HREF="tij0163.html#Heading514">Testing programs without a network</A><P>
+</UL>
+<A HREF="tij0163.html#Heading515">Port: a unique place  within the machine</A><P>
+</UL>
+<A HREF="tij0164.html">Sockets</A><P>
+<UL>
+<A HREF="tij0164.html#Heading517">A simple server and client</A><P>
+</UL>
+<A HREF="tij0165.html">Serving multiple clients</A><P>
+<A HREF="tij0166.html">Datagrams</A><P>
+<A HREF="tij0167.html">A Web application</A><P>
+<UL>
+<A HREF="tij0167.html#Heading521">The server application</A><P>
+<UL>
+<A HREF="tij0167.html#Heading522">The C program</A><P>
+<A HREF="tij0167.html#Heading523">The Java program</A><P>
+</UL>
+<A HREF="tij0167.html#Heading524">The NameSender applet</A><P>
+<UL>
+<A HREF="tij0167.html#Heading525">The Web page</A><P>
+</UL>
+<A HREF="tij0167.html#Heading526">Problems with this approach</A><P>
+</UL>
+<A HREF="tij0168.html">Connecting Java to CGI</A><P>
+<UL>
+<A HREF="tij0168.html#Heading528">Encoding data for CGI</A><P>
+<A HREF="tij0168.html#Heading529">The applet</A><P>
+<UL>
+<A HREF="tij0168.html#Heading530">Displaying a Web page from within an applet</A><P>
+</UL>
+<A HREF="tij0168.html#Heading531">The CGI program in C++</A><P>
+<A HREF="tij0168.html#Heading532">What about POST?</A><P>
+</UL>
+<A HREF="tij0169.html">Connecting to databases  with JDBC</A><P>
+<UL>
+<A HREF="tij0169.html#Heading534">Getting the example to work</A><P>
+<UL>
+<A HREF="tij0169.html#Heading535">Step 1: Find the JDBC Driver</A><P>
+<A HREF="tij0169.html#Heading536">Step 2: Configure the database</A><P>
+<A HREF="tij0169.html#Heading537">Step 3: Test the configuration</A><P>
+<A HREF="tij0169.html#Heading538">Step 4: Generate your SQL query</A><P>
+<A HREF="tij0169.html#Heading539">Step 5: Modify and paste in your query</A><P>
+</UL>
+<A HREF="tij0169.html#Heading540">A GUI version of the lookup program</A><P>
+<A HREF="tij0169.html#Heading541">Why the JDBC API  seems so complex</A><P>
+</UL>
+<A HREF="tij0170.html">Remote methods</A><P>
+<UL>
+<A HREF="tij0170.html#Heading543">Remote interfaces</A><P>
+<A HREF="tij0170.html#Heading544">Implementing the remote interface</A><P>
+<UL>
+<A HREF="tij0170.html#Heading545">Setting up the registry</A><P>
+</UL>
+<A HREF="tij0170.html#Heading546">Creating stubs and skeletons</A><P>
+<A HREF="tij0170.html#Heading547">Using the remote object</A><P>
+<A HREF="tij0170.html#Heading548">Alternatives to RMI</A><P>
+</UL>
+<A HREF="tij0171.html">Summary</A><P>
+<A HREF="tij0172.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0173.html">16: Design patterns</A></b><P>
+<UL>
+<A HREF="tij0174.html">The pattern concept</A><P>
+<UL>
+<A HREF="tij0174.html#Heading553">The singleton</A><P>
+<A HREF="tij0174.html#Heading554">Classifying patterns</A><P>
+</UL>
+<A HREF="tij0175.html">The observer pattern</A><P>
+<A HREF="tij0176.html">Simulating the trash recycler</A><P>
+<A HREF="tij0177.html">Improving the design</A><P>
+<UL>
+<A HREF="tij0177.html#Heading558">&#8220;Make more objects&#8221;</A><P>
+<A HREF="tij0177.html#Heading559">A pattern for prototyping creation</A><P>
+<UL>
+<A HREF="tij0177.html#Heading560">Trash subclasses</A><P>
+<A HREF="tij0177.html#Heading561">Parsing Trash from an external file</A><P>
+<A HREF="tij0177.html#Heading562">Recycling with prototyping</A><P>
+</UL>
+</UL>
+<A HREF="tij0178.html">Abstracting usage</A><P>
+<A HREF="tij0179.html">Multiple dispatching</A><P>
+<UL>
+<A HREF="tij0179.html#Heading565">Implementing the double dispatch</A><P>
+</UL>
+<A HREF="tij0180.html">The &#8220;visitor&#8221; pattern</A><P>
+<UL>
+<A HREF="tij0180.html#Heading567">More coupling?</A><P>
+</UL>
+<A HREF="tij0181.html">RTTI considered harmful?</A><P>
+<A HREF="tij0182.html">Summary</A><P>
+<A HREF="tij0183.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0184.html">17: Projects</A></b><P>
+<UL>
+<A HREF="tij0185.html">Text processing</A><P>
+<UL>
+<A HREF="tij0185.html#Heading573">Extracting code listings</A><P>
+<UL>
+<A HREF="tij0185.html#Heading574">Building a packed file</A><P>
+<A HREF="tij0185.html#Heading575">Extracting from a packed file</A><P>
+<A HREF="tij0185.html#Heading576">Accessing and writing the listings</A><P>
+<A HREF="tij0185.html#Heading577">Containing the entire collection of listings</A><P>
+<A HREF="tij0185.html#Heading578">The main program</A><P>
+</UL>
+<A HREF="tij0185.html#Heading579">Checking capitalization style</A><P>
+</UL>
+<A HREF="tij0186.html">A method lookup tool</A><P>
+<A HREF="tij0187.html">Complexity theory</A><P>
+<A HREF="tij0188.html">Summary</A><P>
+<A HREF="tij0189.html">Exercises</A><P>
+</UL>
+<br><b><A HREF="tij0190.html">A: Using non-Java code</A></b><P>
+<UL>
+<A HREF="tij0191.html">The Java Native Interface</A><P>
+<UL>
+<A HREF="tij0191.html#Heading586">Calling a native method</A><P>
+<UL>
+<A HREF="tij0191.html#Heading587">The C header file generator: javah</A><P>
+<A HREF="tij0191.html#Heading588">Name mangling and function signatures</A><P>
+<A HREF="tij0191.html#Heading589">Implementing your DLL</A><P>
+</UL>
+<A HREF="tij0191.html#Heading590">Accessing JNI functions:  The JNIEnv argument</A><P>
+<UL>
+<A HREF="tij0191.html#Heading591">Accessing Java Strings</A><P>
+</UL>
+<A HREF="tij0191.html#Heading592">Passing and using Java objects</A><P>
+<A HREF="tij0191.html#Heading593">JNI and Java exceptions</A><P>
+<A HREF="tij0191.html#Heading594">JNI and threading</A><P>
+<A HREF="tij0191.html#Heading595">Using a pre-existing code base</A><P>
+</UL>
+<A HREF="tij0192.html">The Microsoft way</A><P>
+<A HREF="tij0193.html">J/Direct</A><P>
+<UL>
+<A HREF="tij0193.html#Heading598">The @dll.import directive</A><P>
+<UL>
+<A HREF="tij0193.html#Heading599">Aliasing and linking by ordinal</A><P>
+<A HREF="tij0193.html#Heading600">Applying @dll.import to the entire class</A><P>
+</UL>
+<A HREF="tij0193.html#Heading601">The com.ms.win32 package</A><P>
+<A HREF="tij0193.html#Heading602">Marshaling</A><P>
+<A HREF="tij0193.html#Heading603">Writing callback functions</A><P>
+<A HREF="tij0193.html#Heading604">Other J/Direct features</A><P>
+</UL>
+<A HREF="tij0194.html">Raw Native Interface (RNI)</A><P>
+<UL>
+<A HREF="tij0194.html#Heading606">RNI Summary</A><P>
+</UL>
+<A HREF="tij0195.html">Java/COM integration</A><P>
+<UL>
+<A HREF="tij0195.html#Heading608">COM Fundamentals </A><P>
+<UL>
+<A HREF="tij0195.html#Heading609">GUIDs and the Registry</A><P>
+<A HREF="tij0195.html#Heading610">Type Libraries</A><P>
+<A HREF="tij0195.html#Heading611">Function return codes in COM: HRESULT</A><P>
+</UL>
+<A HREF="tij0195.html#Heading612">MS Java/COM Integration</A><P>
+<A HREF="tij0195.html#Heading613">Developing COM servers in Java</A><P>
+<A HREF="tij0195.html#Heading614">Developing COM clients in Java</A><P>
+<UL>
+<A HREF="tij0195.html#Heading615">The com.ms.com package</A><P>
+</UL>
+<A HREF="tij0195.html#Heading616">ActiveX/Beans integration</A><P>
+<A HREF="tij0195.html#Heading617">A note about native methods and applets</A><P>
+</UL>
+<A HREF="tij0196.html">CORBA</A><P>
+<UL>
+<A HREF="tij0196.html#Heading619">CORBA Fundamentals</A><P>
+<UL>
+<A HREF="tij0196.html#Heading620">CORBA Interface Definition Language (IDL)</A><P>
+<A HREF="tij0196.html#Heading621">The naming service</A><P>
+</UL>
+<A HREF="tij0196.html#Heading622">An example</A><P>
+<UL>
+<A HREF="tij0196.html#Heading623">Writing the IDL source</A><P>
+<A HREF="tij0196.html#Heading624">Creating stubs and skeletons</A><P>
+<A HREF="tij0196.html#Heading625">Implementing the server and the client</A><P>
+<A HREF="tij0196.html#Heading626">Some CORBA services</A><P>
+<A HREF="tij0196.html#Heading627">Activating the name service process</A><P>
+<A HREF="tij0196.html#Heading628">Activating the server and the client</A><P>
+</UL>
+<A HREF="tij0196.html#Heading629">Java Applets and CORBA</A><P>
+<A HREF="tij0196.html#Heading630">CORBA vs. RMI</A><P>
+</UL>
+<A HREF="tij0197.html">Summary</A><P>
+</UL>
+<br><b><A HREF="tij0198.html">B: Comparing C++ and Java</A></b><P>
+<br><b><A HREF="tij0199.html">C: Java programming guidelines</A></b><P>
+<br><b><A HREF="tij0200.html">D: Performance</A></b><P>
+<UL>
+<A HREF="tij0201.html">Basic approach </A><P>
+<A HREF="tij0202.html">Locating the bottleneck</A><P>
+<UL>
+<A HREF="tij0202.html#Heading637">1. Install your own instrumentation</A><P>
+<A HREF="tij0202.html#Heading638">2. JDK profiling [2]</A><P>
+<A HREF="tij0202.html#Heading639">3. Special tools</A><P>
+<A HREF="tij0202.html#Heading640">Tips for measuring performance</A><P>
+</UL>
+<A HREF="tij0203.html">Speedup techniques </A><P>
+<UL>
+<A HREF="tij0203.html#Heading642">Generic approaches</A><P>
+<A HREF="tij0203.html#Heading643">Language dependent approaches</A><P>
+<UL>
+<A HREF="tij0203.html#Heading644">General modifications </A><P>
+</UL>
+<A HREF="tij0203.html#Heading645">Specific situations</A><P>
+<UL>
+<A HREF="tij0203.html#Heading646">Other suggestions</A><P>
+</UL>
+</UL>
+<A HREF="tij0204.html">References</A><P>
+<UL>
+<A HREF="tij0204.html#Heading648">Performance tools</A><P>
+<A HREF="tij0204.html#Heading649">Web sites</A><P>
+<A HREF="tij0204.html#Heading650">Articles</A><P>
+<A HREF="tij0204.html#Heading651">Java specific books</A><P>
+<A HREF="tij0204.html#Heading652">General books</A><P>
+</UL>
+</UL>
+<br><b><A HREF="tij0205.html">E: A bit about garbage collection</A></b><P>
+<br><b><A HREF="tij0206.html">F: Recommended reading</A></b><P>
+<br><b><A HREF="tij_i.html">Index</A></b><P>
+<UL>
+</UL>
+</UL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij.html">Prev</a> | <a href="tij_t.html">Next</a>
+</div>
+</body></html>
+
+
+
+
+
+
+

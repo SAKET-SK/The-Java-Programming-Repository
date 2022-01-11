@@ -1,0 +1,210 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0078.html">Prev</a> | <a href="tij0080.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Abstract
+classes 
+<P>and
+methods
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+all the instrument examples, the methods in the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+were always &#8220;dummy&#8221; methods. If these methods are ever called,
+you&#8217;ve done something wrong. That&#8217;s because the intent of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>common
+interface
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all the classes derived from it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+only reason to establish this common interface<A NAME="Index579"></A><A NAME="Index580"></A>
+is so it can be expressed differently for each different subtype. It
+establishes a basic form, so you can say what&#8217;s in common with all the
+derived classes. Another way of saying this is to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>abstract
+base class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index581"></A><A NAME="Index582"></A><A NAME="Index583"></A>(or
+simply an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>abstract
+class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+You create an abstract class when you want to manipulate a set of classes
+through this common interface. All derived-class methods that match the
+signature of the base-class declaration will be called using the dynamic
+binding mechanism. (However, as seen in the last section, if the method&#8217;s
+name is the same as the base class but the arguments are different,
+you&#8217;ve got overloading, which probably isn&#8217;t what you want.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you have an abstract class like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+objects of that class almost always have no meaning. That is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is meant to express only the interface, and not a particular implementation, so
+creating an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object makes no sense, and you&#8217;ll probably want to prevent the user from
+doing it. This can be accomplished by making all the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+print error messages, but this delays the information until run-time and
+requires reliable exhaustive testing on the user&#8217;s part. It&#8217;s
+always better to catch problems at compile time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+provides a mechanism for doing this called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>abstract
+method
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is a method that is incomplete; it has only a declaration and no method
+body. Here is the syntax for an abstract method declaration:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">abstract
+void X();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+class containing abstract methods is called an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>abstract
+class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If a class contains one or more abstract methods, the class must be qualified as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Otherwise, the compiler gives you an error message.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+an abstract class is incomplete, what is the compiler supposed to do when
+someone tries to make an object of that class? It cannot safely create an
+object of an abstract class, so you get an error message from the compiler.
+This way the compiler ensures the purity of the abstract class, and you
+don&#8217;t need to worry about misusing it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you <A NAME="Index584"></A><A NAME="Index585"></A><A NAME="Index586"></A>inherit
+from an abstract class and you want to make objects of the new type, you must
+provide method definitions for all the abstract methods in the base class. If
+you don&#8217;t (and you may choose not to), then the derived class is also
+abstract and the compiler will force you to qualify 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class with the <A NAME="Index587"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+possible to declare a class as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+including any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. This is useful when you&#8217;ve got a class in which it doesn&#8217;t
+make sense to have any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, and yet you want to prevent any instances of that class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class can easily be turned into an abstract class. Only some of the methods
+will be abstract, since making a class abstract doesn&#8217;t force you to make
+all the methods abstract.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+what it looks like:
+</FONT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the orchestra example modified to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes and methods:
+<a name="WIND5_CPP"></a></FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Music4.java</font>
+<font color="#009900">// Abstract classes and methods</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Instrument4 {
+  <font color="#0000ff">int</font> i; <font color="#009900">// storage allocated for each</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> play();
+  <font color="#0000ff">public</font> String what() {
+    <font color="#0000ff">return</font> "Instrument4";
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> adjust();
+}
+
+<font color="#0000ff">class</font> Wind4 <font color="#0000ff">extends</font> Instrument4 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Wind4.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Wind4"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Percussion4 <font color="#0000ff">extends</font> Instrument4 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Percussion4.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Percussion4"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Stringed4 <font color="#0000ff">extends</font> Instrument4 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Stringed4.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Stringed4"; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() {}
+}
+
+<font color="#0000ff">class</font> Brass4 <font color="#0000ff">extends</font> Wind4 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Brass4.play()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> adjust() { 
+    System.out.println("Brass4.adjust()");
+  }
+}
+
+<font color="#0000ff">class</font> Woodwind4 <font color="#0000ff">extends</font> Wind4 {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {
+    System.out.println("Woodwind4.play()");
+  }
+  <font color="#0000ff">public</font> String what() { <font color="#0000ff">return</font> "Woodwind4"; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Music4 {
+  <font color="#009900">// Doesn't care about type, so new types</font>
+  <font color="#009900">// added to the system still work right:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument4 i) {
+    <font color="#009900">// ...</font>
+    i.play();
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tuneAll(Instrument4[] e) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; e.length; i++)
+      tune(e[i]);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Instrument4[] orchestra = <font color="#0000ff">new</font> Instrument4[5];
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#009900">// Upcasting during addition to the array:</font>
+    orchestra[i++] = <font color="#0000ff">new</font> Wind4();
+    orchestra[i++] = <font color="#0000ff">new</font> Percussion4();
+    orchestra[i++] = <font color="#0000ff">new</font> Stringed4();
+    orchestra[i++] = <font color="#0000ff">new</font> Brass4();
+    orchestra[i++] = <font color="#0000ff">new</font> Woodwind4();
+    tuneAll(orchestra);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that there&#8217;s really no change except in the base class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+helpful to create 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">classes
+and methods because they make the abstractness of a class explicit and tell
+both the user and the compiler how it was intended to be used.
+</FONT><a name="_Toc375545335"></a><a name="_Toc408018538"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0078.html">Prev</a> | <a href="tij0080.html">Next</a>
+</div>
+</body></html>
+

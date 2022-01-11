@@ -1,0 +1,157 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0069.html">Prev</a> | <a href="tij0071.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Upcasting<P><A NAME="Index495"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most important aspect of inheritance is not that it provides methods for the
+new class. It&#8217;s the relationship expressed between the new class and the
+base class. This <A NAME="Index496"></A>relationship
+can be summarized by saying &#8220;The new class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is
+a type of
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the existing class.&#8221; 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+description is not just a fanciful way of explaining inheritance &#8211;
+it&#8217;s supported directly by the language. As an example, consider a base
+class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that represents musical instruments and a derived class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because inheritance means that all of the methods in the base class are also
+available in the derived class, any message you can send to the base class can
+also be sent to the derived class. If the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>play(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, so will 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instruments. This means we can accurately say that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is also a type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The following example shows how the compiler supports this notion:
+<a name="WIND_CPP"></a></FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Wind.java</font>
+<font color="#009900">// Inheritance &amp; upcasting</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Instrument {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> play() {}
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> tune(Instrument i) {
+    <font color="#009900">// ...</font>
+    i.play();
+  }
+}
+
+<font color="#009900">// Wind objects are instruments</font>
+<font color="#009900">// because they have the same interface:</font>
+<font color="#0000ff">class</font> Wind <font color="#0000ff">extends</font> Instrument {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Wind flute = <font color="#0000ff">new</font> Wind();
+    Instrument.tune(flute); <font color="#009900">// Upcasting</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What&#8217;s
+interesting in this example is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which accepts an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. However, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called by giving it a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. Given that Java is particular about type checking, it seems strange
+that a method that accepts one type will readily accept another type, until you
+realize that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is also an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, and there&#8217;s no method that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could call for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that isn&#8217;t also in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tune(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the code works for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and anything derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the act of converting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>upcasting</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc312374032"></a><a name="_Toc375545316"></a><a name="_Toc408018519"></a><P></DIV>
+<A NAME="Heading194"></A><H3 ALIGN=LEFT>
+Why
+&#8220;upcasting&#8221;?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason for the term is historical and is based on the way class inheritance
+diagrams <A NAME="Index497"></A><A NAME="Index498"></A><A NAME="Index499"></A>have
+traditionally been drawn with the root at the top of the page, growing
+downward. (Of course, you can draw your diagrams any way you find helpful.) The
+inheritance diagram for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is then: 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Casting
+from derived to base moves 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>up</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on the inheritance diagram, so it&#8217;s commonly referred to as upcasting.
+Upcasting is always safe because you&#8217;re going from a more specific type
+to a more general type. That is, the derived class is a superset of the base
+class. It might contain more methods than the base class, but it must contain 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>at
+least
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the methods in the base class. The only thing that can occur to the class
+interface during the upcast is that it can lose methods, not gain them. This is
+why the compiler allows upcasting without any explicit casts or other special
+notation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also perform the reverse of upcasting, called <A NAME="Index500"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>downcasting</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but this involves a dilemma that is the subject of Chapter 11.
+</FONT><a name="_Toc312374033"></a><P></DIV>
+<A NAME="Heading195"></A><H4 ALIGN=LEFT>
+Composition
+vs. inheritance revisited
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+object-oriented programming, the most likely way that you&#8217;ll create and
+use code is by simply packaging data and methods together into a class, and
+using objects of that class. Occasionally, you&#8217;ll use existing classes to
+build new classes with composition. Even less frequently than that you&#8217;ll
+use inheritance. So although inheritance gets a lot of emphasis while learning
+OOP, it doesn&#8217;t mean that you should use it everywhere you possibly can.
+On the contrary, you should use it sparingly, only when it&#8217;s clear that
+inheritance is useful. <A NAME="Index501"></A><A NAME="Index502"></A>One
+of the clearest ways to determine whether you should use composition or
+inheritance is to ask whether you&#8217;ll ever need to upcast from your new
+class to the base class. If you must upcast, then inheritance is necessary, but
+if you don&#8217;t need to upcast, then you should look closely at whether you
+need inheritance. The next chapter (polymorphism) provides one of the most
+compelling reasons for upcasting, but if you remember to ask &#8220;Do I need
+to upcast?&#8221;, you&#8217;ll have a good tool for deciding between
+composition and inheritance.
+</FONT><a name="_Toc375545317"></a><a name="_Toc408018520"></a><a name="_Toc305593260"></a><a name="_Toc305628732"></a><a name="_Toc312374036"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0069.html">Prev</a> | <a href="tij0071.html">Next</a>
+</div>
+</body></html>
+

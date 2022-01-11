@@ -1,0 +1,149 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0071.html">Prev</a> | <a href="tij0073.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Initialization
+and 
+<P>class
+loading
+<P><A NAME="Index537"></A><A NAME="Index538"></A><A NAME="Index539"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+many more traditional languages, programs are loaded all at once as part of the
+startup process. This is followed by initialization, and then the program
+begins. The process of initialization in these languages must be carefully
+controlled so that the order of initialization of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+doesn&#8217;t cause trouble. C++, for example, has problems if one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expects another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+be valid before the second one has been initialized.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+doesn&#8217;t have this problem because it takes a different approach to
+loading. Because everything in Java is an object, many activities become
+easier, and this is one of them. As you will learn in the next chapter, the
+code for each object exists in a separate file. That file isn&#8217;t loaded
+until the code is needed. In general, you can say that until an object of that
+class is constructed, the class code doesn&#8217;t get loaded. Since there can
+be some subtleties with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, you can also say, &#8220;Class code is loaded at the point of first
+use.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+point of first use is also where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization takes place. All the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+code block will be initialized in textual <A NAME="Index540"></A>order
+(that is, the order that you write them down in the class definition) at the
+point of loading. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+of course, are initialized only once.
+</FONT><a name="_Toc375545323"></a><a name="_Toc408018526"></a><P></DIV>
+<A NAME="Heading204"></A><H3 ALIGN=LEFT>
+Initialization
+with inheritance
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+helpful to look at the whole <A NAME="Index541"></A><A NAME="Index542"></A>initialization
+process, including inheritance, to get a full picture of what happens. Consider
+the following code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Beetle.java</font>
+<font color="#009900">// The full process of initialization.</font>
+
+<font color="#0000ff">class</font> Insect {
+  <font color="#0000ff">int</font> i = 9;
+  <font color="#0000ff">int</font> j;
+  Insect() {
+    prt("i = " + i + ", j = " + j);
+    j = 39;
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> x1 = 
+    prt("<font color="#0000ff">static</font> Insect.x1 initialized");
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> prt(String s) {
+    System.out.println(s);
+    <font color="#0000ff">return</font> 47;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Beetle <font color="#0000ff">extends</font> Insect {
+  <font color="#0000ff">int</font> k = prt("Beetle.k initialized");
+  Beetle() {
+    prt("k = " + k);
+    prt("j = " + j);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> x2 =
+    prt("<font color="#0000ff">static</font> Beetle.x2 initialized");
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> prt(String s) {
+    System.out.println(s);
+    <font color="#0000ff">return</font> 63;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    prt("Beetle constructor");
+    Beetle b = <font color="#0000ff">new</font> Beetle();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> Insect.x initialized
+<font color="#0000ff">static</font> Beetle.x initialized
+Beetle constructor
+i = 9, j = 0
+Beetle.k initialized
+k = 63
+j = 39  </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first thing that happens when you run Java on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Beetle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that the loader goes out and finds that <A NAME="Index543"></A><A NAME="Index544"></A>class.
+In the process of loading it, the loader notices that it has a base class
+(that&#8217;s what the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+says), which it then loads. This will happen whether or not you&#8217;re going
+to make an object of that base class. (Try commenting out the object creation
+to prove it to yourself.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the base class has a base class, that second base class would then be loaded,
+and so on. Next, the <A NAME="Index545"></A><A NAME="Index546"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization in the root base class (in this case, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Insect</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is performed, and then the next derived class, and so on. This is important
+because the derived-class static initialization might depend on the base class
+member being initialized properly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, the necessary classes have all been loaded so the object can be
+created. First, all the primitives in this object are set to their default
+values and the object handles are set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Then
+the base-class constructor will be called. In this case the call is automatic,
+but you can also specify the constructor call (as the first operation in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Beetle(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor) using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The base class construction goes through the same process in the same order as
+the derived-class constructor. After the base-class constructor completes, the
+instance variables are initialized in textual order. Finally, the rest of the
+body of the constructor is executed.
+</FONT><a name="_Toc375545324"></a><a name="_Toc408018527"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0071.html">Prev</a> | <a href="tij0073.html">Next</a>
+</div>
+</body></html>
+

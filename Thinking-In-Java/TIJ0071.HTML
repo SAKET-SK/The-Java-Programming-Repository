@@ -1,0 +1,499 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0070.html">Prev</a> | <a href="tij0072.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+final keyword
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index503"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword has slightly different meanings depending on the context, but in
+general it says &#8220;This cannot be changed.&#8221; You might want to prevent
+changes for two reasons: design or efficiency. Because these two reasons are
+quite different, it&#8217;s possible to misuse the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following sections discuss the three places where 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used: for data, methods and for a class.
+</FONT><a name="_Toc375545318"></a><a name="_Toc408018521"></a><P></DIV>
+<A NAME="Heading197"></A><H3 ALIGN=LEFT>
+Final
+data
+<P><A NAME="Index504"></A><A NAME="Index505"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Many
+programming languages have a way to tell the compiler that a piece of data is
+&#8220;constant.&#8221; A constant is useful for two reasons: 
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+can be a <A NAME="Index506"></A><A NAME="Index507"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>compile-time
+constant
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that won&#8217;t ever change.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+can be a value initialized at <A NAME="Index508"></A>run-time
+that you don&#8217;t want changed.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the case of a compile-time constant the compiler is allowed to
+&#8220;fold&#8221; the <A NAME="Index509"></A><A NAME="Index510"></A>constant
+value into any calculations in which it&#8217;s used; that is, the calculation
+can be performed at compile time, eliminating some run-time overhead. In Java,
+these sorts of constants must be <A NAME="Index511"></A>primitives
+and are expressed using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. A value must be given at the time of definition of such a constant.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+field that is both <A NAME="Index512"></A><A NAME="Index513"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has only one piece of storage that cannot be changed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+using <A NAME="Index514"></A><A NAME="Index515"></A><A NAME="Index516"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with object handles rather than primitives the meaning gets a bit confusing.
+With a primitive, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+makes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>value</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a constant, but with an object handle, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+makes the handle a constant. The handle must be initialized to an object at the
+point of declaration, and the handle can never be changed to point to another
+object. However, the object can be modified; Java does not provide a way to
+make any arbitrary object a constant. (You can, however, write your class so
+that objects have the effect of being constant.) This restriction includes
+arrays, which are also objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that demonstrates 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FinalData.java</font>
+<font color="#009900">// The effect of final on fields</font>
+
+<font color="#0000ff">class</font> Value {
+  <font color="#0000ff">int</font> i = 1;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FinalData {
+  <font color="#009900">// Can be compile-time constants</font>
+  <font color="#0000ff">final</font> <font color="#0000ff">int</font> i1 = 9;
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> I2 = 99;
+  <font color="#009900">// Typical public constant:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> I3 = 39;
+  <font color="#009900">// Cannot be compile-time constants:</font>
+  <font color="#0000ff">final</font> <font color="#0000ff">int</font> i4 = (<font color="#0000ff">int</font>)(Math.random()*20);
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> i5 = (<font color="#0000ff">int</font>)(Math.random()*20);
+  
+  Value v1 = <font color="#0000ff">new</font> Value();
+  <font color="#0000ff">final</font> Value v2 = <font color="#0000ff">new</font> Value();
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> Value v3 = <font color="#0000ff">new</font> Value();
+  <font color="#009900">//! final Value v4; // Pre-Java 1.1 Error: </font>
+                      <font color="#009900">// no initializer</font>
+  <font color="#009900">// Arrays:</font>
+  <font color="#0000ff">final</font> <font color="#0000ff">int</font>[] a = { 1, 2, 3, 4, 5, 6 };
+
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> print(String id) {
+    System.out.println(
+      id + ": " + "i4 = " + i4 + 
+      ", i5 = " + i5);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    FinalData fd1 = <font color="#0000ff">new</font> FinalData();
+    <font color="#009900">//! fd1.i1++; // Error: can't change value</font>
+    fd1.v2.i++; <font color="#009900">// Object isn't constant!</font>
+    fd1.v1 = <font color="#0000ff">new</font> Value(); <font color="#009900">// OK -- not final</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; fd1.a.length; i++)
+      fd1.a[i]++; <font color="#009900">// Object isn't constant!</font>
+    <font color="#009900">//! fd1.v2 = new Value(); // Error: Can't </font>
+    <font color="#009900">//! fd1.v3 = new Value(); // change handle</font>
+    <font color="#009900">//! fd1.a = new int[3];</font>
+
+    fd1.print("fd1");
+    System.out.println("Creating <font color="#0000ff">new</font> FinalData");
+    FinalData fd2 = <font color="#0000ff">new</font> FinalData();
+    fd1.print("fd1");
+    fd2.print("fd2");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>I2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+primitives with compile-time values, they can both be used as compile-time
+constants and are not different in any important way. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>I3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the more typical way you&#8217;ll see such constants defined: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so they&#8217;re usable outside the package, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to emphasize that there&#8217;s only one, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to say that it&#8217;s a constant. Note that <A NAME="Index517"></A><A NAME="Index518"></A><A NAME="Index519"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final
+static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+primitives with constant initial values (that is, compile-time constants) are
+named with all capitals by convention. Also note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot be known at compile time, so it is not capitalized.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Just
+because something is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t mean that its value is known at compile-time. This is
+demonstrated by initializing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at run-time using randomly generated numbers. This portion of the example also
+shows the difference between making a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This difference shows up only when the values are initialized at run-time,
+since the compile-time values are treated the same by the compiler. (And
+presumably optimized out of existence.) The difference is shown in the output
+from one run:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>fd1: i4 = 15, i5 = 9
+Creating <font color="#0000ff">new</font> FinalData
+fd1: i4 = 15, i5 = 9
+fd2: i4 = 10, i5 = 9 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the values of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fd1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fd2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are unique, but the value for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not changed by creating the second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FinalData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. That&#8217;s because it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and is initialized once upon loading and not each time a new object is created.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+variables 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+demonstrate the meaning of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. As you can see in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+just because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t mean that you can&#8217;t change its value. However, you cannot
+re-bind 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a new object, precisely because it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That&#8217;s what 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means for a handle. You can also see the same meaning holds true for an array,
+which is just another kind of handle. (There is know way that I know of to make
+the array handles themselves 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+Making handles 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+seems less useful than making primitives 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading198"></A><H4 ALIGN=LEFT>
+Blank
+finals
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index520"></A>
+allows the creation of <A NAME="Index521"></A><A NAME="Index522"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>blank
+finals
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are fields that are declared as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but are not given an initialization value. In all cases, the blank final 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be initialized before it is used, and the compiler ensures this. However, blank
+finals provide much more flexibility in the use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword since, for example, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field inside a class can now be different for each object and yet it retains
+its immutable quality. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BlankFinal.java</font>
+<font color="#009900">// "Blank" final data members</font>
+
+<font color="#0000ff">class</font> Poppet { }
+
+<font color="#0000ff">class</font> BlankFinal {
+  <font color="#0000ff">final</font> <font color="#0000ff">int</font> i = 0; <font color="#009900">// Initialized final</font>
+  <font color="#0000ff">final</font> <font color="#0000ff">int</font> j; <font color="#009900">// Blank final</font>
+  <font color="#0000ff">final</font> Poppet p; <font color="#009900">// Blank final handle</font>
+  <font color="#009900">// Blank finals MUST be initialized</font>
+  <font color="#009900">// in the constructor:</font>
+  BlankFinal() {
+    j = 1; <font color="#009900">// Initialize blank final</font>
+    p = <font color="#0000ff">new</font> Poppet();
+  }
+  BlankFinal(<font color="#0000ff">int</font> x) {
+    j = x; <font color="#009900">// Initialize blank final</font>
+    p = <font color="#0000ff">new</font> Poppet();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    BlankFinal bf = <font color="#0000ff">new</font> BlankFinal();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;re
+forced to perform assignments to finals either with an expression at the point
+of definition of the field or in every constructor. This way it&#8217;s
+guaranteed that the final field is always initialized before use.
+</FONT><P></DIV>
+<A NAME="Heading199"></A><H4 ALIGN=LEFT>
+Final
+arguments
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index523"></A>
+allows you to make <A NAME="Index524"></A><A NAME="Index525"></A>arguments
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by declaring them as such in the argument list. This means that inside the
+method you cannot change what the argument handle points to:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FinalArguments.java</font>
+<font color="#009900">// Using "final" with method arguments</font>
+
+<font color="#0000ff">class</font> Gizmo {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> spin() {}
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FinalArguments {
+  <font color="#0000ff">void</font> with(<font color="#0000ff">final</font> Gizmo g) {
+    <font color="#009900">//! g = new Gizmo(); // Illegal -- g is final</font>
+    g.spin();
+  }
+  <font color="#0000ff">void</font> without(Gizmo g) {
+    g = <font color="#0000ff">new</font> Gizmo(); <font color="#009900">// OK -- g not final</font>
+    g.spin();
+  }
+  <font color="#009900">// void f(final int i) { i++; } // Can't change</font>
+  <font color="#009900">// You can only read from a final primitive:</font>
+  <font color="#0000ff">int</font> g(<font color="#0000ff">final</font> <font color="#0000ff">int</font> i) { <font color="#0000ff">return</font> i + 1; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    FinalArguments bf = <font color="#0000ff">new</font> FinalArguments();
+    bf.without(<font color="#0000ff">null</font>);
+    bf.with(<font color="#0000ff">null</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that you can still assign a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle to an argument that&#8217;s final without the compiler catching it, just
+like you can with a non-final argument.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+show what happens when primitive arguments are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+you can only read the argument, but you can't change it.
+</FONT><a name="_Toc375545319"></a><a name="_Toc408018522"></a><P></DIV>
+<A NAME="Heading200"></A><H3 ALIGN=LEFT>
+Final
+methods
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two reasons for <A NAME="Index526"></A><A NAME="Index527"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. The first is to put a &#8220;lock&#8221; on the method to prevent any
+inheriting class from changing its meaning. This is done for design reasons
+when you want to make sure that a method&#8217;s behavior is retained during
+inheritance and cannot be overridden.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second reason for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods is efficiency. If you make a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you are allowing the compiler to turn any calls to that method into <A NAME="Index528"></A><A NAME="Index529"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>inline</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls. When the compiler sees a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method call it can (at its discretion) skip the normal approach of inserting
+code to perform the method call mechanism (push arguments on the stack, hop
+over to the method code and execute it, hop back and clean off the stack
+arguments, and deal with the return value) and instead replace the method call
+with a copy of the actual code in the method body. This eliminates the overhead
+of the method call. Of course, if a method is big, then your code begins to
+bloat and you probably won&#8217;t see any performance gains from inlining
+since any improvements will be dwarfed by the amount of time spent inside the
+method. It is implied that the Java compiler is able to detect these situations
+and choose wisely whether to inline a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. However, it&#8217;s better to not trust that the compiler is able to do
+this and make a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only if it&#8217;s quite small or if you want to explicitly prevent overriding.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Any
+<A NAME="Index530"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods in a class are implicitly 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because you can&#8217;t access a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method,
+you can&#8217;t override it (the compiler gives an error message if you try).
+You can add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+specifier to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method but it doesn&#8217;t give that method any extra meaning.
+</FONT><a name="_Toc375545320"></a><a name="_Toc408018523"></a><P></DIV>
+<A NAME="Heading201"></A><H3 ALIGN=LEFT>
+Final
+classes
+<P><A NAME="Index531"></A><A NAME="Index532"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you say that an entire class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(by preceding its definition with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword), you state that you don&#8217;t want to inherit from this class or
+allow anyone else to do so. In other words, for some reason the design of your
+class is such that there is never a need to make any changes, or for safety or
+security reasons you don&#8217;t want subclassing. Alternatively, you might be
+dealing with an efficiency issue and you want to make sure that any activity
+involved with objects of this class is as efficient as possible.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Jurassic.java</font>
+<font color="#009900">// Making an entire class final</font>
+
+<font color="#0000ff">class</font> SmallBrain {}
+
+<font color="#0000ff">final</font> <font color="#0000ff">class</font> Dinosaur {
+  <font color="#0000ff">int</font> i = 7;
+  <font color="#0000ff">int</font> j = 1;
+  SmallBrain x = <font color="#0000ff">new</font> SmallBrain();
+  <font color="#0000ff">void</font> f() {}
+}
+
+<font color="#009900">//! class Further extends Dinosaur {}</font>
+<font color="#009900">// error: Cannot extend final class 'Dinosaur'</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Jurassic {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Dinosaur n = <font color="#0000ff">new</font> Dinosaur();
+    n.f();
+    n.i = 40;
+    n.j++;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the data members can be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or not, as you choose. The same rules apply to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for data members regardless of whether the class is defined as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Defining the class as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+simply prevents inheritance &#8211; nothing more. However, because it prevents <A NAME="Index533"></A>inheritance
+all methods in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class are implicitly 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since there&#8217;s no way to override them. So the compiler has the same
+efficiency options as it does if you explicitly declare a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+specifier to a method in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, but it doesn&#8217;t add any meaning.
+</FONT><a name="_Toc375545321"></a><a name="_Toc408018524"></a><P></DIV>
+<A NAME="Heading202"></A><H3 ALIGN=LEFT>
+Final
+caution
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+can seem to be sensible to make a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+while you&#8217;re designing a class. You might feel that <A NAME="Index534"></A><A NAME="Index535"></A><A NAME="Index536"></A>efficiency
+is very important when using your class and that no one could possibly want to
+override your methods anyway. Sometimes this is true.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+be careful with your assumptions. In general, it&#8217;s difficult to
+anticipate how a class can be reused, especially a general-purpose class. If
+you define a method as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you might prevent the possibility of reusing your class through inheritance in
+some other programmer&#8217;s project simply because you couldn&#8217;t imagine
+it being used that way.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+standard Java library is a good example of this. In particular, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is commonly used and might be even more useful if, in the name of
+efficiency, all the methods hadn&#8217;t been made 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s easily conceivable that you might want to inherit and override with
+such a fundamentally useful class, but the designers somehow decided this
+wasn&#8217;t appropriate. This is ironic for two reasons. First, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which says that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which isn&#8217;t really true. Second, many of the most important methods of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which as you will see in Chapter 14 incurs a significant performance overhead
+that probably wipes out any gains provided by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This lends credence to the theory that programmers are consistently bad at
+guessing where optimizations should occur. It&#8217;s just too bad that such a
+clumsy design made it into the standard library where we must all cope with it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+also interesting to note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+another important standard library class, does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. As mentioned elsewhere in this book, it&#8217;s quite obvious that
+some classes were designed by completely different people than others. (Notice
+the brevity of the method names in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+compared to those in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+This is precisely the sort of thing that should 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be obvious to consumers of a class library. When things are inconsistent it
+just makes more work for the user. Yet another paean to the value of design and
+code walkthroughs.
+</FONT><a name="_Toc375545322"></a><a name="_Toc408018525"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0070.html">Prev</a> | <a href="tij0072.html">Next</a>
+</div>
+</body></html>
+

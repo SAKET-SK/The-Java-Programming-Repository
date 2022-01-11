@@ -1,0 +1,48 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0047.html">Prev</a> | <a href="tij0049.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+4:
+Initialization 
+<P>and
+cleanup
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">As
+the computer revolution progresses, &#8220;unsafe&#8221; programming has become
+one of the major culprits that makes programming expensive.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Two
+of these safety issues are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>initialization</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>cleanup</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Many C bugs occur when the programmer forgets to initialize a variable. This is
+especially true with libraries when users don&#8217;t know how to initialize a
+library component, or even that they must. Cleanup is a special problem because
+it&#8217;s easy to forget about an element when you&#8217;re done with it,
+since it no longer concerns you. Thus, the resources used by that element are
+retained and you can easily end up running out of resources (most notably
+memory). 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">C++
+introduced the concept of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>constructor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a special method automatically called when an object is created. Java also
+adopted the constructor, and in addition has a garbage collector that
+automatically releases memory resources when they&#8217;re no longer being
+used. This chapter examines the issues of initialization and cleanup and their
+support in Java.
+</FONT><a name="_Toc312373853"></a><a name="_Toc375545275"></a><a name="_Toc408018476"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0047.html">Prev</a> | <a href="tij0049.html">Next</a>
+</div>
+</body></html>
+

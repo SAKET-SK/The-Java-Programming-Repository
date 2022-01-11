@@ -1,0 +1,702 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0049.html">Prev</a> | <a href="tij0051.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Method
+overloading
+<P><A NAME="Index270"></A><A NAME="Index271"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the important features in any programming language is the use of names. When
+you create an object, you give a name to a region of storage. A method is a
+name for an action. By using names to describe your system, you create a
+program that is easier for people to understand and change. It&#8217;s a lot
+like writing prose &#8211; the goal is to communicate with your readers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+refer to all objects and methods by using names. Well-chosen names make it
+easier for you and others to understand your code. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+problem arises when mapping the concept of nuance in human language onto a
+programming language. Often, the same word expresses a number of different
+meanings &#8211; it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>overloaded</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is useful, especially when it comes to trivial differences. You say
+&#8220;wash the shirt,&#8221; &#8220;wash the car,&#8221; and &#8220;wash the
+dog.&#8221; It would be silly to be forced to say, &#8220;shirtWash the
+shirt,&#8221; &#8220;carWash the car,&#8221; and &#8220;dogWash the dog&#8221;
+just so the listener doesn&#8217;t need to make any distinction about the
+action performed. Most human languages are redundant, so even if you miss a few
+words, you can still determine the meaning. We don&#8217;t need unique
+identifiers &#8211; we can deduce meaning from context.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+programming languages (C in particular) require you to have a unique identifier
+for each function. So you could not have one function called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for printing integers and another called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for printing floats &#8211; each function requires a unique name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java, another factor forces the overloading of method names: the constructor<A NAME="Index272"></A><A NAME="Index273"></A>.
+Because the constructor&#8217;s name is predetermined by the name of the class,
+there can be only one constructor name. But what if you want to create an
+object in more than one way? For example, suppose you build a class that can
+initialize itself in a standard way and by reading information from a file. You
+need two constructors, one that takes no arguments (the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>default</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor), and one that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an argument, which is the name of the file from which to initialize the
+object. Both are constructors, so they must have the same name &#8211; the name
+of the class. Thus 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>method
+overloading
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is essential to allow the same method name to be used with different argument
+types. And although method overloading is a must for constructors, it&#8217;s a
+general convenience and can be used with any method. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that shows both overloaded constructors and overloaded ordinary
+methods:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Overloading.java</font>
+<font color="#009900">// Demonstration of both constructor</font>
+<font color="#009900">// and ordinary method overloading.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Tree {
+  <font color="#0000ff">int</font> height;
+  Tree() {
+    prt("Planting a seedling");
+    height = 0;
+  }
+  Tree(<font color="#0000ff">int</font> i) {
+    prt("Creating <font color="#0000ff">new</font> Tree that is "
+        + i + " feet tall");
+    height = i;
+  }
+  <font color="#0000ff">void</font> info() {
+    prt("Tree is " + height
+        + " feet tall");
+  }
+  <font color="#0000ff">void</font> info(String s) {
+    prt(s + ": Tree is "
+        + height + " feet tall");
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Overloading {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 5; i++) {
+      Tree t = <font color="#0000ff">new</font> Tree(i);
+      t.info();
+      t.info("overloaded method");
+    }
+    <font color="#009900">// Overloaded constructor:</font>
+    <font color="#0000ff">new</font> Tree();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object can be created either as a seedling, with no argument, or as a plant
+grown in a nursery, with an existing height. To support this, there are two
+constructors, one that takes no arguments (we call constructors that take no
+arguments <A NAME="Index274"></A><A NAME="Index275"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>default
+constructors
+</I></FONT><A NAME="fnB17" HREF="#fn17">[17]</A><A NAME="Index276"></A><A NAME="Index277"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and one that takes the existing height.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might also want to call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>info(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in more than one way. For example, with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument if you have an extra message you want printed, and without if you have
+nothing more to say. It would seem strange to give two separate names to what
+is obviously the same concept. Fortunately, method overloading allows you to
+use the same name for both.
+</FONT><a name="_Toc375545277"></a><a name="_Toc408018478"></a><P></DIV>
+<A NAME="Heading140"></A><H3 ALIGN=LEFT>
+Distinguishing
+overloaded methods
+<P><A NAME="Index278"></A><A NAME="Index279"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the methods have the same name, how can Java know which method you mean?
+There&#8217;s a simple rule: Each overloaded method must take a unique list of
+argument types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you think about this for a second, it makes sense: how else could a programmer
+tell the difference between two methods that have the same name, other than by
+the types of their arguments?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+differences in the ordering of arguments is sufficient to distinguish two
+methods: (Although you don&#8217;t normally want to take this approach, as it
+produces difficult-to-maintain code.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: OverloadingOrder.java</font>
+<font color="#009900">// Overloading based on the order of</font>
+<font color="#009900">// the arguments.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> OverloadingOrder {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(String s, <font color="#0000ff">int</font> i) {
+    System.out.println(
+      "String: " + s +
+      ", <font color="#0000ff">int</font>: " + i);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(<font color="#0000ff">int</font> i, String s) {
+    System.out.println(
+      "<font color="#0000ff">int</font>: " + i +
+      ", String: " + s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    print("String first", 11);
+    print(99, "Int first");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods have identical arguments, but the order is different, and that&#8217;s
+what makes them distinct.
+</FONT><a name="_Toc408018479"></a><a name="_Toc312373866"></a><a name="_Toc375545278"></a><P></DIV>
+<A NAME="Heading141"></A><H3 ALIGN=LEFT>
+Overloading
+with primitives
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Primitives
+can be automatically promoted from a smaller type to a larger one and this can
+be slightly confusing in combination with overloading. The following example
+demonstrates what happens when a primitive is handed to an overloaded method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PrimitiveOverloading.java</font>
+<font color="#009900">// Promotion of primitives and overloading</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PrimitiveOverloading {
+  <font color="#009900">// boolean can't be automatically converted</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) { 
+    System.out.println(s); 
+  }
+
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">char</font> x) { prt("f1(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">byte</font> x) { prt("f1(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">short</font> x) { prt("f1(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">int</font> x) { prt("f1(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">long</font> x) { prt("f1(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">float</font> x) { prt("f1(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">double</font> x) { prt("f1(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">byte</font> x) { prt("f2(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">short</font> x) { prt("f2(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">int</font> x) { prt("f2(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">long</font> x) { prt("f2(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">float</font> x) { prt("f2(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">double</font> x) { prt("f2(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">short</font> x) { prt("f3(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">int</font> x) { prt("f3(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">long</font> x) { prt("f3(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">float</font> x) { prt("f3(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">double</font> x) { prt("f3(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">int</font> x) { prt("f4(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">long</font> x) { prt("f4(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">float</font> x) { prt("f4(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">double</font> x) { prt("f4(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">long</font> x) { prt("f5(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">float</font> x) { prt("f5(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">double</font> x) { prt("f5(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f6(<font color="#0000ff">float</font> x) { prt("f6(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f6(<font color="#0000ff">double</font> x) { prt("f6(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f7(<font color="#0000ff">double</font> x) { prt("f7(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> testConstVal() {
+    prt("Testing with 5");
+    f1(5);f2(5);f3(5);f4(5);f5(5);f6(5);f7(5);
+  }
+  <font color="#0000ff">void</font> testChar() {
+    <font color="#0000ff">char</font> x = 'x';
+    prt("<font color="#0000ff">char</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testByte() {
+    <font color="#0000ff">byte</font> x = 0;
+    prt("<font color="#0000ff">byte</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testShort() {
+    <font color="#0000ff">short</font> x = 0;
+    prt("<font color="#0000ff">short</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testInt() {
+    <font color="#0000ff">int</font> x = 0;
+    prt("<font color="#0000ff">int</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testLong() {
+    <font color="#0000ff">long</font> x = 0;
+    prt("<font color="#0000ff">long</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testFloat() {
+    <font color="#0000ff">float</font> x = 0;
+    prt("<font color="#0000ff">float</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">void</font> testDouble() {
+    <font color="#0000ff">double</font> x = 0;
+    prt("<font color="#0000ff">double</font> argument:");
+    f1(x);f2(x);f3(x);f4(x);f5(x);f6(x);f7(x);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    PrimitiveOverloading p = 
+      <font color="#0000ff">new</font> PrimitiveOverloading();
+    p.testConstVal();
+    p.testChar();
+    p.testByte();
+    p.testShort();
+    p.testInt();
+    p.testLong();
+    p.testFloat();
+    p.testDouble();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you view the output of this program, you&#8217;ll see that the constant value 5
+is treated as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so if an overloaded method is available that takes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it is used. In all other cases, if you have a data type that is smaller than
+the argument in the method, that data type is promoted. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a slightly different effect, since if it doesn&#8217;t find an exact 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+match, it is promoted to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens if your argument is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>bigger</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+than the argument expected by the overloaded method? A modification of the
+above program gives the answer:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Demotion.java</font>
+<font color="#009900">// Demotion of primitives and overloading</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Demotion {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) { 
+    System.out.println(s); 
+  }
+
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">char</font> x) { prt("f1(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">byte</font> x) { prt("f1(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">short</font> x) { prt("f1(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">int</font> x) { prt("f1(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">long</font> x) { prt("f1(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">float</font> x) { prt("f1(<font color="#0000ff">float</font>)"); }
+  <font color="#0000ff">void</font> f1(<font color="#0000ff">double</font> x) { prt("f1(<font color="#0000ff">double</font>)"); }
+
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">char</font> x) { prt("f2(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">byte</font> x) { prt("f2(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">short</font> x) { prt("f2(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">int</font> x) { prt("f2(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">long</font> x) { prt("f2(<font color="#0000ff">long</font>)"); }
+  <font color="#0000ff">void</font> f2(<font color="#0000ff">float</font> x) { prt("f2(<font color="#0000ff">float</font>)"); }
+
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">char</font> x) { prt("f3(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">byte</font> x) { prt("f3(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">short</font> x) { prt("f3(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">int</font> x) { prt("f3(<font color="#0000ff">int</font>)"); }
+  <font color="#0000ff">void</font> f3(<font color="#0000ff">long</font> x) { prt("f3(<font color="#0000ff">long</font>)"); }
+
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">char</font> x) { prt("f4(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">byte</font> x) { prt("f4(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">short</font> x) { prt("f4(<font color="#0000ff">short</font>)"); }
+  <font color="#0000ff">void</font> f4(<font color="#0000ff">int</font> x) { prt("f4(<font color="#0000ff">int</font>)"); }
+
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">char</font> x) { prt("f5(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">byte</font> x) { prt("f5(<font color="#0000ff">byte</font>)"); }
+  <font color="#0000ff">void</font> f5(<font color="#0000ff">short</font> x) { prt("f5(<font color="#0000ff">short</font>)"); }
+
+  <font color="#0000ff">void</font> f6(<font color="#0000ff">char</font> x) { prt("f6(<font color="#0000ff">char</font>)"); }
+  <font color="#0000ff">void</font> f6(<font color="#0000ff">byte</font> x) { prt("f6(<font color="#0000ff">byte</font>)"); }
+
+  <font color="#0000ff">void</font> f7(<font color="#0000ff">char</font> x) { prt("f7(<font color="#0000ff">char</font>)"); }
+
+  <font color="#0000ff">void</font> testDouble() {
+    <font color="#0000ff">double</font> x = 0;
+    prt("<font color="#0000ff">double</font> argument:");
+    f1(x);f2((<font color="#0000ff">float</font>)x);f3((<font color="#0000ff">long</font>)x);f4((<font color="#0000ff">int</font>)x);
+    f5((<font color="#0000ff">short</font>)x);f6((<font color="#0000ff">byte</font>)x);f7((<font color="#0000ff">char</font>)x);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Demotion p = <font color="#0000ff">new</font> Demotion();
+    p.testDouble();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+the methods take narrower primitive values. If your argument is wider then you
+must <A NAME="Index280"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>cast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the necessary type using the type name in parentheses. If you don&#8217;t do
+this, the compiler will issue an error message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+should be aware that this is a <A NAME="Index281"></A><A NAME="Index282"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>narrowing
+conversion,
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which means you might lose information during the cast. This is why the
+compiler forces you to do it &#8211; to flag the narrowing conversion. 
+</FONT><a name="_Toc408018480"></a><P></DIV>
+<A NAME="Heading142"></A><H3 ALIGN=LEFT>
+Overloading
+on return values
+<P><A NAME="Index283"></A><A NAME="Index284"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is common to wonder &#8220;Why only class names and method argument lists? Why
+not distinguish between methods based on their return values?&#8221; For
+example, these two methods, which have the same name and arguments, are easily
+distinguished from each other:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">void</font> f() {}
+<font color="#0000ff">int</font> f() {} </PRE></font><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+works fine when the compiler can unequivocally determine the meaning from the
+context, as in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+x = f(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, you can call a method and ignore the return value; this is often
+referred to as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>calling
+a method for its <A NAME="Index285"></A>side
+effect
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since you don&#8217;t care about the return value but instead want the other
+effects of the method call. So if you call the method this way:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">f();</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">how
+can Java determine which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be called? And how could someone reading the code see it? Because of
+this sort of problem, you cannot use return value types to distinguish
+overloaded methods.
+</FONT><a name="_Toc375545279"></a><a name="_Toc408018481"></a><P></DIV>
+<A NAME="Heading143"></A><H3 ALIGN=LEFT>
+Default
+constructors
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+mentioned previously, a default constructor <A NAME="Index286"></A><A NAME="Index287"></A>is
+one without arguments, used to create a &#8220;vanilla object.&#8221; If you
+create a class that has no constructors, the compiler will automatically create
+a default constructor for you. For example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DefaultConstructor.java</font>
+
+<font color="#0000ff">class</font> Bird {
+  <font color="#0000ff">int</font> i;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DefaultConstructor {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Bird nc = <font color="#0000ff">new</font> Bird(); <font color="#009900">// default!</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+line
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Bird();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">creates
+a new object and calls the default constructor, even though one was not
+explicitly defined. Without it we would have no method to call to build our
+object. However, if you define any constructors (with or without arguments),
+the compiler will 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+synthesize one for you:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Bush {
+  Bush(<font color="#0000ff">int</font> i) {}
+  Bush(<font color="#0000ff">double</font> d) {}
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+if you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Bush();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+compiler will complain that it cannot find a constructor that matches.
+It&#8217;s as if when you don&#8217;t put in any constructors, the compiler
+says &#8220;You are bound to need 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>some</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor, so let me make one for you.&#8221; But if you write a constructor,
+the compiler says &#8220;You&#8217;ve written a constructor so you know what
+you&#8217;re doing; if you didn&#8217;t put in a default it&#8217;s because you
+meant to leave it out.&#8221;
+</FONT><a name="_Toc375545280"></a><a name="_Toc408018482"></a><P></DIV>
+<A NAME="Heading144"></A><H3 ALIGN=LEFT>
+The
+<A NAME="Index288"></A>this
+keyword
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you have two objects of the same type called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you might wonder how it is that you can call a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for both those objects:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Banana { <font color="#0000ff">void</font> f(<font color="#0000ff">int</font> i) { <font color="#009900">/* ... */</font> } }
+Banana a = <font color="#0000ff">new</font> Banana(), b = <font color="#0000ff">new</font> Banana();
+a.f(1);
+b.f(2);</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+there&#8217;s only one method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+how can that method know whether it&#8217;s being called for the object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+allow you to write the code in a convenient object-oriented syntax in which you
+&#8220;send a message to an object,&#8221; the compiler does some undercover
+work for you. There&#8217;s a secret first argument passed to the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that argument is the handle to the object that&#8217;s being manipulated.
+So the two method calls above become something like:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Banana.f(a,1);
+Banana.f(b,2);</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is internal and you can&#8217;t write these expressions and get the compiler to
+accept them, but it gives you an idea of what&#8217;s happening.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Suppose
+you&#8217;re inside a method and you&#8217;d like to get the handle to the
+current object. Since that handle is passed 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>secretly</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by the compiler, there&#8217;s no identifier for it. However, for this purpose
+there&#8217;s a keyword: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword &#8211; which can be used only inside a method &#8211; produces the
+handle to the object the method has been called for. You can treat this handle
+just like any other object handle. Keep in mind that if you&#8217;re calling a
+method of your class from within another method of your class, you don&#8217;t
+need to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you simply call the method. The current 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is automatically used for the other method. Thus you can say:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Apricot {
+  <font color="#0000ff">void</font> pick() { <font color="#009900">/* ... */</font> }
+  <font color="#0000ff">void</font> pit() { pick(); <font color="#009900">/* ... */</font> }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inside
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>could</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this.pick(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but there&#8217;s no need to. The compiler does it for you automatically. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword is used only for those special cases in which you need to explicitly
+use the handle to the current object. For example, it&#8217;s often used in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements when you want to return the handle to the current object:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Leaf.java</font>
+<font color="#009900">// Simple use of the "this" keyword</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Leaf {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 0;
+  Leaf increment() {
+    i++;
+    <font color="#0000ff">return</font> <font color="#0000ff">this</font>;
+  }
+  <font color="#0000ff">void</font> print() {
+    System.out.println("i = " + i);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Leaf x = <font color="#0000ff">new</font> Leaf();
+    x.increment().increment().increment().print();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>increment(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the handle to the current object via the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, multiple operations can easily be performed on the same object.
+</FONT><P></DIV>
+<A NAME="Heading145"></A><H4 ALIGN=LEFT>
+Calling
+constructors from constructors
+<P><A NAME="Index289"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you write several constructors for a class, there are times when you&#8217;d
+like to call one constructor from another to avoid duplicating code. You can do
+this using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Normally,
+when you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it is in the sense of &#8220;this object&#8221; or &#8220;the current
+object,&#8221; and by itself it produces the handle to the current object. In a
+constructor, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword takes on a different meaning when you give it an argument list: it
+makes an explicit call to the constructor that matches that argument list. Thus
+you have a straightforward way to call other constructors:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Flower.java</font>
+<font color="#009900">// Calling constructors with "this"</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Flower {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> petalCount = 0;
+  <font color="#0000ff">private</font> String s = <font color="#0000ff">new</font> String("<font color="#0000ff">null</font>");
+  Flower(<font color="#0000ff">int</font> petals) {
+    petalCount = petals;
+    System.out.println(
+      "Constructor w/ <font color="#0000ff">int</font> arg only, petalCount= "
+      + petalCount);
+  }
+  Flower(String ss) {
+    System.out.println(
+      "Constructor w/ String arg only, s=" + ss);
+    s = ss;
+  }
+  Flower(String s, <font color="#0000ff">int</font> petals) {
+    <font color="#0000ff">this</font>(petals);
+<font color="#009900">//!    this(s); // Can't call two!</font>
+    <font color="#0000ff">this</font>.s = s; <font color="#009900">// Another use of "this"</font>
+    System.out.println("String &amp; <font color="#0000ff">int</font> args");
+  }
+  Flower() {
+    <font color="#0000ff">this</font>("hi", 47);
+    System.out.println(
+      "<font color="#0000ff">default</font> constructor (no args)");
+  }
+  <font color="#0000ff">void</font> print() {
+<font color="#009900">//!    this(11); // Not inside non-constructor!</font>
+    System.out.println(
+      "petalCount = " + petalCount + " s = "+ s);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Flower x = <font color="#0000ff">new</font> Flower();
+    x.print();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Flower(String
+s, int petals)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows that, while you can call one constructor using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you cannot call two. In addition, the constructor call must be the first thing
+you do or you&#8217;ll get a compiler error message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also shows another way you&#8217;ll see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+used. Since the name of the argument 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+the name of the member data 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the same, there&#8217;s an ambiguity. You can resolve it by saying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this.s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to refer to the member data. You&#8217;ll often see this form used in Java
+code, and it&#8217;s used in numerous places in this book.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see that the compiler won&#8217;t let you call a constructor from
+inside any method other than a constructor.
+</FONT><P></DIV>
+<A NAME="Heading146"></A><H4 ALIGN=LEFT>
+The
+meaning of static
+<P><A NAME="Index290"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+in mind, you can more fully understand what it means to make a <A NAME="Index291"></A><A NAME="Index292"></A>method
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It means that there is no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that particular method. You cannot call non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods from inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods
+</FONT><A NAME="fnB18" HREF="#fn18">[18]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(although the reverse is possible), and you can call a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for the class itself, without any object. In fact, that&#8217;s
+primarily what a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is for. It&#8217;s as if you&#8217;re creating the equivalent of a
+global function (from C). Except global functions are not permitted in Java,
+and putting the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method inside a class allows it access to other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+and to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+people argue that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are not object-oriented since they do have the semantics of a global
+function; with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method you don&#8217;t send a message to an object, since there&#8217;s no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is probably a fair argument, and if you find yourself using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lot</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of static methods you should probably rethink your strategy. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are pragmatic and there are times when you genuinely need them, so whether or
+not they are &#8220;proper OOP&#8221; should be left to the theoreticians.
+Indeed, even <A NAME="Index293"></A>Smalltalk
+has the equivalent in its &#8220;class methods.&#8221;
+</FONT><a name="_Toc375545281"></a><a name="_Toc408018483"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn17" HREF="#fnB17">[17]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+In some of the Java literature from Sun they instead refer to these with the
+clumsy but descriptive name &#8220;no-arg constructors.&#8221; The term
+&#8220;default constructor&#8221; has been in use for many years and so I will
+use that.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn18" HREF="#fnB18">[18]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+The one case in which this is possible occurs if you pass a handle to an object
+into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+method. Then, via the handle (which is now effectively 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">),
+you can call non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+methods and access non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+fields. But typically if you want to do something like this you&#8217;ll just
+make an ordinary, non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+method.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0049.html">Prev</a> | <a href="tij0051.html">Next</a>
+</div>
+</body></html>
+

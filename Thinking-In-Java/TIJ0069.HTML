@@ -1,0 +1,58 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0068.html">Prev</a> | <a href="tij0070.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Incremental
+development
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the advantages of inheritance is that it supports 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>incremental
+development<A NAME="Index492"></A><A NAME="Index493"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by allowing you to introduce new code without causing bugs in existing code.
+This also isolates new bugs to the new code. By inheriting from an existing,
+functional class and adding data members and methods (and redefining existing
+methods), you leave the existing code &#8211; that someone else might still be
+using &#8211; untouched and unbugged. If a bug happens, you know that
+it&#8217;s in your new code, which is much shorter and easier to read than if
+you had modified the body of existing code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+rather amazing how cleanly the classes are separated. You don&#8217;t even need
+the source code for the methods in order to reuse the code. At most, you just
+import a package. (This is true for both inheritance and composition.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+important to realize that program development is an incremental process, just
+like human learning. You can do as much analysis as you want, but you still
+won&#8217;t know all the answers when you set out on a project. You&#8217;ll
+have much more success &#8211; and more immediate feedback &#8211; if you start
+out to &#8220;grow&#8221; your project as an organic, evolutionary creature,
+rather than constructing it all at once like a glass-box skyscraper.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+inheritance for experimentation can be a useful technique, at some point after
+things stabilize you need to take a new look at your class hierarchy with an
+eye to collapsing it into a sensible structure. Remember that underneath it
+all, inheritance is meant to express a relationship that says &#8220;This new
+class is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>type
+of
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that old class.&#8221; Your program should not be concerned with pushing bits
+around, but instead with creating and manipulating objects of various types to
+express a model in the terms that come from the <A NAME="Index494"></A>problem
+space.
+</FONT><a name="_Toc305593259"></a><a name="_Toc305628731"></a><a name="_Toc312374031"></a><a name="_Toc375545315"></a><a name="_Toc408018518"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0068.html">Prev</a> | <a href="tij0070.html">Next</a>
+</div>
+</body></html>
+
