@@ -1,0 +1,232 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0180.html">Prev</a> | <a href="tij0182.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+RTTI
+considered harmful?
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Various
+designs in this chapter attempt to remove RTTI, which might give you the
+impression that it&#8217;s &#8220;considered harmful&#8221; (the condemnation
+used for poor, ill-fated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which was thus never put into Java). This isn&#8217;t true; it is the <A NAME="Index3004"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>misuse</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of RTTI that is the problem. The reason our designs removed RTTI is because the
+misapplication of that feature prevented <A NAME="Index3005"></A>extensibility,
+while the stated goal was to be able to add a new type to the system with as
+little impact on surrounding code as possible. Since RTTI is often misused by
+having it look for every single type in your system, it causes code to be
+non-extensible: when you add a new type, you have to go hunting for all the
+code in which RTTI is used, and if you miss any you won&#8217;t get help from
+the compiler.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+RTTI doesn&#8217;t automatically create non-extensible code. Let&#8217;s
+revisit the trash recycler once more. This time, a new tool will be introduced,
+which I call a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that holds 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+but the interface is simple: you can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a new object, and you can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing all the objects of a particular type. The keys for the contained 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the types in the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The beauty of this design (suggested by Larry O&#8217;Brien) is that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+dynamically adds a new pair whenever it encounters a new type, so whenever you
+add a new type to the system (even if you add the new type at run-time), it
+adapts.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Our
+example will again build on the structure of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c16.Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash.dat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file used there can be used here without change):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DynaTrash.java </font>
+<font color="#009900">// Using a Hashtable of Vectors and RTTI</font>
+<font color="#009900">// to automatically sort trash into</font>
+<font color="#009900">// vectors. This solution, despite the</font>
+<font color="#009900">// use of RTTI, is extensible.</font>
+<font color="#0000ff">package</font> c16.dynatrash;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#009900">// Generic TypeMap works in any situation:</font>
+<font color="#0000ff">class</font> TypeMap {
+  <font color="#0000ff">private</font> Hashtable t = <font color="#0000ff">new</font> Hashtable();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> add(Object o) {
+    Class type = o.getClass();
+    <font color="#0000ff">if</font>(t.containsKey(type))
+      ((Vector)t.get(type)).addElement(o);
+    <font color="#0000ff">else</font> {
+      Vector v = <font color="#0000ff">new</font> Vector();
+      v.addElement(o);
+      t.put(type,v);
+    }
+  }
+  <font color="#0000ff">public</font> Vector get(Class type) {
+    <font color="#0000ff">return</font> (Vector)t.get(type);
+  }
+  <font color="#0000ff">public</font> Enumeration keys() { <font color="#0000ff">return</font> t.keys(); }
+  <font color="#009900">// Returns handle to adapter class to allow</font>
+  <font color="#009900">// callbacks from ParseTrash.fillBin():</font>
+  <font color="#0000ff">public</font> Fillable filler() { 
+    <font color="#009900">// Anonymous inner class:</font>
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Fillable() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> addTrash(Trash t) { add(t); }
+    };
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DynaTrash {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    TypeMap bin = <font color="#0000ff">new</font> TypeMap();
+    ParseTrash.fillBin("Trash.dat",bin.filler());
+    Enumeration keys = bin.keys();
+    <font color="#0000ff">while</font>(keys.hasMoreElements())
+      Trash.sumValue(
+        bin.get((Class)keys.nextElement()));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+powerful, the definition for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simple. It contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method does most of the work. When you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a new object, the handle for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for that type is extracted. This is used as a key to determine whether a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holding objects of that type is already present in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If so, that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is extracted and the object is added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If not, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are added as a key-value pair.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can get an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of all the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and use each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to fetch the corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+And that&#8217;s all there is to it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>filler(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is interesting because it takes advantage of the design of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ParseTrash.fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which doesn&#8217;t just try to fill a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but instead anything that implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface with its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTrash(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. All 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>filler(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs to do is to return a handle to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then this handle can be used as an argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">ParseTrash.fillBin("Trash.dat",
+bin.filler());
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+produce this handle, an <A NAME="Index3006"></A><A NAME="Index3007"></A><A NAME="Index3008"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>anonymous
+inner class
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(described in Chapter 7) is used. You never need a named class to implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you just need a handle to an object of that class, thus this is an appropriate
+use of anonymous inner classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+interesting thing about this design is that even though it wasn&#8217;t created
+to handle the sorting, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is performing a sort every time it inserts a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Much
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+DynaTrash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be familiar from the previous examples. This time, instead of placing
+the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so when the trash is thrown into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it&#8217;s immediately sorted by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+internal sorting mechanism. Stepping through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and operating on each individual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+becomes a simple matter:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    Enumeration keys = bin.keys();
+    <font color="#0000ff">while</font>(keys.hasMoreElements())
+      Trash.sumValue(
+        bin.get((Class)keys.nextElement())); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see, adding a new type to the system won&#8217;t affect this code at
+all, nor the code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is certainly the smallest solution to the problem, and arguably the most
+elegant as well. It does rely heavily on RTTI, but notice that each key-value
+pair in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is looking for only one type. In addition, there&#8217;s no way you can
+&#8220;forget&#8221; to add the proper code to this system when you add a new
+type, since there isn&#8217;t any code you need to add.
+</FONT><a name="_Toc408018807"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0180.html">Prev</a> | <a href="tij0182.html">Next</a>
+</div>
+</body></html>
+

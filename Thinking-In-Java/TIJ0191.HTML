@@ -1,0 +1,546 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0190.html">Prev</a> | <a href="tij0192.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+Java Native Interface
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JNI
+is a fairly rich programming interface that allows you to call native methods
+from a Java application. It was added in Java 1.1, maintaining a certain degree
+of compatibility with its Java 1.0 equivalent, the <A NAME="Index3089"></A><A NAME="Index3090"></A>native
+method interface (NMI). NMI has design characteristics that make it unsuitable
+for adoption in all virtual machines. For this reason, future versions of the
+language might no longer support NMI, and it will not be covered here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Currently,
+JNI is designed to interface with native methods written only in <A NAME="Index3091"></A>C
+or C++. Using JNI, your native methods can:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create,
+inspect, and update Java objects (including arrays and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s)</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Call
+Java methods
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Catch
+and throw exceptions
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Load
+classes and obtain class information
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Perform
+runtime type checking
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+virtually everything you can do with classes and objects in ordinary Java you
+can also do in native methods. 
+</FONT><a name="_Toc408018819"></a><P></DIV>
+<A NAME="Heading586"></A><H3 ALIGN=LEFT>
+Calling
+a native method
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">We&#8217;ll
+start with a simple example: a Java program that calls a native method, which
+in turn calls the Win32 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+API function to display a graphical text box. This example will also be used
+later with J/Direct. If your platform is not Win32, just replace the C header
+include: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">#include
+&lt;windows.h&gt;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">#include
+&lt;stdio.h&gt;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+replace the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first step is to write the Java code declaring a native method and its arguments:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> ShowMsgBox {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String [] args) {
+    ShowMsgBox app = <font color="#0000ff">new</font> ShowMsgBox();
+    app.ShowMessage("Generated with JNI");
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">native</font> <font color="#0000ff">void</font> ShowMessage(String msg);
+  <font color="#0000ff">static</font> {
+    System.loadLibrary("MsgImpl");
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+native method declaration is followed by a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block that calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.loadLibrary(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which you could call at any time, but this style is more appropriate). 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.loadLibrary(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loads a DLL in memory and links to it. The DLL must be in your system path or
+in the directory containing the Java class file. The file name extension is
+automatically added by the JVM depending on the platform.
+</FONT><P></DIV>
+<A NAME="Heading587"></A><H4 ALIGN=LEFT>
+The
+C header file generator: javah
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+compile your Java source file and run <A NAME="Index3092"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>javah</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javah</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was present in version 1.0, but since you are using Java 1.1 JNI you must
+specify the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8211;jni</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+switch:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">javah
+&#8211;jni ShowMsgBox
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javah</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reads the Java class file and for each native method declaration it generates a
+function prototype in a C or C++ header file. Here&#8217;s the output: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMsgBox.h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+source file (edited slightly to fit into the book):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">/* DO NOT EDIT THIS FILE 
+   - it is machine generated */</font>
+#include &lt;jni.h&gt;
+<font color="#009900">/* Header for class ShowMsgBox */</font>
+
+#ifndef _Included_ShowMsgBox
+#define _Included_ShowMsgBox
+#ifdef __cplusplus
+extern "C" {
+#endif
+<font color="#009900">/*
+ * Class:     ShowMsgBox
+ * Method:    ShowMessage
+ * Signature: (Ljava/lang/String;)V
+ */</font>
+JNIEXPORT <font color="#0000ff">void</font> JNICALL 
+Java_ShowMsgBox_ShowMessage
+  (JNIEnv *, jobject, jstring);
+
+#ifdef __cplusplus
+}
+#endif
+#endif</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#ifdef
+__cplusplus
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+preprocessor directive, this file can be compiled either by a C or a C++
+compiler. The first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#include</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive includes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jni.h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a header file that, among other things, defines the types that you can see used
+in the rest of the file. <A NAME="Index3093"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEXPORT</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index3094"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNICALL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are macros that expand to match platform-specific directives; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jobject</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jstring</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are JNI data type definitions.
+</FONT><P></DIV>
+<A NAME="Heading588"></A><H4 ALIGN=LEFT>
+Name
+mangling and function signatures
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JNI
+imposes a naming convention (called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>name
+mangling
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+on native methods; this is important, since it&#8217;s part of the mechanism by
+which the virtual machine links Java calls to native methods. Basically, all
+native methods start with the word &#8220;Java,&#8221; followed by the name of
+the class in which the Java native declaration appears, followed by the name of
+the Java method; the underscore character is used as a separator. If the Java
+native method is overloaded, then the function signature is appended to the
+name as well; you can see the native signature in the comments preceding the
+prototype. For more information about name mangling and native method
+signatures, please refer to the JNI documentation.
+</FONT><P></DIV>
+<A NAME="Heading589"></A><H4 ALIGN=LEFT>
+Implementing
+your DLL
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, all you have to do is write a C or C++ source file that includes
+the javah-generated header file and implements the native method, then compile
+it and generate a dynamic link library. This part is platform-dependent, and
+I&#8217;ll assume that you know how to create a DLL. The code below implements
+the native method by calling a Win32 API. It is then compiled and linked into a
+file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MsgImpl.dll</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(for &#8220;Message Implementation&#8221;).
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>#include &lt;windows.h&gt;
+#include "ShowMsgBox.h"
+
+BOOL APIENTRY DllMain(HANDLE hModule, 
+  DWORD dwReason, <font color="#0000ff">void</font>** lpReserved) {
+  <font color="#0000ff">return</font> TRUE;
+}
+
+JNIEXPORT <font color="#0000ff">void</font> JNICALL 
+Java_ShowMsgBox_ShowMessage(JNIEnv * jEnv, 
+  jobject <font color="#0000ff">this</font>, jstring jMsg) {
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font> * msg;
+  msg = (*jEnv)-&gt;GetStringUTFChars(jEnv, jMsg,0);
+  MessageBox(HWND_DESKTOP, msg, 
+    "Thinking in Java: JNI",
+    MB_OK | MB_ICONEXCLAMATION);
+  (*jEnv)-&gt;ReleaseStringUTFChars(jEnv, jMsg,msg);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you have no interest in Win32, just skip the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+call; the interesting part is the surrounding code. The arguments that are
+passed into the native method are the gateway back into Java. The first, of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">contains
+all the hooks that allow you to call back into the JVM. (We&#8217;ll look at
+this in the next section.) The second argument has a different meaning
+depending on the type of method. For non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods like the example above (also called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>instance
+methods
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+the second argument is the equivalent of the &#8220;this&#8221; pointer in C++
+and similar to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java: it&#8217;s a reference to the object that called the native method. For 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, it&#8217;s a reference to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object where the method is implemented.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+remaining arguments represent the Java objects passed into the native method
+call. Primitives are also passed in this way, but they come in by value.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following sections we&#8217;ll explain this code by looking at how to
+access and control the JVM from inside a native method.
+</FONT><a name="_Toc408018820"></a><P></DIV>
+<A NAME="Heading590"></A><H3 ALIGN=LEFT>
+Accessing
+JNI functions: 
+<P>The
+JNIEnv argument
+<P><A NAME="Index3095"></A><A NAME="Index3096"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JNI
+functions are those that the programmer uses to interact with the JVM from
+inside a native method. As you can see in the example above, every JNI native
+method receives a special argument as its first parameter: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument, which is a pointer to a special JNI data structure of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv_</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+One element of the JNI data structure is a pointer to an array generated by the
+JVM; each element of this array is a pointer to a JNI function. The JNI
+functions can be called from the native method by dereferencing these pointers
+(it&#8217;s simpler than it sounds). Every JVM provides its own implementation
+of the JNI functions, but their addresses will always be at predefined offsets.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Through
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument, the programmer has access to a large set of functions. These
+functions can be grouped into the following categories:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Obtaining
+version information
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Performing
+class and object operations
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Handling
+global and local references to Java objects
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Accessing
+instance fields and static fields
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Calling
+instance methods and static methods
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Performing
+string and array operations
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Generating
+and handling Java exceptions
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+number of JNI functions is quite large and won&#8217;t be covered here.
+Instead, I&#8217;ll show the rationale behind the use of these functions. For
+more detailed information, consult your compiler&#8217;s JNI documentation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you take a look at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jni.h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+header file, you&#8217;ll see that inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#ifdef
+__cplusplus
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+preprocessor conditional, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv_</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+structure is defined as a class when compiled by a C++ compiler. This class
+contains a number of inline functions that let you access the JNI functions
+with an easy and familiar syntax. For example, the line in the preceding example
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">(*jEnv)-&gt;ReleaseStringUTFChars(jEnv,
+jMsg,msg);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">can
+be rewritten as follows in C++:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jEnv-&gt;ReleaseStringUTFChars(jMsg,msg);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that you no longer need the double dereferencing of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointer, and that the same pointer is no longer passed as the first parameter
+to the JNI function call. In the rest of these examples, I&#8217;ll use the C++
+style.
+</FONT><P></DIV>
+<A NAME="Heading591"></A><H4 ALIGN=LEFT>
+Accessing
+Java Strings
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an example of accessing a JNI function, consider the code shown above. Here, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to access a Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are in Unicode format, so if you receive one and want to pass it to a
+non-Unicode function (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example), you must first convert it into ASCII characters with the JNI
+function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GetStringUTFChars(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This function takes a Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and converts it to UTF-8 characters. (These are 8 bits wide to hold ASCII
+values or 16 bits wide to hold Unicode. If the content of the original string
+was composed only of ASCII, the resulting string will be ASCII as well.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GetStringUTFChars</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the name of one of the fields in the structure that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is indirectly pointing to, and this field in turn is a pointer to a function.
+To access the JNI function, we use the traditional C syntax for calling a
+function though a pointer. You use the form above to access all of the JNI
+functions.
+</FONT><a name="_Toc408018821"></a><P></DIV>
+<A NAME="Heading592"></A><H3 ALIGN=LEFT>
+Passing
+and using Java objects
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the previous example we passed a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the native method. You can also pass Java objects of your own creation to a
+native method. Inside your native method, you can access the fields and methods
+of the object that was received.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+pass objects, use the ordinary Java syntax when declaring the native method. In
+the example below, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyJavaClass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field and one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. The class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UseObjects
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">declares
+a native method that takes an object of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyJavaClass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To see if the native method manipulates its argument, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field of the argument is set, the native method is called, and then the value
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is printed.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> MyJavaClass {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> divByTwo() { aValue /= 2; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> aValue;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> UseObjects {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String [] args) {
+    UseObjects app = <font color="#0000ff">new</font> UseObjects();
+    MyJavaClass anObj = <font color="#0000ff">new</font> MyJavaClass();
+    anObj.aValue = 2;
+    app.changeObject(anObj);
+    System.out.println("Java: " + anObj.aValue);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">native</font> <font color="#0000ff">void</font> 
+  changeObject(MyJavaClass obj);
+  <font color="#0000ff">static</font> {
+    System.loadLibrary("UseObjImpl");
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+compiling the code and handing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>javah</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can implement the native method. In the example below, once the field and
+method ID are obtained, they are accessed through JNI functions.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>JNIEXPORT <font color="#0000ff">void</font> JNICALL
+Java_UseObjects_changeObject(
+  JNIEnv * env, jobject jThis, jobject obj) {
+  jclass cls;
+  jfieldID fid;
+  jmethodID mid;
+  <font color="#0000ff">int</font> value;
+  cls = env-&gt;GetObjectClass(obj);
+  fid = env-&gt;GetFieldID(cls,
+        "aValue", "I");
+  mid = env-&gt;GetMethodID(cls,
+        "divByTwo", "()V");
+  value = env-&gt;GetIntField(obj, fid);
+  printf("Native: %d\n", value);
+  env-&gt;SetIntField(obj, fid, 6);
+  env-&gt;CallVoidMethod(obj, mid);
+  value = env-&gt;GetIntField(obj, fid);
+  printf("Native: %d\n", value);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first argument aside, the C++ function receives a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jobject</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is the native side of the Java object reference we pass from the Java
+code. We simply read 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>aValue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+print it out, change the value, call the object&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>divByTwo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and print the value out again. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+access a field or method, you must first obtain its identifier. Appropriate JNI
+functions take the class object, the element name, and the signature. These
+functions return an identifier that you use to access the element. This
+approach might seem convoluted, but your native method has no knowledge of the
+internal layout of the Java object. Instead, it must access fields and methods
+through indexes returned by the JVM. This allows different JVMs to implement
+different internal object layouts with no impact on your native methods.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you run the Java program, you&#8217;ll see that the object that&#8217;s passed
+from the Java side is manipulated by your native method. But what exactly is
+passed? A pointer or a Java reference? And what is the garbage collector doing
+during native method calls?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index3097"></A>garbage
+collector continues to operate during native method execution, but it&#8217;s
+guaranteed that your objects will not be garbage collected during a native
+method call. To ensure this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>local
+references
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are created before, and destroyed right after, the native method call. Since
+their lifetime wraps the call, you know that the objects will be valid
+throughout the native method call.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+these references are created and subsequently destroyed every time the function
+is called, you cannot make local copies in your native methods, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variables. If you want a reference that lasts across function invocations, you
+need a global reference. Global references are not created by the JVM, but the
+programmer can make a global reference out of a local one by calling specific
+JNI functions. When you create a global reference, you become responsible for
+the lifetime of the referenced object. The global reference (and the object it
+refers to) will be in memory until the programmer explicitly frees the
+reference with the appropriate JNI function. It&#8217;s similar to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>malloc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>free(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in C.
+</FONT><a name="_Toc408018822"></a><P></DIV>
+<A NAME="Heading593"></A><H3 ALIGN=LEFT>
+JNI
+and Java exceptions
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+<A NAME="Index3098"></A>JNI,
+Java exceptions can be thrown, caught, printed, and rethrown just as they are
+inside a Java program. But it&#8217;s up to the programmer to call dedicated
+JNI functions to deal with exceptions. Here are the JNI functions for exception
+handling:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throw(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Throws
+an existing exception object. Used in native methods to rethrow an exception.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThrowNew(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Generates
+a new exception object and throws it.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionOccurred(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Determines
+if an exception was thrown and not yet cleared.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionDescribe(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Prints
+an exception and the stack trace.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionClear(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Clears
+a pending exception.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FatalError(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Raises
+a fatal error. Does not return.
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Among
+these, you can&#8217;t ignore 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionOccurred(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionClear(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Most JNI functions can generate exceptions, and there is no language feature
+that you can use in place of a Java try block, so you must call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionOccurred(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">after
+each JNI function call to see if an exception was thrown. If you detect an
+exception, you may choose to handle it (and possibly rethrow it). You must make
+certain, however, that the exception is eventually cleared. This can be done in
+your function using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExceptionClear(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or in some other function if the exception is rethrown, but it must be done.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+must ensure that the exception is cleared, because otherwise the results will
+be unpredictable if you call a JNI function while an exception is pending.
+There are few JNI functions that are safe to call during an exception; among
+these, of course, are all the exception handling functions.
+</FONT><a name="_Toc408018823"></a><P></DIV>
+<A NAME="Heading594"></A><H3 ALIGN=LEFT>
+JNI
+and threading
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+Java is a multithreaded language, several threads can call a native method
+concurrently. (The native method might be suspended in the middle of its
+operation when a second thread calls it.) It&#8217;s entirely up to the
+programmer to guarantee that the native call is thread-safe, i.e. it does not
+modify shared data in an unmonitored way. Basically, you have two options:
+declare the native method as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or implement some other strategy within the native method to ensure correct,
+concurrent data manipulation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Also,
+you should never pass the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JNIEnv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointer across threads, since the internal structure it points to is allocated
+on a per-thread basis and contains information that makes sense only in that
+particular thread.
+</FONT><a name="_Toc408018824"></a><P></DIV>
+<A NAME="Heading595"></A><H3 ALIGN=LEFT>
+Using
+a pre-existing code base
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+easiest way to implement JNI native methods is to start writing native method
+prototypes in a Java class, compile that class, and run the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>javah</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But what if you have a large, pre-existing code base that you want to call from
+Java? Renaming all the functions in your DLLs to match the JNI name mangling
+convention is not a viable solution. The best approach is to write a wrapper
+DLL &#8220;outside&#8221; your original code base. The Java code calls
+functions in this new DLL, which in turn calls your original DLL functions.
+This solution is not just a work-around; in most cases you must do this anyway
+because you must call JNI functions on the object references before you can use
+them.
+</FONT><a name="_Toc408018825"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0190.html">Prev</a> | <a href="tij0192.html">Next</a>
+</div>
+</body></html>
+

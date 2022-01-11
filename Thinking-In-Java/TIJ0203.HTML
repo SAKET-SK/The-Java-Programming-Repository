@@ -1,0 +1,604 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0202.html">Prev</a> | <a href="tij0204.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Speedup
+techniques 
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+that the critical region has been isolated, you can apply two types of <A NAME="Index3138"></A>optimizations</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">generic
+techniques and those specific to Java.
+</FONT><a name="_Toc408018857"></a><P></DIV>
+<A NAME="Heading642"></A><H3 ALIGN=LEFT>
+Generic
+approaches
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+effective generic speedup is to redefine the program in a more practical way.
+For example, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Programming
+Pearls
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+[14], Bentley describes Doug McIlroy&#8217;s representation of the English
+language with a novel data depiction that enabled him to produce a remarkably
+fast, compact spelling checker. In addition, choosing a better algorithm will
+probably give a bigger performance gain than any other approach, particularly
+as the size of the data set increases. For more of these generic approaches,
+see the general book listings [12-19] at the end of this appendix. 
+</FONT><a name="_Toc408018858"></a><P></DIV>
+<A NAME="Heading643"></A><H3 ALIGN=LEFT>
+Language
+dependent approaches
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+put things in perspective, it&#8217;s useful to look at the time it takes to
+perform various operations. So that the results are relatively independent of
+the computer being used, they have been normalized by dividing by the time it
+takes to make a local assignment.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="103">
+      <COL width="132">
+      <COL width="65">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Operation</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Example</FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Normalized
+time
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Local
+assignment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+= n;
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Instance
+assignment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this.i
+= n;
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1.2</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1.5</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Empty
+loop
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while(true)
+n++;
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Ternary
+expression
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>(x&lt;0)
+? -x : x
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.2</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Math
+call
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.abs(x);</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.5</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Array
+assignment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a[0]
+= n;
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.7</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+increment
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>l++;</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">3.5</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method
+call
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>funct(&#160;);</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.9</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throw</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try{
+throw e; } catch(e){}
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">320</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method call
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchMethod(&#160;);</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">570</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>New</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new
+Object(&#160;);
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">980</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>New</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=132 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new
+int[10];
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=65 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">3100</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Using
+present systems (such as Pentium 200 pro, Netscape 3, and JDK 1.1.5), these
+relative times show the extraordinary cost of new objects and arrays, the heavy
+cost of synchronization, and the modest cost of an unsynchronized method call.
+References [5] and [6] give the Web address of measurement applets you can run
+on your own machine.
+</FONT><P></DIV>
+<A NAME="Heading644"></A><H4 ALIGN=LEFT>
+General
+modifications 
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+are some modifications that you can make to speed up time-critical parts of
+your Java program. (Be sure to test the performance before and after you try
+them.)
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="67">
+      <COL width="103">
+      <COL width="162">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Replace</FONT><P></DIV>
+</TD>
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Why</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Interface</FONT><P></DIV>
+</TD>
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Abstract
+Class (when only one parent is needed)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Multiple
+inheritance of interfaces prevents some optimizations.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Non-local
+or array loop variable
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Local
+loop variable
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Time
+(above) shows an instance integer assignment is 1.2 local integer assignments,
+but an array assignment is 2.7 local integer assignments.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Linked
+list (fixed size)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Saving
+discarded link items or replacing the list with a circular array (in which
+approximate size is known)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+new object takes 980 local assignments. See Reusing Objects (below), Van Wyk
+[12] p. 87 and Bentley[15] p. 81
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">x/2
+(or any power of 2)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=103 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">X
+&gt;&gt; 2 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(or
+any power of 2)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Uses
+faster hardware instructions
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc408018859"></a></TABLE></DIV>
+<A NAME="Heading645"></A><H3 ALIGN=LEFT>
+Specific
+situations
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>The
+cost of Strings
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+concatenation operator + looks innocent but involves a lot of work. The
+compiler can efficiently concatenate constant strings, but a variable string
+requires considerable processing. For example, if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variables:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println("heading"
++ s + "trailer" + t);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">this
+requires a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+appending arguments, and converting the result back to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This costs both space and time. If you&#8217;re appending more than one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+consider using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directly, especially if you can repeatedly reuse it in a loop. Preventing the
+creation of a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on each iteration saves the object creation time of 980 seen earlier. Using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>substring(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods is usually an improvement. When feasible, character arrays are even
+faster. Also notice that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is costly because of synchronization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Synchronization</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+In the JDK interpreter, calling a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is typically 10 times slower than calling an unsynchronized method. With
+JIT compilers, this performance gap has increased to 50 to 100 times (notice
+the timing above shows it to be 97 times slower). Avoid 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods if you can &#8211; if you can&#8217;t, synchronizing on methods rather
+than on code blocks is slightly faster.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reusing
+objects
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+It takes a long time to create an object (the timing above shows 980 assignment
+times for a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 3100 assignment times for a small new array), so it&#8217;s often worth
+saving and updating the fields of an old object instead of creating a new
+object. For example, rather than creating a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Font</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object in your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, you can declare it an instance object, initialize it once, and then
+just update it when necessary in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+See also Bentley, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Programming
+Pearls
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+p. 81 [15].
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exceptions</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+You should only throw exceptions in abnormal situations, which are usually
+cases in which performance is not an issue since the program has run into a
+problem that it doesn&#8217;t normally expect. When optimizing, combine small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+blocks, which thwart compiler optimization by breaking the code into small
+independent sections. On the other hand, be careful of sacrificing the
+robustness of your code by over-zealous removal of exception handling.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashing:
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+standard 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in Java 1.0 and 1.1 requires casting and costly synchronization (570
+assignment times). Furthermore, the early JDK library doesn&#8217;t
+deliberately choose prime number table sizes. Finally, a hashing function
+should be designed for the particular characteristics of the keys actually
+used. For all these reasons, the generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be improved by designing a hash class that fits a particular application
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Note that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the Java 1.2 collections library has much greater flexibility and
+isn&#8217;t automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method
+inlining:
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Java compilers can inline a method only if it is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and in some cases it must have no local variables. If your code spends a lot of
+time calling a method that has none of these modifiers, consider writing a
+version that is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>I/O</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+Use buffers wherever possible, otherwise you can end up doing I/O a single byte
+at a time. Note that the JDK 1.0 I/O classes use a lot of synchronization, so
+you might get better performance by using a single &#8220;bulk&#8221; call such
+as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readFully(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then interpreting the data yourself. Also notice that the Java 1.1
+&#8220;reader&#8221; and &#8220;writer&#8221; classes were designed for
+improved performance.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Casts
+and instanceof
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Casts
+take from 2 to 200 assignment times. The more costly ones require travel up the
+inheritance hierarchy. Other costly operations lose and restore capabilities of
+the lower level constructs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Use clipping to reduce the amount of work done in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>repaint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+double buffering to improve perceived speed, and image strips or compression to
+speed downloading times. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Animation
+in Java Applets
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from JavaWorld and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Performing
+Animation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from Sun are two good tutorials. Remember to use high-level primitives;
+it&#8217;s much faster to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawPolygon(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on a bunch of points than looping with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you must draw a one-pixel-wide line, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawLine(x,y,x,y)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is faster than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillRect(x,y,1,1)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Using
+API classes
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+Use classes from the Java API when they offer native machine performance that
+you can&#8217;t match using Java. For example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>arrayCopy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is much faster than using a loop to copy an array of any significant size. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Replacing
+API classes
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+Sometimes API classes do more than you need, with a corresponding increase in
+execution time. For these you can write specialized versions that do less but
+run faster. For example, one application that needed a container to store many
+arrays was speeded by replacing the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a faster dynamic array of objects.
+</FONT><P></DIV>
+<A NAME="Heading646"></A><H4 ALIGN=LEFT>
+Other
+suggestions
+</H4>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Move
+repeated constant calculations out of a critical loop, for example, computing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buffer.length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a constant-size 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+final 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">constants
+can help the compiler optimize the program. 
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Unroll
+fixed length loops.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use
+javac&#8217;s optimization option, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-O</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which optimizes compiled code by inlining 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. Note that your classes may get larger in size (JDK 1.1 or later only
+&#8211; earlier versions might not perform byte verification). Newer
+just-in-time (JIT) compilers will dramatically speed the code.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Count
+down to zero whenever possible &#8211; this uses a special JVM byte code.
+</FONT><a name="_Toc408018860"></a></UL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0202.html">Prev</a> | <a href="tij0204.html">Next</a>
+</div>
+</body></html>
+

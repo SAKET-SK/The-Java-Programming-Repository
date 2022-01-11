@@ -1,0 +1,268 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0198.html">Prev</a> | <a href="tij0200.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+C:
+Java programming guidelines
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">This
+appendix contains suggestions to help guide you while performing low-level
+program design, and also while writing <A NAME="Index3129"></A><A NAME="Index3130"></A><A NAME="Index3131"></A><A NAME="Index3132"></A>code.</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Capitalize
+the first letter of class names. The first letter of fields, methods, and
+objects (handles) should be lowercase. All identifiers should run their words
+together, and capitalize the first letter of all intermediate words. For example:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThisIsAClassName</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>thisIsAMethodOrFieldName</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Capitalize
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the letters of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+primitive identifiers that have constant initializers in their definitions.
+This indicates they are compile-time constants.
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Packages
+are a special case: they are all lowercase letters, even for intermediate
+words. The domain extension (com, org, net, edu, etc.) should also be
+lowercase. (This was a change between Java 1.1<A NAME="Index3133"></A>
+and Java 1.2.<A NAME="Index3134"></A>)</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+creating a class for general-purpose use, follow a &#8220;canonical form&#8221;
+and include definitions for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	For
+each class you create, consider including a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains code to test that class. You don&#8217;t need to remove the test
+code to use the class in a project, and if you make any changes you can easily
+re-run the tests. This code also provides examples of how to use your class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Methods
+should be kept to brief, functional units that describe and implement a
+discrete part of a class interface. Ideally, methods should be concise; if they
+are long you might want to search for a way to break them up into several
+shorter methods. This will also foster reuse within your class. (Sometimes
+methods must be large, but they should still do just one thing.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+you design a class, think about the client programmer&#8217;s perspective (the
+class should be fairly obvious to use) and the perspective of the person
+maintaining the code (anticipate the kind of changes that will be made, to make
+them easy).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Try
+to keep classes small and focused. Clues to suggest redesign of a class are:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1)
+A complicated switch statement: consider using polymorphism 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2)
+A large number of methods that cover broadly different types of operations:
+consider using several classes
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">3)
+A large number of member variables that concern broadly different
+characteristics: consider using several classes
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Keep
+things as &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as possible.&#8221; Once you publicize an aspect of your library (a method, a
+class, a field), you can never take it out. If you do, you&#8217;ll wreck
+somebody&#8217;s existing code, forcing them to rewrite and redesign. If you
+publicize only what you must, you can change everything else with impunity, and
+since designs tend to evolve this is an important freedom. Privacy is
+especially important when dealing with multithreading &#8211; only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields can be protected against un-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+use.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Watch
+out for &#8220;giant object syndrome.&#8221; This is often an affliction of
+procedural programmers who are new to OOP and who end up writing a procedural
+program and sticking it inside one or two giant objects. With the exception of
+application frameworks, objects represent concepts in your application, not the
+application.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+you must do something ugly, at least localize the ugliness inside a class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Anytime
+you notice classes that appear to have high coupling with each other, consider
+the coding and maintenance improvements you might get by using inner classes
+(see &#8220;
+<A HREF="tij0155.htm#_Ref403700451">Improving
+the code with an inner class
+</A>&#8221;
+on page 
+<A HREF=" PAGE#_Ref403700451">759</A>).</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Use
+comments liberally, and use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>javadoc
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">comment-documentation
+syntax to produce your program documentation.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Avoid
+using &#8220;magic numbers,&#8221; which are numbers hard-wired into code.
+These are a nightmare if you need to change them, since you never know if
+&#8220;100&#8221; means &#8220;the array size&#8221; or &#8220;something else
+entirely.&#8221; Instead, create a constant with a descriptive name and use the
+constant identifier throughout your program. This makes the program easier to
+understand and much easier to maintain.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	In
+terms of constructors and exceptions, you&#8217;ll generally want to re-throw
+any exceptions that you catch while in a constructor if it causes failure of
+the creation of that object, so the caller doesn&#8217;t continue blindly,
+thinking that the object was created correctly.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+your class requires any cleanup when the client programmer is finished with the
+object, place the cleanup code in a single, well- defined method with a name
+like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that clearly suggests its purpose. In addition, place a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag in the class to indicate whether the object has been cleaned up. In the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for the class, check to make sure that the object has been cleaned up
+and throw a class derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if it hasn&#8217;t, to indicate a programming error. Before relying on such a
+scheme, ensure that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">works
+on your system. (You might need to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.runFinalizersOnExit(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to ensure this behavior.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+an object must be cleaned up (other than by garbage collection) within a
+particular scope, use the following approach: Initialize the object and, if
+successful, immediately enter a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause that performs the cleanup.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+overriding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+during inheritance, remember to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this is not necessary if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is your immediate superclass). You should call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>final</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+act of your overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rather than the first, to ensure that base-class components are still valid if
+you need them.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+you are creating a fixed-size collection of objects, transfer them to an array
+(especially if you&#8217;re returning this collection from a method). This way
+you get the benefit of the array&#8217;s compile-time type checking, and the
+recipient of the array might not need to cast the objects in the array in order
+to use them.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Choose
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+over 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. If you know something is going to be a base class, your first choice
+should be to make it an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only if you&#8217;re forced to have method definitions or member variables
+should you change it to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">talks
+about what the client wants to do, while a class tends to focus on (or allow)
+implementation details.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Inside
+constructors, do only what is necessary to set the object into the proper
+state. Actively avoid calling other methods (except for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods) since those methods can be overridden by someone else to produce
+unexpected results during construction. (See Chapter 7 for details.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Objects
+should not simply hold some data; they should also have well-defined behaviors.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Choose
+composition first when creating new classes from existing classes. You should
+only used inheritance if it is required by your design. If you use inheritance
+where composition will work, your designs will become needlessly complicated.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Use
+inheritance and method overriding to express differences in behavior, and
+fields to express variations in state. An extreme example of what not to do is
+inheriting different classes to represent colors instead of using a
+&#8220;color&#8221; field.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	To
+avoid a highly frustrating experience, make sure that there&#8217;s only one
+class of each name anywhere in your classpath. Otherwise, the compiler can find
+the identically-named other class first, and report error messages that make no
+sense. If you suspect that you are having a classpath problem, try looking for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files with the same names at each of the starting points in your classpath.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+using the event &#8220;adapters&#8221; in the Java 1.1<A NAME="Index3135"></A>
+AWT, there&#8217;s a particularly easy pitfall you can encounter. If you
+override one of the adapter methods and you don&#8217;t quite get the spelling
+right, you&#8217;ll end up adding a new method rather than overriding an
+existing method. However, this is perfectly legal, so you won&#8217;t get any
+error message from the compiler or run-time system &#8211; your code simply
+won&#8217;t work correctly.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Use
+design patterns to eliminate &#8220;naked functionality.&#8221; That is, if
+only one object of your class should be created, don&#8217;t bolt ahead to the
+application and write a comment &#8220;Make only one of these.&#8221; Wrap it
+in a singleton. If you have a lot of messy code in your main program that
+creates your objects, look for a creational pattern like a factory method in
+which you can encapsulate that creation. Eliminating &#8220;naked
+functionality&#8221; will not only make your code much easier to understand and
+maintain, it will also make it more bulletproof against the well-intentioned
+maintainers that come after you.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Watch
+out for &#8220;analysis paralysis.&#8221; Remember that you must usually move
+forward in a project before you know everything, and that often the best and
+fastest way to learn about some of your unknown factors is to go to the next
+step rather than trying to figure it out in your head.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Watch
+out for premature optimization. First make it work, then make it fast &#8211;
+but only if you must, and only if it&#8217;s proven that there is a performance
+bottleneck in a particular section of your code. Unless you have used a
+profiler to discover a bottleneck, you will probably be wasting your time. The
+hidden cost of performance tweaks is that your code becomes less understandable
+and maintainable. 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Remember
+that code is read much more than it is written. Clean designs make for
+easy-to-understand programs, but comments, detailed explanations, and examples
+are invaluable. They will help both you and everyone who comes after you. If
+nothing else, the frustration of trying to ferret out useful information from
+the online Java documentation should convince you.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+you think you&#8217;ve got a good analysis, design, or implementation, do a
+walkthrough. Bring someone in from outside your group &#8211; this
+doesn&#8217;t have to be a consultant, but can be someone from another group
+within your company. Reviewing your work with a pair of fresh eyes can reveal
+problems at a stage where it&#8217;s much easier to fix them and more than pays
+for the time and money &#8220;lost&#8221; to the walkthrough process.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Elegance
+always pays off. In the short term it might seem like it takes much longer to
+come up with a truly graceful solution to a problem, but when it works the
+first time and easily adapts to new situations instead of requiring hours,
+days, or months of struggle, you&#8217;ll see the rewards (even if no one can
+measure them). And there&#8217;s nothing that matches the feeling that comes
+from knowing you&#8217;ve got an amazing design. Resist the urge to hurry; it
+will only slow you down.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+can find other programming guidelines on the Web. A good set of links can be
+found at 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.ulb.ac.be/esp/ip-Links/Java/joodcs/mm-WebBiblio.html</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT></OL><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=47 COLOR="Black">8</FONT><a name="_Toc407441465"></a><a name="_Toc408018849"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0198.html">Prev</a> | <a href="tij0200.html">Next</a>
+</div>
+</body></html>
+

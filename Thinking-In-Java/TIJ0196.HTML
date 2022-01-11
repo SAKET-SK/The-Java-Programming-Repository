@@ -1,0 +1,530 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0195.html">Prev</a> | <a href="tij0197.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+CORBA</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+large, distributed applications, your needs might not be satisfied by the
+preceding approaches. For example, you might want to interface with legacy
+datastores, or you might need services from a server object regardless of its
+physical location. These situations require some form of Remote Procedure Call
+(RPC), and possibly language independence. This is where CORBA can help.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index3120"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">CORBA
+is not a language feature; it&#8217;s an integration technology. It&#8217;s a
+specification that vendors can follow to implement CORBA-compliant integration
+products. CORBA is part of the OMG&#8217;s effort to define a standard
+framework for distributed, language-independent object interoperability.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">CORBA
+supplies the ability to make remote procedure calls into Java objects and
+non-Java objects, and to interface with legacy systems in a
+location-transparent way. Java adds networking support and a nice
+object-oriented language for building graphical and non-graphical applications.
+The Java and <A NAME="Index3121"></A>OMG
+object model map nicely to each other; for example, both Java and CORBA
+implement the interface concept and a reference object model.
+</FONT><a name="_Toc408018842"></a><P></DIV>
+<A NAME="Heading619"></A><H3 ALIGN=LEFT>
+CORBA
+Fundamentals
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+object interoperability specification developed by the OMG is commonly referred
+to as the Object Management Architecture (OMA). The OMA defines two components:
+the Core Object Model and the OMA Reference Architecture. The Core Object Model
+states the basic concepts of object, interface, operation, and so on. (CORBA is
+a refinement of the Core Object Model.) The OMA Reference Architecture defines
+an underlying infrastructure of services and mechanisms that allow objects to
+interoperate. The OMA Reference Architecture includes the Object Request Broker
+(ORB), Object Services (also known as CORBAservices), and common facilities.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+ORB is the communication bus by which objects can request services from other
+objects, regardless of their physical location. This means that what looks like
+a method call in the client code is actually a complex operation. First, a
+connection with the server object must exist, and to create a connection the
+ORB must know where the server implementation code resides. Once the connection
+is established, the method arguments must be marshaled, i.e. converted in a
+binary stream to be sent across a network. Other information that must be sent
+are the server machine name, the server process, and the identity of the server
+object inside that process. Finally, this information is sent through a
+low-level wire protocol, the information is decoded on the server side, and the
+call is executed. The ORB hides all of this complexity from the programmer and
+makes the operation almost as simple as calling a method on local object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is no specification for how an ORB Core should be implemented, but to provide a
+basic compatibility among different vendors&#8217; ORBs, the OMG defines a set
+of services that are accessible through standard interfaces.
+</FONT><P></DIV>
+<A NAME="Heading620"></A><H4 ALIGN=LEFT>
+CORBA
+Interface Definition Language (IDL)
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">CORBA
+is designed for language transparency: a client object can call methods on a
+server object of different class, regardless of the language they are
+implemented with. Of course, the client object must know the names and
+signatures of methods that the server object exposes. This is where IDL comes
+in. The CORBA IDL is a language-neutral way to specify data types, attributes,
+operations, interfaces, and more. The IDL syntax is similar to the C++ or Java
+syntax. The following table shows the correspondence between some of the
+concepts common to three languages that can be specified through CORBA IDL:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="83">
+      <COL width="92">
+      <COL width="100">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=83 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CORBA
+IDL
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=92 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Java</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=100 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>C++</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=83 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Module</FONT><P></DIV>
+</TD>
+<TD WIDTH=92 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Package</FONT><P></DIV>
+</TD>
+<TD WIDTH=100 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Namespace</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=83 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Interface</FONT><P></DIV>
+</TD>
+<TD WIDTH=92 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Interface</FONT><P></DIV>
+</TD>
+<TD WIDTH=100 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Pure
+abstract class
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=83 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method</FONT><P></DIV>
+</TD>
+<TD WIDTH=92 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method</FONT><P></DIV>
+</TD>
+<TD WIDTH=100 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Member
+function
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inheritance concept is supported as well, using the colon operator as in C++.
+The programmer writes an IDL description of the attributes, methods, and
+interfaces that will be implemented and used by the server and clients. The IDL
+is then compiled by a vendor-provided IDL/Java compiler, which reads the IDL
+source and generates Java code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+IDL compiler is an extremely useful tool: it doesn&#8217;t just generate a Java
+source equivalent of the IDL, it also generates the code that will be used to
+marshal method arguments and to make remote calls. This code, called the stub
+and skeleton code, is organized in multiple Java source files and is usually
+part of the same Java package. 
+</FONT><P></DIV>
+<A NAME="Heading621"></A><H4 ALIGN=LEFT>
+The
+naming service
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+naming service is one of the fundamental CORBA services. A CORBA object is
+accessed through a reference, a piece of information that&#8217;s not
+meaningful for the human reader. But references can be assigned
+programmer-defined, string names. This operation is known as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>stringifying
+the reference
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and one of the OMA components, the Naming Service, is devoted to performing
+string-to-object and object-to-string conversion and mapping. Since the Naming
+Service acts as a telephone directory that both servers and clients can consult
+and manipulate, it runs as a separate process. Creating an object-to-string
+mapping is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>binding
+an object
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and removing the mapping is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>unbinding</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Getting an object reference passing a string is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>resolving
+the name
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+example, on startup, a server application could create a server object, bind
+the object into the name service, and then wait for clients to make requests. A
+client first obtains a server object reference, resolving the string name, and
+then can make calls into the server using the reference.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Again,
+the Naming Service specification is part of CORBA, but the application that
+implements it is provided by the ORB vendor. The way you get access to the
+Naming Service functionality can vary from vendor to vendor. 
+</FONT><a name="_Toc408018843"></a><P></DIV>
+<A NAME="Heading622"></A><H3 ALIGN=LEFT>
+An
+example
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+code shown here will not be elaborate because different ORBs have different
+ways to access CORBA services, so examples are vendor specific. (The example
+below uses JavaIDL, a free product from Sun that comes with a light-weight ORB,
+a naming service, and a IDL-to-Java compiler.) In addition, since Java is young
+and still evolving, not all CORBA features are present in the various
+Java/CORBA products.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">We
+want to implement a server, running on some machine, that can be queried for
+the exact time. We also want to implement a client that asks for the exact
+time. In this case we&#8217;ll be implementing both programs in Java, but we
+could also use two different languages (which often happens in real situations).
+</FONT><P></DIV>
+<A NAME="Heading623"></A><H4 ALIGN=LEFT>
+Writing
+the IDL source
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first step is to write an IDL description of the services provided. This is
+usually done by the server programmer, who is then free to implement the server
+in any language in which a CORBA IDL compiler exists. The IDL file is
+distributed to the client side programmer and becomes the bridge between
+languages.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+example below shows the IDL description of our exact time server:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>module RemoteTime {
+   <font color="#0000ff">interface</font> ExactTime {
+      string getTime();
+   };
+};</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a declaration of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExactTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+namespace. The interface is made up of one single method the gives back the
+current time in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>string</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+format.
+</FONT><P></DIV>
+<A NAME="Heading624"></A><H4 ALIGN=LEFT>
+Creating
+stubs and skeletons
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second step is to compile the IDL to create the Java stub and skeleton code
+that we&#8217;ll use for implementing the client and the server. The tool that
+comes with the JavaIDL product is <A NAME="Index3122"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>idltojava</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">idltojava
+&#8211;fserver &#8211;fclient RemoteTime.idl
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two flags tell 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>idltojava</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to generate code for both the stub and the skeleton. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Idltojava</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+generates a Java package named after the IDL module, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the generated Java files are put in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subdirectory. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>_ExactTimeImplBase.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+the skeleton that we&#8217;ll use to implement the server object, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>_ExactTimeStub.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be used for the client. There are Java representations of the IDL
+interface in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExactTime.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a couple of other support files used, for example, to facilitate access to
+the naming service operations.
+</FONT><P></DIV>
+<A NAME="Heading625"></A><H4 ALIGN=LEFT>
+Implementing
+the server and the client
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Below
+you can see the code for the server side. The server object implementation is
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExactTimeServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteTimeServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the application that creates a server object, registers it with the ORB,
+gives a name to the object reference, and then sits quietly waiting for client
+requests.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> RemoteTime.*;
+
+<font color="#0000ff">import</font> org.omg.CosNaming.*;
+<font color="#0000ff">import</font> org.omg.CosNaming.NamingContextPackage.*;
+<font color="#0000ff">import</font> org.omg.CORBA.*;
+
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.text.*;
+
+<font color="#009900">// Server object implementation</font>
+<font color="#0000ff">class</font> ExactTimeServer <font color="#0000ff">extends</font> _ExactTimeImplBase{
+  <font color="#0000ff">public</font> String getTime(){
+    <font color="#0000ff">return</font> DateFormat.
+        getTimeInstance(DateFormat.FULL).
+          format(<font color="#0000ff">new</font> Date(
+              System.currentTimeMillis()));
+  }
+}
+
+<font color="#009900">// Remote application implementation</font>
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RemoteTimeServer {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[])  {
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// ORB creation and initialization:</font>
+      ORB orb = ORB.init(args, <font color="#0000ff">null</font>);
+      <font color="#009900">// Create the server object and register it:</font>
+      ExactTimeServer timeServerObjRef = 
+        <font color="#0000ff">new</font> ExactTimeServer();
+      orb.connect(timeServerObjRef);
+      <font color="#009900">// Get the root naming context:</font>
+      org.omg.CORBA.Object objRef = 
+        orb.resolve_initial_references(
+          "NameService");
+      NamingContext ncRef = 
+        NamingContextHelper.narrow(objRef);
+      <font color="#009900">// Assign a string name to the </font>
+      <font color="#009900">// object reference (binding):</font>
+      NameComponent nc = 
+        <font color="#0000ff">new</font> NameComponent("ExactTime", "");
+      NameComponent path[] = {nc};
+      ncRef.rebind(path, timeServerObjRef);
+      <font color="#009900">// Wait for client requests:</font>
+      java.lang.Object sync =
+        <font color="#0000ff">new</font> java.lang.Object();
+      <font color="#0000ff">synchronized</font>(sync){
+        sync.wait();
+      }
+    }
+    <font color="#0000ff">catch</font> (Exception e)  {
+      System.out.println(
+         "Remote Time server error: " + e);
+      e.printStackTrace(System.out);
+    }
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see, implementing the server object is simple; it&#8217;s a regular
+Java class that inherits from the skeleton code generated by the IDL compiler.
+Things get a bit more complicated when it comes to interacting with the ORB and
+other CORBA services.
+</FONT><P></DIV>
+<A NAME="Heading626"></A><H4 ALIGN=LEFT>
+Some
+CORBA services
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a short description of what the JavaIDL-related code is doing (primarily
+ignoring the part of the CORBA code that is vendor dependent). The first line in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+starts up the ORB, and of course, this is because our server object will need
+to interact with it. Right after the ORB initialization, a server object is
+created. Actually, the right term would be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>transient
+servant object
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+an object that receives requests from clients, and whose lifetime is the same
+as the process that creates it. Once the transient servant object is created,
+it is registered with the ORB, which means that the ORB knows of its existence
+and can now forward requests to it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Up
+to this point, all we have is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>timeServerObjRef</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+an object reference that is known only inside the current server process. The
+next step will be to assign a stringified name to this servant object; clients
+will use that name to locate the servant object. We accomplish this operation
+using the Naming Service. First, we need an object reference to the Naming
+Service; the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resolve_initial_references(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes the stringified object reference of the Naming Service that is
+&#8220;NameService,&#8221; in JavaIDL, and returns an object reference. This is
+cast to a specific 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NamingContext</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reference using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>narrow(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. We can use now the naming services.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+bind the servant object with a stringified object reference, we first create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, initialized with &#8220;ExactTime,&#8221; the name string we want to
+bind to the servant object. Then, using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rebind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, the stringified reference is bound to the object reference. We use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rebind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to assign a reference, even if it already exists, whereas 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+raises an exception if the reference already exists. A name is made up in CORBA
+by a sequence of NameContexts &#8211; that&#8217;s why we use an array to bind
+the name to the object reference.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+servant object is finally ready for use by clients. At this point, the server
+process enters a wait state. Again, this is because it is a transient servant,
+so its lifetime is confined to the server process. JavaIDL does not currently
+support persistent objects &#8211; objects that survive the execution of the
+process that creates them.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+that we have an idea of what the server code is doing, let&#8217;s look at the
+client code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> RemoteTime.*;
+<font color="#0000ff">import</font> org.omg.CosNaming.*;
+<font color="#0000ff">import</font> org.omg.CORBA.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RemoteTimeClient {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// ORB creation and initialization:</font>
+      ORB orb = ORB.init(args, <font color="#0000ff">null</font>);
+      <font color="#009900">// Get the root naming context:</font>
+      org.omg.CORBA.Object objRef = 
+        orb.resolve_initial_references(
+          "NameService");
+      NamingContext ncRef = 
+        NamingContextHelper.narrow(objRef);
+      <font color="#009900">// Get (resolve) the stringified object </font>
+      <font color="#009900">// reference for the time server:</font>
+      NameComponent nc = 
+        <font color="#0000ff">new</font> NameComponent("ExactTime", "");
+      NameComponent path[] = {nc};
+      ExactTime timeObjRef = 
+        ExactTimeHelper.narrow(
+          ncRef.resolve(path));
+      <font color="#009900">// Make requests to the server object:</font>
+      String exactTime = timeObjRef.getTime();
+      System.out.println(exactTime);
+    } <font color="#0000ff">catch</font> (Exception e) {
+      System.out.println(
+         "Remote Time server error: " + e);
+      e.printStackTrace(System.out);
+    }
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first few lines do the same as they do in the server process: the ORB is
+initialized and a reference to the naming service server is resolved. Next, we
+need an object reference for the servant object, so we pass the stringified
+object reference to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resolve(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and we cast the result into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ExactTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface reference using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>narrow(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Finally, we call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getTime(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV>
+<A NAME="Heading627"></A><H4 ALIGN=LEFT>
+Activating
+the name service process
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally
+we have a server and a client application ready to interoperate. You&#8217;ve
+seen that both need the naming service to bind and resolve stringified object
+references. You must start the naming service process before running either the
+server or the client. In JavaIDL, the naming service is a Java application that
+comes with the product package, but it can be different with other products.
+The JavaIDL naming service runs inside an instance of the JVM and listens by
+default to network port 900.
+</FONT><P></DIV>
+<A NAME="Heading628"></A><H4 ALIGN=LEFT>
+Activating
+the server and the client
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you are ready to start your server and client application (in this order, since
+our server is transient). If everything is set up correctly, what you&#8217;ll
+get is a single output line on the client console window, giving you the
+current time. Of course, this might be not very exciting by itself, but you
+should take one thing into account: even if they are on the same physical
+machine, the client and the server application are running inside different
+virtual machines and they can communicate via an underlying integration layer,
+the ORB and the Naming Service.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a simple example, designed to work without a network, but an ORB is usually
+configured for location transparency. When the server and the client are on
+different machines, the ORB can resolve remote stringified references using a
+component known as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Implementation
+Repository
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although the Implementation Repository is part of CORBA, there is almost no
+specification, so it differs from vendor to vendor.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see, there is much more to CORBA than what has been covered here, but
+you should get the basic idea. If you want more information about CORBA, the
+place to start is the OMG Web site, at http://www.omg.org
+<A HREF="http://www.omg.org">http://www.omg.org</A>.
+There you&#8217;ll find documentation, white papers, proceedings, and
+references to other CORBA sources and products.
+</FONT><a name="_Toc408018844"></a><P></DIV>
+<A NAME="Heading629"></A><H3 ALIGN=LEFT>
+Java
+Applets and CORBA
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+applets can act as CORBA clients. This way, an applet can access remote
+information and services exposed as CORBA objects. But an applet can connect
+only with the server from which it was downloaded, so all the CORBA objects the
+applet interacts with must be on that server. This is the opposite of what
+CORBA tries to do: give you complete location transparency.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is an issue of network security. If you&#8217;re on an Intranet, one solution
+is to loosen the security restrictions on the browser. Or, set up a firewall
+policy for connecting with external servers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+Java ORB products offer proprietary solutions to this problem. For example,
+some implement what is called HTTP Tunneling, while others have their special
+firewall features.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is too complex a topic to be covered in an appendix, but it is definitely
+something you should be aware of.
+</FONT><a name="_Toc408018845"></a><P></DIV>
+<A NAME="Heading630"></A><H3 ALIGN=LEFT>
+CORBA
+vs. RMI
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+saw that one of the main CORBA features is RPC support, which allows your local
+objects to call methods in remote objects. Of course, there already is a native
+Java feature that does exactly the same thing: RMI (see Chapter 15). While RMI
+makes RPC possible between Java objects, CORBA makes RPC possible between
+objects implemented in any language. It&#8217;s a big difference.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+<A NAME="Index3123"></A>RMI
+can be used to call services on remote, non-Java code. All you need is some
+kind of wrapper Java object around the non-Java code on the server side. The
+wrapper object connects externally to Java clients via RMI, and internally
+connects to the non-Java code using one of the techniques shown above, such as
+JNI or J/Direct.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach requires you to write a kind of integration layer, which is exactly
+what CORBA does for you, but then you don&#8217;t need a third-party ORB.
+</FONT><a name="_Toc408018846"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0195.html">Prev</a> | <a href="tij0197.html">Next</a>
+</div>
+</body></html>
+

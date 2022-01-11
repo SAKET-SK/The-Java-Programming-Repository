@@ -1,0 +1,432 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0179.html">Prev</a> | <a href="tij0181.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+&#8220;visitor&#8221; pattern
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+consider applying a design pattern with an entirely different goal to the
+trash-sorting problem.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+this pattern, we are no longer concerned with optimizing the addition of new
+types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+the system. Indeed, this pattern makes adding a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>more</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+complicated. The assumption is that you have a primary class hierarchy that is
+fixed; perhaps it&#8217;s from another vendor and you can&#8217;t make changes
+to that hierarchy. However, you&#8217;d like to add new polymorphic methods to
+that hierarchy, which means that normally you&#8217;d have to add something to
+the base class interface. So the dilemma is that you need to add methods to the
+base class, but you can&#8217;t touch the base class. How do you get around this?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+design pattern that solves this kind of problem is called a
+&#8220;visitor&#8221; (the final one in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+book), and it builds on the double
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">dispatching
+scheme shown in the last section.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2999"></A><A NAME="Index3000"></A>visitor
+pattern allows you to extend the interface of the primary type by creating a
+separate class hierarchy of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+virtualize the operations performed upon the primary type. The objects of the
+primary type simply &#8220;accept&#8221; the visitor, then call the
+visitor&#8217;s dynamically
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">bound
+method. It looks like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now,
+if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">handle
+to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, the code:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">PriceVisitor
+pv = new PriceVisitor();
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">v.accept(pv);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">causes
+two polymorphic method calls: the first one to select 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the second one within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when the specific version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>visit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called dynamically using the base-class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+configuration means that new functionality can be added to the system in the
+form of new subclasses of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">hierarchy
+doesn&#8217;t need to be touched. This is the prime benefit of the visitor
+pattern: you can add new polymorphic functionality to a class hierarchy without
+touching that hierarchy (once the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods have been installed). Note that the benefit is helpful here but not
+exactly what we started out to accomplish, so at first blush you might decide
+that this isn&#8217;t the desired solution.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+look at one thing that&#8217;s been accomplished: the visitor solution avoids
+sorting from the master 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+sequence into individual typed sequences. Thus, you can leave everything in the
+single master sequence and simply pass through that sequence using the
+appropriate visitor to accomplish the goal. Although this behavior seems to be
+a side effect of visitor, it does give us what we want (avoiding RTTI).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index3001"></A><A NAME="Index3002"></A>double
+dispatching in the visitor pattern takes care of determining both the type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+the type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following example, there are two implementations of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PriceVisitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to both determine and sum the price, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WeightVisitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to keep track of the weights.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see all of this implemented in the new, improved version of the recycling
+program. As with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DoubleDispatch.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is left alone and a new interface is created to add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Visitable.java</font>
+<font color="#009900">// An interface to add visitor functionality to </font>
+<font color="#009900">// the Trash hierarchy without modifying the </font>
+<font color="#009900">// base class.</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">interface</font> Visitable {
+  <font color="#009900">// The new method:</font>
+  <font color="#0000ff">void</font> accept(Visitor v);
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+subtypes of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Paper
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Glass, 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Cardboard
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VAluminum.java</font>
+<font color="#009900">// Aluminum for the visitor pattern</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VAluminum <font color="#0000ff">extends</font> Aluminum 
+    <font color="#0000ff">implements</font> Visitable {
+  <font color="#0000ff">public</font> VAluminum(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> accept(Visitor v) {
+    v.visit(<font color="#0000ff">this</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VPaper.java</font>
+<font color="#009900">// Paper for the visitor pattern</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VPaper <font color="#0000ff">extends</font> Paper 
+    <font color="#0000ff">implements</font> Visitable {
+  <font color="#0000ff">public</font> VPaper(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> accept(Visitor v) {
+    v.visit(<font color="#0000ff">this</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VGlass.java</font>
+<font color="#009900">// Glass for the visitor pattern</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VGlass <font color="#0000ff">extends</font> Glass 
+    <font color="#0000ff">implements</font> Visitable {
+  <font color="#0000ff">public</font> VGlass(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> accept(Visitor v) {
+    v.visit(<font color="#0000ff">this</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VCardboard.java</font>
+<font color="#009900">// Cardboard for the visitor pattern</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VCardboard <font color="#0000ff">extends</font> Cardboard 
+    <font color="#0000ff">implements</font> Visitable {
+  <font color="#0000ff">public</font> VCardboard(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> accept(Visitor v) {
+    v.visit(<font color="#0000ff">this</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+there&#8217;s nothing concrete in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+base class, it can be created as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Visitor.java</font>
+<font color="#009900">// The base interface for visitors</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">interface</font> Visitor {
+  <font color="#0000ff">void</font> visit(VAluminum a);
+  <font color="#0000ff">void</font> visit(VPaper p);
+  <font color="#0000ff">void</font> visit(VGlass g);
+  <font color="#0000ff">void</font> visit(VCardboard c);
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+again custom 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types have been created in a different subdirectory. The new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data file is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>VTrash.dat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>c16.TrashVisitor.VGlass:54
+c16.TrashVisitor.VPaper:22
+c16.TrashVisitor.VPaper:11
+c16.TrashVisitor.VGlass:17
+c16.TrashVisitor.VAluminum:89
+c16.TrashVisitor.VPaper:88
+c16.TrashVisitor.VAluminum:76
+c16.TrashVisitor.VCardboard:96
+c16.TrashVisitor.VAluminum:25
+c16.TrashVisitor.VAluminum:34
+c16.TrashVisitor.VGlass:11
+c16.TrashVisitor.VGlass:68
+c16.TrashVisitor.VGlass:43
+c16.TrashVisitor.VAluminum:27
+c16.TrashVisitor.VCardboard:44
+c16.TrashVisitor.VAluminum:18
+c16.TrashVisitor.VPaper:91
+c16.TrashVisitor.VGlass:63
+c16.TrashVisitor.VGlass:50
+c16.TrashVisitor.VGlass:80
+c16.TrashVisitor.VAluminum:81
+c16.TrashVisitor.VCardboard:12
+c16.TrashVisitor.VGlass:12
+c16.TrashVisitor.VGlass:54
+c16.TrashVisitor.VAluminum:36
+c16.TrashVisitor.VAluminum:93
+c16.TrashVisitor.VGlass:93
+c16.TrashVisitor.VPaper:80
+c16.TrashVisitor.VGlass:36
+c16.TrashVisitor.VGlass:12
+c16.TrashVisitor.VGlass:60
+c16.TrashVisitor.VPaper:66
+c16.TrashVisitor.VAluminum:36
+c16.TrashVisitor.VCardboard:22</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of the program creates specific 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types and sends them through a single list of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TrashVisitor.java </font>
+<font color="#009900">// The "visitor" pattern</font>
+<font color="#0000ff">package</font> c16.trashvisitor;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#009900">// Specific group of algorithms packaged</font>
+<font color="#009900">// in each implementation of Visitor:</font>
+<font color="#0000ff">class</font> PriceVisitor <font color="#0000ff">implements</font> Visitor {
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> alSum; <font color="#009900">// Aluminum</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> pSum; <font color="#009900">// Paper</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> gSum; <font color="#009900">// Glass</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> cSum; <font color="#009900">// Cardboard</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VAluminum al) {
+    <font color="#0000ff">double</font> v = al.weight() * al.value();
+    System.out.println(
+      "value of Aluminum= " + v);
+    alSum += v;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VPaper p) {
+    <font color="#0000ff">double</font> v = p.weight() * p.value();
+    System.out.println(
+      "value of Paper= " + v);
+    pSum += v;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VGlass g) {
+    <font color="#0000ff">double</font> v = g.weight() * g.value();
+    System.out.println(
+      "value of Glass= " + v);
+    gSum += v;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VCardboard c) {
+    <font color="#0000ff">double</font> v = c.weight() * c.value();
+    System.out.println(
+      "value of Cardboard = " + v);
+    cSum += v;
+  }
+  <font color="#0000ff">void</font> total() {
+    System.out.println(
+      "Total Aluminum: $" + alSum + "\n" +
+      "Total Paper: $" + pSum + "\n" +
+      "Total Glass: $" + gSum + "\n" +
+      "Total Cardboard: $" + cSum);
+  }
+}
+
+<font color="#0000ff">class</font> WeightVisitor <font color="#0000ff">implements</font> Visitor {
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> alSum; <font color="#009900">// Aluminum</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> pSum; <font color="#009900">// Paper</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> gSum; <font color="#009900">// Glass</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> cSum; <font color="#009900">// Cardboard</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VAluminum al) {
+    alSum += al.weight();
+    System.out.println("weight of Aluminum = "
+        + al.weight());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VPaper p) {
+    pSum += p.weight();
+    System.out.println("weight of Paper = "
+        + p.weight());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VGlass g) {
+    gSum += g.weight();
+    System.out.println("weight of Glass = "
+        + g.weight());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> visit(VCardboard c) {
+    cSum += c.weight();
+    System.out.println("weight of Cardboard = "
+        + c.weight());
+  }
+  <font color="#0000ff">void</font> total() {
+    System.out.println("Total weight Aluminum:"
+        + alSum);
+    System.out.println("Total weight Paper:"
+        + pSum);
+    System.out.println("Total weight Glass:"
+        + gSum);
+    System.out.println("Total weight Cardboard:"
+        + cSum);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TrashVisitor {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector bin = <font color="#0000ff">new</font> Vector();
+    <font color="#009900">// ParseTrash still works, without changes:</font>
+    ParseTrash.fillBin("VTrash.dat", bin);
+    <font color="#009900">// You could even iterate through</font>
+    <font color="#009900">// a list of visitors!</font>
+    PriceVisitor pv = <font color="#0000ff">new</font> PriceVisitor();
+    WeightVisitor wv = <font color="#0000ff">new</font> WeightVisitor();
+    Enumeration it = bin.elements();
+    <font color="#0000ff">while</font>(it.hasMoreElements()) {
+      Visitable v = (Visitable)it.nextElement();
+      v.accept(pv);
+      v.accept(wv);
+    }
+    pv.total();
+    wv.total();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the shape of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has changed again. Now there&#8217;s only a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+bin. The two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are accepted into every element in the sequence, and they perform their
+operations. The visitors keep their own internal data to tally the total
+weights and prices.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+there&#8217;s no run-time type identification other than the inevitable cast to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when pulling things out of the sequence. This, too, could be eliminated with
+the implementation of parameterized types in Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+way you can distinguish this solution from the double dispatching solution
+described previously is to note that, in the double dispatching solution, only
+one of the overloaded methods, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+was overridden when each subclass was created, while here 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>each</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+one of the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>visit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods is overridden in every subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading567"></A><H3 ALIGN=LEFT>
+More
+coupling?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a lot more code here, and there&#8217;s definite coupling between the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchy and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchy. However, there&#8217;s also high cohesion within the respective sets
+of classes: they each do only one thing (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">describes
+Trash, while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">describes
+actions performed on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+which is an indicator of a good design. Of course, in this case it works well
+only if you&#8217;re adding new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+but it gets in the way when you add new types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Low
+coupling between classes and high cohesion within a class is definitely an
+important design goal. Applied mindlessly, though, it can prevent you from
+achieving a more elegant design. It seems that some classes inevitably have a
+certain intimacy with each other. These often occur in pairs that could perhaps
+be called <A NAME="Index3003"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>couplets</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, collections and iterators (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s).
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash-Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pair above appears to be another such couplet.
+</FONT><a name="_Toc408018806"></a><a name="_Toc375545419"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0179.html">Prev</a> | <a href="tij0181.html">Next</a>
+</div>
+</body></html>
+

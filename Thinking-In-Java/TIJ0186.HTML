@@ -1,0 +1,312 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0185.html">Prev</a> | <a href="tij0187.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+A
+method lookup tool
+<P><A NAME="Index3062"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Chapter
+11 introduced the Java 1.1 concept of <A NAME="Index3063"></A><A NAME="Index3064"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reflection</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and used that feature to look up methods for a particular class &#8211; either
+the entire list of methods or a subset of those whose names match a keyword you
+provide. The magic of this is that it can automatically show you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the methods for a class without forcing you to walk up the inheritance
+hierarchy examining the base classes at each level. Thus, it provides a
+valuable timesaving tool for programming: because the names of most Java method
+names are made nicely verbose and descriptive, you can search for the method
+names that contain a particular word of interest. When you find what you think
+you&#8217;re looking for, check the online documentation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+by Chapter 11 you hadn&#8217;t seen the AWT, so that tool was developed as a
+command-line application. Here is the more useful GUI version, which
+dynamically updates the output as you type and also allows you to cut and paste
+from the output:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DisplayMethods.java</font>
+<font color="#009900">// Display the methods of any class inside</font>
+<font color="#009900">// a window. Dynamically narrows your search.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.lang.reflect.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DisplayMethods <font color="#0000ff">extends</font> Applet {
+  Class cl;
+  Method[] m;
+  Constructor[] ctor;
+  String[] n = <font color="#0000ff">new</font> String[0];
+  TextField 
+    name = <font color="#0000ff">new</font> TextField(40),
+    searchFor = <font color="#0000ff">new</font> TextField(30);
+  Checkbox strip = 
+    <font color="#0000ff">new</font> Checkbox("Strip Qualifiers");
+  TextArea results = <font color="#0000ff">new</font> TextArea(40, 65);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    strip.setState(<font color="#0000ff">true</font>);
+    name.addTextListener(<font color="#0000ff">new</font> NameL());
+    searchFor.addTextListener(<font color="#0000ff">new</font> SearchForL());
+    strip.addItemListener(<font color="#0000ff">new</font> StripL());
+    Panel 
+      top = <font color="#0000ff">new</font> Panel(),
+      lower = <font color="#0000ff">new</font> Panel(),
+      p = <font color="#0000ff">new</font> Panel();
+    top.add(<font color="#0000ff">new</font> Label("Qualified <font color="#0000ff">class</font> name:"));
+    top.add(name);
+    lower.add(
+      <font color="#0000ff">new</font> Label("String to search <font color="#0000ff">for</font>:"));
+    lower.add(searchFor);
+    lower.add(strip);
+    p.setLayout(<font color="#0000ff">new</font> BorderLayout());
+    p.add(top, BorderLayout.NORTH);
+    p.add(lower, BorderLayout.SOUTH);
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(p, BorderLayout.NORTH);
+    add(results, BorderLayout.CENTER);
+  }
+  <font color="#0000ff">class</font> NameL <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      String nm = name.getText().trim();
+      <font color="#0000ff">if</font>(nm.length() == 0) {
+        results.setText("No match");
+        n = <font color="#0000ff">new</font> String[0];
+        <font color="#0000ff">return</font>;
+      }
+      <font color="#0000ff">try</font> {
+        cl = Class.forName(nm);
+      } <font color="#0000ff">catch</font> (ClassNotFoundException ex) {
+        results.setText("No match");
+        <font color="#0000ff">return</font>;
+      }
+      m = cl.getMethods();
+      ctor = cl.getConstructors();
+      <font color="#009900">// Convert to an array of Strings:</font>
+      n = <font color="#0000ff">new</font> String[m.length + ctor.length];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; m.length; i++)
+        n[i] = m[i].toString();
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; ctor.length; i++)
+        n[i + m.length] = ctor[i].toString();
+      reDisplay();
+    }
+  }
+  <font color="#0000ff">void</font> reDisplay() {
+    <font color="#009900">// Create the result set:</font>
+    String[] rs = <font color="#0000ff">new</font> String[n.length];
+    String find = searchFor.getText();
+    <font color="#0000ff">int</font> j = 0;
+    <font color="#009900">// Select from the list if find exists:</font>
+    <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; n.length; i++) {
+      <font color="#0000ff">if</font>(find == <font color="#0000ff">null</font>)
+        rs[j++] = n[i];
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(n[i].indexOf(find) != -1)
+          rs[j++] = n[i];
+    }
+    results.setText("");
+    <font color="#0000ff">if</font>(strip.getState() == <font color="#0000ff">true</font>)
+      <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; j; i++)
+        results.append(
+          StripQualifiers.strip(rs[i]) + "\n");
+    <font color="#0000ff">else</font> <font color="#009900">// Leave qualifiers on</font>
+      <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; j; i++)
+        results.append(rs[i] + "\n");
+  }
+  <font color="#0000ff">class</font> StripL <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      reDisplay();
+    }
+  }
+  <font color="#0000ff">class</font> SearchForL <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      reDisplay();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    DisplayMethods applet = <font color="#0000ff">new</font> DisplayMethods();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Display Methods");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(500,750);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+}
+
+<font color="#0000ff">class</font> StripQualifiers {
+  <font color="#0000ff">private</font> StreamTokenizer st;
+  <font color="#0000ff">public</font> StripQualifiers(String qualified) {
+      st = <font color="#0000ff">new</font> StreamTokenizer(
+        <font color="#0000ff">new</font> StringReader(qualified));
+      st.ordinaryChar(' ');
+  }
+  <font color="#0000ff">public</font> String getNext() {
+    String s = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">if</font>(st.nextToken() !=
+            StreamTokenizer.TT_EOF) {
+        <font color="#0000ff">switch</font>(st.ttype) {
+          <font color="#0000ff">case</font> StreamTokenizer.TT_EOL:
+            s = <font color="#0000ff">null</font>;
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_NUMBER:
+            s = Double.toString(st.nval);
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_WORD:
+            s = <font color="#0000ff">new</font> String(st.sval);
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">default</font>: <font color="#009900">// single character in ttype</font>
+            s = String.valueOf((<font color="#0000ff">char</font>)st.ttype);
+        }
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println(e);
+    }
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String strip(String qualified) {
+    StripQualifiers sq = 
+      <font color="#0000ff">new</font> StripQualifiers(qualified);
+    String s = "", si;
+    <font color="#0000ff">while</font>((si = sq.getNext()) != <font color="#0000ff">null</font>) {
+      <font color="#0000ff">int</font> lastDot = si.lastIndexOf('.');
+      <font color="#0000ff">if</font>(lastDot != -1)
+        si = si.substring(lastDot + 1);
+      s += si;
+    }
+    <font color="#0000ff">return</font> s;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+things you&#8217;ve seen before. As with many of the GUI programs in this book,
+this is created to perform both as an application and as an applet. Also, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StripQualifiers</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is exactly the same as it was in Chapter 11.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+GUI contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+which you can enter the fully-qualified class name you want to look up, and
+another one, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>searchFor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in which you can enter the optional text to search for within the list of
+methods. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to say whether you want to use the fully-qualified names in the
+output or if you want the qualification stripped off. Finally, the results are
+displayed in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that there are no buttons or other components by which to indicate that
+you want the search to start. That&#8217;s because both of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are monitored by their listener objects. Whenever you make a change, the list
+is immediately updated. If you change the text within the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">field,
+the new text is captured in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+NameL
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the text isn&#8217;t empty, it is used inside <A NAME="Index3065"></A><A NAME="Index3066"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to try to look up the class. As you&#8217;re typing, of course, the name will
+be incomplete and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will fail, which means that it throws an exception. This is trapped and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is set to &#8220;No match&#8221;. But as soon as you type in a correct name
+(capitalization counts), 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is successful and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMethods(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will return arrays of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, respectively. Each of the objects in these arrays is turned into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this produces the complete method or constructor signature) and both lists are
+combined into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array. The array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a member of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+DisplayMethods
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and is used in updating the display whenever 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reDisplay(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you change the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>searchFor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+components, their listeners simply call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reDisplay(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reDisplay(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates a temporary array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rs</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(for &#8220;result set&#8221;). The result set is either copied directly from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if there is no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>find</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+word, or conditionally copied from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contain the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>find</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+word. Finally, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>strip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is interrogated to see if the user wants the names to be stripped (the default
+is &#8220;yes&#8221;). If so, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StripQualifiers.strip(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does the job; if not, the list is simply displayed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you might think that there&#8217;s a lot of busy work involved in setting up
+the layout. In fact, it is possible to lay out the components with less work,
+but the advantage of using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+this way is that it allows the user to resize the window and make &#8211; in
+particular &#8211; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+larger, which means you can resize to allow you to see longer names without
+scrolling.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might find that you&#8217;ll keep this tool running while you&#8217;re
+programming, since it provides one of the best &#8220;first lines of
+attack&#8221; when you&#8217;re trying to figure out what method to call.
+</FONT><a name="_Toc408018814"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0185.html">Prev</a> | <a href="tij0187.html">Next</a>
+</div>
+</body></html>
+

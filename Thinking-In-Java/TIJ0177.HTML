@@ -1,0 +1,839 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0176.html">Prev</a> | <a href="tij0178.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Improving
+the design
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+solutions in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are organized around the question &#8220;What will change as this program
+evolves?&#8221; This is usually the most important question that you can ask
+about any design. If you can build your system around the answer, the results
+will be two-pronged: not only will your system allow easy (and inexpensive)
+maintenance, but you might also produce components that are reusable, so that
+other systems can be built more cheaply. This is the promise of object-oriented
+programming, but it doesn&#8217;t happen automatically; it requires thought and
+insight on your part. In this section we&#8217;ll see how this process can
+happen during the refinement of a system.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+answer to the question &#8220;What will change?&#8221; for the recycling system
+is a common one: more types will be added to the system. The goal of the
+design, then, is to make this addition of types as painless as possible. In the
+recycling program, we&#8217;d like to encapsulate all places where specific
+type information is mentioned, so (if for no other reason) any changes can be
+localized to those encapsulations. It turns out that this process also cleans
+up the rest of the code considerably.
+</FONT><a name="_Toc375545415"></a><a name="_Toc408018800"></a><P></DIV>
+<A NAME="Heading558"></A><H3 ALIGN=LEFT>
+&#8220;Make
+more objects&#8221;
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+brings up a general object-oriented design principle that I first heard spoken
+by <A NAME="Index2951"></A>Grady
+Booch: &#8220;If the design is too complicated, make more objects.&#8221; This
+is simultaneously counterintuitive and ludicrously simple, and yet it&#8217;s
+the most useful guideline I&#8217;ve found. (You might observe that
+&#8220;making more objects&#8221; is often equivalent to &#8220;add another
+level of indirection.&#8221;) In general, if you find a place with messy code,
+consider what sort of class would clean that up. Often the side effect of
+cleaning up the code will be a system that has better structure and is more
+flexible.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+first the place where 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created, which is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 30; i++)
+      <font color="#0000ff">switch</font>((<font color="#0000ff">int</font>)(Math.random() * 3)) {
+        <font color="#0000ff">case</font> 0 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Aluminum(Math.random() * 100));
+          <font color="#0000ff">break</font>;
+        <font color="#0000ff">case</font> 1 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Paper(Math.random() * 100));
+          <font color="#0000ff">break</font>;
+        <font color="#0000ff">case</font> 2 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Glass(Math.random() * 100));
+      } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is definitely messy, and also a place where you must change code whenever a new
+type is added. If new types are commonly added, a better solution is a single
+method that takes all of the necessary information and produces a handle to an
+object of the correct type, already upcast to a trash object. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+this is broadly referred to as a <A NAME="Index2952"></A><A NAME="Index2953"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>creational
+pattern
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(of which there are several). The specific pattern that will be applied here is
+a variant of the <A NAME="Index2954"></A><A NAME="Index2955"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Factory
+Method
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, the factory method is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but more commonly it is a method that is overridden in the derived class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+idea of the factory method is that you pass it the essential information it
+needs to know to create your object, then stand back and wait for the handle
+(already upcast to the base type) to pop out as the return value. From then on,
+you treat the object polymorphically. Thus, you never even need to know the
+exact type of object that&#8217;s created. In fact, the factory method hides it
+from you to prevent accidental misuse. If you want to use the object without
+polymorphism, you must explicitly use RTTI and casting.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+there&#8217;s a little problem, especially when you use the more complicated
+approach (not shown here) of making the factory method in the base class and
+overriding it in the derived classes. What if the information required in the
+derived class requires more or different arguments? &#8220;Creating more
+objects&#8221; solves this problem. To implement the factory method, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class gets a new method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To hide the creational data, there&#8217;s a new class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains all of the necessary information for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to create the appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Here&#8217;s a simple implementation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Info {
+  <font color="#0000ff">int</font> type;
+  <font color="#009900">// Must change this to add another type:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> MAX_NUM = 4;
+  <font color="#0000ff">double</font> data;
+  Info(<font color="#0000ff">int</font> typeNum, <font color="#0000ff">double</font> dat) {
+    type = typeNum % MAX_NUM;
+    data = dat;
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object&#8217;s only job is to hold information for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Now, if there&#8217;s a situation in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs more or different information to create a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface doesn&#8217;t need to be changed. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class can be changed by adding new data and new constructors, or in the more
+typical object-oriented fashion of subclassing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for this simple example looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">static</font> Trash factory(Info i) {
+    <font color="#0000ff">switch</font>(i.type) {
+      <font color="#0000ff">default</font>: <font color="#009900">// To quiet the compiler</font>
+      <font color="#0000ff">case</font> 0:
+        <font color="#0000ff">return</font> <font color="#0000ff">new</font> Aluminum(i.data);
+      <font color="#0000ff">case</font> 1:
+        <font color="#0000ff">return</font> <font color="#0000ff">new</font> Paper(i.data);
+      <font color="#0000ff">case</font> 2:
+        <font color="#0000ff">return</font> <font color="#0000ff">new</font> Glass(i.data);
+      <font color="#009900">// Two lines here:</font>
+      <font color="#0000ff">case</font> 3: 
+        <font color="#0000ff">return</font> <font color="#0000ff">new</font> Cardboard(i.data);
+    }
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+the determination of the exact type of object is simple, but you can imagine a
+more complicated system in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses an elaborate algorithm. The point is that it&#8217;s now hidden away in
+one place, and you know to come to this place when you add new types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+creation of new objects is now much simpler in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 30; i++)
+      bin.addElement(
+        Trash.factory(
+          <font color="#0000ff">new</font> Info(
+            (<font color="#0000ff">int</font>)(Math.random() * Info.MAX_NUM),
+            Math.random() * 100))); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created to pass the data into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which in turn produces some kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object on the heap and returns the handle that&#8217;s added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, if you change the quantity and type of argument, this statement will
+still need to be modified, but that can be eliminated if the creation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is automated. For example, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of arguments can be passed into the constructor of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (or directly into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+call, for that matter). This requires that the arguments be parsed and checked
+at runtime, but it does provide the greatest flexibility.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see from this code what &#8220;<A NAME="Index2956"></A><A NAME="Index2957"></A><A NAME="Index2958"></A>vector
+of change&#8221; problem the factory is responsible for solving: if you add new
+types to the system (the change), the only code that must be modified is within
+the factory, so the factory isolates the effect of that change.
+</FONT><a name="_Toc375545418"></a><a name="_Toc408018801"></a><P></DIV>
+<A NAME="Heading559"></A><H3 ALIGN=LEFT>
+A
+pattern for prototyping creation
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+problem with the design above is that it still requires a central location
+where all the types of the objects must be known: inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. If new types are regularly being added to the system, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must be changed for each new type. When you discover something like
+this, it is useful to try to go one step further and move 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the information about the type &#8211; including its creation &#8211; into
+the class representing that type. This way, the only thing you need to do to
+add a new type to the system is to inherit a single class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+move the information concerning type creation into each specific type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+&#8220;<A NAME="Index2959"></A><A NAME="Index2960"></A>prototype&#8221;
+pattern (from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">book)
+will be used. The general idea is that you have a master sequence of objects,
+one of each type you&#8217;re interested in making. The objects in this
+sequence are used 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for making new objects, using an operation that&#8217;s not unlike the <A NAME="Index2961"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+scheme built into Java&#8217;s root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In this case, we&#8217;ll name the cloning method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tClone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you&#8217;re ready to make a new object, presumably you have some sort of
+information that establishes the type of object you want to create, then you
+move through the master sequence comparing your information with whatever
+appropriate information is in the prototype objects in the master sequence.
+When you find one that matches your needs, you clone it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this scheme there is no hard-coded information for creation. Each object knows
+how to expose appropriate information and how to clone itself. Thus, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method doesn&#8217;t need to be changed when a new type is added to the system. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+approach to the problem of prototyping is to add a number of methods to support
+the creation of new objects. However, in Java 1.1 there&#8217;s already support
+for creating new objects if you have a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. With <A NAME="Index2962"></A><A NAME="Index2963"></A>Java
+1.1 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reflection</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(introduced in Chapter 11) you can call a constructor even if you have only a
+handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is the perfect solution for the prototyping problem.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+list of prototypes will be represented indirectly by a list of handles to all
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects you want to create. In addition, if the prototyping fails, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method will assume that it&#8217;s because a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object wasn&#8217;t in the list, and it will attempt to load it. By loading the
+prototypes dynamically like this, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class doesn&#8217;t need to know what types it is working with, so it
+doesn&#8217;t need any modifications when you add new types. This allows it to
+be easily reused throughout the rest of the chapter.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Trash.java</font>
+<font color="#009900">// Base class for Trash recycling examples</font>
+<font color="#0000ff">package</font> c16.trash;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.lang.reflect.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> weight;
+  Trash(<font color="#0000ff">double</font> wt) { weight = wt; }
+  Trash() {}
+  <font color="#0000ff">public</font> <font color="#0000ff">abstract</font> <font color="#0000ff">double</font> value();
+  <font color="#0000ff">public</font> <font color="#0000ff">double</font> weight() { <font color="#0000ff">return</font> weight; }
+  <font color="#009900">// Sums the value of Trash in a bin:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> sumValue(Vector bin) {
+    Enumeration e = bin.elements();
+    <font color="#0000ff">double</font> val = 0.0f;
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      <font color="#009900">// One kind of RTTI:</font>
+      <font color="#009900">// A dynamically-checked cast</font>
+      Trash t = (Trash)e.nextElement();
+      val += t.weight() * t.value();
+      System.out.println(
+        "weight of " +
+        <font color="#009900">// Using RTTI to get type</font>
+        <font color="#009900">// information about the class:</font>
+        t.getClass().getName() +
+        " = " + t.weight());
+    }
+    System.out.println("Total value = " + val);
+  }
+  <font color="#009900">// Remainder of class provides support for</font>
+  <font color="#009900">// prototyping:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> PrototypeNotFoundException
+      <font color="#0000ff">extends</font> Exception {}
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> CannotCreateTrashException
+      <font color="#0000ff">extends</font> Exception {}
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Vector trashTypes = 
+    <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Trash factory(Info info) 
+      <font color="#0000ff">throws</font> PrototypeNotFoundException, 
+      CannotCreateTrashException {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; trashTypes.size(); i++) {
+      <font color="#009900">// Somehow determine the new type</font>
+      <font color="#009900">// to create, and create one:</font>
+      Class tc = 
+        (Class)trashTypes.elementAt(i);
+      <font color="#0000ff">if</font> (tc.getName().indexOf(info.id) != -1) {
+        <font color="#0000ff">try</font> {
+          <font color="#009900">// Get the dynamic constructor method</font>
+          <font color="#009900">// that takes a double argument:</font>
+          Constructor ctor =
+            tc.getConstructor(
+              <font color="#0000ff">new</font> Class[] {<font color="#0000ff">double</font>.<font color="#0000ff">class</font>});
+          <font color="#009900">// Call the constructor to create a </font>
+          <font color="#009900">// new object:</font>
+          <font color="#0000ff">return</font> (Trash)ctor.newInstance(
+            <font color="#0000ff">new</font> Object[]{<font color="#0000ff">new</font> Double(info.data)});
+        } <font color="#0000ff">catch</font>(Exception ex) {
+          ex.printStackTrace();
+          <font color="#0000ff">throw</font> <font color="#0000ff">new</font> CannotCreateTrashException();
+        }
+      }
+    }
+    <font color="#009900">// Class was not in the list. Try to load it,</font>
+    <font color="#009900">// but it must be in your class path!</font>
+    <font color="#0000ff">try</font> {
+      System.out.println("Loading " + info.id);
+      trashTypes.addElement(
+        Class.forName(info.id));
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> PrototypeNotFoundException();
+    }
+    <font color="#009900">// Loaded successfully. Recursive call </font>
+    <font color="#009900">// should work this time:</font>
+    <font color="#0000ff">return</font> factory(info);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> Info {
+    <font color="#0000ff">public</font> String id;
+    <font color="#0000ff">public</font> <font color="#0000ff">double</font> data;
+    <font color="#0000ff">public</font> Info(String name, <font color="#0000ff">double</font> data) {
+      id = name;
+      <font color="#0000ff">this</font>.data = data;
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+basic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sumValue(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+remain as before. The rest of the class supports the prototyping pattern. You
+first see two <A NAME="Index2964"></A><A NAME="Index2965"></A>inner
+classes (which are made 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so they are inner classes only for code organization purposes) describing
+exceptions that can occur. This is followed by a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+trashTypes
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used to hold the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash.factory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>id
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(a
+different version of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Info</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class than that of the prior discussion) contains the type name of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+be created; this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is compared to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+names in the list. If there&#8217;s a match, then that&#8217;s the object to
+create. Of course, there are many ways to determine what object you want to
+make. This one is used so that information read in from a file can be turned
+into objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you&#8217;ve discovered which kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create, then the <A NAME="Index2966"></A>reflection
+methods come into play. The <A NAME="Index2967"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructor(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method takes an argument that&#8217;s an array of <A NAME="Index2968"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles. This array represents the arguments, in their proper order, for the
+constructor that you&#8217;re looking for. Here, the <A NAME="Index2969"></A><A NAME="Index2970"></A>array
+is dynamically created using the Java 1.1<A NAME="Index2971"></A>
+array-creation syntax:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Class[] {double.class}
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+code assumes that every 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+type has a constructor that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(and
+notice that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is distinct from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Double.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+It&#8217;s also possible, for a more flexible solution, to call <A NAME="Index2972"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns an array of the possible constructors.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+comes back from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructor(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+a handle to a <A NAME="Index2973"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.lang.reflect</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+You call the constructor dynamically with the method <A NAME="Index2974"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which takes an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the actual arguments. This array is again created using the Java 1.1<A NAME="Index2975"></A>
+syntax:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Object[]{new Double(info.data)}
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this case, however, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be placed inside a wrapper class so that it can be part of this array of
+objects. The process of calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+extracts the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you can see it is a bit confusing &#8211; an argument might be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but when you make the call you must always pass in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Fortunately, this issue exists only for the primitive types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you understand how to do it, the process of creating a new object given only a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is remarkably simple. Reflection also allows you to call methods in this
+same dynamic fashion.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, the appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle might not be in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trashTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+list. In this case, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the inner loop is never executed and you&#8217;ll drop out at the end. Here,
+the program tries to rectify the situation by loading the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object dynamically and adding it to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trashTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+list. If it still can&#8217;t be found something is really wrong, but if the
+load is successful then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>factory</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called <A NAME="Index2976"></A><A NAME="Index2977"></A>recursively
+to try again.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you&#8217;ll see, the beauty of this design is that this code doesn&#8217;t
+need to be changed, regardless of the different situations it will be used in
+(assuming that all 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subclasses contain a constructor that takes a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument).
+</FONT><P></DIV>
+<A NAME="Heading560"></A><H4 ALIGN=LEFT>
+Trash
+subclasses
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+fit into the prototyping scheme, the only thing that&#8217;s required of each
+new subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that it contain a constructor that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument. Java 1.1<A NAME="Index2978"></A>
+reflection handles everything else.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+are the different types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+each in their own file but part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+package (again, to facilitate reuse within the chapter):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Aluminum.java </font>
+<font color="#009900">// The Aluminum class with prototyping</font>
+<font color="#0000ff">package</font> c16.trash;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Aluminum <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 1.67f;
+  <font color="#0000ff">public</font> Aluminum(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newVal) {
+    val = newVal;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Paper.java </font>
+<font color="#009900">// The Paper class with prototyping</font>
+<font color="#0000ff">package</font> c16.trash;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Paper <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 0.10f;
+  <font color="#0000ff">public</font> Paper(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newVal) {
+    val = newVal;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Glass.java </font>
+<font color="#009900">// The Glass class with prototyping</font>
+<font color="#0000ff">package</font> c16.trash;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Glass <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 0.23f;
+  <font color="#0000ff">public</font> Glass(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newVal) {
+    val = newVal;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">And
+here&#8217;s a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Cardboard.java </font>
+<font color="#009900">// The Cardboard class with prototyping</font>
+<font color="#0000ff">package</font> c16.trash;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Cardboard <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 0.23f;
+  <font color="#0000ff">public</font> Cardboard(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newVal) {
+    val = newVal;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that, other than the constructor, there&#8217;s nothing special about
+any of these classes.
+</FONT><P></DIV>
+<A NAME="Heading561"></A><H4 ALIGN=LEFT>
+Parsing
+Trash from an external file
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+information about 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects will be read from an outside file. The file has all of the necessary
+information about each piece of trash on a single line in the form 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash:weight</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+such as:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>c16.Trash.Glass:54
+c16.Trash.Paper:22
+c16.Trash.Paper:11
+c16.Trash.Glass:17
+c16.Trash.Aluminum:89
+c16.Trash.Paper:88
+c16.Trash.Aluminum:76
+c16.Trash.Cardboard:96
+c16.Trash.Aluminum:25
+c16.Trash.Aluminum:34
+c16.Trash.Glass:11
+c16.Trash.Glass:68
+c16.Trash.Glass:43
+c16.Trash.Aluminum:27
+c16.Trash.Cardboard:44
+c16.Trash.Aluminum:18
+c16.Trash.Paper:91
+c16.Trash.Glass:63
+c16.Trash.Glass:50
+c16.Trash.Glass:80
+c16.Trash.Aluminum:81
+c16.Trash.Cardboard:12
+c16.Trash.Glass:12
+c16.Trash.Glass:54
+c16.Trash.Aluminum:36
+c16.Trash.Aluminum:93
+c16.Trash.Glass:93
+c16.Trash.Paper:80
+c16.Trash.Glass:36
+c16.Trash.Glass:12
+c16.Trash.Glass:60
+c16.Trash.Paper:66
+c16.Trash.Aluminum:36
+c16.Trash.Cardboard:22</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the class path must be included when giving the class names, otherwise the
+class will not be found.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+parse this, the line is read and the <A NAME="Index2979"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+<A NAME="Index2980"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces the index of the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+This is first used with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+<A NAME="Index2981"></A><A NAME="Index2982"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>substring(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+extract the name of the trash type, and next to get the weight that is turned
+into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+<A NAME="Index2983"></A>Double.valueOf(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method.
+The <A NAME="Index2984"></A><A NAME="Index2985"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trim(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method removes white space at both ends of a string.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">parser
+is placed in a separate file since it will be reused throughout this chapter:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ParseTrash.java </font>
+<font color="#009900">// Open a file and parse its contents into</font>
+<font color="#009900">// Trash objects, placing each into a Vector</font>
+<font color="#0000ff">package</font> c16.trash;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ParseTrash {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  fillBin(String filename, Fillable bin) {
+    <font color="#0000ff">try</font> {
+      BufferedReader data =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> FileReader(filename));
+      String buf;
+      <font color="#0000ff">while</font>((buf = data.readLine())!= <font color="#0000ff">null</font>) {
+        String type = buf.substring(0, 
+          buf.indexOf(':')).trim();
+        <font color="#0000ff">double</font> weight = Double.valueOf(
+          buf.substring(buf.indexOf(':') + 1)
+          .trim()).doubleValue();
+        bin.addTrash(
+          Trash.factory(
+            <font color="#0000ff">new</font> Trash.Info(type, weight)));
+      }
+      data.close();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+  <font color="#009900">// Special case to handle Vector:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  fillBin(String filename, Vector bin) {
+    fillBin(filename, <font color="#0000ff">new</font> FillableVector(bin));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RecycleA.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was used to hold the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. However, other types of collections can be used as well. To allow for
+this, the first version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is simply an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that supports a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTrash(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Fillable.java </font>
+<font color="#009900">// Any object that can be filled with Trash</font>
+<font color="#0000ff">package</font> c16.trash;
+
+<font color="#0000ff">public</font> <font color="#0000ff">interface</font> Fillable {
+  <font color="#0000ff">void</font> addTrash(Trash t);
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Anything
+that supports this interface can be used with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it won&#8217;t work. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used in most of the examples, it makes sense to add a second overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object using an adapter class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FillableVector.java </font>
+<font color="#009900">// Adapter that makes a Vector Fillable</font>
+<font color="#0000ff">package</font> c16.trash;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FillableVector <font color="#0000ff">implements</font> Fillable {
+  <font color="#0000ff">private</font> Vector v;
+  <font color="#0000ff">public</font> FillableVector(Vector vv) { v = vv; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addTrash(Trash t) {
+    v.addElement(t);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the only job of this class is to connect 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTrash(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+With this class in hand, the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method can be used with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ParseTrash.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  fillBin(String filename, Vector bin) {
+    fillBin(filename, <font color="#0000ff">new</font> FillableVector(bin));
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach works for any collection class that&#8217;s used frequently.
+Alternatively, the collection class can provide its own adapter that implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Fillable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(You&#8217;ll see this later, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DynaTrash.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)</FONT><P></DIV>
+<A NAME="Heading562"></A><H4 ALIGN=LEFT>
+Recycling
+with prototyping
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can see the revised version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RecycleA.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using the <A NAME="Index2986"></A><A NAME="Index2987"></A>prototyping
+technique:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RecycleAP.java </font>
+<font color="#009900">// Recycling with RTTI and Prototypes</font>
+<font color="#0000ff">package</font> c16.recycleap;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RecycleAP {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector bin = <font color="#0000ff">new</font> Vector();
+    <font color="#009900">// Fill up the Trash bin:</font>
+    ParseTrash.fillBin("Trash.dat", bin);
+    Vector 
+      glassBin = <font color="#0000ff">new</font> Vector(),
+      paperBin = <font color="#0000ff">new</font> Vector(),
+      alBin = <font color="#0000ff">new</font> Vector();
+    Enumeration sorter = bin.elements();
+    <font color="#009900">// Sort the Trash:</font>
+    <font color="#0000ff">while</font>(sorter.hasMoreElements()) {
+      Object t = sorter.nextElement();
+      <font color="#009900">// RTTI to show class membership:</font>
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Aluminum)
+        alBin.addElement(t);
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Paper)
+        paperBin.addElement(t);
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Glass)
+        glassBin.addElement(t);
+    }
+    Trash.sumValue(alBin);
+    Trash.sumValue(paperBin);
+    Trash.sumValue(glassBin);
+    Trash.sumValue(bin);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, as well as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ParseTrash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and support classes, are now part of the package 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c16.trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so they are simply imported.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+process of opening the data file containing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+descriptions and the parsing of that file have been wrapped into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ParseTrash.fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so now it&#8217;s no longer a part of our design focus. You will see that
+throughout the rest of the chapter, no matter what new classes are added, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ParseTrash.fillBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will continue to work without change, which indicates a good design.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+terms of object creation, this design does indeed severely localize the changes
+you need to make to add a new type to the system. However, there&#8217;s a
+significant problem in the use of RTTI that shows up clearly here. The program
+seems to run fine, and yet it never detects any cardboard, even though there is
+cardboard in the list! This happens 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>because</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the use of RTTI, which looks for only the types that you tell it to look
+for. The clue that <A NAME="Index2988"></A>RTTI
+is being misused is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>every
+type in the system 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+being tested, rather than a single type or subset of types. As you will see
+later, there are ways to use polymorphism instead when you&#8217;re testing for
+every type. But if you use RTTI a lot in this fashion, and you add a new type
+to your system, you can easily forget to make the necessary changes in your
+program and produce a difficult-to-find bug. So it&#8217;s worth trying to
+eliminate RTTI in this case, not just for aesthetic reasons &#8211; it produces
+more maintainable code.
+</FONT><a name="_Toc375545416"></a><a name="_Toc408018802"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0176.html">Prev</a> | <a href="tij0178.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,229 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0177.html">Prev</a> | <a href="tij0179.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Abstracting
+usage
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+creation out of the way, it&#8217;s time to tackle the remainder of the design:
+where the classes are used. Since it&#8217;s the act of sorting into bins
+that&#8217;s particularly ugly and exposed, why not take that process and hide
+it inside a class? This is the principle of &#8220;If you must do something
+ugly, at least localize the ugliness inside a class.&#8221; It looks like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashSorter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object initialization must now be changed whenever a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to the model. You could imagine that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashSorter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class might look something like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> TrashSorter <font color="#0000ff">extends</font> Vector {
+  <font color="#0000ff">void</font> sort(Trash t) { <font color="#009900">/* ... */</font> }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashSorter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of handles to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles, and with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can install another one, like so:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">TrashSorter
+ts = new TrashSorter();
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">ts.addElement(new
+Vector());
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now,
+however, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+becomes a problem. How does the statically-coded method deal with the fact that
+a new type has been added? To solve this, the type information must be removed
+from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that all it needs to do is call a generic method that takes care of the
+details of type. This, of course, is another way to describe a
+dynamically-bound method. So 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will simply move through the sequence and call a dynamically-bound method for
+each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since the job of this method is to grab the pieces of trash it is interested
+in, it&#8217;s called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grab(Trash)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The structure now looks like:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashSorter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs to call each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method and get a different result depending on what type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the current 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is holding. That is, each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be aware of the type it holds. The classic approach to this problem is to
+create a base &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+bin&#8221; class and inherit a new derived class for each different type you
+want to hold. If Java had a parameterized type mechanism that would probably be
+the most straightforward approach. But rather than hand-coding all the classes
+that such a mechanism should be building for us, further observation can
+produce a better approach.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+basic OOP design principle is &#8220;Use data members for variation in state,
+use <A NAME="Index2989"></A>polymorphism
+for variation in behavior.&#8221; Your first thought might be that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method certainly behaves differently for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that holds 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Paper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+than for one that holds 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But what it does is strictly dependent on the type, and nothing else. This
+could be interpreted as a different state, and since Java has a class to
+represent type (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+this can be used to determine the type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will hold.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor for this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">requires
+that you hand it the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of your choice. This tells the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+what type it is supposed to hold. Then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class
+BinType
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and RTTI to see if the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object you&#8217;ve handed it matches the type it&#8217;s supposed to grab.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the whole program. The commented numbers (e.g. (*1*) ) mark sections that
+will be described following the code.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RecycleB.java</font>
+<font color="#009900">// Adding more objects to the recycling problem</font>
+<font color="#0000ff">package</font> c16.recycleb;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#009900">// A vector that admits only the right type:</font>
+<font color="#0000ff">class</font> Tbin <font color="#0000ff">extends</font> Vector {
+  Class binType;
+  Tbin(Class binType) { 
+    <font color="#0000ff">this</font>.binType = binType; 
+  }
+  <font color="#0000ff">boolean</font> grab(Trash t) {
+    <font color="#009900">// Comparing class types:</font>
+    <font color="#0000ff">if</font>(t.getClass().equals(binType)) {
+      addElement(t);
+      <font color="#0000ff">return</font> <font color="#0000ff">true</font>; <font color="#009900">// Object grabbed</font>
+    }
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>; <font color="#009900">// Object not grabbed</font>
+  }
+}
+
+<font color="#0000ff">class</font> TbinList <font color="#0000ff">extends</font> Vector { <font color="#009900">//(*1*)</font>
+  <font color="#0000ff">boolean</font> sort(Trash t) {
+    Enumeration e = elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      Tbin bin = (Tbin)e.nextElement();
+      <font color="#0000ff">if</font>(bin.grab(t)) <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>; <font color="#009900">// bin not found for t</font>
+  }
+  <font color="#0000ff">void</font> sortBin(Tbin bin) { <font color="#009900">// (*2*)</font>
+    Enumeration e = bin.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      <font color="#0000ff">if</font>(!sort((Trash)e.nextElement()))
+        System.out.println("Bin not found");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RecycleB {
+  <font color="#0000ff">static</font> Tbin bin = <font color="#0000ff">new</font> Tbin(Trash.<font color="#0000ff">class</font>);
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Fill up the Trash bin:</font>
+    ParseTrash.fillBin("Trash.dat", bin);
+
+    TbinList trashBins = <font color="#0000ff">new</font> TbinList();
+    trashBins.addElement(
+      <font color="#0000ff">new</font> Tbin(Aluminum.<font color="#0000ff">class</font>));
+    trashBins.addElement(
+      <font color="#0000ff">new</font> Tbin(Paper.<font color="#0000ff">class</font>));
+    trashBins.addElement(
+      <font color="#0000ff">new</font> Tbin(Glass.<font color="#0000ff">class</font>));
+    <font color="#009900">// add one line here: (*3*)</font>
+    trashBins.addElement(
+      <font color="#0000ff">new</font> Tbin(Cardboard.<font color="#0000ff">class</font>));
+
+    trashBins.sortBin(bin); <font color="#009900">// (*4*)</font>
+
+    Enumeration e = trashBins.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      Tbin b = (Tbin)e.nextElement();
+      Trash.sumValue(b);
+    }
+    Trash.sumValue(bin);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>	TbinList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds a set of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles, so that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can iterate through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+when it&#8217;s looking for a match for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object you&#8217;ve handed it.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>	sortBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to pass an entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in, and it moves through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+picks out each piece of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and sorts it into the appropriate specific 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tbin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Notice the genericity of this code: it doesn&#8217;t change at all if new types
+are added. If the bulk of your code doesn&#8217;t need changing when a new type
+is added (or some other change occurs) then you have an easily-extensible system.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Now
+you can see how easy it is to add a new type. Few lines must be changed to
+support the addition. If it&#8217;s really important, you can squeeze out even
+more by further manipulating the design.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	One
+method call causes the contents of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be sorted into the respective specifically-typed bins.
+</FONT><a name="_Toc408018803"></a><a name="_Toc375545417"></a></OL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0177.html">Prev</a> | <a href="tij0179.html">Next</a>
+</div>
+</body></html>
+

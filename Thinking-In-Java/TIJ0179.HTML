@@ -1,0 +1,452 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0178.html">Prev</a> | <a href="tij0180.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Multiple
+dispatching
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+above design is certainly satisfactory. Adding new types to the system consists
+of adding or modifying distinct classes without causing code changes to be
+propagated throughout the system. In addition, RTTI is not
+&#8220;misused&#8221; as it was in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RecycleA.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, it&#8217;s possible to go one step further and take a purist viewpoint
+about <A NAME="Index2990"></A>RTTI
+and say that it should be eliminated altogether from the operation of sorting
+the trash into bins.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+accomplish this, you must first take the perspective that all type-dependent
+activities &#8211; such as detecting the type of a piece of trash and putting
+it into the appropriate bin &#8211; should be controlled through polymorphism
+and dynamic binding.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+previous examples first sorted by type, then acted on sequences of elements
+that were all of a particular type. But whenever you find yourself picking out
+particular types, stop and think. The whole idea of polymorphism
+(dynamically-bound method calls) is to handle type-specific information for
+you. So why are you hunting for types?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+answer is something you probably don&#8217;t think about: Java performs only
+single dispatching. That is, if you are performing an operation on more than
+one object whose type is unknown, Java will invoke the dynamic binding
+mechanism on only one of those types. This doesn&#8217;t solve the problem, so
+you end up detecting some types manually and effectively producing your own
+dynamic binding behavior.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+solution is called <A NAME="Index2991"></A><A NAME="Index2992"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multiple
+dispatching
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means setting up a configuration such that a single method call produces
+more than one dynamic method call and thus determines more than one type in the
+process. To get this effect, you need to work with more than one type
+hierarchy: you&#8217;ll need a type hierarchy for each dispatch. The following
+example works with two hierarchies: the existing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+family and a hierarchy of the types of trash bins that the trash will be placed
+into. This second hierarchy isn&#8217;t always obvious and in this case it
+needed to be created in order to produce multiple dispatching (in this case
+there will be only two dispatches, which is referred to as <A NAME="Index2993"></A><A NAME="Index2994"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>double
+dispatching
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><a name="_Toc408018804"></a><P></DIV>
+<A NAME="Heading565"></A><H3 ALIGN=LEFT>
+Implementing
+the double dispatch
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Remember
+that polymorphism can occur only via method calls, so if you want double
+dispatching to occur, there must be two method calls: one used to determine the
+type within each hierarchy. In the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchy there will be a new method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which takes an argument of an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It uses this array to step through and try to add itself to the appropriate
+bin, and this is where you&#8217;ll see the double dispatch.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new hierarchy is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it contains its own method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is also used polymorphically. But here&#8217;s an additional twist: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>overloaded</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to take arguments of the different types of trash. So an essential part of the
+double dispatching scheme also involves overloading.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Redesigning
+the program produces a dilemma: it&#8217;s now necessary for the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to contain an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. One approach is to copy all of the code and change the base class.
+Another approach, which you can take when you don&#8217;t have control of the
+source code, is to put the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+leave 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+alone, and inherit new specific types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Paper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cardboard</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the approach that will be taken here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the classes in this design must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so they are placed in their own files. Here&#8217;s the interface:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TypedBinMember.java</font>
+<font color="#009900">// An interface for adding the double dispatching</font>
+<font color="#009900">// method to the trash hierarchy without </font>
+<font color="#009900">// modifying the original hierarchy.</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+
+<font color="#0000ff">interface</font> TypedBinMember {
+  <font color="#009900">// The new method:</font>
+  <font color="#0000ff">boolean</font> addToBin(TypedBin[] tb);
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+each particular subtype of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Paper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Glass,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cardboard</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+TypedBinMember
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is implemented,, but it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>looks</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like the code is exactly the same in each case:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DDAluminum.java</font>
+<font color="#009900">// Aluminum for double dispatching</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DDAluminum <font color="#0000ff">extends</font> Aluminum 
+    <font color="#0000ff">implements</font> TypedBinMember {
+  <font color="#0000ff">public</font> DDAluminum(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> addToBin(TypedBin[] tb) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tb.length; i++)
+      <font color="#0000ff">if</font>(tb[i].add(<font color="#0000ff">this</font>))
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DDPaper.java</font>
+<font color="#009900">// Paper for double dispatching</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DDPaper <font color="#0000ff">extends</font> Paper 
+    <font color="#0000ff">implements</font> TypedBinMember {
+  <font color="#0000ff">public</font> DDPaper(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> addToBin(TypedBin[] tb) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tb.length; i++)
+      <font color="#0000ff">if</font>(tb[i].add(<font color="#0000ff">this</font>))
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DDGlass.java</font>
+<font color="#009900">// Glass for double dispatching</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DDGlass <font color="#0000ff">extends</font> Glass 
+    <font color="#0000ff">implements</font> TypedBinMember {
+  <font color="#0000ff">public</font> DDGlass(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> addToBin(TypedBin[] tb) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tb.length; i++)
+      <font color="#0000ff">if</font>(tb[i].add(<font color="#0000ff">this</font>))
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DDCardboard.java</font>
+<font color="#009900">// Cardboard for double dispatching</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DDCardboard <font color="#0000ff">extends</font> Cardboard 
+    <font color="#0000ff">implements</font> TypedBinMember {
+  <font color="#0000ff">public</font> DDCardboard(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> addToBin(TypedBin[] tb) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tb.length; i++)
+      <font color="#0000ff">if</font>(tb[i].add(<font color="#0000ff">this</font>))
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+code in each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">calls
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object in the array. But notice the argument: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is different for each subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the code is different. (Although this code will benefit if a <A NAME="Index2995"></A><A NAME="Index2996"></A>parameterized
+type mechanism is ever added to Java.) So this is the first part of the double
+dispatch, because once you&#8217;re inside this method you know you&#8217;re 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Aluminum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Paper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. During the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+this information is passed via the type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The compiler resolves the call to the proper overloaded version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tb[i]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a handle to the base type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">this
+call will end up calling a different method depending on the type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s currently selected. That is the second dispatch.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the base class for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TypedBin.java</font>
+<font color="#009900">// Vector that knows how to grab the right type</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">abstract</font> <font color="#0000ff">class</font> TypedBin {
+  Vector v = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">protected</font> <font color="#0000ff">boolean</font> addIt(Trash t) {
+    v.addElement(t);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> Enumeration elements() {
+    <font color="#0000ff">return</font> v.elements();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDAluminum a) {
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDPaper a) {
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDGlass a) {
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDCardboard a) {
+    <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods all return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the method is not overloaded in a derived class, it will continue to return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the caller (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in this case) will assume that the current 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object has not been added successfully to a collection, and continue searching
+for the right collection.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+each of the subclasses of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+only one overloaded method is overridden, according to the type of bin
+that&#8217;s being created. For example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardboardBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+overrides 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(DDCardboard)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The overridden method adds the trash object to its collection and returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+while all the rest of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardboardBin
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">continue
+to return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since they haven&#8217;t been overridden. This is another case in which a
+parameterized type mechanism in Java would allow automatic generation of code.
+(With <A NAME="Index2997"></A><A NAME="Index2998"></A>C++
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>template</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+you wouldn&#8217;t have to explicitly write the subclasses or place the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+for this example the trash types have been customized and placed in a different
+directory, you&#8217;ll need a different trash data file to make it work.
+Here&#8217;s a possible 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DDTrash.dat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE>c16.DoubleDispatch.DDGlass:54
+c16.DoubleDispatch.DDPaper:22
+c16.DoubleDispatch.DDPaper:11
+c16.DoubleDispatch.DDGlass:17
+c16.DoubleDispatch.DDAluminum:89
+c16.DoubleDispatch.DDPaper:88
+c16.DoubleDispatch.DDAluminum:76
+c16.DoubleDispatch.DDCardboard:96
+c16.DoubleDispatch.DDAluminum:25
+c16.DoubleDispatch.DDAluminum:34
+c16.DoubleDispatch.DDGlass:11
+c16.DoubleDispatch.DDGlass:68
+c16.DoubleDispatch.DDGlass:43
+c16.DoubleDispatch.DDAluminum:27
+c16.DoubleDispatch.DDCardboard:44
+c16.DoubleDispatch.DDAluminum:18
+c16.DoubleDispatch.DDPaper:91
+c16.DoubleDispatch.DDGlass:63
+c16.DoubleDispatch.DDGlass:50
+c16.DoubleDispatch.DDGlass:80
+c16.DoubleDispatch.DDAluminum:81
+c16.DoubleDispatch.DDCardboard:12
+c16.DoubleDispatch.DDGlass:12
+c16.DoubleDispatch.DDGlass:54
+c16.DoubleDispatch.DDAluminum:36
+c16.DoubleDispatch.DDAluminum:93
+c16.DoubleDispatch.DDGlass:93
+c16.DoubleDispatch.DDPaper:80
+c16.DoubleDispatch.DDGlass:36
+c16.DoubleDispatch.DDGlass:12
+c16.DoubleDispatch.DDGlass:60
+c16.DoubleDispatch.DDPaper:66
+c16.DoubleDispatch.DDAluminum:36
+c16.DoubleDispatch.DDCardboard:22</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the rest of the program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DoubleDispatch.java</font>
+<font color="#009900">// Using multiple dispatching to handle more</font>
+<font color="#009900">// than one unknown type during a method call.</font>
+<font color="#0000ff">package</font> c16.doubledispatch;
+<font color="#0000ff">import</font> c16.trash.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> AluminumBin <font color="#0000ff">extends</font> TypedBin {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDAluminum a) {
+    <font color="#0000ff">return</font> addIt(a);
+  }
+}
+
+<font color="#0000ff">class</font> PaperBin <font color="#0000ff">extends</font> TypedBin {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDPaper a) {
+    <font color="#0000ff">return</font> addIt(a);
+  }
+}
+
+<font color="#0000ff">class</font> GlassBin <font color="#0000ff">extends</font> TypedBin {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDGlass a) {
+    <font color="#0000ff">return</font> addIt(a);
+  }
+}
+
+<font color="#0000ff">class</font> CardboardBin <font color="#0000ff">extends</font> TypedBin {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> add(DDCardboard a) {
+    <font color="#0000ff">return</font> addIt(a);
+  }
+}
+
+<font color="#0000ff">class</font> TrashBinSet {
+  <font color="#0000ff">private</font> TypedBin[] binSet = {
+    <font color="#0000ff">new</font> AluminumBin(),
+    <font color="#0000ff">new</font> PaperBin(),
+    <font color="#0000ff">new</font> GlassBin(),
+    <font color="#0000ff">new</font> CardboardBin()
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> sortIntoBins(Vector bin) {
+    Enumeration e = bin.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      TypedBinMember t = 
+        (TypedBinMember)e.nextElement();
+      <font color="#0000ff">if</font>(!t.addToBin(binSet))
+        System.err.println("Couldn't add " + t);
+    }
+  }
+  <font color="#0000ff">public</font> TypedBin[] binSet() { <font color="#0000ff">return</font> binSet; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DoubleDispatch {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector bin = <font color="#0000ff">new</font> Vector();
+    TrashBinSet bins = <font color="#0000ff">new</font> TrashBinSet();
+    <font color="#009900">// ParseTrash still works, without changes:</font>
+    ParseTrash.fillBin("DDTrash.dat", bin);
+    <font color="#009900">// Sort from the master bin into the </font>
+    <font color="#009900">// individually-typed bins:</font>
+    bins.sortIntoBins(bin);
+    TypedBin[] tb = bins.binSet();
+    <font color="#009900">// Perform sumValue for each bin...</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tb.length; i++)
+      Trash.sumValue(tb[i].v);
+    <font color="#009900">// ... and for the master bin</font>
+    Trash.sumValue(bin);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashBinSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+encapsulates all of the different types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+along with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sortIntoBins(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which is where all the double dispatching takes place. You can see that
+once the structure is set up, sorting into the various 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is remarkably easy. In addition, the efficiency of two dynamic method calls is
+probably better than any other way you could sort.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the ease of use of this system in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as well as the complete independence of any specific type information within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All other methods that talk only to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+base-class interface will be equally invulnerable to changes in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+changes necessary to add a new type are relatively isolated: you inherit the
+new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addToBin(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, then you inherit a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TypedBin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this is really just a copy and simple edit), and finally you add a new type
+into the aggregate initialization for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashBinSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018805"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0178.html">Prev</a> | <a href="tij0180.html">Next</a>
+</div>
+</body></html>
+

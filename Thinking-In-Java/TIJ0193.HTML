@@ -1,0 +1,571 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0192.html">Prev</a> | <a href="tij0194.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+J/Direct</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">J/Direct
+is the simplest way to call functions in a Win32 DLL. It was designed primarily
+to interface with the Win32 API, but you can use it to call any other APIs. The
+ease of use of this feature is counterbalanced by some limitations and reduced
+performance (compared to RNI). But J/Direct has distinct advantages. First,
+there is no need to write additional non-Java code, except the code in the DLL
+you want to call. In other words, you do not need a wrapper or proxy/stub DLL.
+Second, function arguments are automatically converted to and from standard
+data types. (If you must pass user-defined data types, J/Direct might not be
+the way to go.) Third, it&#8217;s simple and straightforward, as the example
+below shows. In just a few lines, this example calls the Win32 API function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which pops up a little modal window with a title, a message, an optional icon,
+and a few buttons.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">class</font> ShowMsgBox {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) 
+  <font color="#0000ff">throws</font> UnsatisfiedLinkError   {
+    MessageBox(0,
+      "Created by the MessageBox() Win32 func",
+      "Thinking in Java", 0);
+  }
+  <font color="#009900">/** @dll.import("USER32") */</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">native</font> <font color="#0000ff">int</font> 
+  MessageBox(<font color="#0000ff">int</font> hwndOwner, String text,
+    String title, <font color="#0000ff">int</font> fuStyle);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Amazingly,
+this code is all you need to call a function in a Win32 DLL using J/Direct. The
+key is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive before the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+declaration, at the bottom of the example code. It looks like a comment, but
+it&#8217;s not: it tells the compiler that the function below the directive is
+implemented in the USER32 DLL, and should be called accordingly. All you must
+do is supply a prototype that matches the function implementation in the DLL
+and call the function. But instead of typing in the Java version of each Win32
+API function that you need, a Microsoft Java package does this for you
+(I&#8217;ll describe this shortly). For this example to work, the function must
+be exported 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>by
+name
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by the DLL, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">directive
+can be used to link 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>by
+ordinal
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well, i.e., you can specify the entry position of the function in the DLL.
+I&#8217;ll cover the features of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">directive
+later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+important issue in the process of linking with non-Java code is the automatic
+marshaling of the function parameters. As you can see, the Java declaration of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes two String arguments, but the original C implementation takes two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointers. The compiler automatically converts the standard data types for you,
+following the rules described in a later section.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+you might have noticed the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsatisfiedLinkError</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception in the declaration of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This exception occurs when the linker is unable to resolve the symbol for the
+non-Java function at run-time. This happens for a number of reasons: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.dll</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file was not found, it is not a valid DLL, or J/Direct is not supported by your
+virtual machine. For the DLL to be found, it must be in the Windows or
+Windows\System directory, in one of the directories listed in your PATH
+environment variable, or in the directory where the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+is located. J/Direct is supported in the Microsoft Java compiler version
+1.02.4213 or above, and in the Microsoft JVM version 4.79.2164 or above. To get
+the compiler version number, run JVC from the command line with no parameters.
+To get the JVM version number, locate the icon for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>msjava.dll</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and using the context menu look at its properties.
+</FONT><a name="_Toc408018827"></a><P></DIV>
+<A NAME="Heading598"></A><H3 ALIGN=LEFT>
+The
+@dll.import directive
+<P><A NAME="Index3099"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive, your one and only way to J/Direct, is quite flexible. It has a
+number of modifiers that you can use to customize the way you link to the
+non-Java code. It can also be applied to some methods within a class or to a
+whole class, meaning that all of the methods you declare in that class are
+implemented in the same DLL. Let&#8217;s look at these features.
+</FONT><P></DIV>
+<A NAME="Heading599"></A><H4 ALIGN=LEFT>
+Aliasing
+and linking by ordinal
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive to work as shown above, the function in the DLL must be exported by
+name. However, you might want to use a different name than the original one in
+the DLL (aliasing), or the function might be exported by number (i.e. by
+ordinal) instead of by name. The example below declares 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FinestraDiMessaggio(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(the Italian equivalent of &#8220;MessageBox&#8221;) as an alias to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As you can see, the syntax is pretty simple.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">class</font> Aliasing {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) 
+  <font color="#0000ff">throws</font> UnsatisfiedLinkError   {
+    FinestraDiMessaggio(0,
+      "Created by the MessageBox() Win32 func",
+      "Thinking in Java", 0);
+  }
+  <font color="#009900">/** @dll.import("USER32", 
+  entrypoint="MessageBox") */</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">native</font> <font color="#0000ff">int</font> 
+  FinestraDiMessaggio(<font color="#0000ff">int</font> hwndOwner, String text,
+    String title, <font color="#0000ff">int</font> fuStyle);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next example shows how to link to a function in a DLL that is not exported by
+name, but by its position inside of the DLL. The example assumes that there is
+a DLL named MYMATH somewhere along your path, and that this DLL contains at
+position 3 a function that takes two integers and gives you back the sum.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">class</font> ByOrdinal {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) 
+  <font color="#0000ff">throws</font> UnsatisfiedLinkError {
+    <font color="#0000ff">int</font> j=3, k=9;
+    System.out.println("Result of DLL function:"
+      + Add(j,k));
+  }
+  <font color="#009900">/** @dll.import("MYMATH", entrypoint = "#3") */</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">native</font> <font color="#0000ff">int</font> Add(<font color="#0000ff">int</font> op1,<font color="#0000ff">int</font> op2);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the only difference is the form of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>entrypoint</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument.
+</FONT><P></DIV>
+<A NAME="Heading600"></A><H4 ALIGN=LEFT>
+Applying
+@dll.import to the entire class
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index3100"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive can be applied to an entire class, meaning that all of the methods in
+that class are implemented in the same DLL and with the same linkage
+attributes. The directive is not inherited by subclasses; for this reason, and
+since functions in a DLL are by nature 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functions, a better design approach is to encapsulate the API functions in a
+separate class, as shown here:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">/** @dll.import("USER32") */</font>
+<font color="#0000ff">class</font> MyUser32Access {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">native</font> <font color="#0000ff">int</font> 
+  MessageBox(<font color="#0000ff">int</font> hwndOwner, String text,
+    String title, <font color="#0000ff">int</font> fuStyle);
+  <font color="#0000ff">public</font> <font color="#0000ff">native</font> <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> 
+  MessageBeep(<font color="#0000ff">int</font> uType);
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WholeClass {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) 
+  <font color="#0000ff">throws</font> UnsatisfiedLinkError {
+    MyUser32Access.MessageBeep(4);
+    MyUser32Access.MessageBox(0,
+      "Created by the MessageBox() Win32 func",
+      "Thinking in Java", 0);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBeep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functions are now declared as static in a different class, you must call them
+specifying their scope. You might think that you must use the approach above to
+map 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">of
+the <A NAME="Index3101"></A>Win32
+API (functions, constants, and data types) to Java classes. Fortunately, you
+don&#8217;t have to.
+</FONT><a name="_Toc408018828"></a><P></DIV>
+<A NAME="Heading601"></A><H3 ALIGN=LEFT>
+The
+com.ms.win32 package
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Win32 API is fairly big &#8211; on the order of a thousand functions,
+constants, and data types. Of course, you do not want to write the Java
+equivalent of every single Win32 API function. Microsoft took care of this,
+distributing a Java package that maps the Win32 API to Java classes using
+J/Direct. This package, named <A NAME="Index3102"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.win32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is installed in your classpath during the installation of the Java SDK 2.0 if
+you select it in the setup options. The package is made up of large number of
+Java classes that reproduce the constants, data structures, and functions of
+the Win32 API. The three richest classes are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>User32.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Kernel32.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gdi32.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These contain the core of the Win32 API. To use them, just import them in your
+Java code. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMsgBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example above can be rewritten using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.win32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as follows (I also took care of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsatisfiedLinkError</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a more civilized way):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> com.ms.win32.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> UseWin32Package {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    <font color="#0000ff">try</font> {
+      User32.MessageBeep(
+        winm.MB_ICONEXCLAMATION);
+      User32.MessageBox(0,
+        "Created by the MessageBox() Win32 func",
+        "Thinking in Java",
+        winm.MB_OKCANCEL |
+        winm.MB_ICONEXCLAMATION);
+    } <font color="#0000ff">catch</font>(UnsatisfiedLinkError e) {
+      System.out.println("Can&#8217;t link Win32 API");
+      System.out.println(e);
+    }
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+package is imported in the first line. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBeep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functions can now be called with no other declarations. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBeep(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can see that importing the package has also declared the Win32 constants. These
+constants are defined in a number of Java interfaces, all named winx (x is the
+first letter of the constant you want to use). 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+the time of this writing, the classes in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.win32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+package are still under development, but usable nonetheless.
+</FONT><a name="_Toc408018829"></a><P></DIV>
+<A NAME="Heading602"></A><H3 ALIGN=LEFT>
+Marshaling<P><A NAME="Index3103"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Marshaling
+means converting a function argument from its native binary representation into
+some language-independent format, and then converting this generic
+representation into a binary format that is appropriate to the called function.
+In the example above, we called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function and passed it a couple of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a C function, and the binary layout of Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is not the same as C strings, but the arguments are nonetheless correctly
+passed. That&#8217;s because J/Direct takes care of converting a Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a C string before calling the C code. This happens with all standard Java
+types. Below is a table of the implicit conversions for simple data types:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="55">
+      <COL width="185">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Java</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>C</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">BYTE
+or CHAR
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">SHORT
+or WORD
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">INT,
+UINT, LONG, ULONG, or DWORD
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">TCHAR</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">__int64</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Float</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Double</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">BOOL</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">LPCTSTR
+(Allowed as return value only in ole mode)
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte[]</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">BYTE
+*
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short[]</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">WORD
+*
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">TCHAR
+*
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=55 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int[]</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=185 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">DWORD
+*
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+list continues, but this gives you the idea. In most cases, you do not need to
+worry about converting to and from simple data types, but things are different
+when you must pass arguments of user-defined data types. For example, you might
+need to pass the address of a structured, user-defined data type, or you might
+need to pass a pointer to a raw memory area. For these situations, there are
+special compiler directives to mark a Java class so that it can be passed as a
+pointer to a structure (the <A NAME="Index3104"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.struct</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive). For details on the use of these keywords, please refer to the
+product documentation.
+</FONT><a name="_Toc408018830"></a><P></DIV>
+<A NAME="Heading603"></A><H3 ALIGN=LEFT>
+Writing
+callback functions
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+Win32 API functions require a function pointer as one of the parameters. The
+Windows API function may then call the argument function, possibly at a later
+time when some event occurs. This technique is called a <A NAME="Index3105"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>callback
+function
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Examples include window procedures and the callbacks you set up during a print
+operation (you give the print spooler the address of your callback function so
+it can update the status and possibly interrupt printing).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+example is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EnumWindows(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+API function that enumerates all top-level windows currently present in the
+system. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EnumWindows(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a function pointer, then traverses a list maintained internally by
+Windows. For every window in the list, it calls the callback function, passing
+the window handle as an argument to the callback.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+do the same thing in Java, you must use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Callback
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.dll</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+package. You inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Callback
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>callback(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This method will accept only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+parameters and will return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The method signature and implementation depends on the Windows API function
+that&#8217;s using this callback.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+all we need to do is create an instance of this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Callback</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-derived
+class and pass it as the function pointer argument to the API function.
+J/Direct will take care of the rest.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+example below calls the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EnumWindows(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Win32 API; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>callback(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the EnumWindowsProc class gets the window handle for each top-level
+window, obtains the caption text, and prints it to the console window.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> com.ms.dll.*;
+<font color="#0000ff">import</font> com.ms.win32.*;
+
+<font color="#0000ff">class</font> EnumWindowsProc <font color="#0000ff">extends</font> Callback {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> callback(<font color="#0000ff">int</font> hwnd, <font color="#0000ff">int</font> lparam) {
+    StringBuffer text = <font color="#0000ff">new</font> StringBuffer(50);
+    User32.GetWindowText(
+      hwnd, text, text.capacity()+1);
+    <font color="#0000ff">if</font>(text.length() != 0)
+      System.out.println(text);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;  <font color="#009900">// to continue enumeration.</font>
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ShowCallback {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[])
+  <font color="#0000ff">throws</font> InterruptedException {
+    <font color="#0000ff">boolean</font> ok = User32.EnumWindows(
+      <font color="#0000ff">new</font> EnumWindowsProc(), 0);
+    <font color="#0000ff">if</font>(!ok)
+      System.err.println("EnumWindows failed.");
+    Thread.currentThread().sleep(3000);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows the windows procedure to complete before 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exits.
+</FONT><a name="_Toc408018831"></a><P></DIV>
+<A NAME="Heading604"></A><H3 ALIGN=LEFT>
+Other
+J/Direct features
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two more J/Direct features you can get using modifiers in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive. The first is simplified access to OLE functions, and the second is
+the selection of the ANSI versus Unicode version of API functions. Here is a
+short description of the two.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+convention, all OLE functions return a value of type HRESULT, which is a
+structured integer value defined by COM. If you program at the COM level and
+you want something different returned from an OLE function, you must pass it a
+pointer to a memory area that the function will fill with data. But in Java we
+don&#8217;t have pointers; also, this style is not exactly elegant. With
+J/Direct, you can easily call OLE functions using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ole</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+modifier in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive. A native method marked as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ole</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function is automatically translated from a Java-style method signature, which
+is where you decide the return type, into a COM-style function.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second feature selects between ANSI and Unicode string handling. Most Win32 API
+functions that handle strings come in two versions. For example, if you look at
+the symbols exported by the USER32 DLL, you will not find a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBox(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function, but instead 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBoxA(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MessageBoxW(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functions, which are the ANSI and Unicode version, respectively. If you do not
+specify which version you want to call in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@dll.import
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">directive,
+the JVM will try to figure it out. But this operation takes some time during
+program execution time that you can save with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ansi</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>unicode,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>auto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+modifiers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+a more detailed discussion of these features, consult the Microsoft
+documentation.
+</FONT><a name="_Toc408018832"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0192.html">Prev</a> | <a href="tij0194.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,97 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0181.html">Prev</a> | <a href="tij0183.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Coming
+up with a design such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashVisitor.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+contains a larger amount of code than the earlier designs can seem at first to
+be counterproductive. It pays to notice what you&#8217;re trying to accomplish
+with various designs. Design patterns in general strive to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>separate
+the things that change from the things that stay the same
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The &#8220;things that change&#8221; can refer to many different kinds of
+changes. Perhaps the change occurs because the program is placed into a new
+environment or because something in the current environment changes (this could
+be: &#8220;The user wants to add a new shape to the diagram currently on the
+screen&#8221;). Or, as in this case, the change could be the evolution of the
+code body. While previous versions of the trash-sorting example emphasized the
+addition of new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>types</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+the system, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashVisitor.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to easily add new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>functionality</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without disturbing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchy. There&#8217;s more code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TrashVisitor.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but adding new functionality to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Visitor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is cheap. If this is something that happens a lot, then it&#8217;s worth the
+extra effort and code to make it happen more easily.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+discovery of the <A NAME="Index3009"></A>vector
+of change is no trivial matter; it&#8217;s not something that an analyst can
+usually detect before the program sees its initial design. The necessary
+information will probably not appear until later phases in the project:
+sometimes only at the design or implementation phases do you discover a deeper
+or more subtle need in your system. In the case of adding new types (which was
+the focus of most of the &#8220;recycle&#8221; examples) you might realize that
+you need a particular inheritance hierarchy only when you are in the
+maintenance phase and you begin extending the system!
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the most important things that you&#8217;ll learn by studying design
+patterns seems to be an about-face from what has been promoted so far in this
+book. That is: &#8220;OOP is all about polymorphism.&#8221; This statement can
+produce the &#8220;two-year-old with a hammer&#8221; syndrome (everything looks
+like a nail). Put another way, it&#8217;s hard enough to &#8220;get&#8221;
+polymorphism, and once you do, you try to cast all your designs into that one
+particular mold.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+design patterns say is that OOP isn&#8217;t just about polymorphism. It&#8217;s
+about &#8220;separating the things that change from the things that stay the
+same.&#8221; <A NAME="Index3010"></A>Polymorphism
+is an especially important way to do this, and it turns out to be helpful if
+the programming language directly supports polymorphism (so you don&#8217;t
+have to wire it in yourself, which would tend to make it prohibitively
+expensive). But design patterns in general show 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>other</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ways to accomplish the basic goal, and once your eyes have been opened to this
+you will begin to search for more creative designs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+book came out and made such an impact, people have been searching for other
+patterns. You can expect to see more of these appear as time goes on. Here are
+some sites recommended by Jim Coplien, of C++ fame (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.bell-labs.com/~cope</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+who is one of the main proponents of the patterns movement:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://st-www.cs.uiuc.edu/users/patterns</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://c2.com/cgi/wiki</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://c2.com/ppr</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.bell-labs.com/people/cope/Patterns/Process/index.html</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.bell-labs.com/cgi-user/OrgPatterns/OrgPatterns</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://st-www.cs.uiuc.edu/cgi-bin/wikic/wikic</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.cs.wustl.edu/~schmidt/patterns.html</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.espinc.com/patterns/overview.html</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Also
+note there has been a yearly conference on design patterns, called PLOP, that
+produces a published proceedings, the third of which came out in late 1997 (all
+published by Addison-Wesley).
+</FONT><a name="_Toc375545420"></a><a name="_Toc408018808"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0181.html">Prev</a> | <a href="tij0183.html">Next</a>
+</div>
+</body></html>
+

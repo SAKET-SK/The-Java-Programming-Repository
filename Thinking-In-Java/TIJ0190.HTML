@@ -1,0 +1,64 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0189.html">Prev</a> | <a href="tij0191.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+A:
+Using non-Java code
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">This
+appendix was contributed by and used with the permission of Andrea Provaglio (
+</FONT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black"><I>www.AndreaProvaglio.com</I></FONT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java language and its standard API are rich enough to write full-fledged
+applications. But in some cases you must call <A NAME="Index3073"></A><A NAME="Index3074"></A>non-Java
+code; for example, if you want to access operating-system-specific features, <A NAME="Index3075"></A>interface
+with special <A NAME="Index3076"></A>hardware
+devices, reuse a pre-existing, non-Java code base, or implement <A NAME="Index3077"></A>time-critical
+sections of code. Interfacing with non-Java code requires dedicated support in
+the compiler and in the Virtual Machine, and additional tools to map the Java
+code to the non-Java code. (There&#8217;s also a simple approach: in Chapter
+15, the section titled &#8220;a Web application&#8221; contains an example of
+connecting to non-Java code using standard input and output.) Currently,
+different vendors offer different solutions: Java 1.1 has the <A NAME="Index3078"></A><A NAME="Index3079"></A>Java
+Native Interface (JNI), Netscape has proposed its <A NAME="Index3080"></A>Java
+Runtime Interface, and Microsoft offers <A NAME="Index3081"></A>J/Direct,
+<A NAME="Index3082"></A><A NAME="Index3083"></A>Raw
+Native Interface (RNI), and <A NAME="Index3084"></A><A NAME="Index3085"></A>Java/COM
+integration.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+fragmentation among different vendors implies serious drawbacks for the
+programmer. If a Java application must call native methods, the programmer
+might need to implement different versions of the native methods depending on
+the platform the application will run on. The programmer might actually need
+different versions of the Java code as well as different Java virtual machines.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+solution is <A NAME="Index3086"></A>CORBA
+(Common Object Request Broker Architecture), an integration technology
+developed by the OMG (Object Management Group, a non-profit consortium of
+companies). CORBA is not part of any language, but is a specification for
+implementing a common communication bus and services that allow
+interoperability among objects implemented in different languages. This
+communication bus, called an <A NAME="Index3087"></A><A NAME="Index3088"></A>ORB
+(Object Request Broker), is a product implemented by third-party vendors, but
+it is not part of the Java language specification.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+appendix gives an overview of JNI, J/Direct, RNI, Java/COM integration, and
+CORBA. This is not an in-depth treatment, and in some cases you&#8217;re
+assumed to have partial knowledge of the related concepts and techniques. But
+in the end, you should be able to compare the different approaches and choose
+the one that is most appropriate to the problem you want to solve.
+</FONT><a name="_Toc408018818"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0189.html">Prev</a> | <a href="tij0191.html">Next</a>
+</div>
+</body></html>
+

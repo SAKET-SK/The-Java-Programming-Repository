@@ -1,0 +1,1451 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0184.html">Prev</a> | <a href="tij0186.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Text
+processing
+<P><A NAME="Index3011"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you come from a C or C++ background, you might be skeptical at first of
+Java&#8217;s power when it comes to handling text. Indeed, one drawback is that
+execution speed is slower and that could hinder some of your efforts. However,
+the tools (in particular the <A NAME="Index3012"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class) are quite powerful, as the examples in this section show (and
+performance improvements have been promised for Java).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you&#8217;ll see, these examples were created to solve problems that arose in
+the creation of this book. However, they are not restricted to that and the
+solutions they offer can easily be adapted to other situations. In addition,
+they show the power of Java in an area that has not previously been emphasized
+in this book.
+</FONT><a name="_Toc375545503"></a><a name="_Toc408018811"></a><P></DIV>
+<A NAME="Heading573"></A><H3 ALIGN=LEFT>
+Extracting
+code listings
+<P><A NAME="Index3013"></A><A NAME="Index3014"></A><A NAME="Index3015"></A><A NAME="Index3016"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ve
+no doubt noticed that each complete code listing (not code fragment) in this
+book begins and ends with special comment tag marks &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>//:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>///:~</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+This meta-information is included so that the code can be automatically
+extracted from the book into compilable source-code files. In my previous book,
+I had a system that allowed me to automatically incorporate tested code files
+into the book. In this book, however, I discovered that it was often easier to
+paste the code into the book once it was initially tested and, since it&#8217;s
+hard to get right the first time, to perform edits to the code within the book.
+But how to extract it and test the code? This program is the answer, and it
+could come in handy when you set out to solve a text processing problem. It
+also demonstrates many of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class features.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">I
+first save the entire book in ASCII text format into a separate file. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program has two modes (which you can see described in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>usageString</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">):
+if you use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag, it expects to see an input file containing the ASCII text from the book.
+It will go through this file and use the comment tag marks to extract the code,
+and it uses the file name on the first line to determine the name of the file.
+In addition, it looks for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement in case it needs to put the file into a special directory (chosen via
+the path indicated by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+that&#8217;s not all. It also watches for the change in chapters by keeping
+track of the package names. Since all packages for each chapter begin with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c02</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c03</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c04</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. to indicate the chapter where they belong
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(except
+for those beginning with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are ignored for the purpose of keeping track of chapters), as long as the
+first listing in each chapter contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement with the chapter number, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program can keep track of when the chapter changed and put all the subsequent
+files in the new chapter subdirectory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+each file is extracted, it is placed into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that is then placed into a collection. (This process will be more
+thoroughly described later.) These 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects could simply be stored in files, but that brings us to the second use
+for this project. If you invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag it expects a &#8220;packed&#8221; file as input, which it will then
+extract into separate files. So the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag means that the extracted files will be found &#8220;packed&#8221; into
+this single file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Why
+bother with the packed file? Because different computer platforms have
+different ways of storing text information in files. A big issue is the
+end-of-line character or characters, but other issues can also exist. However,
+Java has a special type of IO stream &#8211; the <A NAME="Index3017"></A><A NAME="Index3018"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+which promises that, regardless of what machine the data is coming from, the
+storage of that data will be in a form that can be correctly retrieved by any
+other machine by using a <A NAME="Index3019"></A><A NAME="Index3020"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That is, Java handles all of the <A NAME="Index3021"></A>platform-specific
+details, which is a large part of the promise of Java. So the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag stores everything into a single file in a universal format. You download
+this file and the Java program from the Web, and when you run 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on this file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag the files will all be extracted to appropriate places on your system. (You
+can specify an alternate subdirectory; otherwise the subdirectories will just
+be created in the current directory.) To ensure that no system-specific formats
+remain, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are used everywhere a path or a file is described. In addition,
+there&#8217;s a sanity check: an empty file is placed in each subdirectory; the
+name of that file indicates how many files you should find in that subdirectory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the code, which will be described in detail at the end of the listing:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CodePackager.java</font>
+<font color="#009900">// "Packs" and "unpacks" the code in "Thinking </font>
+<font color="#009900">// in Java" for cross-platform distribution.</font>
+<font color="#009900">/* Commented so CodePackager sees it and starts
+   a new chapter directory, but so you don't 
+   have to worry about the directory where this
+   program lives:
+package c17;
+*/</font>
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> Pr {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> error(String e) {
+    System.err.println("ERROR: " + e);
+    System.exit(1);
+  }
+}
+
+<font color="#0000ff">class</font> IO {
+  <font color="#0000ff">static</font> BufferedReader disOpen(File f) {
+    BufferedReader in = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      in = <font color="#0000ff">new</font> BufferedReader(
+        <font color="#0000ff">new</font> FileReader(f));
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("could not open " + f);
+    }
+    <font color="#0000ff">return</font> in;
+  }
+  <font color="#0000ff">static</font> BufferedReader disOpen(String fname) {
+    <font color="#0000ff">return</font> disOpen(<font color="#0000ff">new</font> File(fname));
+  }
+  <font color="#0000ff">static</font> DataOutputStream dosOpen(File f) {
+    DataOutputStream in = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      in = <font color="#0000ff">new</font> DataOutputStream(
+        <font color="#0000ff">new</font> BufferedOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream(f)));
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("could not open " + f);
+    }
+    <font color="#0000ff">return</font> in;
+  }
+  <font color="#0000ff">static</font> DataOutputStream dosOpen(String fname) {
+    <font color="#0000ff">return</font> dosOpen(<font color="#0000ff">new</font> File(fname));
+  }
+  <font color="#0000ff">static</font> PrintWriter psOpen(File f) {
+    PrintWriter in = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      in = <font color="#0000ff">new</font> PrintWriter(
+        <font color="#0000ff">new</font> BufferedWriter(
+          <font color="#0000ff">new</font> FileWriter(f)));
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("could not open " + f);
+    }
+    <font color="#0000ff">return</font> in;
+  }
+  <font color="#0000ff">static</font> PrintWriter psOpen(String fname) {
+    <font color="#0000ff">return</font> psOpen(<font color="#0000ff">new</font> File(fname));
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> close(Writer os) {
+    <font color="#0000ff">try</font> {
+      os.close();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("closing " + os);
+    }
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> close(DataOutputStream os) {
+    <font color="#0000ff">try</font> {
+      os.close();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("closing " + os);
+    }
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> close(Reader os) {
+    <font color="#0000ff">try</font> {
+      os.close();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("closing " + os);
+    }
+  }
+}
+
+<font color="#0000ff">class</font> SourceCodeFile {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> String 
+    startMarker = "<font color="#009900">//:", // Start of source file</font>
+    endMarker = "} <font color="#009900">///:~", // End of source</font>
+    endMarker2 = "}; <font color="#009900">///:~", // C++ file end</font>
+    beginContinue = "} <font color="#009900">///:Continued",</font>
+    endContinue = "<font color="#009900">///:Continuing",</font>
+    packMarker = "###", <font color="#009900">// Packed file header tag</font>
+    eol = <font color="#009900">// Line separator on current system</font>
+      System.getProperty("line.separator"),
+    filesep = <font color="#009900">// System's file path separator</font>
+      System.getProperty("file.separator");
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String copyright = "";
+  <font color="#0000ff">static</font> {
+    <font color="#0000ff">try</font> {
+      BufferedReader cr =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> FileReader("Copyright.txt"));
+      String crin;
+      <font color="#0000ff">while</font>((crin = cr.readLine()) != <font color="#0000ff">null</font>)
+        copyright += crin + "\n";
+      cr.close();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      copyright = "";
+    }
+  }
+  <font color="#0000ff">private</font> String filename, dirname,
+    contents = <font color="#0000ff">new</font> String();
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> String chapter = "c02";
+  <font color="#009900">// The file name separator from the old system:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String oldsep;
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> dirname + filesep + filename;
+  }
+  <font color="#009900">// Constructor for parsing from document file:</font>
+  <font color="#0000ff">public</font> SourceCodeFile(String firstLine, 
+      BufferedReader in) {
+    dirname = chapter;
+    <font color="#009900">// Skip past marker:</font>
+    filename = firstLine.substring(
+        startMarker.length()).trim();
+    <font color="#009900">// Find space that terminates file name:</font>
+    <font color="#0000ff">if</font>(filename.indexOf(' ') != -1)
+      filename = filename.substring(
+          0, filename.indexOf(' '));
+    System.out.println("found: " + filename);
+    contents = firstLine + eol;
+    <font color="#0000ff">if</font>(copyright.length() != 0)
+      contents += copyright + eol;
+    String s;
+    <font color="#0000ff">boolean</font> foundEndMarker = <font color="#0000ff">false</font>;
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>((s = in.readLine()) != <font color="#0000ff">null</font>) {
+        <font color="#0000ff">if</font>(s.startsWith(startMarker))
+          Pr.error("No end of file marker <font color="#0000ff">for</font> " +
+            filename);
+        <font color="#009900">// For this program, no spaces before </font>
+        <font color="#009900">// the "package" keyword are allowed</font>
+        <font color="#009900">// in the input source code:</font>
+        <font color="#0000ff">else</font> <font color="#0000ff">if</font>(s.startsWith("<font color="#0000ff">package</font>")) {
+          <font color="#009900">// Extract package name:</font>
+          String pdir = s.substring(
+            s.indexOf(' ')).trim();
+          pdir = pdir.substring(
+            0, pdir.indexOf(';')).trim();
+          <font color="#009900">// Capture the chapter from the package</font>
+          <font color="#009900">// ignoring the 'com' subdirectories:</font>
+          <font color="#0000ff">if</font>(!pdir.startsWith("com")) {
+            <font color="#0000ff">int</font> firstDot = pdir.indexOf('.');
+            <font color="#0000ff">if</font>(firstDot != -1)
+              chapter = 
+                pdir.substring(0,firstDot);
+            <font color="#0000ff">else</font>
+              chapter = pdir;
+          }
+          <font color="#009900">// Convert package name to path name:</font>
+          pdir = pdir.replace(
+            '.', filesep.charAt(0));
+          System.out.println("<font color="#0000ff">package</font> " + pdir);
+          dirname = pdir;
+        }
+        contents += s + eol;
+        <font color="#009900">// Move past continuations:</font>
+        <font color="#0000ff">if</font>(s.startsWith(beginContinue))
+          <font color="#0000ff">while</font>((s = in.readLine()) != <font color="#0000ff">null</font>)
+            <font color="#0000ff">if</font>(s.startsWith(endContinue)) {
+              contents += s + eol;
+              <font color="#0000ff">break</font>;
+            }
+        <font color="#009900">// Watch for end of code listing:</font>
+        <font color="#0000ff">if</font>(s.startsWith(endMarker) ||
+           s.startsWith(endMarker2)) {
+          foundEndMarker = <font color="#0000ff">true</font>;
+          <font color="#0000ff">break</font>;
+        }
+      }
+      <font color="#0000ff">if</font>(!foundEndMarker)
+        Pr.error(
+          "End marker not found before EOF");
+      System.out.println("Chapter: " + chapter);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("Error reading line");
+    }
+  }
+  <font color="#009900">// For recovering from a packed file:</font>
+  <font color="#0000ff">public</font> SourceCodeFile(BufferedReader pFile) {
+    <font color="#0000ff">try</font> {
+      String s = pFile.readLine();
+      <font color="#0000ff">if</font>(s == <font color="#0000ff">null</font>) <font color="#0000ff">return</font>;
+      <font color="#0000ff">if</font>(!s.startsWith(packMarker))
+        Pr.error("Can't find " + packMarker
+          + " in " + s);
+      s = s.substring(
+        packMarker.length()).trim();
+      dirname = s.substring(0, s.indexOf('#'));
+      filename = s.substring(s.indexOf('#') + 1);
+      dirname = dirname.replace(
+        oldsep.charAt(0), filesep.charAt(0));
+      filename = filename.replace(
+        oldsep.charAt(0), filesep.charAt(0));
+      System.out.println("listing: " + dirname 
+        + filesep + filename);
+      <font color="#0000ff">while</font>((s = pFile.readLine()) != <font color="#0000ff">null</font>) {
+        <font color="#009900">// Watch for end of code listing:</font>
+        <font color="#0000ff">if</font>(s.startsWith(endMarker) ||
+           s.startsWith(endMarker2)) {
+          contents += s;
+          <font color="#0000ff">break</font>;
+        }
+        contents += s + eol;
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.err.println("Error reading line");
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> hasFile() { 
+    <font color="#0000ff">return</font> filename != <font color="#0000ff">null</font>; 
+  }
+  <font color="#0000ff">public</font> String directory() { <font color="#0000ff">return</font> dirname; }
+  <font color="#0000ff">public</font> String filename() { <font color="#0000ff">return</font> filename; }
+  <font color="#0000ff">public</font> String contents() { <font color="#0000ff">return</font> contents; }
+  <font color="#009900">// To write to a packed file:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writePacked(DataOutputStream out) {
+    <font color="#0000ff">try</font> {
+      out.writeBytes(
+        packMarker + dirname + "#" 
+        + filename + eol);
+      out.writeBytes(contents);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("writing " + dirname + 
+        filesep + filename);
+    }
+  }
+  <font color="#009900">// To generate the actual file:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writeFile(String rootpath) {
+    File path = <font color="#0000ff">new</font> File(rootpath, dirname);
+    path.mkdirs();
+    PrintWriter p =
+      IO.psOpen(<font color="#0000ff">new</font> File(path, filename));
+    p.print(contents);
+    IO.close(p);
+  }
+}
+
+<font color="#0000ff">class</font> DirMap {
+  <font color="#0000ff">private</font> Hashtable t = <font color="#0000ff">new</font> Hashtable();
+  <font color="#0000ff">private</font> String rootpath;
+  DirMap() {
+    rootpath = System.getProperty("user.dir");
+  }
+  DirMap(String alternateDir) {
+    rootpath = alternateDir;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> add(SourceCodeFile f){
+    String path = f.directory();
+    <font color="#0000ff">if</font>(!t.containsKey(path))
+      t.put(path, <font color="#0000ff">new</font> Vector());
+    ((Vector)t.get(path)).addElement(f);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writePackedFile(String fname) {
+    DataOutputStream packed = IO.dosOpen(fname);
+    <font color="#0000ff">try</font> {
+      packed.writeBytes("###Old Separator:" +
+        SourceCodeFile.filesep + "###\n");
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("Writing separator to " + fname);
+    }
+    Enumeration e = t.keys();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      String dir = (String)e.nextElement();
+      System.out.println(
+        "Writing directory " + dir);
+      Vector v = (Vector)t.get(dir);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; v.size(); i++) {
+        SourceCodeFile f = 
+          (SourceCodeFile)v.elementAt(i);
+        f.writePacked(packed);
+      }
+    }
+    IO.close(packed);
+  }
+  <font color="#009900">// Write all the files in their directories:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> write() {
+    Enumeration e = t.keys();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      String dir = (String)e.nextElement();
+      Vector v = (Vector)t.get(dir);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; v.size(); i++) {
+        SourceCodeFile f = 
+          (SourceCodeFile)v.elementAt(i);
+        f.writeFile(rootpath);
+      }
+      <font color="#009900">// Add file indicating file quantity</font>
+      <font color="#009900">// written to this directory as a check:</font>
+      IO.close(IO.dosOpen(
+        <font color="#0000ff">new</font> File(<font color="#0000ff">new</font> File(rootpath, dir),
+          Integer.toString(v.size())+".files")));
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CodePackager {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> String usageString =
+  "usage: java CodePackager packedFileName" +
+  "\nExtracts source code files from packed \n" +
+  "version of Tjava.doc sources into " +
+  "directories off current directory\n" +
+  "java CodePackager packedFileName newDir\n" +
+  "Extracts into directories off newDir\n" +
+  "java CodePackager -p source.txt packedFile" +
+  "\nCreates packed version of source files" +
+  "\nfrom text version of Tjava.doc";
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> usage() {
+    System.err.println(usageString);
+    System.exit(1);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length == 0) usage();
+    <font color="#0000ff">if</font>(args[0].equals("-p")) {
+      <font color="#0000ff">if</font>(args.length != 3)
+        usage();
+      createPackedFile(args);
+    }
+    <font color="#0000ff">else</font> {
+      <font color="#0000ff">if</font>(args.length &gt; 2)
+        usage();
+      extractPackedFile(args);
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> String currentLine; 
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> BufferedReader in;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> DirMap dm;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  createPackedFile(String[] args) {
+    dm = <font color="#0000ff">new</font> DirMap();
+    in = IO.disOpen(args[1]);
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>((currentLine = in.readLine()) 
+          != <font color="#0000ff">null</font>) {
+        <font color="#0000ff">if</font>(currentLine.startsWith(
+            SourceCodeFile.startMarker)) {
+          dm.add(<font color="#0000ff">new</font> SourceCodeFile(
+                   currentLine, in));
+        }
+        <font color="#0000ff">else</font> <font color="#0000ff">if</font>(currentLine.startsWith(
+            SourceCodeFile.endMarker))
+          Pr.error("file has no start marker");
+        <font color="#009900">// Else ignore the input line</font>
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("Error reading " + args[1]);
+    }
+    IO.close(in);
+    dm.writePackedFile(args[2]);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  extractPackedFile(String[] args) {
+    <font color="#0000ff">if</font>(args.length == 2) <font color="#009900">// Alternate directory</font>
+      dm = <font color="#0000ff">new</font> DirMap(args[1]);
+    <font color="#0000ff">else</font> <font color="#009900">// Current directory</font>
+      dm = <font color="#0000ff">new</font> DirMap();
+    in = IO.disOpen(args[0]);
+    String s = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+       s = in.readLine();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      Pr.error("Cannot read from " + in);
+    }
+    <font color="#009900">// Capture the separator used in the system</font>
+    <font color="#009900">// that packed the file:</font>
+    <font color="#0000ff">if</font>(s.indexOf("###Old Separator:") != -1 ) {
+      String oldsep = s.substring(
+        "###Old Separator:".length());
+      oldsep = oldsep.substring(
+        0, oldsep. indexOf('#'));
+      SourceCodeFile.oldsep = oldsep;
+    }
+    SourceCodeFile sf = <font color="#0000ff">new</font> SourceCodeFile(in);
+    <font color="#0000ff">while</font>(sf.hasFile()) {
+      dm.add(sf);
+      sf = <font color="#0000ff">new</font> SourceCodeFile(in);
+    }
+    dm.write();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+first notice the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement that is commented out. Since this is the first program in the
+chapter, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+is necessary to tell 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+the chapter has changed, but putting it in a package would be a problem. When
+you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you tie the resulting program to a particular directory structure, which is
+fine for most of the examples in this book. Here, however, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program must be compiled and run from an arbitrary directory, so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement is commented out. It will still 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>look</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like an ordinary 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+though, since the program isn&#8217;t sophisticated enough to detect multi-line
+comments. (It has no need for such sophistication, a fact that comes in handy
+here.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first two classes are support/utility classes designed to make the rest of the
+program more consistent to write and easier to read. The first, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pr</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is similar to the ANSI C library 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>perror</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since it prints an error message (but also exits the program). The second class
+encapsulates the creation of files, a process that was shown in Chapter 10 as
+one that rapidly becomes verbose and annoying. In Chapter 10, the proposed
+solution created new classes, but here 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+calls are used. Within those methods the appropriate exceptions are caught and
+dealt with. These methods make the rest of the code much cleaner to read.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first class that helps solve the problem is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which represents all the information (including the contents, file name, and
+directory) for one source code file in the book. It also contains a set of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constants representing the markers that start and end a file, a marker used
+inside the packed file, the current system&#8217;s end-of-line separator and
+file path separator (notice the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.getProperty(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get the local version), and a copyright notice, which is extracted from the
+following file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Copyright.txt</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//////////////////////////////////////////////////</font>
+<font color="#009900">// Copyright (c) Bruce Eckel, 1998</font>
+<font color="#009900">// Source code file from the book "Thinking in Java"</font>
+<font color="#009900">// All rights reserved EXCEPT as allowed by the</font>
+<font color="#009900">// following statements: You may freely use this file</font>
+<font color="#009900">// for your own work (personal or commercial),</font>
+<font color="#009900">// including modifications and distribution in</font>
+<font color="#009900">// executable form only. Permission is granted to use</font>
+<font color="#009900">// this file in classroom situations, including its</font>
+<font color="#009900">// use in presentation materials, as long as the book</font>
+<font color="#009900">// "Thinking in Java" is cited as the source. </font>
+<font color="#009900">// Except in classroom situations, you may not copy</font>
+<font color="#009900">// and distribute this code; instead, the sole</font>
+<font color="#009900">// distribution point is http://www.BruceEckel.com </font>
+<font color="#009900">// (and official mirror sites) where it is</font>
+<font color="#009900">// freely available. You may not remove this</font>
+<font color="#009900">// copyright and notice. You may not distribute</font>
+<font color="#009900">// modified versions of the source code in this</font>
+<font color="#009900">// package. You may not use this file in printed</font>
+<font color="#009900">// media without the express permission of the</font>
+<font color="#009900">// author. Bruce Eckel makes no representation about</font>
+<font color="#009900">// the suitability of this software for any purpose.</font>
+<font color="#009900">// It is provided "as is" without express or implied</font>
+<font color="#009900">// warranty of any kind, including any implied</font>
+<font color="#009900">// warranty of merchantability, fitness for a</font>
+<font color="#009900">// particular purpose or non-infringement. The entire</font>
+<font color="#009900">// risk as to the quality and performance of the</font>
+<font color="#009900">// software is with you. Bruce Eckel and the</font>
+<font color="#009900">// publisher shall not be liable for any damages</font>
+<font color="#009900">// suffered by you or any third party as a result of</font>
+<font color="#009900">// using or distributing software. In no event will</font>
+<font color="#009900">// Bruce Eckel or the publisher be liable for any</font>
+<font color="#009900">// lost revenue, profit, or data, or for direct,</font>
+<font color="#009900">// indirect, special, consequential, incidental, or</font>
+<font color="#009900">// punitive damages, however caused and regardless of</font>
+<font color="#009900">// the theory of liability, arising out of the use of</font>
+<font color="#009900">// or inability to use software, even if Bruce Eckel</font>
+<font color="#009900">// and the publisher have been advised of the</font>
+<font color="#009900">// possibility of such damages. Should the software</font>
+<font color="#009900">// prove defective, you assume the cost of all</font>
+<font color="#009900">// necessary servicing, repair, or correction. If you</font>
+<font color="#009900">// think you've found an error, please email all</font>
+<font color="#009900">// modified files with clearly commented changes to:</font>
+<font color="#009900">// Bruce@EckelObjects.com. (please use the same</font>
+<font color="#009900">// address for non-code errors found in the book).</PRE></font></font><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=2 COLOR="Black">//////////////////////////////////////////////////</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+extracting files from a packed file, the file separator of the system that
+packed the file is also noted, so it can be replaced with the correct one for
+the local system.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+subdirectory name for the current chapter is kept in the field 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>chapter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is initialized to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c02</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(You&#8217;ll notice that the listing in Chapter 2 doesn&#8217;t contain a
+package statement.) The only time that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>chapter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field changes is when a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement is discovered in the current file.
+</FONT><P></DIV>
+<A NAME="Heading574"></A><H4 ALIGN=LEFT>
+Building
+a packed file
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first constructor is used to extract a file from the ASCII text version of this
+book. The calling code (which appears further down in the listing) reads each
+line in until it finds one that matches the beginning of a listing. At that
+point, it creates a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, passing it the first line (which has already been read by the calling
+code) and the <A NAME="Index3022"></A><A NAME="Index3023"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object from which to extract the rest of the source code listing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, you begin to see heavy use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. To extract the file name, the overloaded version of <A NAME="Index3024"></A><A NAME="Index3025"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>substring(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called that takes the starting offset and goes to the end of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This starting index is produced by finding the <A NAME="Index3026"></A><A NAME="Index3027"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>startMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index3028"></A><A NAME="Index3029"></A>trim(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+removes white space from both ends of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The first line can also have words after the name of the file; these are
+detected using <A NAME="Index3030"></A><A NAME="Index3031"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns -1 if it cannot find the character you&#8217;re looking for and
+the value where the first instance of that character is found if it does.
+Notice there is also an overloaded version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of a character.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the file name is parsed and stored, the first line is placed into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is used to hold the entire text of the source code listing). At this
+point, the rest of the lines are read and concatenated into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s not quite that simple, since certain situations require special
+handling. One case is error checking: if you run into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>startMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it means that no end marker was placed at the end of the listing that&#8217;s
+currently being collected. This is an error condition that aborts the program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second special case is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. Although Java is a free-form language, this program requires that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword be at the beginning of the line. When the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword is seen, the package name is extracted by looking for the space at the
+beginning and the semicolon at the end. (Note that this could also have been
+performed in a single operation by using the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>substring(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that takes both the starting and ending indexes.) Then the dots in the package
+name are replaced by the file separator, although an assumption is made here
+that the file separator is only one character long. This is probably true on
+all systems, but it&#8217;s a place to look if there are problems.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+default behavior is to concatenate each line to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+along with the end-of-line string, until the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>endMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is discovered, which indicates that the constructor should terminate. If the
+end of the file is encountered before the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>endMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is seen, that&#8217;s an error.
+</FONT><P></DIV>
+<A NAME="Heading575"></A><H4 ALIGN=LEFT>
+Extracting
+from a packed file
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second constructor is used to recover the source code files from a packed file.
+Here, the calling method doesn&#8217;t have to worry about skipping over the
+intermediate text. The file contains all the source-code files, placed
+end-to-end. All you need to hand to this constructor is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where the information is coming from, and the constructor takes it from there.
+There is some meta-information, however, at the beginning of each listing, and
+this is denoted by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>packMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>packMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t there, it means the caller is mistakenly trying to use this
+constructor where it isn&#8217;t appropriate.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>packMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is found, it is stripped off and the directory name (terminated by a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;)
+and the file name (which goes to the end of the line) are extracted. In both
+cases, the old separator character is replaced by the one that is current to
+this machine using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+<A NAME="Index3032"></A><A NAME="Index3033"></A>replace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. The old separator is placed at the beginning of the packed file, and
+you&#8217;ll see how that is extracted later in the listing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of the constructor is quite simple. It reads and concatenates each line to
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+until the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>endMarker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is found.
+</FONT><P></DIV>
+<A NAME="Heading576"></A><H4 ALIGN=LEFT>
+Accessing
+and writing the listings
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next set of methods are simple accessors: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>directory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>filename(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(notice the method can have the same spelling and capitalization as the field)
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to indicate whether this object contains a file or not. (The need for this will
+be seen later.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+final three methods are concerned with writing this code listing into a file,
+either a packed file via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writePacked(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a Java source file via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writePacked(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which was opened elsewhere, and represents the file that&#8217;s being written.
+It puts the header information on the first line and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to write 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contents</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a &#8220;universal&#8221; format.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+writing the Java source file, the file must be created. This is done via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IO.psOpen(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+handing it a <A NAME="Index3034"></A><A NAME="Index3035"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that contains not only the file name but also the path. But the question
+now is: does this path exist? The user has the option of placing all the source
+code directories into a completely different subdirectory, which might not even
+exist. So before each file is written, <A NAME="Index3036"></A><A NAME="Index3037"></A><A NAME="Index3038"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File.mkdirs(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called with the path that you want to write the file into. This will make
+the entire path all at once.
+</FONT><P></DIV>
+<A NAME="Heading577"></A><H4 ALIGN=LEFT>
+Containing
+the entire collection of listings
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+convenient to organize the listings as subdirectories while the whole
+collection is being built in memory. One reason is another sanity check: as
+each subdirectory of listings is created, an additional file is added whose
+name contains the number of files in that directory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class produces this effect and demonstrates the concept of a
+&#8220;multimap.&#8221; This is implemented using a <A NAME="Index3039"></A><A NAME="Index3040"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+whose keys are the subdirectories being created and whose values are <A NAME="Index3041"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects containing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects in that particular directory. Thus, instead of mapping a key to a
+single value, the &#8220;multimap&#8221; maps a key to a set of values via the
+associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although this sounds complex, it&#8217;s remarkably straightforward to
+implement. You&#8217;ll see that most of the size of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is due to the portions that write to files, not to the
+&#8220;multimap&#8221; implementation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two ways you can make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the default constructor assumes that you want the directories to branch off of
+the current one, and the second constructor lets you specify an alternate
+absolute path for the starting directory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is where quite a bit of dense action occurs. First, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>directory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is extracted from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you want to add, and then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is examined to see if it contains that key already. If not, a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and associated with that key. At this point, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is there, one way or another, and it is extracted so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be added. Because <A NAME="Index3042"></A><A NAME="Index3043"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can be easily combined with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+like this, the power of both is amplified.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Writing
+a packed file involves opening the file to write (as a <A NAME="Index3044"></A><A NAME="Index3045"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so the data is universally recoverable) and writing the header information
+about the old separator on the first line. Next, an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keys is produced and stepped through to select each directory and to fetch the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+associated with that directory so each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be written to the packed file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Writing
+the Java source files to their directories in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>write(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+almost identical to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writePackedFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since both methods simply call the appropriate method in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, however, the root path is passed into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile.writeFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and when all the files have been written the additional file with the name
+containing the number of files is also written.
+</FONT><P></DIV>
+<A NAME="Heading578"></A><H4 ALIGN=LEFT>
+The
+main program
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+previously described classes are used within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CodePackager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+First you see the usage string that gets printed whenever the end user invokes
+the program incorrectly, along with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>usage(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that calls it and exits the program. All 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does is determine whether you want to create a packed file or extract from one,
+then it ensures the arguments are correct and calls the appropriate method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+a packed file is created, it&#8217;s assumed to be made in the current
+directory, so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created using the default constructor. After the file is opened each line is
+read and examined for particular conditions:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+the line starts with the starting marker for a source code listing, a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created. The constructor reads in the rest of the source listing. The
+handle that results is directly added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+the line starts with the end marker for a source code listing, something has
+gone wrong, since end markers should be found only by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+extracting a packed file, the extraction can be into the current directory or
+into an alternate directory, so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created accordingly. The file is opened and the first line is read.
+The old file path separator information is extracted from this line. Then the
+input is used to create the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which is added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+New 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SourceCodeFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created and added as long as they contain a file. (The last one
+created will simply return when it runs out of input and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will return false.)
+</FONT><a name="_Toc375545504"></a><a name="_Toc408018812"></a><P></DIV>
+<A NAME="Heading579"></A><H3 ALIGN=LEFT>
+Checking
+capitalization style
+<P><A NAME="Index3046"></A><A NAME="Index3047"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+the previous example can come in handy as a guide for some project of your own
+that involves text processing, this project will be directly useful because it
+performs a style check to make sure that your capitalization conforms to the
+de-facto Java style. It opens each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file in the current directory and extracts all the class names and identifiers,
+then shows you if any of them don&#8217;t meet the Java style.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+the program to operate correctly, you must first build a class name repository
+to hold all the class names in the standard Java library. You do this by moving
+into all the source code subdirectories for the standard Java library and
+running 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in each subdirectory. Provide as arguments the name of the repository file
+(using the same path and name each time) and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+command-line option to indicate that the class names should be added to the
+repository.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+use the program to check your code, run it and hand it the path and name of the
+repository to use. It will check all the classes and identifiers in the current
+directory and tell you which ones don&#8217;t follow the typical Java
+capitalization style.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+should be aware that the program isn&#8217;t perfect; there a few times when it
+will point out what it thinks is a problem but on looking at the code
+you&#8217;ll see that nothing needs to be changed. This is a little annoying,
+but it&#8217;s still much easier than trying to find all these cases by staring
+at your code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+explanation immediately follows the listing:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ClassScanner.java</font>
+<font color="#009900">// Scans all files in directory for classes</font>
+<font color="#009900">// and identifiers, to check capitalization.</font>
+<font color="#009900">// Assumes properly compiling code listings.</font>
+<font color="#009900">// Doesn't do everything right, but is a very</font>
+<font color="#009900">// useful aid.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> MultiStringMap <font color="#0000ff">extends</font> Hashtable {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> add(String key, String value) {
+    <font color="#0000ff">if</font>(!containsKey(key))
+      put(key, <font color="#0000ff">new</font> Vector());
+    ((Vector)get(key)).addElement(value);
+  }
+  <font color="#0000ff">public</font> Vector getVector(String key) {
+    <font color="#0000ff">if</font>(!containsKey(key)) {
+      System.err.println(
+        "ERROR: can't find key: " + key);
+      System.exit(1);
+    }
+    <font color="#0000ff">return</font> (Vector)get(key);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> printValues(PrintStream p) {
+    Enumeration k = keys();
+    <font color="#0000ff">while</font>(k.hasMoreElements()) {
+      String oneKey = (String)k.nextElement();
+      Vector val = getVector(oneKey);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; val.size(); i++)
+        p.println((String)val.elementAt(i));
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ClassScanner {
+  <font color="#0000ff">private</font> File path;
+  <font color="#0000ff">private</font> String[] fileList;
+  <font color="#0000ff">private</font> Properties classes = <font color="#0000ff">new</font> Properties();
+  <font color="#0000ff">private</font> MultiStringMap 
+    classMap = <font color="#0000ff">new</font> MultiStringMap(),
+    identMap = <font color="#0000ff">new</font> MultiStringMap();
+  <font color="#0000ff">private</font> StreamTokenizer in;
+  <font color="#0000ff">public</font> ClassScanner() {
+    path = <font color="#0000ff">new</font> File(".");
+    fileList = path.list(<font color="#0000ff">new</font> JavaFilter());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; fileList.length; i++) {
+      System.out.println(fileList[i]);
+      scanListing(fileList[i]);
+    }
+  }
+  <font color="#0000ff">void</font> scanListing(String fname) {
+    <font color="#0000ff">try</font> {
+      in = <font color="#0000ff">new</font> StreamTokenizer(
+          <font color="#0000ff">new</font> BufferedReader(
+            <font color="#0000ff">new</font> FileReader(fname)));
+      <font color="#009900">// Doesn't seem to work:</font>
+      <font color="#009900">// in.slashStarComments(true);</font>
+      <font color="#009900">// in.slashSlashComments(true);</font>
+      in.ordinaryChar('/');
+      in.ordinaryChar('.');
+      in.wordChars('_', '_');
+      in.eolIsSignificant(<font color="#0000ff">true</font>);
+      <font color="#0000ff">while</font>(in.nextToken() != 
+            StreamTokenizer.TT_EOF) {
+        <font color="#0000ff">if</font>(in.ttype == '/')
+          eatComments();
+        <font color="#0000ff">else</font> <font color="#0000ff">if</font>(in.ttype == 
+                StreamTokenizer.TT_WORD) {
+          <font color="#0000ff">if</font>(in.sval.equals("<font color="#0000ff">class</font>") || 
+             in.sval.equals("<font color="#0000ff">interface</font>")) {
+            <font color="#009900">// Get class name:</font>
+               <font color="#0000ff">while</font>(in.nextToken() != 
+                     StreamTokenizer.TT_EOF
+                     &amp;&amp; in.ttype != 
+                     StreamTokenizer.TT_WORD)
+                 ;
+               classes.put(in.sval, in.sval);
+               classMap.add(fname, in.sval);
+          }
+          <font color="#0000ff">if</font>(in.sval.equals("<font color="#0000ff">import</font>") ||
+             in.sval.equals("<font color="#0000ff">package</font>"))
+            discardLine();
+          <font color="#0000ff">else</font> <font color="#009900">// It's an identifier or keyword</font>
+            identMap.add(fname, in.sval);
+        }
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    }
+  }
+  <font color="#0000ff">void</font> discardLine() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>(in.nextToken() != 
+            StreamTokenizer.TT_EOF
+            &amp;&amp; in.ttype != 
+            StreamTokenizer.TT_EOL)
+        ; <font color="#009900">// Throw away tokens to end of line</font>
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    }
+  }
+  <font color="#009900">// StreamTokenizer's comment removal seemed</font>
+  <font color="#009900">// to be broken. This extracts them:</font>
+  <font color="#0000ff">void</font> eatComments() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">if</font>(in.nextToken() != 
+         StreamTokenizer.TT_EOF) {
+        <font color="#0000ff">if</font>(in.ttype == '/')
+          discardLine();
+        <font color="#0000ff">else</font> <font color="#0000ff">if</font>(in.ttype != '*')
+          in.pushBack();
+        <font color="#0000ff">else</font> 
+          <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+            <font color="#0000ff">if</font>(in.nextToken() == 
+              StreamTokenizer.TT_EOF)
+              <font color="#0000ff">break</font>;
+            <font color="#0000ff">if</font>(in.ttype == '*')
+              <font color="#0000ff">if</font>(in.nextToken() != 
+                StreamTokenizer.TT_EOF
+                &amp;&amp; in.ttype == '/')
+                <font color="#0000ff">break</font>;
+          }
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    }
+  }
+  <font color="#0000ff">public</font> String[] classNames() {
+    String[] result = <font color="#0000ff">new</font> String[classes.size()];
+    Enumeration e = classes.keys();
+    <font color="#0000ff">int</font> i = 0;
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      result[i++] = (String)e.nextElement();
+    <font color="#0000ff">return</font> result;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> checkClassNames() {
+    Enumeration files = classMap.keys();
+    <font color="#0000ff">while</font>(files.hasMoreElements()) {
+      String file = (String)files.nextElement();
+      Vector cls = classMap.getVector(file);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; cls.size(); i++) {
+        String className = 
+          (String)cls.elementAt(i);
+        <font color="#0000ff">if</font>(Character.isLowerCase(
+             className.charAt(0)))
+          System.out.println(
+            "<font color="#0000ff">class</font> capitalization error, file: "
+            + file + ", <font color="#0000ff">class</font>: " 
+            + className);
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> checkIdentNames() {
+    Enumeration files = identMap.keys();
+    Vector reportSet = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">while</font>(files.hasMoreElements()) {
+      String file = (String)files.nextElement();
+      Vector ids = identMap.getVector(file);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; ids.size(); i++) {
+        String id = 
+          (String)ids.elementAt(i);
+        <font color="#0000ff">if</font>(!classes.contains(id)) {
+          <font color="#009900">// Ignore identifiers of length 3 or</font>
+          <font color="#009900">// longer that are all uppercase</font>
+          <font color="#009900">// (probably static final values):</font>
+          <font color="#0000ff">if</font>(id.length() &gt;= 3 &amp;&amp;
+             id.equals(
+               id.toUpperCase()))
+            <font color="#0000ff">continue</font>;
+          <font color="#009900">// Check to see if first char is upper:</font>
+          <font color="#0000ff">if</font>(Character.isUpperCase(id.charAt(0))){
+            <font color="#0000ff">if</font>(reportSet.indexOf(file + id)
+                == -1){ <font color="#009900">// Not reported yet</font>
+              reportSet.addElement(file + id);
+              System.out.println(
+                "Ident capitalization error in:"
+                + file + ", ident: " + id);
+            }
+          }
+        }
+      }
+    }
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> String usage =
+    "Usage: \n" + 
+    "ClassScanner classnames -a\n" +
+    "\tAdds all the <font color="#0000ff">class</font> names in <font color="#0000ff">this</font> \n" +
+    "\tdirectory to the repository file \n" +
+    "\tcalled 'classnames'\n" +
+    "ClassScanner classnames\n" +
+    "\tChecks all the java files in <font color="#0000ff">this</font> \n" +
+    "\tdirectory <font color="#0000ff">for</font> capitalization errors, \n" +
+    "\tusing the repository file 'classnames'";
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> usage() {
+    System.err.println(usage);
+    System.exit(1);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length &lt; 1 || args.length &gt; 2)
+      usage();
+    ClassScanner c = <font color="#0000ff">new</font> ClassScanner();
+    File old = <font color="#0000ff">new</font> File(args[0]);
+    <font color="#0000ff">if</font>(old.exists()) {
+      <font color="#0000ff">try</font> {
+        <font color="#009900">// Try to open an existing </font>
+        <font color="#009900">// properties file:</font>
+        InputStream oldlist =
+          <font color="#0000ff">new</font> BufferedInputStream(
+            <font color="#0000ff">new</font> FileInputStream(old));
+        c.classes.load(oldlist);
+        oldlist.close();
+      } <font color="#0000ff">catch</font>(IOException e) {
+        System.err.println("Could not open "
+          + old + " <font color="#0000ff">for</font> reading");
+        System.exit(1);
+      }
+    }
+    <font color="#0000ff">if</font>(args.length == 1) {
+      c.checkClassNames();
+      c.checkIdentNames();
+    }
+    <font color="#009900">// Write the class names to a repository:</font>
+    <font color="#0000ff">if</font>(args.length == 2) {
+      <font color="#0000ff">if</font>(!args[1].equals("-a"))
+        usage();
+      <font color="#0000ff">try</font> {
+        BufferedOutputStream out =
+          <font color="#0000ff">new</font> BufferedOutputStream(
+            <font color="#0000ff">new</font> FileOutputStream(args[0]));
+        c.classes.save(out,
+          "Classes found by ClassScanner.java");
+        out.close();
+      } <font color="#0000ff">catch</font>(IOException e) {
+        System.err.println(
+          "Could not write " + args[0]);
+        System.exit(1);
+      }
+    }
+  }
+}
+
+<font color="#0000ff">class</font> JavaFilter <font color="#0000ff">implements</font> FilenameFilter {
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> accept(File dir, String name) {
+    <font color="#009900">// Strip path information:</font>
+    String f = <font color="#0000ff">new</font> File(name).getName();
+    <font color="#0000ff">return</font> f.trim().endsWith(".java");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiStringMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a tool that allows you to map a group of strings onto each key entry. As in
+the previous example, it uses a <A NAME="Index3048"></A><A NAME="Index3049"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this time with inheritance) with the key as the single string that&#8217;s
+mapped onto the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method simply checks to see if there&#8217;s a key already in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if not it puts one there. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getVector(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a particular key, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printValues(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is primarily useful for debugging, prints out all the values 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+keep life simple, the class names from the standard Java libraries are all put
+into a <A NAME="Index3050"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (from the standard Java library). Remember that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that holds only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects for both the key and value entries. However, it can be saved to disk
+and restored from disk in one method call, so it&#8217;s ideal for the
+repository of names. Actually, we need only a list of names, and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can&#8217;t accept 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for either its key or its value entry. So the same object will be used for both
+the key and the value.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+the classes and identifiers that are discovered for the files in a particular
+directory, two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiStringMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are used: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classMap
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>identMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Also, when the program starts up it loads the standard class name repository
+into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and when a new class name is found in the local directory that is also added to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">as
+well as to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This way, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used to step through all the classes in the local directory, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used to see if the current token is a class name (which indicates a
+definition of an object or method is beginning, so grab the next tokens &#8211;
+until a semicolon &#8211; and put them into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>identMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+default constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates a list of file names (using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JavaFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implementation of <A NAME="Index3051"></A><A NAME="Index3052"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as described in Chapter 10). Then it calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scanListing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each file name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inside
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scanListing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the source code file is opened and turned into a <A NAME="Index3053"></A><A NAME="Index3054"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the documentation, passing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>slashStarComments(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>slashSlashComments(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is supposed to strip those comments out, but this seems to be a bit flawed (it
+doesn&#8217;t quite work in Java 1.0<A NAME="Index3055"></A>).
+Instead, those lines are commented out and the comments are extracted by
+another method. To do this, the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>/</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+must be captured as an ordinary character rather than letting the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+absorb it as part of a comment, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ordinaryChar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method tells the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">do
+this. This is also true for dots (&#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;),
+since we want to have the method calls pulled apart into individual
+identifiers. However, the underscore, which is ordinarily treated by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an individual character, should be left as part of identifiers since it
+appears in such 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TT_EOF</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+etc., used in this very program. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wordChars(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+takes a range of characters you want to add to those that are left inside a
+token that is being parsed as a word. Finally, when parsing for one-line
+comments or discarding a line we need to know when an end-of-line occurs, so by
+calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>eolIsSignificant(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the eol will show up rather than being absorbed by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scanListing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reads and reacts to tokens until the end of the file, signified when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextToken(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final
+static 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">value
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer.TT_EOF</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the token is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">/</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8217;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it is potentially a comment, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>eatComments(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called to deal with it. The only other situation we&#8217;re interested in
+here is if it&#8217;s a word, of which there are some special cases.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the word is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+then the next token represents a class or interface name, and it is put into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the word is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then we don&#8217;t want the rest of the line. Anything else must be an
+identifier (which we&#8217;re interested in) or a keyword (which we&#8217;re
+not, but they&#8217;re all lowercase anyway so it won&#8217;t spoil things to
+put those in). These are added to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>identMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>discardLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is a simple tool that looks for the end of a line. Note that any time
+you get a new token, you must check for the end of the file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>eatComments(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called whenever a forward slash is encountered in the main parsing
+loop. However, that doesn&#8217;t necessarily mean a comment has been found, so
+the next token must be extracted to see if it&#8217;s another forward slash (in
+which case the line is discarded) or an asterisk. But if it&#8217;s neither of
+those, it means the token you&#8217;ve just pulled out is needed back in the
+main parsing loop! Fortunately, the <A NAME="Index3056"></A><A NAME="Index3057"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pushBack(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method allows you to &#8220;push back&#8221; the current token onto the input
+stream so that when the main parsing loop calls <A NAME="Index3058"></A><A NAME="Index3059"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextToken(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it will get the one you just pushed back.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+convenience, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classNames(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces an array of all the names in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+collection. This method is not used in the program but is helpful for debugging.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next two methods are the ones in which the actual checking takes place. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>checkClassNames(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the class names are extracted from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which, remember, contains only the names in this directory, organized by file
+name so the file name can be printed along with the errant class name). This is
+accomplished by pulling each associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and stepping through that, looking to see if the first character is lower case.
+If so, the appropriate error message is printed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>checkIdentNames(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a similar approach is taken: each identifier name is extracted from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>identMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the name is not in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+list, it&#8217;s assumed to be an identifier or keyword. A special case is
+checked: if the identifier length is 3 or more 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+all the characters are uppercase, this identifier is ignored because it&#8217;s
+probably a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TT_EOF</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, this is not a perfect algorithm, but it assumes that you&#8217;ll
+eventually notice any all-uppercase identifiers that are out of place.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Instead
+of reporting every identifier that starts with an uppercase character, this
+method keeps track of which ones have already been reported in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reportSet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This treats the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a &#8220;set&#8221; that tells you whether an item is already in the set.
+The item is produced by concatenating the file name and identifier. If the
+element isn&#8217;t in the set, it&#8217;s added and then the report is made.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of the listing is comprised of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which busies itself by handling the command line arguments and figuring out
+whether you&#8217;re building a repository of class names from the standard
+Java library or checking the validity of code you&#8217;ve written. In both
+cases it makes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Whether
+you&#8217;re building a repository or using one, you must try to open the
+existing repository. By making a <A NAME="Index3060"></A><A NAME="Index3061"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and testing for existence, you can decide whether to open the file and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>load(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+list 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(The classes from the repository add to, rather than overwrite, the classes
+found by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor.) If you provide only one command-line argument it means that you
+want to perform a check of the class names and identifier names, but if you
+provide two arguments (the second being &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you&#8217;re
+building a class name repository. In this case, an output file is opened and
+the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties.save(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to write the list into a file, along with a string that provides header
+file information.
+</FONT><a name="_Toc408018813"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0184.html">Prev</a> | <a href="tij0186.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,645 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0197.html">Prev</a> | <a href="tij0199.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+B:
+Comparing C++ and Java
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">As
+a C++ programmer, you already have the basic idea of object-oriented
+programming, and the syntax of Java no doubt looks familiar to you. This makes
+sense since Java was derived from C++.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+there are a surprising number of differences between <A NAME="Index3124"></A><A NAME="Index3125"></A>C++
+and Java. These differences are intended to be significant improvements, and if
+you understand the differences you&#8217;ll see why Java is such a beneficial
+programming language. This appendix takes you through the important features
+that distinguish Java from C++.
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+biggest potential stumbling block is speed: interpreted Java runs in the range
+of 20 times slower than C. Nothing prevents the Java language from being
+compiled and there are just-in-time compilers appearing at this writing that
+offer significant speed-ups. It is not inconceivable that full native compilers
+will appear for the more popular platforms, but without those there are classes
+of problems that will be insoluble with Java because of the speed issue.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has both kinds of comments like C++ does.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Everything
+must be in a class. There are no global functions or global data. If you want
+the equivalent of globals, make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data within a class. There are no structs or enumerations or unions, only
+classes.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	All
+method definitions are defined in the body of the class. Thus, in C++ it would
+look like all the functions are inlined, but they&#8217;re not (inlines are
+noted later).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Class
+definitions are roughly the same form in Java as in C++, but there&#8217;s no
+closing semicolon. There are no class declarations of the form 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+foo,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only class definitions.
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">class
+aType {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ void aMethod(&#160;) { /* method body */ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">}</FONT></TT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There&#8217;s
+no scope resolution operator 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>::</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java. Java uses the dot for everything, but can get away with it since you
+can define elements only within a class. Even the method definitions must
+always occur within a class, so there is no need for scope resolution there
+either. One place where you&#8217;ll notice the difference is in the calling of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods: you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassName.methodName(&#160;);</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In addition, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+names are established using the dot, and to perform a kind of C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#include</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. For example: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import
+java.awt.*;
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#include</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not directly map to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it has a similar feel to it).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java,
+like C++, has primitive types for efficient access. In Java, these are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All the primitive types have specified sizes that are machine independent for
+portability. (This must have some impact on performance, varying with the
+machine.) Type-checking and type requirements are much tighter in Java. For
+example:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1.
+Conditional expressions can be only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+boolean
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not integral.
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2.
+The result of an expression like X + Y must be used; you can&#8217;t just say
+&#8220;X + Y&#8221; for the side effect.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+type uses the international 16-bit Unicode character set, so it can
+automatically represent most national characters.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Static
+quoted strings are automatically converted into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. There is no independent static character array string like there is in
+C and C++.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+adds the triple right shift 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;&gt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to act as a &#8220;logical&#8221; right shift by inserting zeroes at the top
+end; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&gt;&gt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inserts the sign bit as it shifts (an &#8220;arithmetic&#8221; shift).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Although
+they look similar, arrays have a very different structure and behavior in Java
+than they do in C++. There&#8217;s a read-only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member that tells you how big the array is, and run-time checking throws an
+exception if you go out of bounds. All arrays are created on the heap, and you
+can assign one array to another (the array handle is simply copied). The array
+identifier is a first-class object, with all of the methods commonly available
+to all other objects.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	All
+objects of non-primitive types can be created only via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+There&#8217;s no equivalent to creating non-primitive objects &#8220;on the
+stack&#8221; as in C++. All primitive types can be created only on the stack,
+without 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+There are wrapper classes for all primitive classes so that you can create
+equivalent heap-based objects via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(Arrays of primitives are a special case: they can be allocated via aggregate
+initialization as in C++, or by using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	No
+forward declarations are necessary in Java. If you want to use a class or a
+method before it is defined, you simply use it &#8211; the compiler ensures
+that the appropriate definition exists. Thus you don&#8217;t have any of the
+forward referencing issues that you do in C++.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has no preprocessor. If you want to use classes in another library, you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the name of the library. There are no preprocessor-like macros.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+uses packages in place of namespaces. The name issue is taken care of by
+putting everything into a class and by using a facility called
+&#8220;packages&#8221; that performs the equivalent namespace breakup for class
+names. Packages also collect library components under a single library name.
+You simply 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a package and the compiler takes care of the rest.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Object
+handles defined as class members are automatically initialized to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Initialization of primitive class data members is guaranteed in Java; if you
+don&#8217;t explicitly initialize them they get a default value (a zero or
+equivalent). You can initialize them explicitly, either when you define them in
+the class or in the constructor. The syntax makes more sense than that for C++,
+and is consistent for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members alike. You don&#8217;t need to externally define storage for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members like you do in C++.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There
+are no Java pointers in the sense of C and C++. When you create an object with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you get back a reference (which I&#8217;ve been calling a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>handle</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in this book). For example: 
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+s = new String(&#8220;howdy&#8221;);
+</FONT></TT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+unlike C++ references that must be initialized when created and cannot be
+rebound to a different location, Java references don&#8217;t have to be bound
+at the point of creation. They can also be rebound at will, which eliminates
+part of the need for pointers. The other reason for pointers in C and C++ is to
+be able to point at any place in memory whatsoever (which makes them unsafe,
+which is why Java doesn&#8217;t support them). Pointers are often seen as an
+efficient way to move through an array of primitive variables; Java arrays
+allow you to do that in a safer fashion. The ultimate solution for pointer
+problems is native methods (discussed in Appendix A). Passing pointers to
+methods isn&#8217;t a problem since there are no global functions, only
+classes, and you can pass references to objects.
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java language promoters initially said &#8220;No pointers!&#8221;, but when
+many programmers questioned how you can work without pointers, the promoters
+began saying &#8220;Restricted pointers.&#8221; You can make up your mind
+whether it&#8217;s &#8220;really&#8221; a pointer or not. In any event,
+there&#8217;s no pointer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>arithmetic</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has constructors that are similar to constructors in C++. You get a default
+constructor if you don&#8217;t define one, and if you define a non-default
+constructor, there&#8217;s no automatic default constructor defined for you,
+just like in C++. There are no copy constructors, since all arguments are
+passed by reference.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There
+are no destructors in Java. There is no &#8220;scope&#8221; of a variable per
+se, to indicate when the object&#8217;s lifetime is ended &#8211; the lifetime
+of an object is determined instead by the garbage collector. There is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that&#8217;s a member of each class, something like a C++ destructor, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called by the garbage collector and is supposed to be responsible only for
+releasing "resources" (such as open files, sockets, ports, URLs, etc). If you
+need something done at a specific point, you must create a special method and
+call it, not rely upon 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Put another way, all objects in C++ will be (or rather, should be) destroyed,
+but not all objects in Java are garbage collected. Because Java doesn&#8217;t
+support destructors, you must be careful to create a cleanup method if
+it&#8217;s necessary and to explicitly call all the cleanup methods for the
+base class and member objects in your class.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has method overloading that works virtually identically to C++ function
+overloading.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+does not support default arguments.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There&#8217;s
+no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java. The one unconditional jump mechanism is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>label</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>label</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used to jump out of the middle of multiply-nested loops.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+uses a singly-rooted hierarchy, so all objects are ultimately inherited from
+the root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In C++, you can start a new inheritance tree anywhere, so you end up with a
+forest of trees. In Java you get a single ultimate hierarchy. This can seem
+restrictive, but it gives a great deal of power since you know that every
+object is guaranteed to have at least the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. C++ appears to be the only OO language that does not impose a singly
+rooted hierarchy.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has no templates or other implementation of parameterized types. There is a set
+of collections: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+references, and through which you can satisfy your collection needs, but these
+collections are not designed for efficiency like the C++ Standard Template
+Library (STL). The new collections in Java 1.2 are more complete, but still
+don&#8217;t have the same kind of efficiency as template implementations would
+allow.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Garbage
+collection means memory leaks are much harder to cause in Java, but not
+impossible. (If you make native method calls that allocate storage, these are
+typically not tracked by the garbage collector.) However, many memory leaks and
+resouce leaks can be tracked to a badly written 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+to not releasing a resource at the end of the block where it is allocated (a
+place where a destructor would certainly come in handy). The garbage collector
+is a huge improvement over C++, and makes a lot of programming problems simply
+vanish. It might make Java unsuitable for solving a small subset of problems
+that cannot tolerate a garbage collector, but the advantage of a garbage
+collector seems to greatly outweigh this potential drawback.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has built-in multithreading support. There&#8217;s a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that you inherit to create a new thread (you override the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method). Mutual exclusion occurs at the level of objects using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword as a type qualifier for methods. Only one thread may use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of a particular object at any one time. Put another way, when a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is entered, it first &#8220;locks&#8221; the object against any other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method using that object and &#8220;unlocks&#8221; the object only upon exiting
+the method. There are no explicit locks; they happen automatically.
+You&#8217;re still responsible for implementing more sophisticated
+synchronization between threads by creating your own &#8220;monitor&#8221;
+class. Recursive 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods work correctly. Time slicing is not guaranteed between equal priority
+threads.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Instead
+of controlling blocks of declarations like C++ does, the access specifiers (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+are placed on each definition for each member of a class. Without an explicit
+access specifier, an element defaults to &#8220;friendly,&#8221; which means
+that it is accessible to other elements in the same package (equivalent to them
+all being C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>friend</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s)
+but inaccessible outside the package. The class, and each method within the
+class, has an access specifier to determine whether it&#8217;s visible outside
+the file. Sometimes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+is used less in Java because &#8220;friendly&#8221; access is often more useful
+than excluding access from other classes in the same package. (However, with
+multithreading the proper use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is essential.) The Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword means &#8220;accessible to inheritors 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to others in this package.&#8221; There is no equivalent to the C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword
+that means &#8220;accessible to inheritors
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+only
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+used to do this, but the use of that keyword pair was removed).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Nested
+classes. In C++, nesting a class is an aid to name hiding and code organization
+(but C++ namespaces eliminate the need for name hiding). Java packaging
+provides the equivalence of namespaces, so that isn&#8217;t an issue. Java 1.1<A NAME="Index3126"></A>
+has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>inner
+classes
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that look just like nested classes. However, an object of an inner class
+secretly keeps a handle to the object of the outer class that was involved in
+the creation of the inner class object. This means that the inner class object
+may access members of the outer class object without qualification, as if those
+members belonged directly to the inner class object. This provides a much more
+elegant solution to the problem of callbacks, solved with pointers to members
+in C++.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Because
+of inner classes described in the previous point, there are no pointers to
+members in Java.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	No
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>inline</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. The Java compiler might decide on its own to inline a method, but you
+don&#8217;t have much control over this. You can suggest inlining in Java by
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword for a method. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>inline</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functions are only suggestions to the C++ compiler as well.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Inheritance
+in Java has the same effect as in C++, but the syntax is different. Java uses
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword to indicate inheritance from a base class and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword to specify methods to be called in the base class that have the same
+name as the method you&#8217;re in. (However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword in Java allows you to access methods only in the parent class, one
+level up in the hierarchy.) Base-class scoping in C++ allows you to access
+methods that are deeper in the hierarchy). The base-class constructor is also
+called using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. As mentioned before, all classes are ultimately automatically
+inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+no explicit constructor initializer list like in C++, but the compiler forces
+you to perform all base-class initialization at the beginning of the
+constructor body and it won&#8217;t let you perform these later in the body.
+Member initialization is guaranteed through a combination of automatic
+initialization and exceptions for uninitialized object handles.
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">public
+class Foo extends Bar {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ public Foo(String msg) {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   super(msg); // Calls base constructor
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ public baz(int i) { // Override
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   super.baz(i); // Calls base method
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">}</FONT></TT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Inheritance
+in Java doesn&#8217;t change the protection level of the members in the base
+class. You cannot specify 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inheritance in Java, as you can in C++. Also, overridden methods in a derived
+class cannot reduce the access of the method in the base class. For example, if
+a method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the base class and you override it, your overridden method must also be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(the compiler checks for this).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+provides the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, which creates the equivalent of an abstract base class filled with
+abstract methods and with no data members. This makes a clear distinction
+between something designed to be just an interface and an extension of existing
+functionality via the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. It&#8217;s worth noting that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword produces a similar effect in that you can&#8217;t create an object of
+that class. An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>may</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contain abstract methods (although it isn&#8217;t required to contain any), but
+it is also able to contain implementations, so it is restricted to single
+inheritance. Together with interfaces, this scheme prevents the need for some
+mechanism like virtual base classes in C++.
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create a version of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that can be instantiated, use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword,
+whose syntax looks like inheritance:
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">public
+interface Face {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ public void smile();
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">}</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">public
+class Baz extends Bar implements Face {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ public void smile(&#160;) {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   System.out.println("a warm smile");
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">}</FONT></TT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There&#8217;s
+no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>virtual</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword in Java because all non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods always use dynamic binding. In Java, the programmer doesn&#8217;t have
+to decide whether to use dynamic binding. The reason 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>virtual</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exists in C++ is so you can leave it off for a slight increase in efficiency
+when you&#8217;re tuning for performance (or, put another way, &#8220;If you
+don&#8217;t use it, you don&#8217;t pay for it&#8221;), which often results in
+confusion and unpleasant surprises. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword provides some latitude for efficiency tuning &#8211; it tells the
+compiler that this method cannot be overridden, and thus that it may be
+statically bound (and made inline, thus using the equivalent of a C++ non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>virtual</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+call). These optimizations are up to the compiler.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+doesn&#8217;t provide multiple inheritance (MI), at least not in the same sense
+that C++ does. Like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+MI seems like a good idea but you know you need it only when you are face to
+face with a certain design problem. Since Java uses a singly-rooted hierarchy,
+you&#8217;ll probably run into fewer situations in which MI is necessary. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword takes care of combining multiple interfaces.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Run-time
+type identification functionality is quite similar to that in C++. To get
+information about handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>X,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can say, for example:
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">X.getClass().getName();</FONT></TT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+perform a type-safe downcast you say:
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">derived
+d = (derived)base;
+</FONT></TT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">just
+like an old-style C cast. The compiler automatically invokes the dynamic
+casting mechanism without requiring extra syntax. Although this doesn&#8217;t
+have the benefit of easy location of casts as in C++ &#8220;new casts,&#8221;
+Java checks usage and throws exceptions so it won&#8217;t allow bad casts like
+C++ does. 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Exception
+handling in Java is different because there are no destructors. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause can be added to force execution of statements that perform necessary
+cleanup. All exceptions in Java are inherited from the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you&#8217;re guaranteed a common interface.
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">public
+void f(Obj b) throws IOException {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ myresource mr = b.createResource();
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ try {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   mr.UseResource();
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ } catch (MyException e) { 
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   // handle my exception
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ } catch (Throwable e) { 
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   // handle all other exceptions
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ } finally {
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+   mr.dispose(); // special cleanup
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">}</FONT></TT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Exception
+specifications in Java are vastly superior to those in C++. Instead of the C++
+approach of calling a function at run-time when the wrong exception is thrown,
+Java exception specifications are checked and enforced at compile-time. In
+addition, overridden methods must conform to the exception specification of the
+base-class version of that method: they can throw the specified exceptions or
+exceptions derived from those. This provides much more robust
+exception-handling code.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has method overloading, but no operator overloading. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class does use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">operators
+to concatenate strings and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">expressions
+use automatic type conversion, but that&#8217;s a special built-in case.
+</FONT><a name="OLE_LINK7"></a><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>const</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+issues in C++ are avoided in Java by convention. You pass only handles to
+objects and local copies are never made for you automatically. If you want the
+equivalent of C++&#8217;s pass-by-value, 
+<a name="OLE_LINK8"></a>you
+call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce a local copy of the argument (although the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">mechanism
+is somewhat poorly designed &#8211; see Chapter 12). There&#8217;s no
+copy-constructor that&#8217;s automatically called.
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create a compile-time constant value, you say, for example:
+</FONT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black"><B>static
+final int SIZE = 255;
+</B></FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black"><B>static
+final int BSIZE = 8 * SIZE;
+</B></FONT></TT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Because
+of security issues, programming an &#8220;application&#8221; is quite different
+from programming an &#8220;applet.&#8221; A significant issue is that an applet
+won&#8217;t let you write to disk, because that would allow a program
+downloaded from an unknown machine to trash your disk. This changes somewhat
+with Java 1.1<A NAME="Index3127"></A>
+digital signing, which allows you to unequivocally 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>know</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+everyone that wrote all the programs that have special access to your system
+(one of which might have trashed your disk; you still have to figure out which
+one and what to do about it.). Java 1.2 also promises more power for applets
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Since
+Java can be too restrictive in some cases, you could be prevented from doing
+important tasks such as directly accessing hardware. Java solves this with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>native
+methods
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that allow you to call a function written in another language (currently only C
+and C++ are supported). Thus, you can always solve a platform-specific problem
+(in a relatively non-portable fashion, but then that code is isolated). Applets
+cannot call native methods, only applications.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+has built-in support for comment documentation, so the source code file can
+also contain its own documentation, which is stripped out and reformatted into
+HTML via a separate program. This is a boon for documentation maintenance and
+use.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+contains standard libraries for solving specific tasks. C++ relies on
+non-standard third-party libraries. These tasks include (or will soon include):
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Networking
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Database Connection (via JDBC)
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Multithreading
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Distributed Objects (via RMI and CORBA)
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Compression
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Commerce
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+availability and standard nature of these libraries allow for more rapid
+application development.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+1.1<A NAME="Index3128"></A>
+includes the Java Beans standard, which is a way to create components that can
+be used in visual programming environments. This promotes visual components
+that can be used under all vendor&#8217;s development environments. Since you
+aren&#8217;t tied to a particular vendor&#8217;s design for visual components,
+this should result in greater selection and availability of components. In
+addition, the design for Java Beans is simpler for programmers to understand;
+vendor-specific component frameworks tend to involve a steeper learning curve.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	If
+the access to a Java handle fails, an exception is thrown. This test
+doesn&#8217;t have to occur right before the use of a handle; the Java
+specification just says that the exception must somehow be thrown. Many C++
+runtime systems can also throw exceptions for bad pointers.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Generally,
+Java is more robust, via:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Object handles initialized to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a keyword)
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Handles are always checked and exceptions are thrown for failures
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+All array accesses are checked for bounds violations
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Automatic garbage collection prevents memory leaks
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Clean, relatively fool-proof exception handling
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Simple language support for multithreading
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8211;
+Bytecode verification of network applets
+</FONT></OL><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">K</FONT><a name="_Toc407441464"></a><a name="_Toc408018848"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0197.html">Prev</a> | <a href="tij0199.html">Next</a>
+</div>
+</body></html>
+

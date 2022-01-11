@@ -1,0 +1,348 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0186.html">Prev</a> | <a href="tij0188.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Complexity
+theory
+<P><A NAME="Index3067"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program was modified from code originally created by Larry O&#8217;Brien, and
+is based on the &#8220;Boids&#8221; program created by Craig Reynolds in 1986
+to demonstrate an aspect of complexity theory called &#8220;emergence.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+goal here is to produce a reasonably lifelike reproduction of <A NAME="Index3068"></A>flocking
+or <A NAME="Index3069"></A><A NAME="Index3070"></A>herding
+behavior in animals by establishing a small set of simple rules for each
+animal. Each animal can look at the entire scene and all the other animals in
+the scene, but it reacts 
+<a name="only"></a>only
+to a set of nearby &#8220;flockmates.&#8221; The animal moves according to
+three simple steering behaviors: 
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Separation:
+Avoid crowding local flockmates.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Alignment:
+Follow the average heading of local flockmates.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Cohesion:
+Move toward the center of the group of local flockmates. 
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">More
+elaborate models can include obstacles and the ability for the animals to
+predict collisions and avoid them, so the animals can flow around fixed objects
+in the environment. In addition, the animals might also be given a goal, which
+can cause the herd to follow a desired path. For simplicity, obstacle avoidance
+and goal-seeking is not included in the model presented here.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index3071"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Emergence
+means that, despite the limited nature of computers and the simplicity of the
+steering rules, the result seems realistic. That is, remarkably lifelike
+behavior &#8220;emerges&#8221; from this simple model.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+program is presented as a combined application/applet:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FieldOBeasts.java</font>
+<font color="#009900">// Demonstration of complexity theory; simulates </font>
+<font color="#009900">// herding behavior in animals. Adapted from</font>
+<font color="#009900">// a program by Larry O'Brien lobrien@msn.com</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Beast {
+  <font color="#0000ff">int</font>
+    x, y,            <font color="#009900">// Screen position</font>
+    currentSpeed;    <font color="#009900">// Pixels per second</font>
+  <font color="#0000ff">float</font> currentDirection;  <font color="#009900">// Radians</font>
+  Color color;      <font color="#009900">// Fill color</font>
+  FieldOBeasts field; <font color="#009900">// Where the Beast roams</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> GSIZE = 10; <font color="#009900">// Graphic size</font>
+
+  <font color="#0000ff">public</font> Beast(FieldOBeasts f, <font color="#0000ff">int</font> x, <font color="#0000ff">int</font> y, 
+      <font color="#0000ff">float</font> cD, <font color="#0000ff">int</font> cS, Color c) {
+    field = f;
+    <font color="#0000ff">this</font>.x = x;
+    <font color="#0000ff">this</font>.y = y;
+    currentDirection = cD;
+    currentSpeed = cS;
+    color = c;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> step() {
+    <font color="#009900">// You move based on those within your sight:</font>
+    Vector seen = field.beastListInSector(<font color="#0000ff">this</font>);
+    <font color="#009900">// If you're not out in front</font>
+    <font color="#0000ff">if</font>(seen.size() &gt; 0) {
+      <font color="#009900">// Gather data on those you see</font>
+      <font color="#0000ff">int</font> totalSpeed = 0;
+      <font color="#0000ff">float</font> totalBearing = 0.0f;
+      <font color="#0000ff">float</font> distanceToNearest = 100000.0f;
+      Beast nearestBeast = 
+        (Beast)seen.elementAt(0);
+      Enumeration e = seen.elements();
+      <font color="#0000ff">while</font>(e.hasMoreElements()) {
+        Beast aBeast = (Beast) e.nextElement();
+        totalSpeed += aBeast.currentSpeed;
+        <font color="#0000ff">float</font> bearing = 
+          aBeast.bearingFromPointAlongAxis(
+            x, y, currentDirection);
+        totalBearing += bearing;
+        <font color="#0000ff">float</font> distanceToBeast = 
+          aBeast.distanceFromPoint(x, y);
+        <font color="#0000ff">if</font>(distanceToBeast &lt; distanceToNearest) {
+          nearestBeast = aBeast;
+          distanceToNearest = distanceToBeast;
+        }
+      }
+      <font color="#009900">// Rule 1: Match average speed of those </font>
+      <font color="#009900">// in the list:</font>
+      currentSpeed = totalSpeed / seen.size();
+      <font color="#009900">// Rule 2: Move towards the perceived</font>
+      <font color="#009900">// center of gravity of the herd:</font>
+      currentDirection = 
+        totalBearing / seen.size();
+      <font color="#009900">// Rule 3: Maintain a minimum distance </font>
+      <font color="#009900">// from those around you:</font>
+      <font color="#0000ff">if</font>(distanceToNearest &lt;= 
+         field.minimumDistance) {
+        currentDirection = 
+          nearestBeast.currentDirection;
+        currentSpeed = nearestBeast.currentSpeed;
+        <font color="#0000ff">if</font>(currentSpeed &gt; field.maxSpeed) {
+          currentSpeed = field.maxSpeed;
+        }
+      }
+    } 
+    <font color="#0000ff">else</font> {  <font color="#009900">// You are in front, so slow down</font>
+      currentSpeed = 
+        (<font color="#0000ff">int</font>)(currentSpeed * field.decayRate);
+    }
+    <font color="#009900">// Make the beast move:</font>
+    x += (<font color="#0000ff">int</font>)(Math.cos(currentDirection) 
+               * currentSpeed);
+    y += (<font color="#0000ff">int</font>)(Math.sin(currentDirection)
+               * currentSpeed);
+    x %= field.xExtent;
+    y %= field.yExtent;
+    <font color="#0000ff">if</font>(x &lt; 0)
+      x += field.xExtent;
+    <font color="#0000ff">if</font>(y &lt; 0)
+      y += field.yExtent;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">float</font> bearingFromPointAlongAxis (
+      <font color="#0000ff">int</font> originX, <font color="#0000ff">int</font> originY, <font color="#0000ff">float</font> axis) {
+    <font color="#009900">// Returns bearing angle of the current Beast</font>
+    <font color="#009900">// in the world coordiante system</font>
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">double</font> bearingInRadians = 
+        Math.atan(
+          (<font color="#0000ff">this</font>.y - originY) / 
+          (<font color="#0000ff">this</font>.x - originX));
+      <font color="#009900">// Inverse tan has two solutions, so you </font>
+      <font color="#009900">// have to correct for other quarters:</font>
+      <font color="#0000ff">if</font>(x &lt; originX) {  
+        <font color="#0000ff">if</font>(y &lt; originY) {
+          bearingInRadians += - (<font color="#0000ff">float</font>)Math.PI;
+        } 
+        <font color="#0000ff">else</font> {
+          bearingInRadians = 
+            (<font color="#0000ff">float</font>)Math.PI - bearingInRadians;
+        }
+      }
+      <font color="#009900">// Just subtract the axis (in radians):</font>
+      <font color="#0000ff">return</font> (<font color="#0000ff">float</font>) (axis - bearingInRadians);
+    } <font color="#0000ff">catch</font>(ArithmeticException aE) {
+      <font color="#009900">// Divide by 0 error possible on this</font>
+      <font color="#0000ff">if</font>(x &gt; originX) {
+          <font color="#0000ff">return</font> 0;
+      } 
+      <font color="#0000ff">else</font>
+        <font color="#0000ff">return</font> (<font color="#0000ff">float</font>) Math.PI;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">float</font> distanceFromPoint(<font color="#0000ff">int</font> x1, <font color="#0000ff">int</font> y1){
+    <font color="#0000ff">return</font> (<font color="#0000ff">float</font>) Math.sqrt(
+      Math.pow(x1 - x, 2) + 
+      Math.pow(y1 - y, 2));
+  }
+  <font color="#0000ff">public</font> Point position() { 
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Point(x, y);
+  }
+  <font color="#009900">// Beasts know how to draw themselves:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> draw(Graphics g) {
+    g.setColor(color);
+    <font color="#0000ff">int</font> directionInDegrees = (<font color="#0000ff">int</font>)(
+      (currentDirection * 360) / (2 * Math.PI));
+    <font color="#0000ff">int</font> startAngle = directionInDegrees - 
+      FieldOBeasts.halfFieldOfView;
+    <font color="#0000ff">int</font> endAngle = 90;
+    g.fillArc(x, y, GSIZE, GSIZE, 
+      startAngle, endAngle);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FieldOBeasts <font color="#0000ff">extends</font> Applet 
+    <font color="#0000ff">implements</font> Runnable {
+  <font color="#0000ff">private</font> Vector beasts;
+  <font color="#0000ff">static</font> <font color="#0000ff">float</font> 
+    fieldOfView = 
+      (<font color="#0000ff">float</font>) (Math.PI / 4), <font color="#009900">// In radians</font>
+    <font color="#009900">// Deceleration % per second:</font>
+    decayRate = 1.0f, 
+    minimumDistance = 10f; <font color="#009900">// In pixels</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font>
+    halfFieldOfView = (<font color="#0000ff">int</font>)(
+      (fieldOfView * 360) / (2 * Math.PI)),
+    xExtent = 0,
+    yExtent = 0,
+    numBeasts = 50,
+    maxSpeed = 20; <font color="#009900">// Pixels/second</font>
+  <font color="#0000ff">boolean</font> uniqueColors = <font color="#0000ff">true</font>;
+  Thread thisThread;
+  <font color="#0000ff">int</font> delay = 25;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#0000ff">if</font> (xExtent == 0 &amp;&amp; yExtent == 0) {
+      xExtent = Integer.parseInt(
+        getParameter("xExtent"));
+      yExtent = Integer.parseInt(
+        getParameter("yExtent"));
+    }
+    beasts = 
+      makeBeastVector(numBeasts, uniqueColors);
+    <font color="#009900">// Now start the beasts a-rovin':</font>
+    thisThread = <font color="#0000ff">new</font> Thread(<font color="#0000ff">this</font>);
+    thisThread.start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; beasts.size(); i++){
+        Beast b = (Beast) beasts.elementAt(i);
+        b.step();
+      }
+      <font color="#0000ff">try</font> {
+        thisThread.sleep(delay);
+      } <font color="#0000ff">catch</font>(InterruptedException ex){}
+      repaint(); <font color="#009900">// Otherwise it won't update</font>
+    }
+  }
+  Vector makeBeastVector(
+      <font color="#0000ff">int</font> quantity, <font color="#0000ff">boolean</font> uniqueColors) {
+    Vector newBeasts = <font color="#0000ff">new</font> Vector();
+    Random generator = <font color="#0000ff">new</font> Random();
+    <font color="#009900">// Used only if uniqueColors is on:</font>
+    <font color="#0000ff">double</font> cubeRootOfBeastNumber = 
+      Math.pow((<font color="#0000ff">double</font>)numBeasts, 1.0 / 3.0);
+    <font color="#0000ff">float</font> colorCubeStepSize = 
+      (<font color="#0000ff">float</font>) (1.0 / cubeRootOfBeastNumber);
+    <font color="#0000ff">float</font> r = 0.0f;
+    <font color="#0000ff">float</font> g = 0.0f;
+    <font color="#0000ff">float</font> b = 0.0f;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; quantity; i++) {
+      <font color="#0000ff">int</font> x = 
+        (<font color="#0000ff">int</font>) (generator.nextFloat() * xExtent);
+      <font color="#0000ff">if</font>(x &gt; xExtent - Beast.GSIZE) 
+        x -= Beast.GSIZE;
+      <font color="#0000ff">int</font> y = 
+        (<font color="#0000ff">int</font>) (generator.nextFloat() * yExtent);
+      <font color="#0000ff">if</font>(y &gt; yExtent - Beast.GSIZE) 
+        y -= Beast.GSIZE;
+      <font color="#0000ff">float</font> direction = (<font color="#0000ff">float</font>)(
+        generator.nextFloat() * 2 * Math.PI);
+      <font color="#0000ff">int</font> speed = (<font color="#0000ff">int</font>)(
+        generator.nextFloat() * (<font color="#0000ff">float</font>)maxSpeed);
+      <font color="#0000ff">if</font>(uniqueColors) {
+        r += colorCubeStepSize;
+        <font color="#0000ff">if</font>(r &gt; 1.0) {
+          r -= 1.0f;
+          g += colorCubeStepSize;
+          <font color="#0000ff">if</font>( g &gt; 1.0) {
+            g -= 1.0f;
+            b += colorCubeStepSize;
+            <font color="#0000ff">if</font>(b &gt; 1.0) 
+              b -= 1.0f;
+          }
+        }
+      }
+      newBeasts.addElement(
+        <font color="#0000ff">new</font> Beast(<font color="#0000ff">this</font>, x, y, direction, speed, 
+          <font color="#0000ff">new</font> Color(r,g,b)));
+    }
+    <font color="#0000ff">return</font> newBeasts;
+  }
+  <font color="#0000ff">public</font> Vector beastListInSector(Beast viewer) {
+    Vector output = <font color="#0000ff">new</font> Vector();
+    Enumeration e = beasts.elements();
+    Beast aBeast = (Beast)beasts.elementAt(0);
+    <font color="#0000ff">int</font> counter = 0;
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      aBeast = (Beast) e.nextElement();
+      <font color="#0000ff">if</font>(aBeast != viewer) {
+        Point p = aBeast.position();
+        Point v = viewer.position();
+        <font color="#0000ff">float</font> bearing = 
+          aBeast.bearingFromPointAlongAxis(
+            v.x, v.y, viewer.currentDirection);
+        <font color="#0000ff">if</font>(Math.abs(bearing) &lt; fieldOfView / 2)
+         output.addElement(aBeast);
+      }
+    }
+    <font color="#0000ff">return</font> output;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g)  {
+    Enumeration e = beasts.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      ((Beast)e.nextElement()).draw(g);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args)   {
+    FieldOBeasts field = <font color="#0000ff">new</font> FieldOBeasts();
+    field.xExtent = 640;
+    field.yExtent = 480;
+    Frame frame = <font color="#0000ff">new</font> Frame("Field 'O Beasts");
+    <font color="#009900">// Optionally use a command-line argument</font>
+    <font color="#009900">// for the sleep time:</font>
+    <font color="#0000ff">if</font>(args.length &gt;= 1)
+      field.delay = Integer.parseInt(args[0]);
+    frame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    frame.add(field, BorderLayout.CENTER);
+    frame.setSize(640,480);
+    field.init();
+    field.start();
+    frame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+this isn&#8217;t a perfect reproduction of the behavior in Craig
+Reynold&#8217;s &#8220;Boids&#8221; example, it exhibits its own fascinating
+characteristics, which you can modify by adjusting the numbers. You can find
+out more about the modeling of flocking behavior and see a spectacular 3-D
+version of Boids at Craig Reynold&#8217;s page 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.hmt.com/cwr/boids.html</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+run this program as an applet, put the following applet tag in an HTML file:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;applet
+code=FieldOBeasts
+width=640
+height=480&gt;
+&lt;param name=xExtent value = "640"&gt;
+&lt;param name=yExtent value = "480"&gt;
+&lt;/applet&gt;</PRE></font><DIV ALIGN=LEFT><a name="_Toc408018815"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0186.html">Prev</a> | <a href="tij0188.html">Next</a>
+</div>
+</body></html>
+

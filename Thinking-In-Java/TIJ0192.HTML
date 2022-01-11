@@ -1,0 +1,54 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0191.html">Prev</a> | <a href="tij0193.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+Microsoft way
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+the time of this writing, Microsoft does not support JNI, but provides
+proprietary support to call non-Java code. This support is built into the
+compiler, the Microsoft JVM, and external tools. The features described in this
+section will work only if your program was compiled using the Microsoft Java
+compiler and run on the Microsoft Java Virtual Machine. If you plan to
+distribute your application on the Internet, or if your Intranet is built on
+different platforms, this can be a serious issue.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Microsoft interface to Win32 code provides three ways to connect to Win32: 
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>	J/Direct</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+A way to easily call Win32 DLL functions, with some limitations.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>	Raw
+Native Interface (RNI)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+You can call Win32 DLL functions, but you must then handle garbage collection.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>	Java/COM
+integration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+You can expose or call COM services directly from Java.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">I&#8217;ll
+cover all three techniques in the following sections.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+the time of writing, these features were tested on the Microsoft SDK for Java
+2.0 beta 2, which was downloaded (with a painful process they call
+&#8220;Active Setup&#8221;) from the Microsoft Web site. The Java SDK is a set
+of command-line tools, but the compilation engine can be easily plugged into
+the Developer Studio environment, allowing you to use Visual J++ 1.1 to compile
+Java 1.1 code.
+</FONT><a name="_Toc408018826"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0191.html">Prev</a> | <a href="tij0193.html">Next</a>
+</div>
+</body></html>
+

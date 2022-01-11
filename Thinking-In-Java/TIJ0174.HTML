@@ -1,0 +1,243 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0173.html">Prev</a> | <a href="tij0175.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+pattern concept
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Initially,
+you can think of a pattern as an especially clever and insightful way of
+solving a particular class of problems. That is, it looks like a lot of people
+have worked out all the angles of a problem and have come up with the most
+general, flexible solution for it. The problem could be one you have seen and
+solved before, but your solution probably didn&#8217;t have the kind of
+completeness you&#8217;ll see embodied in a pattern.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+they&#8217;re called &#8220;design patterns,&#8221; they really aren&#8217;t
+tied to the realm of design. A pattern seems to stand apart from the
+traditional way of thinking about analysis, design, and implementation.
+Instead, a pattern embodies a complete idea within a program, and thus it can
+sometimes appear at the analysis phase or high-level design phase. This is
+interesting because a pattern has a direct implementation in code and so you
+might not expect it to show up before low-level design or implementation (and
+in fact you might not realize that you need a particular pattern until you get
+to those phases).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+basic concept of a pattern can also be seen as the basic concept of program
+design: adding a layer of <A NAME="Index2914"></A><A NAME="Index2915"></A>abstraction.
+Whenever you abstract something you&#8217;re isolating particular details, and
+one of the most compelling motivations behind this is to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>separate
+things that change from things that stay the same
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Another way to put this is that once you find some part of your program
+that&#8217;s likely to change for one reason or another, you&#8217;ll want to
+keep those changes from propagating other changes throughout your code. Not
+only does this make the code much cheaper to maintain, but it also turns out
+that it is usually simpler to understand (which results in lowered costs).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Often,
+the most difficult part of developing an elegant and cheap-to-maintain design
+is in discovering what I call &#8220;the <A NAME="Index2916"></A><A NAME="Index2917"></A><A NAME="Index2918"></A>vector
+of change.&#8221; (Here, &#8220;vector&#8221; refers to the maximum gradient
+and not a collection class.) This means finding the most important thing that
+changes in your system, or put another way, discovering where your greatest
+cost is. Once you discover the vector of change, you have the focal point
+around which to structure your design.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+the goal of design patterns is to isolate changes in your code. If you look at
+it this way, you&#8217;ve been seeing some design patterns already in this
+book. For example, <A NAME="Index2919"></A>inheritance
+can be thought of as a design pattern (albeit one implemented by the compiler).
+It allows you to express differences in behavior (that&#8217;s the thing that
+changes) in objects that all have the same interface (that&#8217;s what stays
+the same). <A NAME="Index2920"></A>Composition
+can also be considered a pattern, since it allows you to change &#8211;
+dynamically or statically &#8211; the objects that implement your class, and
+thus the way that class works.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ve
+also already seen another pattern that appears in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the <A NAME="Index2921"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>iterator</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Java 1.0<A NAME="Index2922"></A>
+and 1.1 capriciously calls it the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+Java 1.2<A NAME="Index2923"></A>
+collections use &#8220;iterator&#8221;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This hides the particular implementation of the collection as you&#8217;re
+stepping through and selecting the elements one by one. The iterator allows you
+to write generic code that performs an operation on all of the elements in a
+sequence without regard to the way that sequence is built. Thus your generic
+code can be used with any collection that can produce an iterator.
+</FONT><a name="_Toc408018795"></a><P></DIV>
+<A NAME="Heading553"></A><H3 ALIGN=LEFT>
+The
+singleton
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Possibly
+the simplest design pattern is the <A NAME="Index2924"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>singleton</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a way to provide one and only one instance of an object. This is used
+in the Java libraries, but here&#8217;s a more direct example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SingletonPattern.java</font>
+<font color="#009900">// The Singleton design pattern: you can</font>
+<font color="#009900">// never instantiate more than one.</font>
+<font color="#0000ff">package</font> c16;
+
+<font color="#009900">// Since this isn't inherited from a Cloneable</font>
+<font color="#009900">// base class and cloneability isn't added,</font>
+<font color="#009900">// making it final prevents cloneability from</font>
+<font color="#009900">// being added in any derived classes:</font>
+<font color="#0000ff">final</font> <font color="#0000ff">class</font> Singleton {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Singleton s = <font color="#0000ff">new</font> Singleton(47);
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">private</font> Singleton(<font color="#0000ff">int</font> x) { i = x; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Singleton getHandle() { 
+    <font color="#0000ff">return</font> s; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getValue() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setValue(<font color="#0000ff">int</font> x) { i = x; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SingletonPattern {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Singleton s = Singleton.getHandle();
+    System.out.println(s.getValue());
+    Singleton s2 = Singleton.getHandle();
+    s2.setValue(9);
+    System.out.println(s.getValue());
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Can't do this: compile-time error.</font>
+      <font color="#009900">// Singleton s3 = (Singleton)s2.clone();</font>
+    } <font color="#0000ff">catch</font>(Exception e) {}
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+key to creating a singleton is to prevent the client programmer from having any
+way to create an object except the ways you provide. You must make all <A NAME="Index2925"></A><A NAME="Index2926"></A>constructors
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you must
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">create
+at least one constructor to prevent the compiler from <A NAME="Index2927"></A><A NAME="Index2928"></A>synthesizing
+a default constructor for you (which it will create as &#8220;friendly&#8221;).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, you decide how you&#8217;re going to create your object. Here,
+it&#8217;s created statically, but you can also wait until the client
+programmer asks for one and create it on demand. In any case, the object should
+be stored privately. You provide access through public methods. Here, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getHandle(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces the handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Singleton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. The rest of the interface (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getValue(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setValue(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is the regular class interface.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+also allows the creation of objects through cloning. In this example, making
+the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prevents cloning. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Singleton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited directly from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method remains 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so it cannot be used (doing so produces a compile-time error). However, if
+you&#8217;re inheriting from a class hierarchy that has already overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and implemented 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the way to prevent cloning is to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and throw a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CloneNotSupportedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as described in Chapter 12. (You could also override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and simply return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but that would be deceiving since the client programmer would think they were
+cloning the object, but would instead still be dealing with the original.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that you aren&#8217;t restricted to creating only one object. This is also a
+technique to create a limited pool of objects. In that situation, however, you
+can be confronted with the problem of sharing objects in the pool. If this is
+an issue, you can create a solution involving a check-out and check-in of the
+shared objects.
+</FONT><a name="_Toc408018796"></a><P></DIV>
+<A NAME="Heading554"></A><H3 ALIGN=LEFT>
+Classifying
+patterns
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+book discusses 23 different patterns, classified under three purposes (all of
+which revolve around the particular aspect that can vary). The three purposes
+are:
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2929"></A><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2930"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Creational</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+how an object can be created. This often involves isolating the details of
+object creation so your code isn&#8217;t dependent on what types of objects
+there are and thus doesn&#8217;t have to be changed when you add a new type of
+object. The aforementioned 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Singleton</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is classified as a creational pattern, and later in this chapter you&#8217;ll
+see examples of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Factory
+Method
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Prototype</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><A NAME="Index2931"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2932"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Structural</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+designing objects to satisfy particular project constraints. These work with
+the way objects are connected with other objects to ensure that changes in the
+system don&#8217;t require changes to those connections.
+</FONT><LI><A NAME="Index2933"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2934"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Behavioral</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+objects that handle particular types of actions within a program. These
+encapsulate processes that you want to perform, such as interpreting a
+language, fulfilling a request, moving through a sequence (as in an iterator),
+or implementing an algorithm. This chapter contains examples of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Observer</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Visitor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+patterns.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+book has a section on each of its 23 patterns along with one or more examples
+for each, typically in C++ but sometimes in Smalltalk. (You&#8217;ll find that
+this doesn&#8217;t matter too much since you can easily translate the concepts
+from either language into Java.) This book will not repeat all the patterns
+shown in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since that book stands on its own and should be studied separately. Instead,
+this chapter will give some examples that should provide you with a decent feel
+for what patterns are about and why they are so important.
+</FONT><a name="_Toc408018797"></a><a name="_Toc375545413"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0173.html">Prev</a> | <a href="tij0175.html">Next</a>
+</div>
+</body></html>
+

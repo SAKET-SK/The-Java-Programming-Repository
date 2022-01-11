@@ -1,0 +1,47 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0196.html">Prev</a> | <a href="tij0198.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+you&#8217;ve seen in this appendix are the most common techniques to call
+non-Java code from a Java application. Each technique has its pros and cons,
+but currently the major problem is that not all of these features are available
+on all JVMs, so a Java program that calls native methods on a specific platform
+might not work on a different platform with a different JVM.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sun&#8217;s
+JNI is flexible, reasonably simple (although it requires a lot of control over
+the JVM internals), powerful, and it&#8217;s available on most JVMs, but not
+all. Microsoft, at the time of this writing, does not support JNI, but offers
+J/Direct, a simple way to call Win32 DLL functions, and RNI, which is designed
+for high-performance code but requires a good understanding of the JVM
+internals. Microsoft also offers its proprietary Java/COM integration feature,
+which is powerful and makes Java an interesting language for writing COM
+servers and clients. J/Direct, RNI, and Java/COM integration are supported only
+by the Microsoft compiler and JVM.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+we took a look at CORBA, which allows your Java objects to talk to other
+objects regardless of their physical location and implementation language.
+CORBA is different from the techniques above because it is not integrated with
+the Java language, but instead uses third-party integration technology and
+requires that you buy a third-party ORB. CORBA is an interesting and general
+solution, but it might not be the best approach if you just want to make calls
+into the operating system.
+</FONT><P></DIV><DIV ALIGN=LEFT><a name="BM_________"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">#
+$
+</FONT><a name="_Toc407441463"></a><a name="_Toc408018847"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0196.html">Prev</a> | <a href="tij0198.html">Next</a>
+</div>
+</body></html>
+

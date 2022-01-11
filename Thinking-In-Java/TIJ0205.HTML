@@ -1,0 +1,217 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0204.html">Prev</a> | <a href="tij0206.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+E:
+A bit about garbage collection
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">It&#8217;s
+hard to believe that Java could possibly be as fast or faster than C++
+</FONT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black"><I>.</I></FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index3139"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+assertion has yet to be proven to my satisfaction. However, I&#8217;ve begun to
+see that many of my doubts about <A NAME="Index3140"></A><A NAME="Index3141"></A><A NAME="Index3142"></A>speed
+come from early implementations that were not particularly efficient so there
+was no model at which to point to explain how Java could be fast.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Part
+of the way I&#8217;ve thought about speed has come from being cloistered with
+the <A NAME="Index3143"></A>C++
+model. C++ is very focused on everything happening statically, at compile time,
+so that the run-time image of the program is small and fast. C++ is also based
+directly on the C model, primarily for backwards compatibility, but sometimes
+simply because it worked a particular way in C so it was the easiest approach
+in C++. One of the most important cases is the way memory is managed in C and
+C++, and this has to do with one of my more fundamental assertions about why
+Java must be slow: in Java, all objects must be created on the heap. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+C++, creating objects on the <A NAME="Index3144"></A>stack
+is fast because when you enter a particular scope the stack pointer is moved
+down once to allocate storage for all the stack-based objects created in that
+scope, and when you leave the scope (after all the local destructors have been
+called) the stack pointer is moved up once. However, creating heap objects in
+C++ is typically much slower because it&#8217;s based on the C concept of a
+heap as a big pool of memory that (and this is essential) must be recycled.
+When you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>delete</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in C++ the released memory leaves a hole in the heap, so when you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the storage allocation mechanism must go seeking to try to fit the storage for
+your object into any existing holes in the heap or else you&#8217;ll rapidly
+run out of heap storage. Searching for available pieces of memory is the reason
+that allocating heap storage has such a performance impact in C++, so
+it&#8217;s far faster to create stack-based objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Again,
+because so much of C++ is based on doing everything at compile-time, this makes
+sense. But in Java there are certain places where things happen more
+dynamically and it changes the model. When it comes to creating objects, it
+turns out that the garbage collector can have a significant impact on
+increasing the speed of object creation. This might sound a bit odd at first
+&#8211; that storage release affects storage allocation &#8211; but it&#8217;s
+the way some JVMs work and it means that allocating storage for heap objects in
+Java can be nearly as fast as creating storage on the stack in C++.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can think of the C++ heap (and a slow implementation of a Java heap) as a yard
+where each object stakes out its own piece of turf. This real estate can become
+abandoned sometime later and must be reused. In some JVMs, the Java heap is
+quite different; it&#8217;s more like a conveyor belt that moves forward every
+time you allocate a new object. This means that object storage allocation is
+remarkably rapid. The &#8220;heap pointer&#8221; is simply moved forward into
+virgin territory, so it&#8217;s effectively the same as C++&#8217;s stack
+allocation. (Of course, there&#8217;s a little extra overhead for bookkeeping
+but it&#8217;s nothing like searching for storage.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you might observe that the heap isn&#8217;t in fact a conveyor belt, and if you
+treat it that way you&#8217;ll eventually start paging memory a lot (which is a
+big performance hit) and later run out. The trick is that the garbage collector
+steps in and while it collects the garbage it compacts all the objects in the
+heap so that you&#8217;ve effectively moved the &#8220;heap pointer&#8221;
+closer to the beginning of the conveyor belt and further away from a page
+fault. The garbage collector rearranges things and makes it possible for the
+high-speed, infinite-free-heap model to be used while allocating storage.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+understand how this works, you need to get a little better idea of the way the
+different garbage collector (GC) schemes work. A simple but slow GC technique
+is reference counting. This means that each object contains a reference
+counter, and every time a handle is attached to an object the reference count
+is increased. Every time a handle goes out of scope or is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the reference count is decreased. Thus, managing reference counts is a small
+but constant overhead that happens throughout the lifetime of your program. The
+garbage collector moves through the entire list of objects and when it finds
+one with a reference count of zero it releases that storage. The one drawback
+is that if objects circularly refer to each other they can have non-zero
+reference counts while still being garbage. Locating such self-referential
+groups requires significant extra work for the garbage collector. Reference
+counting is commonly used to explain one kind of garbage collection but it
+doesn&#8217;t seem to be used in any JVM implementations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+faster schemes, garbage collection is not based on reference counting. Instead,
+it is based on the idea that any non-dead object must ultimately be traceable
+back to a handle that lives either on the stack or in static storage. The chain
+might go through several layers of objects. Thus, if you start in the stack and
+the static storage area and walk through all the handles you&#8217;ll find all
+the live objects. For each handle that you find, you must trace into the object
+that it points to and then follow all the handles in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, tracing into the objects they point to, etc., until you&#8217;ve moved
+through the entire web that originated with the handle on the stack or in
+static storage. Each object that you move through must still be alive. Note
+that there is no problem with detached self-referential groups &#8211; these
+are simply not found, and are therefore automatically garbage.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the approach described here, the JVM uses an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>adaptive
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">garbage-collection
+scheme, and what it does with the live objects that it locates depends on the
+variant currently being used. One of these variants is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>stop-and-copy</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that, for reasons that will become apparent, the program is first
+stopped (this is not a background collection scheme). Then, each live object
+that is found is copied from one heap to another, leaving behind all the
+garbage. In addition, as the objects are copied into the new heap they are
+packed end-to-end, thus compacting the new heap (and allowing new storage to
+simply be reeled off the end as previously described).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, when an object is moved from one place to another, all handles that
+point at (reference) that object must be changed. The handle that comes from
+tracing to the object from the heap or the static storage area can be changed
+right away, but there can be other handles pointing to this object that will be
+encountered later during the &#8220;walk.&#8221; These are fixed up as they are
+found (you could imagine a hash table mapping old addresses to new ones).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two issues that make copy collectors inefficient. The first is the idea
+that you have two heaps and you slosh all the memory back and forth between
+these two separate heaps, maintaining twice as much memory as you actually
+need. Some JVMs deal with this by allocating the heap in chunks as needed and
+simply copying from one chunk to another.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second issue is the copying. Once your program becomes stable it might be
+generating little or no garbage. Despite that, a copy collector will still copy
+all the memory from one place to another, which is wasteful. To prevent this,
+some JVMs detect that no new garbage is being generated and switch to a
+different scheme (this is the &#8220;adaptive&#8221; part). This other scheme
+is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>mark
+and sweep
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it&#8217;s what Sun&#8217;s JVM uses all the time. For general use mark and
+sweep is fairly slow, but when you know you&#8217;re generating little or no
+garbage it&#8217;s fast.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Mark
+and sweep follows the same logic of starting from the stack and static storage
+and tracing through all the handles to find live objects. However, each time it
+finds a live object that object is marked by setting a flag in it, but the
+object isn&#8217;t collected yet. Only when the marking process is finished
+does the sweep occur. During the sweep, the dead objects are released. However,
+no copying happens, so if the collector chooses to compact a fragmented heap it
+does so by shuffling objects around.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+&#8220;stop-and-copy&#8221; refers to the idea that this type of garbage
+collection is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+done in the background; instead, the program is stopped while the GC occurs. In
+the Sun literature you&#8217;ll find many references to garbage collection as a
+low-priority background process, but it turns out that this was a theoretical
+experiment that didn&#8217;t work out. In practice, the Sun garbage collector
+is run when memory gets low. In addition, mark-and-sweep requires that the
+program be stopped.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+previously mentioned, in the JVM described here memory is allocated in big
+blocks. If you allocate a large object, it gets its own block. Strict
+stop-and-copy requires copying every live object from the source heap to a new
+heap before you could free the old one, which translates to lots of memory.
+With blocks, the GC can typically use dead blocks to copy objects to as it
+collects. Each block has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>generation
+count
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to keep track of whether it&#8217;s alive. In the normal case, only the blocks
+created since the last GC are compacted; all other blocks get their generation
+count bumped if they have been referenced from somewhere. This handles the
+normal case of lots of short-lived temporary objects. Periodically, a full
+sweep is made &#8211; large objects are still not copied (just get their
+generation count bumped) and blocks containing small objects are copied and
+compacted. The JVM monitors the efficiency of GC and if it becomes a waste of
+time because all objects are long-lived then it switches to mark-and-sweep.
+Similarly, the JVM keeps track of how successful mark-and-sweep is, and if the
+heap starts to become fragmented it switches back to stop-and-copy. This is
+where the &#8220;adaptive&#8221; part comes in, so you end up with a mouthful:
+&#8220;adaptive generational stop-and-copy mark-and-sweep.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are a number of additional speedups possible in a JVM. An especially important
+one involves the operation of the loader and Just-In-Time (JIT) compiler. When
+a class must be loaded (typically, the first time you want to create an object
+of that class), the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file is located and the byte codes for that class are brought into memory. At
+this point, one approach is to simply JIT all the code, but this has two
+drawbacks: it takes a little more time, which, compounded throughout the life
+of the program, can add up; and it increases the size of the executable (byte
+codes are significantly more compact than expanded JIT code) and this might
+cause paging, which definitely slows down a program. An alternative approach is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lazy
+evaluation,
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which means that the code is not JIT compiled until necessary. Thus, code that
+never gets executed might never get JIT compiled.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+JVMs are external to browsers, you might expect that you could benefit from the
+speedups of some JVMs while using any browser. Unfortunately, JVMs don&#8217;t
+currently interoperate with different browsers. To get the benefits of a
+particular JVM, you must either use the browser with that JVM built in or run
+standalone Java applications.
+</FONT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">E</FONT><a name="_Toc407441467"></a><a name="_Toc408018867"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0204.html">Prev</a> | <a href="tij0206.html">Next</a>
+</div>
+</body></html>
+

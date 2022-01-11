@@ -1,0 +1,560 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0194.html">Prev</a> | <a href="tij0196.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Java/COM
+integration
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">COM
+(formerly known as OLE) is the Microsoft Component Object Model, the foundation
+of all ActiveX technologies. These include ActiveX Controls, Automation, and
+ActiveX Documents. But COM is much more; it&#8217;s a specification (and a
+partial implementation) for developing component objects that can interoperate
+using dedicated features of the operating system. In practice, all of the new
+software developed for Win32 systems has some relationship with COM &#8211; the
+operating system exposes some of its features via COM objects. Third-party
+components can be COM, and you can create and register your own COM components.
+In one way or another, if you want to write Win32 code, you&#8217;ll have to
+deal with COM. Here, I&#8217;ll just recap the fundamentals of COM programming,
+and I&#8217;ll assume that you are familiar with the concept of a COM server
+(any COM object that can expose services to COM clients) and a COM client (a
+COM object that uses the services provided by a COM server). This section kept
+things simple; the tools are actually much more powerful, and you can use them
+in a more sophisticated way. But this requires a deep knowledge of COM, which
+is beyond the scope of this appendix. If you&#8217;re interested in this
+powerful but platform-dependent feature, you should investigate COM and the
+Microsoft documentation on Java/COM integration. For more information, Dale
+Rogerson&#8217;s &#8220;Inside COM&#8221; (Microsoft Press, 1997) is an
+excellent book.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+COM is the architectural heart of all the new Win32 applications, being able to
+use, or to expose, COM services from Java code can be important. The Java/COM
+integration is no doubt one of the most interesting features of the Microsoft
+Java compiler and virtual machine. Java and COM are so similar in their models
+that the integration is conceptually straightforward and technically seamless
+&#8211; there&#8217;s almost no special code to write in order to access COM.
+Most the details are handled by the compiler and/or by the virtual machine. The
+effect is that the COM objects are seen as ordinary Java objects by the Java
+programmer, and COM clients can use COM servers implemented in Java just like
+any other COM server. Again, I use the generic term COM, but by extension this
+means that you can implement an ActiveX Automation server in Java, or you can
+use an ActiveX Control in your Java programs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most notable similarities between Java and COM revolve around the relationship
+between COM interfaces and the Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">keyword.
+This is a near-perfect match because:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+COM object exposes interfaces (and only interfaces).
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+COM interface has no implementation; the COM object exposing an interface is
+responsible for its implementation. 
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+COM interface is a description of a group of functions semantically related; no
+data is exposed.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+COM class groups together COM interfaces. A Java class can implement an
+arbitrary number of Java interfaces
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">COM
+has a reference object model; the programmer never &#8220;has&#8221; an object,
+just references to one or more of its interfaces. Java has a reference object
+model as well &#8211; a reference to an object can be cast to a reference to
+one of its interfaces.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+lifetime in memory of a COM object is determined by the number of clients using
+the object; when this count goes to zero, the object deletes itself from
+memory. In Java, the lifetime of an object is also determined by the number of
+clients. When there are no more references to that object, the object is a
+candidate to be released by the garbage collector.
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+tight mapping between Java and COM not only allows the Java programmer to
+easily access COM features, but it also makes Java an interesting language for
+writing COM code. COM is language-independent, but the de facto languages for
+COM development are C++ and Visual Basic. Compared to Java, C++ is much more
+powerful for COM development and generates much more efficient code, but
+it&#8217;s hard to use. Visual Basic is much easier than Java, but it&#8217;s
+too far from the underlying operating system, and its object model does not map
+very well to COM. Java is an excellent compromise between the two.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let&#8217;s
+take a look at some of the keys points of COM development that you need to know
+to write Java/COM clients and servers.
+</FONT><a name="_Toc408018835"></a><P></DIV>
+<A NAME="Heading608"></A><H3 ALIGN=LEFT>
+COM
+Fundamentals 
+<P><A NAME="Index3106"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">COM
+is a binary specification for implementing interoperable objects. For example,
+COM describes the binary layout an object should have to be able to call
+services in another COM object. Since it&#8217;s a description of a binary
+layout, COM objects can be implemented in any language that&#8217;s able to
+produce such a layout. Usually the programmer is freed from these low level
+details, since the compiler takes care of generating the correct layout. For
+example, if you program in C++, most compilers generate a virtual function
+table that is COM-compliant. With languages that do not produce executable
+code, such as VB and Java, the runtime takes care of hooking into COM.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+COM Library also supplies a few basic functions, such as the ones for creating
+an object or locating a COM class registered in your system.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+main goals of a component object model are:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let
+objects call services into other objects.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Allow
+new types of objects, or upgrades to existing ones, to be seamlessly plugged
+into the environment.
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first point is exactly what object-oriented programming is about: you have a
+client object that makes requests to a server object. In this case, the terms
+&#8220;client&#8221; and &#8220;server&#8221; are used in a generic way, and
+not to refer to some particular hardware configuration. With any
+object-oriented language, the first goal is easy to achieve if your application
+is a monolithic piece of code that implements both the server object code and
+the client object code. If you make changes to the way client and the server
+objects interface with each other, you simply compile and link again. When you
+restart your application, it uses a new version of the components.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+situation is completely different when your application is made up of component
+objects that are not under your control &#8211; you don&#8217;t control their
+source code and they can evolve separately from your application. This is
+exactly the case, for example, when you use a third-party ActiveX Control in
+your application. The control is installed in your system, and your application
+is able, at runtime, to locate the server code, activate the object, link to
+it, and use it. Later, you can install a newer version of the control, and your
+application should still be able to run; in the worst case, it should
+gracefully report an error condition, such as &#8220;Control not found,&#8221;
+without hanging up.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+these scenarios, your components are implemented in separate executable code
+files: DLLs or EXEs. If the server object is implemented in a separate
+executable code file, you need a standard, operating system supplied method to
+activate these objects. Of course, in your code you do not want to use the
+physical name and location of the DLL or EXE, because these might change; you
+want some identifier maintained by the operating system. Also, your application
+needs a description of the services exposed by the server. This is exactly what
+I&#8217;ll cover in the next two sections.
+</FONT><P></DIV>
+<A NAME="Heading609"></A><H4 ALIGN=LEFT>
+GUIDs
+and the Registry
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">COM
+uses structured integer numbers, 128 bits long, to unequivocally identify COM
+entities registered in the system. These numbers, called <A NAME="Index3107"></A>GUIDs
+(Globally Unique IDentifiers) can be generated by specific utilities, and are
+guaranteed to be unique &#8220;in space and in time,&#8221; to quote Kraig
+Brockschmidt. In space, because the number is generator reads the id of your
+network card, and in time because the system date and time are used as well. A
+GUID can be used to identify a COM class (in which case it&#8217;s called a
+CLSID) or a COM interface (IID). The names are different but the concept and
+the binary structure are the same. GUIDs are also used in other situations that
+I will not cover here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">GUIDs,
+along with their associated information, are stored in the <A NAME="Index3108"></A><A NAME="Index3109"></A>Windows
+Registry, or Registration Database. It&#8217;s a hierarchical database, built
+into the operating system, which holds a great amount of information about the
+hardware and software configuration of your system. For COM, the Registry keeps
+track of the components installed in your system, such as their CLSIDs, the
+name and location of the executable file that implement them, and a lot of
+other details. One of these details is the ProgID of the component; a ProgID is
+conceptually similar to a GUID in the sense that it identifies a COM component.
+The difference is that a GUID is a binary, algorithmically-generated value,
+whereas a <A NAME="Index3110"></A>ProgID
+is a programmer-defined string value. A ProgID is associated with a <A NAME="Index3111"></A>CLSID.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+COM component is said to be registered in the system when at least its CLSID
+and its executable file location are present in the Registry (the ProgID is
+usually present as well). Registering and using COM components is exactly what
+we&#8217;ll do in the following examples.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the effects of the Registry is as a decoupling layer between the client and
+server objects. The client activates the server using some information that is
+stored in the Registry; one piece of information is the physical location of
+the server executables. If the location changes, the information in the
+Registry is updated accordingly, but this is transparent to the client, which
+just uses ProgIDs or CLSIDs. In other words, the Registry allows for location
+transparency of the server code. With the introduction of DCOM (Distributed
+COM), a server that was running on a local machine can even be moved to a
+remote machine on the network, without the client even noticing it (well,
+almost...).
+</FONT><P></DIV>
+<A NAME="Heading610"></A><H4 ALIGN=LEFT>
+Type
+Libraries
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+of COM&#8217;s dynamic linking and the independent evolution of client and
+server code, the client always needs to dynamically detect the services that
+are exposed by the server. These services are described in a binary,
+language-independent way (as interfaces and method signatures) in the <A NAME="Index3112"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>type
+library
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This can be a separate file (usually with the .TLB extension), or a Win32
+resource linked into the executable. At runtime, the client uses the
+information in the type library to call functions in the server.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can generate a type library by writing a Microsoft Interface Definition
+Language (MIDL) source file and compiling it with the MIDL compiler to generate
+a .TLB file. MIDL is a language that describes COM classes, interfaces, and
+methods. It resembles the OMG/CORBA IDL in name, syntax, and purpose. The Java
+programmer has no need to use MIDL, though. A different Microsoft tool,
+described later, reads a Java class file and generates a type library.
+</FONT><P></DIV>
+<A NAME="Heading611"></A><H4 ALIGN=LEFT>
+Function
+return codes in COM: HRESULT
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">COM
+functions exposed by a server return a value of the predefined type HRESULT. An <A NAME="Index3113"></A>HRESULT
+is an integer containing three fields. This allows for multiple failure and
+success codes, along with additional information. Because a COM function
+returns an HRESULT, you cannot use the return value to hand back ordinary data
+from the function call. If you must return data, you pass a pointer to a memory
+area that the function will fill. This is known as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>out
+parameter
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You don&#8217;t need to worry about this as a Java/COM programmer since the
+virtual machine takes care of it for you. This is described in the following
+sections.
+</FONT><a name="_Toc408018836"></a><P></DIV>
+<A NAME="Heading612"></A><H3 ALIGN=LEFT>
+MS
+Java/COM Integration
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Microsoft Java compiler, Virtual Machine, and tools make life a lot easier for
+the Java/COM programmer than it is for the C++/COM programmer. The compiler has
+special directives and packages for treating Java classes as COM classes, but
+in most cases, you&#8217;ll just rely on the Microsoft JVM support for COM, and
+on a couple of external tools.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Microsoft Java Virtual Machine acts as a bridge between COM and Java objects.
+If you create a Java object as a COM server, your object will still be running
+inside the JVM. The Microsoft JVM is implemented as a DLL, which exposes COM
+interfaces to the operating system. Internally, the JVM maps function calls to
+these COM interfaces to method calls in your Java objects. Of course, the JVM
+must know which Java class file corresponds to the server executable; it can
+discover this information because you previously registered the class file in
+the Windows Registry using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a utility in the Microsoft Java SDK. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reads a Java class file, generates a corresponding type library and a GUID, and
+registers the class in the system. <A NAME="Index3114"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used to register remote servers as well, for example, servers that run
+on a different physical machine.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to write a Java/COM client, you must go through a different process. A
+Java/COM client is Java code that wants to activate and use one of the COM
+servers registered on your system. Again, the virtual machine interfaces with
+the COM server and exposes its services as methods in a Java class. Another
+Microsoft tool, <A NAME="Index3115"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+reads a type library and generates Java source files that contain special
+compiler directives. The generated source files are part of a package named
+after the type library you specified. The next step is to import that package
+in your COM client Java source files.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let&#8217;s
+look at a couple of examples.
+</FONT><a name="_Toc408018837"></a><P></DIV>
+<A NAME="Heading613"></A><H3 ALIGN=LEFT>
+Developing
+COM servers in Java
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+section shows the process you will apply to the development of ActiveX
+Controls, Automation Servers, or any other COM-compliant server. The following
+example implements a simple Automation server that adds integer numbers. You
+set the value of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addend</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setAddend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and each time you call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sum(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addend</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to the current 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>result</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You retrieve the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>result</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getResult(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and reset the values with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clear(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The Java class that implements this behavior is straightforward:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">class</font> Adder {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> addend;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> result;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setAddend(<font color="#0000ff">int</font> a) { addend = a; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getAddend() { <font color="#0000ff">return</font> addend; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getResult() { <font color="#0000ff">return</font> result; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> sum() { result += addend;  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> clear() {
+    result = 0;
+    addend = 0;
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+use this Java class as a COM object, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool is applied to the compiled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file. This tool has a number of options; in this case we specify the Java class
+file name (&#8220;Adder&#8221;), the ProgID we want to put in the Registry for
+this server (&#8220;JavaAdder.Adder.1&#8221;), and the name we want for the
+type library that will be generated (&#8221;JavaAdder.tlb&#8221;). Since no
+CLSID is given, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will generate one; if we call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+again on the same server, the existing CLSID will be used.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>javareg /register
+/<font color="#0000ff">class</font>:Adder /progid:JavaAdder.Adder.1
+/typelib:JavaAdder.tlb</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Javareg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also registers the new server in the Windows Registry. At this point, you must
+remember to copy your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file into the Windows\Java\trustlib directory. For security reasons, related
+mostly to the use of COM services by applets, your COM server will be activated
+only if it is installed in the trustlib directory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+now have a new Automation server installed on your system. To test it, you need
+an Automation controller, and &#8220;the&#8221; Automation Controller is <A NAME="Index3116"></A>Visual
+Basic (VB). Below, you can see a few lines of VB code. On the VB form, I put a
+text box to input the value of the addend, a label to show the result, and two
+push buttons to invoke the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sum(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clear(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. At the beginning, an object variable named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is declared. In the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Form_Load</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subroutine, executed when the form is first displayed, a new instance of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automation server is instantiated and the text fields on the form are
+initialized. When the user presses the &#8220;Sum&#8221; or &#8220;Clear&#8221;
+buttons, appropriate methods in the server are invoked.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Dim Adder As Object
+
+Private Sub Form_Load()
+    Set Adder = CreateObject("JavaAdder.Adder.1")
+    Addend.Text = Adder.getAddend
+    Result.Caption = Adder.getResult
+End Sub
+
+Private Sub SumBtn_Click()
+    Adder.setAddend (Addend.Text)
+    Adder.Sum
+    Result.Caption = Adder.getResult
+End Sub
+
+Private Sub ClearBtn_Click()
+    Adder.Clear
+    Addend.Text = Adder.getAddend
+    Result.Caption = Adder.getResult
+End Sub </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that this code has no knowledge that the server was implemented in Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run this program and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CreateObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function is called, the Windows Registry is searched for the specified ProgID.
+Among the information related to the ProgID is the name of the Java class file,
+so in response the Java Virtual Machine is started, and the Java object
+instantiated inside the JVM. From then on, the JVM takes care of the
+interaction between the client and server code.
+</FONT><a name="_Toc408018838"></a><P></DIV>
+<A NAME="Heading614"></A><H3 ALIGN=LEFT>
+Developing
+COM clients in Java
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+let&#8217;s jump to the other side and develop a COM client in Java. This
+program will call services in a COM server that&#8217;s installed on your
+system. The example is a client for the server we implemented in the previous
+example. While the code will look familiar to a Java programmer, what happens
+behind the scenes is quite unusual. This example uses a server that happens to
+be written in Java but applies to any ActiveX Control, ActiveX Automation
+server, or ActiveX component installed in your system for which you have a type
+library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool is applied to the server&#8217;s type library. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a number of options and switches, but in its basic form it reads a type
+library and generates Java source files, which it stores in your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windows/Java/trustlib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directory. In the example line below, it is applied to the type library that
+was generated for out COM Automation server.
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jactivex
+/javatlb JavaAdder.tlb
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If,
+after 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has finished, you take a look at your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windows/Java/trustlib</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directory, you&#8217;ll find a new subdirectory called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>javaadder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains the source files for a new package. This is the Java equivalent
+of the type library. These files use compiler directives specific to the
+Microsoft compiler: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>@com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directives. The reason 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+generated more than one file is that COM uses more than one entity to describe
+a COM server (and also because I did not fine-tune the use of MIDL files and
+the Java/COM tools).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+file named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the equivalent of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>coclass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directive in a MIDL file: it&#8217;s the declaration of a COM class. The other
+files are the Java equivalent of the COM interfaces exposed by the server.
+These interfaces, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adder_DispatchDefault.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+are dispatch interfaces, part of the mechanism of interaction between an
+Automation controller and an Automation server. The Java/COM integration
+feature also supports the implementation and use of dual interfaces. IDispatch
+and dual interfaces are beyond the scope of this appendix.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Below,
+you can see the client code. The first line just imports the package generated
+by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jactivex</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then an instance of the COM Automation server is created and used, as if it was
+an ordinary Java class. Notice the typecast on the line where the COM object is
+instantiated. This is consistent with the COM object model. In COM, the
+programmer never has a reference to the whole object; instead, the programmer
+can only have references to one or more of the interfaces implemented in the
+class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Instantiating
+a Java object of the Adder class tells COM to activate the server and to create
+an instance of this COM object. But then we must specify which interface we
+want to use, choosing among the ones implemented by the server. This is exactly
+what the typecast does. The interface used here is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>default
+dispatch interface
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the standard interface that an Automation controller uses to communicate with
+an Automation server (for details, see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Inside
+COM
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+ibid.). Notice how simple it is to activate the server and select a COM
+interface:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">import</font> javaadder.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> JavaClient {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String [] args) {
+    Adder_DispatchDefault iAdder =
+         (Adder_DispatchDefault) <font color="#0000ff">new</font> Adder();
+    iAdder.setAddend(3);
+    iAdder.sum();
+    iAdder.sum();
+    iAdder.sum();
+    System.out.println(iAdder.getResult());
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can compile and run the code.
+</FONT><P></DIV>
+<A NAME="Heading615"></A><H4 ALIGN=LEFT>
+The
+com.ms.com package
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index3117"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+package defines a number of classes for COM development. It supports the use of
+GUIDs &#8211; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Variant</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SafeArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Automation types &#8211; interfacing with ActiveX Controls at a deeper level
+and handling COM exceptions.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">I
+cannot cover all of these topics here, but I want to point out something about
+COM exceptions. By convention, virtually all COM functions return an HRESULT
+value that tells you if the function invocation succeeded or not and why. But
+if you look at the Java method signature in our server and client code, there
+no HRESULT. Instead, we use the function return value to get data back from
+some functions. The virtual machine is translating Java-style function calls
+into COM-style function calls, even for the return parameter. But what happens
+inside the virtual machine if one of the functions you call in the server fails
+at the COM level? In this case, the JVM sees that the HRESULT value indicates a
+failure and generates a native Java exception of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.ms.com.ComFailException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In this way, you can handle COM errors using Java exception handling instead of
+checking function return values.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+learn more about the classes in this package, please refer to the Microsoft
+documentation.
+</FONT><a name="_Toc408018839"></a><P></DIV>
+<A NAME="Heading616"></A><H3 ALIGN=LEFT>
+ActiveX/Beans
+integration
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+interesting result of Java/COM integration is the <A NAME="Index3118"></A>ActiveX/Beans
+integration, by which a Java Bean can be hosted by an ActiveX container such as
+VB or any Microsoft Office product, and an ActiveX Control can be hosted by a
+Beans container such as Sun&#8217;s BeanBox. The Microsoft JVM takes care of
+the details. An ActiveX Control is just a COM server exposing predefined,
+required interfaces. A Bean is just a Java class that is compliant with a
+specific programming style. At the time this was written, however, the
+integration was not perfect. For example, the virtual machine is not able to
+map the JavaBeans event model to the COM event model. If you want to handle
+events from a <A NAME="Index3119"></A>Bean
+inside an ActiveX container, the Bean must intercept system events such as
+mouse actions via low-level techniques, not the standard JavaBeans delegation
+event model.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Apart
+from this, the ActiveX/Beans integration is extremely interesting. The concept
+and tools are exactly the same as discussed above, so please consult
+Microsoft&#8217;s documentation for more details.
+</FONT><a name="_Toc408018840"></a><P></DIV>
+<A NAME="Heading617"></A><H3 ALIGN=LEFT>
+A
+note about native methods and applets
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Native
+methods face the security issue. When your Java code calls a native method, you
+pass control outside of the virtual machine &#8220;sandbox.&#8221; The native
+method has complete access to the operating system. Of course, this is exactly
+what you want if you write native methods, but it is not acceptable for
+applets, at least not implicitly. You don&#8217;t want an applet, downloaded
+from a remote Internet server, to be free to play with the file system and
+other critical areas of your machine unless you allow it to do so. To prevent
+this situation with J/Direct, RNI, and COM integration, only trusted Java code
+has permission to make native method calls. Different conditions must be met
+depending on the feature the applet is trying to use. For example, an applet
+that uses J/Direct must be digitally signed to indicate full trust. At the time
+of this writing, not all of these security mechanisms are implemented (in the
+Microsoft SDK for Java, beta 2), so keep an eye on the documentation as new
+versions become available.
+</FONT><a name="_Toc408018841"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0194.html">Prev</a> | <a href="tij0196.html">Next</a>
+</div>
+</body></html>
+

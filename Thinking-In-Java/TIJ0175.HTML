@@ -1,0 +1,224 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0174.html">Prev</a> | <a href="tij0176.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+observer pattern
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2935"></A><A NAME="Index2936"></A>observer
+pattern solves a fairly common problem: What if a group of objects needs to
+update themselves when some object changes state? This can be seen in the
+&#8220;model-view&#8221; aspect of Smalltalk&#8217;s MVC
+(model-view-controller), or the almost-equivalent &#8220;Document-View
+Architecture.&#8221; Suppose that you have some data (the
+&#8220;document&#8221;) and more than one view, say a plot and a textual view.
+When you change the data, the two views must know to update themselves, and
+that&#8217;s what the observer facilitates. It&#8217;s a common enough problem
+that its solution has been made a part of the standard 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two types of objects used to implement the observer pattern in Java. The <A NAME="Index2937"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class keeps track of everybody who wants to be informed when a change happens,
+whether the &#8220;state&#8221; has changed or not. When someone says
+&#8220;OK, everybody should check and potentially update themselves,&#8221; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class performs this task by calling the <A NAME="Index2938"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for each one on the list. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is part of the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are actually two &#8220;things that change&#8221; in the observer pattern: the
+quantity of observing objects and the way an update occurs. That is, the
+observer pattern allows you to modify both of these without affecting the
+surrounding code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example is similar to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ColorBoxes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example from Chapter 14. Boxes are placed in a grid on the screen and each one
+is initialized to a random color. In addition, each box 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the <A NAME="Index2939"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface and is registered with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. When you click on a box, all of the other boxes are notified that a
+change has been made because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object automatically calls each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Inside this method, the box checks to see if it&#8217;s adjacent to the
+one that was clicked, and if so it changes its color to match the clicked box.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BoxObserver.java</font>
+<font color="#009900">// Demonstration of Observer pattern using</font>
+<font color="#009900">// Java's built-in observer classes.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#009900">// You must inherit a new type of Observable:</font>
+<font color="#0000ff">class</font> BoxObservable <font color="#0000ff">extends</font> Observable {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> notifyObservers(Object b) {
+    <font color="#009900">// Otherwise it won't propagate changes:</font>
+    setChanged();
+    <font color="#0000ff">super</font>.notifyObservers(b);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BoxObserver <font color="#0000ff">extends</font> Frame {
+  Observable notifier = <font color="#0000ff">new</font> BoxObservable();
+  <font color="#0000ff">public</font> BoxObserver(<font color="#0000ff">int</font> grid) {
+    setTitle("Demonstrates Observer pattern");
+    setLayout(<font color="#0000ff">new</font> GridLayout(grid, grid));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> x = 0; x &lt; grid; x++)
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> y = 0; y &lt; grid; y++)
+        add(<font color="#0000ff">new</font> OCBox(x, y, notifier));
+  }   
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> grid = 8;
+    <font color="#0000ff">if</font>(args.length &gt; 0)
+      grid = Integer.parseInt(args[0]);
+    Frame f = <font color="#0000ff">new</font> BoxObserver(grid);
+    f.setSize(500, 400);
+    f.setVisible(<font color="#0000ff">true</font>);
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+  }
+}
+
+<font color="#0000ff">class</font> OCBox <font color="#0000ff">extends</font> Canvas <font color="#0000ff">implements</font> Observer {
+  Observable notifier;
+  <font color="#0000ff">int</font> x, y; <font color="#009900">// Locations in grid</font>
+  Color cColor = newColor();
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color[] colors = { 
+    Color.black, Color.blue, Color.cyan, 
+    Color.darkGray, Color.gray, Color.green,
+    Color.lightGray, Color.magenta, 
+    Color.orange, Color.pink, Color.red, 
+    Color.white, Color.yellow 
+  };
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color newColor() {
+    <font color="#0000ff">return</font> colors[
+      (<font color="#0000ff">int</font>)(Math.random() * colors.length)
+    ];
+  }
+  OCBox(<font color="#0000ff">int</font> x, <font color="#0000ff">int</font> y, Observable notifier) {
+    <font color="#0000ff">this</font>.x = x;
+    <font color="#0000ff">this</font>.y = y;
+    notifier.addObserver(<font color="#0000ff">this</font>);
+    <font color="#0000ff">this</font>.notifier = notifier;
+    addMouseListener(<font color="#0000ff">new</font> ML());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(cColor);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+  }
+  <font color="#0000ff">class</font> ML <font color="#0000ff">extends</font> MouseAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mousePressed(MouseEvent e) {
+      notifier.notifyObservers(OCBox.<font color="#0000ff">this</font>);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> update(Observable o, Object arg) {
+    OCBox clicked = (OCBox)arg;
+    <font color="#0000ff">if</font>(nextTo(clicked)) {
+      cColor = clicked.cColor;
+      repaint();
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">final</font> <font color="#0000ff">boolean</font> nextTo(OCBox b) {
+    <font color="#0000ff">return</font> Math.abs(x - b.x) &lt;= 1 &amp;&amp; 
+           Math.abs(y - b.y) &lt;= 1;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you first look at the online documentation for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s a bit confusing because it appears that you can use an ordinary 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to manage the updates. But this doesn&#8217;t work; try it &#8211; inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxObserver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+create an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object instead of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxObservable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and see what happens: nothing. To get an effect, you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and somewhere in your derived-class code call <A NAME="Index2940"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setChanged(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the method that sets the &#8220;changed&#8221; flag, which means that
+when you call <A NAME="Index2941"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+all of the observers will, in fact, get notified. In the example above 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setChanged(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simply called within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you could use any criterion you want to decide when to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setChanged(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxObserver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifier</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and every time an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OCBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created, it is tied to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifier</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OCBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whenever you click the mouse the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called, passing the clicked object in as an argument so that all the
+boxes receiving the message (in their 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method)
+know who was clicked and can decide whether to change themselves or not. Using
+a combination of code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can work out some fairly complex schemes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+might appear that the way the observers are notified must be frozen at compile
+time in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyObservers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. However, if you look more closely at the code above you&#8217;ll see
+that the only place in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxObserver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OCBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where you're aware that you&#8217;re working with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxObservable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is at the point of creation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+&#8211; from then on everything uses the basic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. This means that you could inherit other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Observable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes and swap them at run-time if you want to change notification behavior
+then.
+</FONT><a name="_Toc408018798"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0174.html">Prev</a> | <a href="tij0176.html">Next</a>
+</div>
+</body></html>
+

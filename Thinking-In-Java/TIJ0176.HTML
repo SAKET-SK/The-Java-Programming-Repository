@@ -1,0 +1,225 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0175.html">Prev</a> | <a href="tij0177.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Simulating
+the trash recycler
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+nature of this problem is that the trash is thrown unclassified into a single
+bin, so the specific type information is lost. But later, the specific type
+information must be recovered to properly sort the trash. In the initial
+solution, RTTI (described in Chapter 11) is used.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is not a trivial design because it has an added constraint. That&#8217;s what
+makes it interesting &#8211; it&#8217;s more like the messy problems
+you&#8217;re likely to encounter in your work. The extra constraint is that the
+trash arrives at the trash recycling plant all mixed together. The program must
+model the sorting of that trash. This is where RTTI comes in: you have a bunch
+of anonymous pieces of trash, and the program figures out exactly what type
+they are.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RecycleA.java </font>
+<font color="#009900">// Recycling with RTTI</font>
+<font color="#0000ff">package</font> c16.recyclea;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Trash {
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> weight;
+  Trash(<font color="#0000ff">double</font> wt) { weight = wt; }
+  <font color="#0000ff">abstract</font> <font color="#0000ff">double</font> value();
+  <font color="#0000ff">double</font> weight() { <font color="#0000ff">return</font> weight; }
+  <font color="#009900">// Sums the value of Trash in a bin:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> sumValue(Vector bin) {
+    Enumeration e = bin.elements();
+    <font color="#0000ff">double</font> val = 0.0f;
+    <font color="#0000ff">while</font>(e.hasMoreElements()) {
+      <font color="#009900">// One kind of RTTI:</font>
+      <font color="#009900">// A dynamically-checked cast</font>
+      Trash t = (Trash)e.nextElement();
+      <font color="#009900">// Polymorphism in action:</font>
+      val += t.weight() * t.value();
+      System.out.println(
+        "weight of " +
+        <font color="#009900">// Using RTTI to get type</font>
+        <font color="#009900">// information about the class:</font>
+        t.getClass().getName() +
+        " = " + t.weight());
+    }
+    System.out.println("Total value = " + val);
+  }
+}
+
+<font color="#0000ff">class</font> Aluminum <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">static</font> <font color="#0000ff">double</font> val  = 1.67f;
+  Aluminum(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newval) {
+    val = newval;
+  }
+}
+
+<font color="#0000ff">class</font> Paper <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 0.10f;
+  Paper(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newval) {
+    val = newval;
+  }
+}
+
+<font color="#0000ff">class</font> Glass <font color="#0000ff">extends</font> Trash {
+  <font color="#0000ff">static</font> <font color="#0000ff">double</font> val = 0.23f;
+  Glass(<font color="#0000ff">double</font> wt) { <font color="#0000ff">super</font>(wt); }
+  <font color="#0000ff">double</font> value() { <font color="#0000ff">return</font> val; }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> value(<font color="#0000ff">double</font> newval) {
+    val = newval;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RecycleA {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector bin = <font color="#0000ff">new</font> Vector();
+    <font color="#009900">// Fill up the Trash bin:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 30; i++)
+      <font color="#0000ff">switch</font>((<font color="#0000ff">int</font>)(Math.random() * 3)) {
+        <font color="#0000ff">case</font> 0 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Aluminum(Math.random() * 100));
+          <font color="#0000ff">break</font>;
+        <font color="#0000ff">case</font> 1 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Paper(Math.random() * 100));
+          <font color="#0000ff">break</font>;
+        <font color="#0000ff">case</font> 2 :
+          bin.addElement(<font color="#0000ff">new</font>
+            Glass(Math.random() * 100));
+      }
+    Vector 
+      glassBin = <font color="#0000ff">new</font> Vector(),
+      paperBin = <font color="#0000ff">new</font> Vector(),
+      alBin = <font color="#0000ff">new</font> Vector();
+    Enumeration sorter = bin.elements();
+    <font color="#009900">// Sort the Trash:</font>
+    <font color="#0000ff">while</font>(sorter.hasMoreElements()) {
+      Object t = sorter.nextElement();
+      <font color="#009900">// RTTI to show class membership:</font>
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Aluminum)
+        alBin.addElement(t);
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Paper)
+        paperBin.addElement(t);
+      <font color="#0000ff">if</font>(t <font color="#0000ff">instanceof</font> Glass)
+        glassBin.addElement(t);
+    }
+    Trash.sumValue(alBin);
+    Trash.sumValue(paperBin);
+    Trash.sumValue(glassBin);
+    Trash.sumValue(bin);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><a name="_Toc305593314"></a><a name="_Toc305628786"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first thing you&#8217;ll notice is the <A NAME="Index2942"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">package
+c16.recyclea;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+means that in the source code listings available for the book, this file will
+be placed in the subdirectory 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>recyclea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that branches off from the subdirectory 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c16</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(for Chapter 16). The unpacking tool in Chapter 17 takes care of placing it
+into the correct subdirectory. The reason for doing this is that this chapter
+rewrites this particular example a number of times and by putting each version
+in its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the class names will not clash.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Several
+<A NAME="Index2943"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created to hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles. Of course, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">actually
+hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+so they&#8217;ll hold anything at all. The reason they hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(or
+something derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is only because you&#8217;ve been careful to not put in anything except 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you do put something &#8220;wrong&#8221; into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you won&#8217;t get any compile-time warnings or errors &#8211; you&#8217;ll
+find out only via an exception at run-time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles are added, they lose their specific identities and become simply 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles (they are <A NAME="Index2944"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>upcast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+However, because of polymorphism <A NAME="Index2945"></A>the
+proper behavior still occurs when the dynamically-bound methods<A NAME="Index2946"></A>
+are called through the <A NAME="Index2947"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sorter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+once the resulting <A NAME="Index2948"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been cast back to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sumValue(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also uses an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+perform operations on every object in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+looks silly to upcast the types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trash</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a collection holding base type handles, and then turn around and downcast.
+Why not just put the trash into the appropriate receptacle in the first place?
+(Indeed, this is the whole enigma of recycling). In this program it would be
+easy to repair, but sometimes a system&#8217;s structure and flexibility can
+benefit greatly from downcasting.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+program satisfies the design requirements: it works. This might be fine as long
+as it&#8217;s a one-shot solution. However, a useful program tends to evolve
+over time, so you must ask, &#8220;What if the situation changes?&#8221; For
+example, cardboard is now a valuable recyclable commodity, so how will that be
+integrated into the system (especially if the program is large and
+complicated). Since the above <A NAME="Index2949"></A>type-check
+coding in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement could be scattered throughout the program, you must go find all that
+code every time a new type is added, and if you miss one the compiler
+won&#8217;t give you any help by pointing out an error.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+key to the <A NAME="Index2950"></A>misuse
+of RTTI here is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>every
+type is tested
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you&#8217;re looking for only a subset of types because that subset needs
+special treatment, that&#8217;s probably fine. But if you&#8217;re hunting for
+every type inside a switch statement, then you&#8217;re probably missing an
+important point, and definitely making your code less maintainable. In the next
+section we&#8217;ll look at how this program evolved over several stages to
+become much more flexible. This should prove a valuable example in program
+design.
+</FONT><a name="_Toc375545414"></a><a name="_Toc408018799"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0175.html">Prev</a> | <a href="tij0177.html">Next</a>
+</div>
+</body></html>
+

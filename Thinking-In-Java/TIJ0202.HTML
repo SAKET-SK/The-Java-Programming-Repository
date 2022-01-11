@@ -1,0 +1,119 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0201.html">Prev</a> | <a href="tij0203.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Locating
+the bottleneck
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Three
+approaches to locating the performance-critical part of a program are:
+</FONT><a name="_Toc408018852"></a><P></DIV>
+<A NAME="Heading637"></A><H3 ALIGN=LEFT>
+1.
+Install your own instrumentation
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8220;Profile&#8221;
+code by inserting explicit timing: 
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">long</font> start = System.currentTimeMillis();
+   <font color="#009900">// Operation to be timed goes here</font>
+<font color="#0000ff">long</font> time = System.currentTimeMillis() - start; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Have
+an infrequently-used method print cumulative times out to the console window
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out.println(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Since the compiler will ignore it when false, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+final boolean
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+switch can turn the timing on and off so the code can efficiently be left in
+place in released code, ready for emergency use at any time. Even when more
+sophisticated profiling is available, this is a convenient way to time a
+specific task or operation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.currentTimeMillis(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns time in 1/1000ths of a second. However, some systems with time
+resolution less than a millisecond (such as a Windows PC) need to repeat an
+operation 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+times and divide the total time by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get accurate estimates. 
+</FONT><a name="_Toc408018853"></a><P></DIV>
+<A NAME="Heading638"></A><H3 ALIGN=LEFT>
+2.
+JDK profiling [2]
+<P><A NAME="Index3137"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+JDK comes with a built-in profiler that keeps track of the time spent in each
+routine and writes the information to a file. Unfortunately, the JDK profilers
+have uneven performance. JDK 1.1.1 works, but subsequent releases have had
+various instabilities.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+run the profiler, use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-prof
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">option
+when invoking the unoptimized versions of the Java interpreter, for example: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java_g
+-prof myClass
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Or
+with an applet: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java_g
+-prof sun.applet.AppletViewer applet.html
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+profiler output is not particularly easy to decipher. In fact, in JDK 1.0 it
+truncates the method names to 30 characters, so it might not be possible to
+distinguish between some methods. However, if your platform does support the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-prof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+option, either Vladimir Bulatov&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>HyperProf
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">[3]
+or Greg White&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>ProfileViewer</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+[4] will help interpret the results.
+</FONT><a name="_Toc408018854"></a><P></DIV>
+<A NAME="Heading639"></A><H3 ALIGN=LEFT>
+3.
+Special tools
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+best way to keep up with the exploding field of performance optimization tools
+is through a Web site such as Jonathan Hardwick&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Tools
+for Optimizing
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Java
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">[5]
+at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://www.cs.cmu.edu/~jch/java/tools.html</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018855"></a><P></DIV>
+<A NAME="Heading640"></A><H3 ALIGN=LEFT>
+Tips
+for measuring performance
+</H3>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+profiling uses clock time, make every effort to remove other processes during
+the measurement.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Always
+time the code before and after making changes to verify that, at least on the
+test platform, your changes improved the program. (Jon Bentley mentioned that
+some of his most logical changes actually slowed the program down.)
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Try
+to make each timing test under identical conditions. 
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+possible, contrive a test that doesn&#8217;t rely on any user input to avoid
+variations in user response that can cause the results to fluctuate. 
+</FONT><a name="_Toc408018856"></a></UL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0201.html">Prev</a> | <a href="tij0203.html">Next</a>
+</div>
+</body></html>
+
