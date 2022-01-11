@@ -1,0 +1,391 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0121.html">Prev</a> | <a href="tij0123.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Reflection:
+run-time 
+<P>class
+information
+<P><A NAME="Index1415"></A><A NAME="Index1416"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you don&#8217;t know the precise type of an object, RTTI will tell you.
+However, there&#8217;s a limitation: the type must be known at compile time in
+order for you to be able to detect it using RTTI and do something useful with
+the information. Put another way, the compiler must know about all the classes
+you&#8217;re working with for RTTI.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+doesn&#8217;t seem like that much of a limitation at first, but suppose
+you&#8217;re given a handle to an object that&#8217;s not in your program
+space. In fact, the class of the object isn&#8217;t even available to your
+program at compile time. For example, suppose you get a bunch of bytes from a
+disk file or from a network connection and you&#8217;re told that those bytes
+represent a class. Since the compiler can&#8217;t know about the class while
+it&#8217;s compiling the code, how can you possibly use such a class?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+a traditional programming environment this seems like a far-fetched scenario.
+But as we move into a larger programming world there are important cases in
+which this happens. The first is component-based programming in which you build
+projects using <A NAME="Index1417"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Rapid
+Application Development
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(RAD) in an application builder tool. This is a visual approach to creating a
+program (which you see on the screen as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>form</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+by moving icons that represent components onto the form. These components are
+then configured by setting some of their values at program time. This
+design-time configuration requires that any component be instantiable and that
+it expose some part of itself and allow its values to be read and set. In
+addition, components that handle GUI events must expose information about
+appropriate methods so that the RAD environment 
+<a name="may"></a>can
+assist the programmer in overriding these event-handling methods. Reflection
+provides the mechanism to detect the available methods and produce the method
+names. <A NAME="Index1418"></A>Java
+1.1 provides a structure for component-based programming through Java Beans
+(described in Chapter 13).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+compelling motivation for discovering class information at run-time is to
+provide the ability to create and execute objects on remote platforms across a
+network. This is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Remote
+Method Invocation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(RMI) and it allows a Java program (version 1.1 and higher) to have objects
+distributed across many machines. This distribution can happen for a number of
+reasons: perhaps you&#8217;re doing a computation-intensive task and you want
+to break it up and put pieces on machines that are idle in order to speed
+things up. In some situations you might want to place code that handles
+particular types of tasks (e.g. &#8220;Business Rules&#8221; in a multi-tier
+client/server architecture) on a particular machine so that machine becomes a
+common repository describing those actions and it can be easily changed to
+affect everyone in the system. (This is an interesting development since the
+machine exists solely to make software changes easy!) Along these lines,
+distributed computing also supports specialized hardware that might be good at
+a particular task &#8211; matrix inversions, for example &#8211; but
+inappropriate or too expensive for general purpose programming.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java 1.1<A NAME="Index1419"></A>,
+the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(described previously in this chapter) is extended to support the concept of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reflection</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and there&#8217;s an additional library, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.lang.reflect,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+classes <A NAME="Index1420"></A><A NAME="Index1421"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Field</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index1422"></A><A NAME="Index1423"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and <A NAME="Index1424"></A><A NAME="Index1425"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(each
+of which implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Member
+interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Objects of these types are created by the JVM at run-time to represent the
+corresponding member in the unknown class. You can then use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to create new objects, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>set(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods to read and modify the fields associated with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Field</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>invoke(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to call a method associated with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. In addition, you can call the convenience methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getFields(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMethods(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc., to return arrays of the objects representing the fields, methods, and
+constructors. (You can find out more by looking up the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in your online documentation.)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+the class information for anonymous objects can be completely determined at run
+time, and nothing need be known at compile time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+important to realize that there&#8217;s nothing magic about reflection. When
+you&#8217;re using reflection to interact with an object of an unknown type,
+the JVM will simply look at the object and see that it belongs to a particular
+class (just like ordinary RTTI) but then, before it can do anything else, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object must be loaded. Thus, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file for that particular type must still be available to the JVM, either on the
+local machine or across the network. So the true <A NAME="Index1426"></A><A NAME="Index1427"></A>difference
+between RTTI and reflection is that with RTTI, the compiler opens and examines
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file at compile time. Put another way, you can call all the methods of an
+object in the &#8220;normal&#8221; way. With reflection, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file is unavailable at compile time; it is opened and examined by the run-time
+environment.
+</FONT><a name="_Toc408018650"></a><P></DIV>
+<A NAME="Heading361"></A><H3 ALIGN=LEFT>
+A
+class method extractor
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+rarely need to use the reflection tools directly; they&#8217;re in the language
+to support the other Java features such as object serialization (described in
+Chapter 10), Java Beans, and RMI (described later in the book). However, there
+are times when it&#8217;s quite useful to be able to dynamically extract
+information about a class. One extremely useful tool is a class method
+extractor. As mentioned before, looking at a class definition source code or
+online documentation shows only the methods that are defined or overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>within
+that class definition
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But there could be dozens more available to you that have come from base
+classes. To locate these is both tedious and time consuming. Fortunately,
+reflection provides a way to write a simple tool that will automatically show
+you the entire interface. Here&#8217;s the way it works:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ShowMethods.java</font>
+<font color="#009900">// Using Java 1.1 reflection to show all the </font>
+<font color="#009900">// methods of a class, even if the methods are </font>
+<font color="#009900">// defined in the base class.</font>
+<font color="#0000ff">import</font> java.lang.reflect.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ShowMethods {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> String usage =
+    "usage: \n" +
+    "ShowMethods qualified.<font color="#0000ff">class</font>.name\n" +
+    "To show all methods in <font color="#0000ff">class</font> or: \n" +
+    "ShowMethods qualified.<font color="#0000ff">class</font>.name word\n" +
+    "To search <font color="#0000ff">for</font> methods involving 'word'";
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length &lt; 1) {
+      System.out.println(usage);
+      System.exit(0);
+    }
+    <font color="#0000ff">try</font> {
+      Class c = Class.forName(args[0]);
+      Method[] m = c.getMethods();
+      Constructor[] ctor = c.getConstructors();
+      <font color="#0000ff">if</font>(args.length == 1) {
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; m.length; i++)
+          System.out.println(m[i].toString());
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; ctor.length; i++)
+          System.out.println(ctor[i].toString());
+      } 
+      <font color="#0000ff">else</font> {
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; m.length; i++)
+          <font color="#0000ff">if</font>(m[i].toString()
+             .indexOf(args[1])!= -1)
+            System.out.println(m[i].toString());
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; ctor.length; i++)
+          <font color="#0000ff">if</font>(ctor[i].toString()
+             .indexOf(args[1])!= -1)
+          System.out.println(ctor[i].toString());
+      }
+    } <font color="#0000ff">catch</font> (ClassNotFoundException e) {
+      System.out.println("No such <font color="#0000ff">class</font>: " + e);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods <A NAME="Index1428"></A><A NAME="Index1429"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMethods(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1430"></A><A NAME="Index1431"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+return an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+respectively. Each of these classes has further methods to dissect the names,
+arguments, and return values of the methods they represent. But you can also
+just use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as is done here, to produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the entire method signature. The rest of the code is just for extracting
+command line information, determining if a particular signature matches with
+your target string (using <A NAME="Index1432"></A><A NAME="Index1433"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and printing the results.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+shows reflection in action, since the result produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot be known at compile-time, and therefore all the method signature
+information is being extracted at run-time. If you investigate your online
+documentation on reflection, you&#8217;ll see that there is enough support to
+actually set up and make a method call on an object that&#8217;s totally
+unknown at compile-time. Again, this is something you&#8217;ll probably never
+need to do yourself &#8211; the support is there for Java and so a programming
+environment can manipulate Java Beans &#8211; but it&#8217;s interesting.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+interesting experiment is to run 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java
+ShowMethods ShowMethods
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This produces a listing that includes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+default constructor, even though you can see from the code that no constructor
+was defined. The constructor you see is the one that&#8217;s automatically
+synthesized by the compiler. If you then make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMethods</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class (that is, friendly), the synthesized default constructor no longer shows
+up in the output. The synthesized default constructor is automatically given
+the same access as the class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMethods</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is still a little tedious. For example, here&#8217;s a portion of the output
+produced by invoking 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java
+ShowMethods java.lang.String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  java.lang.String.startsWith(java.lang.String,<font color="#0000ff">int</font>)
+<font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  java.lang.String.startsWith(java.lang.String)
+<font color="#0000ff">public</font> <font color="#0000ff">boolean</font> </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">  java.lang.String.endsWith(java.lang.String) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+would be even nicer if the qualifiers like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.lang</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could be stripped off. The <A NAME="Index1434"></A><A NAME="Index1435"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class introduced in the previous chapter can help solve this problem:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ShowMethodsClean.java</font>
+<font color="#009900">// ShowMethods with the qualifiers stripped</font>
+<font color="#009900">// to make the results easier to read</font>
+<font color="#0000ff">import</font> java.lang.reflect.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ShowMethodsClean {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> String usage =
+    "usage: \n" +
+    "ShowMethodsClean qualified.<font color="#0000ff">class</font>.name\n" +
+    "To show all methods in <font color="#0000ff">class</font> or: \n" +
+    "ShowMethodsClean qualif.<font color="#0000ff">class</font>.name word\n" +
+    "To search <font color="#0000ff">for</font> methods involving 'word'";
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length &lt; 1) {
+      System.out.println(usage);
+      System.exit(0);
+    }
+    <font color="#0000ff">try</font> {
+      Class c = Class.forName(args[0]);
+      Method[] m = c.getMethods();
+      Constructor[] ctor = c.getConstructors();
+      <font color="#009900">// Convert to an array of cleaned Strings:</font>
+      String[] n = 
+        <font color="#0000ff">new</font> String[m.length + ctor.length];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; m.length; i++) {
+        String s = m[i].toString();
+        n[i] = StripQualifiers.strip(s);
+      }
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; ctor.length; i++) {
+        String s = ctor[i].toString();
+        n[i + m.length] = 
+          StripQualifiers.strip(s);
+      }
+      <font color="#0000ff">if</font>(args.length == 1)
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; n.length; i++)
+          System.out.println(n[i]);
+      <font color="#0000ff">else</font>
+        <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; n.length; i++)
+          <font color="#0000ff">if</font>(n[i].indexOf(args[1])!= -1)
+            System.out.println(n[i]);
+    } <font color="#0000ff">catch</font> (ClassNotFoundException e) {
+      System.out.println("No such <font color="#0000ff">class</font>: " + e);
+    }
+  }
+}
+
+<font color="#0000ff">class</font> StripQualifiers {
+  <font color="#0000ff">private</font> StreamTokenizer st;
+  <font color="#0000ff">public</font> StripQualifiers(String qualified) {
+      st = <font color="#0000ff">new</font> StreamTokenizer(
+        <font color="#0000ff">new</font> StringReader(qualified));
+      st.ordinaryChar(' '); <font color="#009900">// Keep the spaces</font>
+  }
+  <font color="#0000ff">public</font> String getNext() {
+    String s = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">if</font>(st.nextToken() !=
+            StreamTokenizer.TT_EOF) {
+        <font color="#0000ff">switch</font>(st.ttype) {
+          <font color="#0000ff">case</font> StreamTokenizer.TT_EOL:
+            s = <font color="#0000ff">null</font>;
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_NUMBER:
+            s = Double.toString(st.nval);
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_WORD:
+            s = <font color="#0000ff">new</font> String(st.sval);
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">default</font>: <font color="#009900">// single character in ttype</font>
+            s = String.valueOf((<font color="#0000ff">char</font>)st.ttype);
+        }
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println(e);
+    }
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String strip(String qualified) {
+    StripQualifiers sq = 
+      <font color="#0000ff">new</font> StripQualifiers(qualified);
+    String s = "", si;
+    <font color="#0000ff">while</font>((si = sq.getNext()) != <font color="#0000ff">null</font>) {
+      <font color="#0000ff">int</font> lastDot = si.lastIndexOf('.');
+      <font color="#0000ff">if</font>(lastDot != -1)
+        si = si.substring(lastDot + 1);
+      s += si;
+    }
+    <font color="#0000ff">return</font> s;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMethodsClean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite similar to the previous 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShowMethods</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+except that it takes the arrays of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and converts them into a single array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Each of these 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects is then passed through
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+StripQualifiers.Strip(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to remove all the method qualification. As you can see, this uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+manipulation to do its work.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+tool can be a real time-saver while you&#8217;re programming, when you
+can&#8217;t remember if a class has a particular method and you don&#8217;t
+want to go walking through the class hierarchy in the online documentation, or
+if you don&#8217;t know whether that class can do anything with, for example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Color</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Chapter
+17 contains a GUI version of this program so you can leave it running while
+you&#8217;re writing code, to allow quick lookups.
+</FONT><a name="_Toc408018651"></a><a name="_Toc375545411"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0121.html">Prev</a> | <a href="tij0123.html">Next</a>
+</div>
+</body></html>
+

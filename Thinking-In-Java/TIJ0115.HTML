@@ -1,0 +1,589 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0114.html">Prev</a> | <a href="tij0116.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Compression<P><A NAME="Index1273"></A><A NAME="Index1274"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index1275"></A>
+has also added some classes to support reading and writing streams in a
+compressed format. These are wrapped around existing IO classes to provide
+compression functionality.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+aspect of these Java 1.1 classes stands out: They are not derived from the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes, but instead are part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies. So you might be forced to mix the two types of streams. (Remember
+that you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStreamReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStreamWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to provide easy conversion between one type and another.)
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="126">
+      <COL width="211">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index1276"></A>
+Compression class
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Function</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1277"></A><A NAME="Index1278"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedInputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GetCheckSum(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces checksum for any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(not just decompression)
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1279"></A><A NAME="Index1280"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedOutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GetCheckSum(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces checksum for any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(not just compression)
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1281"></A><A NAME="Index1282"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DeflaterOutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Base
+class for compression classes
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1283"></A><A NAME="Index1284"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipOutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DeflaterOutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+compresses data into the Zip file format
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1285"></A><A NAME="Index1286"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIPOutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DeflaterOutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+compresses data into the GZIP file format
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1287"></A><A NAME="Index1288"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InflaterInputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Base
+class for decompression classes
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1289"></A><A NAME="Index1290"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipInputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DeflaterInputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+Decompresses data that has been stored in the Zip file format
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1291"></A><A NAME="Index1292"></A><TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIPInputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=211 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DeflaterInputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+decompresses data that has been stored in the GZIP file format
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+there are many compression algorithms, Zip and GZIP are possibly the most
+commonly used. Thus you can easily manipulate your compressed data with the
+many tools available for reading and writing these formats.
+</FONT><a name="_Toc408018635"></a><P></DIV>
+<A NAME="Heading340"></A><H3 ALIGN=LEFT>
+Simple
+compression with GZIP
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+GZIP interface is simple and thus is probably more appropriate when you have a
+single stream of data that you want to compress (rather than a collection of
+dissimilar pieces of data). Here&#8217;s an example that compresses a single
+file:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GZIPcompress.java</font>
+<font color="#009900">// Uses Java 1.1 GZIP compression to compress</font>
+<font color="#009900">// a file whose name is passed on the command</font>
+<font color="#009900">// line.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.zip.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> GZIPcompress {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      BufferedReader in =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> FileReader(args[0]));
+      BufferedOutputStream out =
+        <font color="#0000ff">new</font> BufferedOutputStream(
+          <font color="#0000ff">new</font> GZIPOutputStream(
+            <font color="#0000ff">new</font> FileOutputStream("test.gz")));
+      System.out.println("Writing file");
+      <font color="#0000ff">int</font> c;
+      <font color="#0000ff">while</font>((c = in.read()) != -1)
+        out.write(c);
+      in.close();
+      out.close();
+      System.out.println("Reading file");
+      BufferedReader in2 =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> InputStreamReader(
+            <font color="#0000ff">new</font> GZIPInputStream(
+              <font color="#0000ff">new</font> FileInputStream("test.gz"))));
+      String s;
+      <font color="#0000ff">while</font>((s = in2.readLine()) != <font color="#0000ff">null</font>)
+        System.out.println(s);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of the compression classes is straightforward &#8211; you simply wrap your
+output stream in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIPOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and your input stream in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIPInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All else is ordinary IO reading and writing. This is, however, a good example
+of when you&#8217;re forced to mix the old IO streams with the new: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes, whereas 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIPOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+constructor can accept only an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><a name="_Toc408018636"></a><P></DIV>
+<A NAME="Heading341"></A><H3 ALIGN=LEFT>
+Multi-file
+storage with Zip
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java 1.1<A NAME="Index1293"></A>
+library that supports the Zip format is much more extensive. With it you can
+easily store multiple files, and there&#8217;s even a separate class to make
+the process of reading a Zip file easy. The library uses the standard Zip
+format so that it works seamlessly with all the tools currently downloadable on
+the Internet. The following example has the same form as the previous example,
+but it handles as many command-line arguments as you want. In addition, it
+shows the use of the <A NAME="Index1294"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checksum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes to calculate and verify the checksum for the file. There are two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checksum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types: <A NAME="Index1295"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adler32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is faster) and <A NAME="Index1296"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CRC32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is slower but slightly more accurate).
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ZipCompress.java</font>
+<font color="#009900">// Uses Java 1.1 Zip compression to compress</font>
+<font color="#009900">// any number of files whose names are passed</font>
+<font color="#009900">// on the command line.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.util.zip.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ZipCompress {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      FileOutputStream f =
+        <font color="#0000ff">new</font> FileOutputStream("test.zip");
+      CheckedOutputStream csum =
+        <font color="#0000ff">new</font> CheckedOutputStream(
+          f, <font color="#0000ff">new</font> Adler32());
+      ZipOutputStream out =
+        <font color="#0000ff">new</font> ZipOutputStream(
+          <font color="#0000ff">new</font> BufferedOutputStream(csum));
+      out.setComment("A test of Java Zipping");
+      <font color="#009900">// Can't read the above comment, though</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; args.length; i++) {
+        System.out.println(
+          "Writing file " + args[i]);
+        BufferedReader in =
+          <font color="#0000ff">new</font> BufferedReader(
+            <font color="#0000ff">new</font> FileReader(args[i]));
+        out.putNextEntry(<font color="#0000ff">new</font> ZipEntry(args[i]));
+        <font color="#0000ff">int</font> c;
+        <font color="#0000ff">while</font>((c = in.read()) != -1)
+          out.write(c);
+        in.close();
+      }
+      out.close();
+      <font color="#009900">// Checksum valid only after the file</font>
+      <font color="#009900">// has been closed!</font>
+      System.out.println("Checksum: " +
+        csum.getChecksum().getValue());
+      <font color="#009900">// Now extract the files:</font>
+      System.out.println("Reading file");
+      FileInputStream fi =
+         <font color="#0000ff">new</font> FileInputStream("test.zip");
+      CheckedInputStream csumi =
+        <font color="#0000ff">new</font> CheckedInputStream(
+          fi, <font color="#0000ff">new</font> Adler32());
+      ZipInputStream in2 =
+        <font color="#0000ff">new</font> ZipInputStream(
+          <font color="#0000ff">new</font> BufferedInputStream(csumi));
+      ZipEntry ze;
+      System.out.println("Checksum: " +
+        csumi.getChecksum().getValue());
+      <font color="#0000ff">while</font>((ze = in2.getNextEntry()) != <font color="#0000ff">null</font>) {
+        System.out.println("Reading file " + ze);
+        <font color="#0000ff">int</font> x;
+        <font color="#0000ff">while</font>((x = in2.read()) != -1)
+          System.out.write(x);
+      }
+      in2.close();
+      <font color="#009900">// Alternative way to open and read</font>
+      <font color="#009900">// zip files:</font>
+      ZipFile zf = <font color="#0000ff">new</font> ZipFile("test.zip");
+      Enumeration e = zf.entries();
+      <font color="#0000ff">while</font>(e.hasMoreElements()) {
+        ZipEntry ze2 = (ZipEntry)e.nextElement();
+        System.out.println("File: " + ze2);
+        <font color="#009900">// ... and extract the data as before</font>
+      }
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+each file to add to the archive, you must call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>putNextEntry(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+pass it a <A NAME="Index1297"></A><A NAME="Index1298"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntry
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object contains an extensive interface that allows you to get and set all the
+data available on that particular entry in your Zip file: name, compressed and
+uncompressed sizes, date, CRC checksum, extra field data, comment, compression
+method, and whether it&#8217;s a directory entry. However, even though the Zip
+format has a way to set a password, this is not supported in Java&#8217;s Zip
+library. And although 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+support both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adler32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CRC32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+checksums, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class supports only an interface for CRC. This is a restriction of the
+underlying Zip format, but it might limit you from using the faster 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adler32</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+extract files, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getNextEntry(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that returns the next 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if there is one. As a more succinct alternative, you can read the file using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which has a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>entries(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+return an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntries</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+order to read the checksum you must somehow have access to the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checksum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Here, a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckedInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects is retained, but you could also just hold onto a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checksum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+baffling method in Zip streams is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setComment(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As shown above, you can set a comment when you&#8217;re writing a file, but
+there&#8217;s no way to recover the comment in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Comments appear to be supported fully on an entry-by-entry basis only via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ZipEntry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, you are not limited to files when using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GZIP</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Zip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+libraries &#8211; you can compress anything, including data to be sent through
+a network connection.
+</FONT><a name="_Toc408018637"></a><P></DIV>
+<A NAME="Heading342"></A><H3 ALIGN=LEFT>
+The
+Java archive (jar) utility
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Zip format is also used in the <A NAME="Index1299"></A><A NAME="Index1300"></A>Java
+1.1 JAR (Java ARchive) file format, which is a way to collect a group of files
+into a single compressed file, just like Zip. However, like everything else in
+Java, JAR files are cross-platform so you don&#8217;t need to worry about
+platform issues. You can also include audio and image files as well as class
+files. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JAR
+files are particularly helpful when you deal with the Internet. Before JAR
+files, your Web browser would have to make repeated requests of a Web server in
+order to download all of the files that make up an applet. In addition, each of
+these files was uncompressed. By combining all of the files for a particular
+applet into a single JAR file, only one server request is necessary and the
+transfer is faster because of compression. And each entry in a JAR file can be
+digitally signed for security (refer to the Java documentation for details).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+JAR file consists of a single file containing a collection of zipped files
+along with a &#8220;<A NAME="Index1301"></A>manifest&#8221;
+that describes them. (You can create your own manifest file; otherwise the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">program
+will do it for you.) You can find out more about JAR manifests in the online
+documentation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+utility that comes with Sun&#8217;s JDK automatically compresses the files of
+your choice. You invoke it on the command line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+[options] destination [manifest] inputfile(s)
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+options are simply a collection of letters (no hyphen or any other indicator is
+necessary). These are:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="36">
+      <COL width="301">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Creates
+a new or empty archive. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Lists
+the table of contents. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Extracts
+all files
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
+file
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Extracts
+the named file 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Says:
+&#8220;I&#8217;m going to give you the name of the file.&#8221; If you
+don&#8217;t use this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">assumes
+that its input will come from standard input, or, if it is creating a file, its
+output will go to standard output.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>m</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Says
+that the first argument will be the name of the user-created manifest file
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Generates
+verbose output describing what 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is doing
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>O</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Only
+store the files; doesn&#8217;t compress the files (use to create a JAR file
+that you can put in your classpath)
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=36 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>M</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=301 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Don&#8217;t
+automatically create a manifest file
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+a subdirectory is included in the files to be put into the JAR file, that
+subdirectory is automatically added, including all of its subdirectories, etc.
+Path information is also preserved.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+are some typical ways to invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+cf myJarFile.jar *.class
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+creates a JAR file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myJarFile.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains all of the class files in the current directory, along with an
+automatically-generated manifest file.
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+cmf myJarFile.jar myManifestFile.mf *.class
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+the previous example, but adding a user-created manifest file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myManifestFile.mf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+tf myJarFile.jar
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+a table of contents of the files in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myJarFile.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+tvf myJarFile.jar
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Adds
+the &#8220;verbose&#8221; flag to give more detailed information about the
+files in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myJarFile.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+cvf myApp.jar audio classes image
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Assuming
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>audio</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>classes,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>image</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are subdirectories, this combines all of the subdirectories into the file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myApp.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The &#8220;verbose&#8221; flag is also included to give extra feedback while the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program is working.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you create a JAR file using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>O</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+option, that file can be placed in your CLASSPATH:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">CLASSPATH="lib1.jar;lib2.jar;"</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Then
+Java can search 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lib1.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lib2.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for class files.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool isn&#8217;t as useful as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>zip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+utility. For example, you can&#8217;t add or update files to an existing JAR
+file; you can create JAR files only from scratch. Also, you can&#8217;t move
+files into a JAR file, erasing them as they are moved. However, a JAR file
+created on one platform will be transparently readable by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool on any other platform (a problem that sometimes plagues 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>zip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+utilities).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you will see in Chapter 13, JAR files are also used to package Java Beans.
+</FONT><a name="_Toc408018638"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0114.html">Prev</a> | <a href="tij0116.html">Next</a>
+</div>
+</body></html>
+

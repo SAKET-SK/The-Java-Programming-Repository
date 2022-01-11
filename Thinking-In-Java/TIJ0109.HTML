@@ -1,0 +1,411 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0108.html">Prev</a> | <a href="tij0110.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Adding
+attributes 
+<P>and
+useful interfaces
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of layered objects to dynamically and transparently add responsibilities to
+individual objects is referred to as the <A NAME="Index1029"></A><A NAME="Index1030"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>decorator</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pattern. (Patterns
+</FONT><A NAME="fnB47" HREF="#fn47">[47]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the subject of Chapter 16.) The decorator pattern specifies that all
+objects that wrap around your initial object have the same interface, to make
+the use of the decorators transparent &#8211; you send the same message to an
+object whether it&#8217;s been decorated or not. This is the reason for the
+existence of the &#8220;filter&#8221; classes in the Java IO library: the
+abstract &#8220;filter&#8221; class is the base class for all the decorators.
+(A decorator must have the same interface as the object it decorates, but the
+decorator can also extend the interface, which occurs in several of the
+&#8220;filter&#8221; classes).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Decorators
+are often used when subclassing requires a large number of subclasses to
+support every possible combination needed &#8211; so many that subclassing
+becomes impractical. The Java IO library requires many different combinations
+of features which is why the decorator pattern is a good approach. There is a
+drawback to the decorator pattern, however. Decorators give you much more
+flexibility while you&#8217;re writing a program (since you can easily mix and
+match attributes), but they add complexity to your code. The reason that the
+Java IO library is awkward to use is that you must create many classes &#8211;
+the &#8220;core&#8221; IO type plus all the decorators &#8211; in order to get
+the single IO object that you want. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+classes that provide the decorator interface to control a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; which don&#8217;t have very intuitive names. They are derived,
+respectively, from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and they are abstract classes, in theory to provide a common interface for all
+the different ways you want to talk to a stream. In fact, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+simply mimic their base classes, which is the key requirement of the decorator.
+</FONT><a name="_Toc375545387"></a><a name="_Toc408018614"></a><P></DIV>
+<A NAME="Heading308"></A><H3 ALIGN=LEFT>
+Reading
+from an InputStream 
+<P>with
+FilterInputStream
+</H3>
+<DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes accomplish two significantly different things. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to read different types of primitive data as well as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. (All the methods start with &#8220;read,&#8221; such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readByte(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readFloat(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc.) This, along with its companion 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+allows you to move primitive data from one place to another via a stream. These
+&#8220;places&#8221; are determined by the classes in Table 10-1. If
+you&#8217;re reading data in blocks and parsing it yourself, you won&#8217;t
+need 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but in most other cases you will want to use it to automatically format the
+data you read.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+remaining classes modify the way an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+behaves internally: whether it&#8217;s buffered or unbuffered, if it keeps
+track of the lines it&#8217;s reading (allowing you to ask for line numbers or
+set the line number), and whether you can push back a single character. The
+last two classes look a lot like support for building a compiler (that is, they
+were added to support the construction of the Java compiler), so you probably
+won&#8217;t use them in general programming. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+probably need to buffer your input almost every time, regardless of the IO
+device you&#8217;re connecting to, so it would have made more sense for the IO
+library to make a special case for unbuffered input rather than buffered input.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+10-3. Types of FilterInputStream
+</B></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="76">
+      <COL width="121">
+      <COL width="144">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Class</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Function</FONT><P></DIV>
+</TD>
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor
+Arguments
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">How
+to use it
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1031"></A><A NAME="Index1032"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Data-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Used
+in concert with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you can read primitives (int, char, long, etc.) from a stream in a portable
+fashion.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Contains
+a full interface to allow you to read primitive types.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index1033"></A><A NAME="Index1034"></A><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="76">
+      <COL width="121">
+      <COL width="144">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Buffered-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use
+this to prevent a physical read every time you want more data. You&#8217;re
+saying &#8220;Use a buffer.&#8221;
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+with optional buffer size.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+doesn&#8217;t provide an interface 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>per
+se
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+just a requirement that a buffer be used. Attach an interface object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1035"></A><A NAME="Index1036"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumber-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Keeps
+track of line numbers in the input stream; you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLineNumber(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setLineNumber(int)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+just adds line numbering, so you&#8217;ll probably attach an interface object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1037"></A><A NAME="Index1038"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pushback-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Has
+a one byte push-back buffer so that you can push back the last character read.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Generally
+used in the scanner for a compiler and probably included because the Java
+compiler needed it. You probably won&#8217;t use this.
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545388"></a><a name="_Toc408018615"></a></TABLE></DIV>
+<A NAME="Heading309"></A><H3 ALIGN=LEFT>
+Writing
+to an OutputStream 
+<P>with
+FilterOutputStream
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+complement to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which formats each of the primitive types and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects onto a stream in such a way that any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+on any machine, can read them. All the methods start with &#8220;write,&#8221;
+such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeByte(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeFloat(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to do true formatted output, for example, to the console, use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the endpoint that allows you to print all of the primitive data types
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects in a viewable format as opposed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+whose goal is to put them on a stream in a way that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can portably reconstruct them. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+static object is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two important methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are overloaded to print out all the various types. The difference between 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that the latter adds a newline when it&#8217;s done.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a modifier and tells the stream to use buffering so you don&#8217;t get a
+physical write every time you write to the stream. You&#8217;ll probably always
+want to use this with files, and possibly console IO.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+10-4. Types of FilterOutputStream
+</B></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="85">
+      <COL width="121">
+      <COL width="121">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Class</FONT><P></DIV>
+</TH>
+<TH WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Function</FONT><P></DIV>
+</TH>
+<TH WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor
+Arguments 
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TH WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">How
+to use it
+</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1039"></A><A NAME="Index1040"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Data-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Used
+in concert with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can write primitives (int, char, long, etc.) to a stream in a portable
+fashion.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Contains
+full interface to allow you to write primitive types.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1041"></A><A NAME="Index1042"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+producing formatted output. While 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>storage</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of data, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>display</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+with optional boolean indicating that the buffer is flushed with every newline.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Should
+be the &#8220;final&#8221; wrapping for your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. You&#8217;ll probably use this a lot.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1043"></A><A NAME="Index1044"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Buffered-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use
+this to prevent a physical write every time you send a piece of data.
+You&#8217;re saying &#8220;Use a buffer.&#8221; You can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flush(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to flush the buffer.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+with optional buffer size.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+doesn&#8217;t provide an interface 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>per
+se
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+just a requirement that a buffer is used. Attach an interface object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545389"></a><a name="_Toc408018616"></a></TABLE></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn47" HREF="#fnB47">[47]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Design
+Patterns
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+Erich Gamma 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>et
+al.
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+Addison-Wesley 1995. Described later in this book.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0108.html">Prev</a> | <a href="tij0110.html">Next</a>
+</div>
+</body></html>
+

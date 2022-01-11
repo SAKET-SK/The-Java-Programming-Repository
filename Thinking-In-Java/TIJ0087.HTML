@@ -1,0 +1,453 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0086.html">Prev</a> | <a href="tij0088.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Arrays</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the necessary introduction to <A NAME="Index718"></A>arrays
+is in the last section of Chapter 4, which shows how you define and initialize
+an array. Holding objects is the focus of this chapter, and an array is just
+one way to hold objects. But there are a number of other ways to hold objects,
+so what makes an array special?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two issues that distinguish arrays from other types of collections: <A NAME="Index719"></A>efficiency
+and <A NAME="Index720"></A>type.
+The array is the most efficient way that Java provides to store and access a
+sequence of objects (actually, object handles). The array is a simple linear
+sequence, which makes element access fast, but you pay for this speed: when you
+create an array object, its size is fixed and cannot be changed for the
+lifetime of that array object. You might suggest creating an array of a
+particular size and then, if you run out of space, creating a new one and
+moving all the handles from the old one to the new one. This is the behavior of
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, which will be studied later in the chapter. However, because of the
+overhead of this size flexibility, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is measurably less efficient than an array.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index721"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+know the type of objects it holds, but it has a different drawback when
+compared with arrays in Java: the C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t do bounds checking, so you can run past the end. (It&#8217;s
+possible, however, to ask how big the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>at(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+perform bounds checking.) In Java, you get bounds checking regardless of
+whether you&#8217;re using an array or a collection &#8211; you&#8217;ll get a <A NAME="Index722"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if you exceed the bounds. As you&#8217;ll learn in Chapter 9, this type of
+exception indicates a programmer error and thus you don&#8217;t need to check
+for it in your code. As an aside, the reason the C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t check bounds with every access is speed &#8211; in Java you have
+the constant performance overhead of bounds checking all the time for both
+arrays and collections.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+other generic collection classes that will be studied in this chapter, <A NAME="Index723"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index724"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and <A NAME="Index725"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+all deal with objects as if they had no specific type. That is, they treat them
+as type <A NAME="Index726"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the root class of all classes in Java. This works fine from one standpoint: you
+need to build only one collection, and any Java object will go into that
+collection. (Except for primitives &#8211; these can be placed in collections
+as constants using the Java primitive wrapper classes, or as changeable values
+by wrapping in your own class.) This is the second place where an array is
+superior to the generic collections: when you create an array, you create it to
+hold a specific type. This means that you get compile-time type checking to
+prevent you from putting the wrong type in, or mistaking the type that
+you&#8217;re extracting. Of course, Java will prevent you from sending an
+inappropriate message to an object, either at compile-time or at run-time. So
+it&#8217;s not as if it&#8217;s riskier one way or the other, it&#8217;s just
+nicer if the compiler points it out to you, faster at run-time, and
+there&#8217;s less likelihood that the end user will get surprised by an
+exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+efficiency and type checking it&#8217;s always worth trying to use an array if
+you can. However, when you&#8217;re trying to solve a more general problem
+arrays can be too restrictive. After looking at arrays, the rest of this
+chapter will be devoted to the collection classes provided by Java.
+</FONT><a name="_Toc408018564"></a><a name="_Toc375545348"></a><P></DIV>
+<A NAME="Heading242"></A><H3 ALIGN=LEFT>
+Arrays
+are first-class objects
+<P><A NAME="Index727"></A><A NAME="Index728"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Regardless
+of what type of array you&#8217;re working with, the array identifier is
+actually a handle to a true object that&#8217;s created on the heap. The heap
+object can be created either implicitly, as part of the array initialization
+syntax, or explicitly with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expression. Part of the heap object (in fact, the only field or method you can
+access) is the read-only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member that tells you how many elements can be stored in that array object. <A NAME="Index729"></A><A NAME="Index730"></A>The
+&#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+syntax is the only other access that you have to the array object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example shows the various ways that an array can be initialized, and
+how the array handles can be assigned to different array objects. It also shows
+that <A NAME="Index731"></A>arrays
+of objects and <A NAME="Index732"></A>arrays
+of primitives are almost identical in their use. The only difference is that
+arrays of objects hold handles while arrays of primitives hold the primitive
+values directly. (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ArraySize.java</font>
+<font color="#009900">// Initialization &amp; re-assignment of arrays</font>
+<font color="#0000ff">package</font> c08;
+
+<font color="#0000ff">class</font> Weeble {} <font color="#009900">// A small mythical creature</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ArraySize {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Arrays of objects:</font>
+    Weeble[] a; <font color="#009900">// Null handle</font>
+    Weeble[] b = <font color="#0000ff">new</font> Weeble[5]; <font color="#009900">// Null handles</font>
+    Weeble[] c = <font color="#0000ff">new</font> Weeble[4];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; c.length; i++)
+      c[i] = <font color="#0000ff">new</font> Weeble();
+    Weeble[] d = {
+      <font color="#0000ff">new</font> Weeble(), <font color="#0000ff">new</font> Weeble(), <font color="#0000ff">new</font> Weeble()
+    };
+    <font color="#009900">// Compile error: variable a not initialized:</font>
+    <font color="#009900">//!System.out.println("a.length=" + a.length);</font>
+    System.out.println("b.length = " + b.length);
+    <font color="#009900">// The handles inside the array are </font>
+    <font color="#009900">// automatically initialized to null:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; b.length; i++)
+      System.out.println("b[" + i + "]=" + b[i]);
+    System.out.println("c.length = " + c.length);
+    System.out.println("d.length = " + d.length);
+    a = d;
+    System.out.println("a.length = " + a.length);
+    <font color="#009900">// Java 1.1 initialization syntax:</font>
+    a = <font color="#0000ff">new</font> Weeble[] {
+      <font color="#0000ff">new</font> Weeble(), <font color="#0000ff">new</font> Weeble()
+    };
+    System.out.println("a.length = " + a.length);
+
+    <font color="#009900">// Arrays of primitives:</font>
+    <font color="#0000ff">int</font>[] e; <font color="#009900">// Null handle</font>
+    <font color="#0000ff">int</font>[] f = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[5];
+    <font color="#0000ff">int</font>[] g = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[4];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; g.length; i++)
+      g[i] = i*i;
+    <font color="#0000ff">int</font>[] h = { 11, 47, 93 };
+    <font color="#009900">// Compile error: variable e not initialized:</font>
+    <font color="#009900">//!System.out.println("e.length=" + e.length);</font>
+    System.out.println("f.length = " + f.length);
+    <font color="#009900">// The primitives inside the array are</font>
+    <font color="#009900">// automatically initialized to zero:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; f.length; i++)
+      System.out.println("f[" + i + "]=" + f[i]);
+    System.out.println("g.length = " + g.length);
+    System.out.println("h.length = " + h.length);
+    e = h;
+    System.out.println("e.length = " + e.length);
+    <font color="#009900">// Java 1.1 initialization syntax:</font>
+    e = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[] { 1, 2 };
+    System.out.println("e.length = " + e.length);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the output from the program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>b.length = 5
+b[0]=<font color="#0000ff">null</font>
+b[1]=<font color="#0000ff">null</font>
+b[2]=<font color="#0000ff">null</font>
+b[3]=<font color="#0000ff">null</font>
+b[4]=<font color="#0000ff">null</font>
+c.length = 4
+d.length = 3
+a.length = 3
+a.length = 2
+f.length = 5
+f[0]=0
+f[1]=0
+f[2]=0
+f[3]=0
+f[4]=0
+g.length = 4
+h.length = 3
+e.length = 3
+e.length = 2 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is initially just a <A NAME="Index733"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle, and the compiler prevents you from doing anything with this handle
+until you&#8217;ve properly initialized it. The array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is initialized to point to an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Weeble</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles, but no actual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Weeble</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are ever placed in that array. However, you can still ask what the size
+of the array is, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is pointing to a legitimate object. This brings up a slight drawback: you
+can&#8217;t find out how many elements are actually 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>in</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the array, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tells you only how many elements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be placed in the array; that is, the size of the array object, not the number
+of elements it actually holds. However, when an array object is created its
+handles are automatically initialized to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can see whether a particular array slot has an object in it by checking
+to see whether it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Similarly, an array of primitives is automatically initialized to zero for
+numeric types, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+false
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Array
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows the creation of the array object followed by the assignment of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Weeble</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to all the slots in the array. Array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows the &#8220;aggregate initialization&#8221; syntax that causes the array
+object to be created (implicitly with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on the heap, just like for array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialized with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Weeble</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, all in one statement.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+expression
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">a
+= d;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">shows
+how you can take a handle that&#8217;s attached to one array object and assign
+it to another array object, just as you can do with any other type of object
+handle. Now both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are pointing to the same array object on the heap.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index734"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1 adds a new array initialization syntax, which could be thought of as a
+&#8220;dynamic aggregate initialization.&#8221; The Java 1.0<A NAME="Index735"></A>
+aggregate initialization used by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be used at the point of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+definition, but with the Java 1.1 syntax you can create and initialize an array
+object anywhere. For example, suppose 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hide(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a method that takes an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Weeble</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. You could call it by saying:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">hide(d);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">but
+in Java 1.1 you can also dynamically create the array you want to pass as the
+argument:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">hide(new
+Weeble[] { new Weeble(), new Weeble() });
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+new syntax provides a more convenient way to write code in some situations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second part of the above example shows that primitive arrays work just like
+object arrays 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>except</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that primitive arrays hold the primitive values directly.
+</FONT><a name="_Toc375545349"></a><P></DIV>
+<A NAME="Heading243"></A><H4 ALIGN=LEFT>
+Collections
+of primitives
+<P><A NAME="Index736"></A><A NAME="Index737"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Collection
+classes can hold only handles to objects. An array, however, can be created to
+hold primitives directly, as well as handles to objects. It 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+possible to use the &#8220;wrapper&#8221; classes such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Double,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+etc. to place primitive values inside a collection, but as you&#8217;ll see
+later in this chapter in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WordCount.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example, the wrapper classes for primitives are only somewhat useful anyway.
+Whether you put primitives in arrays or wrap them in a class that&#8217;s
+placed in a collection is a question of efficiency. It&#8217;s much more
+efficient to create and access an array of primitives than a collection of
+wrapped primitives.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, if you&#8217;re using a primitive type and you need the flexibility of
+a collection that automatically expands when more space is needed, the array
+won&#8217;t work and you&#8217;re forced to use a collection of wrapped
+primitives. You might think that there should be a specialized type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each of the primitive data types, but Java doesn&#8217;t provide this for
+you. Some sort of templatizing mechanism might someday provide a better way for
+Java to handle this problem.
+</FONT><A NAME="fnB32" HREF="#fn32">[32]</A><a name="_Toc408018565"></a><P></DIV>
+<A NAME="Heading244"></A><H3 ALIGN=LEFT>
+Returning
+an array
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Suppose
+you&#8217;re writing a method and you don&#8217;t just want to return one
+thing, but a whole bunch of things. Languages like C and C++ make this
+difficult because you can&#8217;t just return an array, only a pointer to an
+array. This introduces problems because it becomes messy to control the
+lifetime of the array, which easily leads to memory leaks.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+takes a similar approach, but you just &#8220;return an array.&#8221; Actually,
+of course, you&#8217;re returning a handle to an array, but with Java you never
+worry about responsibility for that array &#8211; it will be around as long as
+you need it, and the garbage collector will clean it up when you&#8217;re done.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an example, consider returning an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: IceCream.java</font>
+<font color="#009900">// Returning arrays from methods</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> IceCream {
+  <font color="#0000ff">static</font> String[] flav = {
+    "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip",
+    "Mocha Almond Fudge", "Rum Raisin",
+    "Praline Cream", "Mud Pie" 
+  };
+  <font color="#0000ff">static</font> String[] flavorSet(<font color="#0000ff">int</font> n) {
+    <font color="#009900">// Force it to be positive &amp; within bounds:</font>
+    n = Math.abs(n) % (flav.length + 1);
+    String[] results = <font color="#0000ff">new</font> String[n];
+    <font color="#0000ff">int</font>[] picks = <font color="#0000ff">new</font> <font color="#0000ff">int</font>[n];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; picks.length; i++)
+      picks[i] = -1;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; picks.length; i++) {
+      retry:
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        <font color="#0000ff">int</font> t =
+          (<font color="#0000ff">int</font>)(Math.random() * flav.length);
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; i; j++)
+          <font color="#0000ff">if</font>(picks[j] == t) <font color="#0000ff">continue</font> retry;
+        picks[i] = t;
+        results[i] = flav[t];
+        <font color="#0000ff">break</font>;
+      }
+    }
+    <font color="#0000ff">return</font> results;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 20; i++) {
+      System.out.println(
+        "flavorSet(" + i + ") = ");
+      String[] fl = flavorSet(flav.length);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; fl.length; j++)
+        System.out.println("\t" + fl[j]);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flavorSet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>results</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The size of this array is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+determined by the argument you pass into the method. Then it proceeds to choose
+flavors randomly from the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flav</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and place them into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>results</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which it finally returns. Returning an array is just like returning any other
+object &#8211; it&#8217;s a handle. It&#8217;s not important that the array was
+created within 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flavorSet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or that the array was created anyplace else, for that matter. The garbage
+collector takes care of cleaning up the array when you&#8217;re done with it,
+and the array will persist for as long as you need it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an aside, notice that when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flavorSet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+chooses flavors randomly, it ensures that a random choice hasn&#8217;t been
+picked before. This is performed in a seemingly infinite 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop that keeps making random choices until it finds one that&#8217;s not
+already in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>picks</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array. (Of course, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+comparison could also have been performed to see if the random choice was
+already in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>results</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+comparisons are inefficient.) If it&#8217;s successful it adds the entry and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+out to go find the next one (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">gets
+incremented). But if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a number that&#8217;s already in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>picks</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then a labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to jump back two levels, which forces a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be selected. It&#8217;s particularly convincing to watch this happen with a
+debugger.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prints out 20 full sets of flavors, so you can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>flavorSet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+chooses the flavors in a random order each time. It&#8217;s easiest to see this
+if you redirect the output into a file. And while you&#8217;re looking at the
+file, remember, you&#8217;re not really hungry. (You just 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>want</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the ice cream, you don&#8217;t 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>need</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it.)
+</FONT><a name="_Toc375545350"></a><a name="_Toc408018566"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn32" HREF="#fnB32">[32]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This is one of the places where C++ is distinctly superior to Java, since C++
+supports 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>parameterized
+types
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>template</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+keyword.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0086.html">Prev</a> | <a href="tij0088.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,124 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0103.html">Prev</a> | <a href="tij0105.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exception
+matching
+<P><A NAME="Index975"></A><A NAME="Index976"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+an exception is thrown, the exception-handling system looks through the
+&#8220;nearest&#8221; handlers in the order they are written. When it finds a
+match, the exception is considered handled, and no further searching occurs. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Matching
+an exception doesn&#8217;t require a perfect match between the exception and
+its handler. A derived-class object will match a handler for the base class, as
+shown in <A NAME="Index977"></A><A NAME="Index978"></A>this
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Human.java</font>
+<font color="#009900">// Catching Exception Hierarchies</font>
+
+<font color="#0000ff">class</font> Annoyance <font color="#0000ff">extends</font> Exception {}
+<font color="#0000ff">class</font> Sneeze <font color="#0000ff">extends</font> Annoyance {}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Human {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Sneeze();
+    } <font color="#0000ff">catch</font>(Sneeze s) {
+      System.out.println("Caught Sneeze");
+    } <font color="#0000ff">catch</font>(Annoyance a) {
+      System.out.println("Caught Annoyance");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sneeze</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception will be caught by the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause that it matches, which is the first one, of course. However, if you
+remove the first catch clause:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">try</font> {
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Sneeze();
+    } <font color="#0000ff">catch</font>(Annoyance a) {
+      System.out.println("Caught Annoyance");
+    } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+remaining catch clause will still work because it&#8217;s catching the base
+class of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sneeze</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Put another way, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch(Annoyance
+e)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will catch a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Annoyance</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>or
+any class derived from it
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is useful because if you decide to add more exceptions to a method, if
+they&#8217;re all inherited from the same base class then the client
+programmer&#8217;s code will not need changing, assuming they catch the base
+class, at the very least.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you try to &#8220;mask&#8221; the derived-class exceptions by putting the
+base-class catch clause first, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">try</font> {
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Sneeze();
+    } <font color="#0000ff">catch</font>(Annoyance a) {
+      System.out.println("Caught Annoyance");
+    } <font color="#0000ff">catch</font>(Sneeze s) {
+      System.out.println("Caught Sneeze");
+    } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+compiler will give you an error message, since it sees that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sneeze</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+catch-clause can never be reached.
+</FONT><a name="_Toc312374128"></a><a name="_Toc375545378"></a><a name="_Toc408018606"></a><P></DIV>
+<A NAME="Heading300"></A><H3 ALIGN=LEFT>
+Exception
+guidelines
+<P><A NAME="Index979"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use
+exceptions to:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Fix
+the problem and call the method (which caused the exception) again.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Patch
+things up and continue without retrying the method.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Calculate
+some alternative result instead of what the method was supposed to produce.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Do
+whatever you can in the current context and rethrow the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>same</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception to a higher context.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Do
+whatever you can in the current context and throw a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>different</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception to a higher context.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Terminate
+the program.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Simplify.
+If your exception scheme makes things more complicated, then it is painful and
+annoying to use.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Make
+your library and program safer. This is a short-term investment (for debugging)
+and a long-term investment (for application robustness).
+</FONT><a name="_Toc375545379"></a><a name="_Toc408018607"></a></OL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0103.html">Prev</a> | <a href="tij0105.html">Next</a>
+</div>
+</body></html>
+

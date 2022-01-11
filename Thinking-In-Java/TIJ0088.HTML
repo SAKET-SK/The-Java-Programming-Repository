@@ -1,0 +1,406 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0087.html">Prev</a> | <a href="tij0089.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Collections</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+summarize what we&#8217;ve seen so far, your first, most efficient choice to
+hold a group of objects should be an array, and you&#8217;re forced into this
+choice if you want to hold a group of primitives. In the remainder of the
+chapter we&#8217;ll look at the more general case, when you don&#8217;t know at
+the time you&#8217;re writing the program how many objects you&#8217;re going
+to need, or if you need a more sophisticated way to store your objects. Java
+provides four types of <A NAME="Index738"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>collection
+classes
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to solve this problem: <A NAME="Index739"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index740"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index741"></A>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and <A NAME="Index742"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although compared to other languages that provide collections this is a fairly
+meager supply, you can nonetheless solve a surprising number of problems using
+these tools.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Among
+their other characteristics &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, implements a LIFO (last-in, first-out) sequence, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an <A NAME="Index743"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>associative
+array
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that lets you associate any object with any other object &#8211; the Java
+collection classes will automatically resize themselves. Thus, you can put in
+any number of objects and you don&#8217;t need to worry about how big to make
+the collection while you&#8217;re writing the program.
+</FONT><a name="_Ref348399494"></a><a name="_Toc375545351"></a><a name="_Toc408018567"></a><P></DIV>
+<A NAME="Heading246"></A><H3 ALIGN=LEFT>
+Disadvantage:
+unknown type
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+&#8220;disadvantage&#8221; to using the Java collections is that you lose type
+information when you put an object into a collection. This happens because,
+when the collection was written, the programmer of that collection had no idea
+what specific type you wanted to put in the collection, and making the
+collection hold only your type would prevent it from being a general-purpose
+tool. So instead, the collection holds handles to objects of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is of course every object in Java, since it&#8217;s the root of all the
+classes. (Of course, this doesn&#8217;t include primitive types, since they
+aren&#8217;t inherited from anything.) This is a great solution, except for
+these reasons:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Since
+the type information is thrown away when you put an object handle into a
+collection, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>any</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+type of object can be put into your collection, even if you mean it to hold
+only, say, cats. Someone could just as easily put a dog into the collection.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Since
+the type information is lost, the only thing the collection knows it holds is a
+handle to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You must perform a <A NAME="Index744"></A>cast
+to the correct type before you use it.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">On
+the up side, Java won&#8217;t let you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>misuse</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the objects that you put into a collection. If you throw a dog into a
+collection of cats, then go through and try to treat everything in the
+collection as a cat, you&#8217;ll get an exception when you get to the dog. In
+the same vein, if you try to cast the dog handle that you pull out of the cat
+collection into a cat, you&#8217;ll get an exception at run-time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CatsAndDogs.java</font>
+<font color="#009900">// Simple collection example (Vector)</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Cat {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> catNumber;
+  Cat(<font color="#0000ff">int</font> i) {
+    catNumber = i;
+  }
+  <font color="#0000ff">void</font> print() {
+    System.out.println("Cat #" + catNumber);
+  }
+}
+
+<font color="#0000ff">class</font> Dog {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> dogNumber;
+  Dog(<font color="#0000ff">int</font> i) {
+    dogNumber = i;
+  }
+  <font color="#0000ff">void</font> print() {
+    System.out.println("Dog #" + dogNumber);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CatsAndDogs {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector cats = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 7; i++)
+      cats.addElement(<font color="#0000ff">new</font> Cat(i));
+    <font color="#009900">// Not a problem to add a dog to cats:</font>
+    cats.addElement(<font color="#0000ff">new</font> Dog(7));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; cats.size(); i++)
+      ((Cat)cats.elementAt(i)).print();
+    <font color="#009900">// Dog is detected only at run-time</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is straightforward: create one, put objects in using <A NAME="Index745"></A><A NAME="Index746"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and later get them out with <A NAME="Index747"></A><A NAME="Index748"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a method <A NAME="Index749"></A><A NAME="Index750"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to let you know how many elements have been added so you don&#8217;t
+inadvertently run off the end and cause an exception.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are distinct &#8211; they have nothing in common except that they are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(If you don&#8217;t explicitly say what class you&#8217;re inheriting from, you
+automatically inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, which comes from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+holds 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+so not only can you put 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects into this collection using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you can also add 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects without complaint at either compile-time or run-time. When you go to
+fetch out what you think are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you get back a handle to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you must cast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then you need to surround the entire expression with parentheses to force the
+evaluation of the cast before calling the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+otherwise you&#8217;ll get a syntax error. Then, at run-time, when you try to
+cast the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cat</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll get an exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is more than just an annoyance. It&#8217;s something that can create some
+difficult-to-find bugs. If one part (or several parts) of a program inserts
+objects into a collection, and you discover only in a separate part of the
+program through an exception that a bad object was placed in the collection,
+then you must find out where the bad insert occurred. You do this by code
+inspection, which is about the worst debugging tool you have. On the upside,
+it&#8217;s convenient to start with some standardized collection classes for
+programming, despite the scarcity and awkwardness.
+</FONT><P></DIV>
+<A NAME="Heading247"></A><H4 ALIGN=LEFT>
+Sometimes
+it works right anyway
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+turns out that in some cases things seem to work correctly without casting back
+to your original type. The first case is quite special: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class has some extra help from the compiler to make it work smoothly. Whenever
+the compiler expects a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and it hasn&#8217;t got one, it will automatically call the <A NAME="Index751"></A><A NAME="Index752"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that&#8217;s defined in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and can be overridden by any Java class. This method produces the desired 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which is then used wherever it was wanted.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+all you need to do to make objects of your class print out is to override the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, as shown in the following example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: WorksAnyway.java</font>
+<font color="#009900">// In special cases, things just seem</font>
+<font color="#009900">// to work correctly.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Mouse {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> mouseNumber;
+  Mouse(<font color="#0000ff">int</font> i) {
+    mouseNumber = i;
+  }
+  <font color="#009900">// Magic method:</font>
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> "This is Mouse #" + mouseNumber;
+  }
+  <font color="#0000ff">void</font> print(String msg) {
+    <font color="#0000ff">if</font>(msg != <font color="#0000ff">null</font>) System.out.println(msg);
+    System.out.println(
+      "Mouse number " + mouseNumber);
+  }
+}
+
+<font color="#0000ff">class</font> MouseTrap {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> caughtYa(Object m) {
+    Mouse mouse = (Mouse)m; <font color="#009900">// Cast from Object</font>
+    mouse.print("Caught one!");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WorksAnyway {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector mice = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 3; i++)
+      mice.addElement(<font color="#0000ff">new</font> Mouse(i));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; mice.size(); i++) {
+      <font color="#009900">// No cast necessary, automatic call</font>
+      <font color="#009900">// to Object.toString():</font>
+      System.out.println(
+        "Free mouse: " + mice.elementAt(i));
+      MouseTrap.caughtYa(mice.elementAt(i));
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the redefinition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mouse</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you find the statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println("Free
+mouse: " + mice.elementAt(i));
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+sign the compiler expects to see a <A NAME="Index753"></A><A NAME="Index754"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so to get the desired 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the compiler implicitly calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Unfortunately, you can work this kind of magic only with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+it isn&#8217;t available for any other type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+second approach to hiding the cast has been placed inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mousetrap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>caughtYa(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method accepts not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mouse</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which it then casts to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mouse</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is quite presumptuous, of course, since by accepting an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+anything could be passed to the method. However, if the cast is incorrect
+&#8211; if you passed the wrong type &#8211; you&#8217;ll get an exception at
+run-time. This is not as good as compile-time checking but it&#8217;s still
+robust. Note that in the use of this method:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">MouseTrap.caughtYa(mice.elementAt(i));</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">no
+cast is necessary.
+</FONT><P></DIV>
+<A NAME="Heading248"></A><H4 ALIGN=LEFT>
+Making
+a type-conscious Vector
+<P><A NAME="Index755"></A><A NAME="Index756"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might not want to give up on this issue just yet. A more ironclad solution is
+to create a new class using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+such that it will accept only your type and produce only your type:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GopherVector.java</font>
+<font color="#009900">// A type-conscious Vector</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Gopher {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> gopherNumber;
+  Gopher(<font color="#0000ff">int</font> i) {
+    gopherNumber = i;
+  }
+  <font color="#0000ff">void</font> print(String msg) {
+    <font color="#0000ff">if</font>(msg != <font color="#0000ff">null</font>) System.out.println(msg);
+    System.out.println(
+      "Gopher number " + gopherNumber);
+  }
+}
+
+<font color="#0000ff">class</font> GopherTrap {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> caughtYa(Gopher g) {
+    g.print("Caught one!");
+  }
+}
+
+<font color="#0000ff">class</font> GopherVector {
+  <font color="#0000ff">private</font> Vector v = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addElement(Gopher m) {
+    v.addElement(m);
+  }
+  <font color="#0000ff">public</font> Gopher elementAt(<font color="#0000ff">int</font> index) {
+    <font color="#0000ff">return</font> (Gopher)v.elementAt(index);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> size() { <font color="#0000ff">return</font> v.size(); }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    GopherVector gophers = <font color="#0000ff">new</font> GopherVector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 3; i++)
+      gophers.addElement(<font color="#0000ff">new</font> Gopher(i));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; gophers.size(); i++)
+      GopherTrap.caughtYa(gophers.elementAt(i));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is similar to the previous example, except that the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GopherVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">member
+of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(inheriting from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tends to be frustrating, for reasons you&#8217;ll see later), and methods just
+like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, it doesn&#8217;t accept and produce generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gopher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GopherVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will accept only a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gopher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+if you were to say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">gophers.addElement(new
+Pigeon());
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+would get an error message 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>at
+compile time
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This approach, while more tedious from a coding standpoint, will tell you
+immediately if you&#8217;re using a type improperly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that no cast is necessary when using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; it&#8217;s always a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gopher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading249"></A><H4 ALIGN=LEFT>
+Parameterized
+types
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+kind of problem isn&#8217;t isolated &#8211; there are numerous cases in which
+you need to create new types based on other types, and in which it is useful to
+have specific type information at compile-time. This is the concept of a <A NAME="Index757"></A><A NAME="Index758"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>parameterized
+type
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In C++, this is directly supported by the language in <A NAME="Index759"></A><A NAME="Index760"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>templates</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+At one point, Java had reserved the keyword <A NAME="Index761"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>generic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to someday support parameterized types, but it&#8217;s uncertain if this will
+ever occur.
+</FONT><a name="_Toc375545352"></a><a name="_Toc408018568"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0087.html">Prev</a> | <a href="tij0089.html">Next</a>
+</div>
+</body></html>
+

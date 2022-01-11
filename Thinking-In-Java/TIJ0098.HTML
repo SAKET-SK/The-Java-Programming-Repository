@@ -1,0 +1,521 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0097.html">Prev</a> | <a href="tij0099.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Catching
+an exception
+<P><A NAME="Index910"></A><A NAME="Index911"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+a method throws an exception, it must assume that exception is caught and dealt
+with. One of the advantages of Java exception handling is that it allows you to
+concentrate on the problem you&#8217;re trying to solve in one place, and then
+deal with the errors from that code in another place.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+see how an exception is caught, you must first understand the concept of a <A NAME="Index912"></A><A NAME="Index913"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>guarded
+region
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a section of code that might produce exceptions, and is followed by
+the code to handle those exceptions.
+</FONT><a name="_Toc312374114"></a><a name="_Toc375545365"></a><a name="_Toc408018592"></a><P></DIV>
+<A NAME="Heading285"></A><H3 ALIGN=LEFT>
+The
+try block
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re inside a method and you throw an exception (or another method you
+call within this method throws an exception), that method will exit in the
+process of throwing. If you don&#8217;t want a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throw
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+leave a method, you can set up a special block within that method to capture
+the exception. This is called the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>try</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>block<A NAME="Index914"></A><A NAME="Index915"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because you &#8220;try&#8221; your various method calls there. The try block is
+an ordinary scope, preceded by the keyword 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">try</font> {
+  <font color="#009900">// Code that might generate exceptions</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you were checking for errors carefully in a programming language that
+didn&#8217;t support exception handling, you&#8217;d have to surround every
+method call with setup and error testing code, even if you call the same method
+several times. With exception handling, you put everything in a try block and
+capture all the exceptions in one place. This means your code is a lot easier
+to write and easier to read because the goal of the code is not confused with
+the error checking.
+</FONT><a name="_Toc312374115"></a><a name="_Toc375545366"></a><a name="_Toc408018593"></a><P></DIV>
+<A NAME="Heading286"></A><H3 ALIGN=LEFT>
+Exception
+handlers
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, the thrown exception must end up someplace. This &#8220;place&#8221; is
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception
+handler<A NAME="Index916"></A><A NAME="Index917"></A></I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and there&#8217;s one for every exception type you want to catch. Exception
+handlers immediately follow the try block and are denoted by the keyword 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch<A NAME="Index918"></A></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">try</font> {
+  <font color="#009900">// Code that might generate exceptions</font>
+} <font color="#0000ff">catch</font>(Type1 id1) {
+  <font color="#009900">// Handle exceptions of Type1</font>
+} <font color="#0000ff">catch</font>(Type2 id2) {
+  <font color="#009900">// Handle exceptions of Type2</font>
+} <font color="#0000ff">catch</font>(Type3 id3) {
+  <font color="#009900">// Handle exceptions of Type3</font>
+}
+
+<font color="#009900">// etc... </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+catch clause (exception handler) is like a little method that takes one and
+only one argument of a particular type. The identifier (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>id1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>id2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and so on) can be used inside the handler, just like a method argument.
+Sometimes you never use the identifier because the type of the exception gives
+you enough information to deal with the exception, but the identifier must
+still be there.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+handlers must appear directly after the try block. If an exception is thrown,
+the exception-handling mechanism goes hunting for the first handler with an
+argument that matches the type of the exception. Then it enters that catch
+clause, and the exception is considered handled. (The search for handlers stops
+once the catch clause is finished.) Only the matching catch clause executes;
+it&#8217;s not like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement in which you need a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+after each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>case</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to prevent the remaining ones from executing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that, within the try block, a number of different method calls might generate
+the same exception, but you need only one handler.
+</FONT><P></DIV>
+<A NAME="Heading287"></A><H4 ALIGN=LEFT>
+Termination
+vs. resumption
+<P><A NAME="Index919"></A><A NAME="Index920"></A><A NAME="Index921"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two basic models in exception-handling theory. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>termination</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is what Java and C++ support), you assume the error is so critical
+there&#8217;s no way to get back to where the exception occurred. Whoever threw
+the exception decided that there was no way to salvage the situation, and they
+don&#8217;t 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>want</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to come back.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+alternative is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>resumption</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It means that the exception handler is expected to do something to rectify the
+situation, and then the faulting method is retried, presuming success the
+second time. If you want resumption, it means you still hope to continue
+execution after the exception is handled. In this case, your exception is more
+like a method call &#8211; which is how you should set up situations in Java in
+which you want resumption-like behavior. (That is, don&#8217;t throw an
+exception; call a method that fixes the problem.) Alternatively, place your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop that keeps reentering the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block until the result is satisfactory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Historically,
+programmers using operating systems that supported resumptive exception
+handling eventually ended up using termination-like code and skipping
+resumption. So although resumption sounds attractive at first, it seems it
+isn&#8217;t quite so useful in practice. The dominant reason is probably the <A NAME="Index922"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>coupling
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+results: your handler must often be aware of where the exception is thrown from
+and contain non-generic code specific to the throwing location. This makes the
+code difficult to write and maintain, especially for large systems where the
+exception can be generated from many points.
+</FONT><a name="_Toc312374116"></a><a name="_Toc375545367"></a><a name="_Toc408018594"></a><P></DIV>
+<A NAME="Heading288"></A><H3 ALIGN=LEFT>
+The
+exception specification
+<P><A NAME="Index923"></A><A NAME="Index924"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java, you&#8217;re required to inform the client programmer, who calls your
+method, of the exceptions that might be thrown from your method. This is
+civilized because the caller can know exactly what code to write to catch all
+potential exceptions. Of course, if source code is available, the client
+programmer could hunt through and look for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throw</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements, but often a library doesn&#8217;t come with sources. To prevent
+this from being a problem, Java provides syntax (and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>forces
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+to use that syntax) to allow you to politely tell the client programmer what
+exceptions this method throws, so the client programmer can handle them. This
+is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception
+specification
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it&#8217;s part of the method declaration, appearing after the argument list.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+exception specification uses an additional keyword, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throws</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+followed by a list of all the potential exception types. So your method
+definition might look like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">void
+f() throws tooBig, tooSmall, divZero { //... 
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you say
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">void
+f() { // ...
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it
+means that no exceptions are thrown from the method. (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Except
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+the exceptions of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which can reasonably be thrown anywhere &#8211; this will be described later.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can&#8217;t lie about an exception specification &#8211; if your method causes
+exceptions and doesn&#8217;t handle them, the compiler will detect this and
+tell you that you must either handle the exception or indicate with an
+exception specification that it may be thrown from your method. By enforcing
+exception specifications from top to bottom, Java guarantees that exception
+correctness can be ensured 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>at
+compile time
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><A NAME="fnB42" HREF="#fn42">[42]</A><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is one place you can lie: you can claim to throw an exception that you
+don&#8217;t. The compiler takes your word for it and forces the users of your
+method to treat it as if it really does throw that exception. This has the
+beneficial effect of being a placeholder for that exception, so you can
+actually start throwing the exception later without requiring changes to
+existing code.
+</FONT><a name="_Toc312374118"></a><a name="_Toc375545368"></a><a name="_Toc408018595"></a><P></DIV>
+<A NAME="Heading289"></A><H3 ALIGN=LEFT>
+Catching
+any exception
+<P><A NAME="Index925"></A><A NAME="Index926"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is possible to create a handler that catches any type of exception. You do this
+by catching the base-class exception type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(there are other types of base exceptions, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the base that&#8217;s pertinent to virtually all programming activities):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">catch</font>(Exception e) {
+  System.out.println("caught an exception");
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+will catch any exception, so if you use it you&#8217;ll want to put it at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>end</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of your list of handlers to avoid pre-empting any exception handlers that might
+otherwise follow it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is the base of all the exception classes that are important to the
+programmer, you don&#8217;t get much specific information about the exception,
+but you can call the methods that come from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>its</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+base type <A NAME="Index927"></A><A NAME="Index928"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+getMessage(&#160;)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Gets
+the detail message. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+toString(&#160;)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a short description of the Throwable, including the detail message if there is
+one.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void
+<A NAME="Index929"></A>printStackTrace(&#160;)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void
+printStackTrace(PrintStream) 
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Prints
+the Throwable and the Throwable&#8217;s call stack trace. The call stack shows
+the sequence of method calls that brought you to the point at which the
+exception was thrown.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first version prints to standard error, the second prints to a stream of your
+choice. If you&#8217;re working under Windows, you can&#8217;t redirect
+standard error so you might want to use the second version and send the results
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+that way the output can be redirected any way you want.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, you get some other methods from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+base type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(everybody&#8217;s base type). The one that might come in handy for exceptions
+is <A NAME="Index930"></A><A NAME="Index931"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getClass(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns an object representing the class of this object. You can in turn
+query this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for its name with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can also do more sophisticated things with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects that aren&#8217;t necessary in exception handling. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects will be studied later in the book.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that shows the use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ExceptionMethods.java</font>
+<font color="#009900">// Demonstrating the Exception Methods</font>
+<font color="#0000ff">package</font> c09;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ExceptionMethods {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Exception("Here's my Exception");
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println("Caught Exception");
+      System.out.println(
+        "e.getMessage(): " + e.getMessage());
+      System.out.println(
+        "e.toString(): " + e.toString());
+      System.out.println("e.printStackTrace():");
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Caught Exception
+e.getMessage(): Here's my Exception
+e.toString(): java.lang.Exception: Here's my Exception
+e.printStackTrace():
+java.lang.Exception: Here's my Exception
+        at ExceptionMethods.main </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the methods provide successively more information &#8211; each is
+effectively a superset of the previous one.
+</FONT><a name="_Toc312374119"></a><a name="_Toc375545369"></a><a name="_Toc408018596"></a><P></DIV>
+<A NAME="Heading290"></A><H3 ALIGN=LEFT>
+Rethrowing
+an exception
+<P><A NAME="Index932"></A><A NAME="Index933"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sometimes
+you&#8217;ll want to rethrow the exception that you just caught, particularly
+when you use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to catch any exception. Since you already have the handle to the current
+exception, you can simply re-throw that handle:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">catch</font>(Exception e) {
+  System.out.println("An exception was thrown");
+  <font color="#0000ff">throw</font> e;
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Rethrowing
+an exception causes the exception to go to the exception handlers in the
+next-higher context. Any further 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clauses for the same 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block are still ignored. In addition, everything about the exception object is
+preserved, so the handler at the higher context that catches the specific
+exception type can extract all the information from that object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you simply re-throw the current exception, the information that you print about
+that exception in <A NAME="Index934"></A><A NAME="Index935"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printStackTrace(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+pertain to the exception&#8217;s origin, not the place where you re-throw it.
+If you want to install new stack trace information, you can do so by calling <A NAME="Index936"></A><A NAME="Index937"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillInStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns an exception object that it creates by stuffing the current stack
+information into the old exception object. Here&#8217;s what it looks like:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Rethrowing.java</font>
+<font color="#009900">// Demonstrating fillInStackTrace()</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Rethrowing {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> f() <font color="#0000ff">throws</font> Exception {
+    System.out.println(
+      "originating the exception in f()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Exception("thrown from f()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> g() <font color="#0000ff">throws</font> Throwable {
+    <font color="#0000ff">try</font> {
+      f();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println(
+        "Inside g(), e.printStackTrace()");
+      e.printStackTrace();
+      <font color="#0000ff">throw</font> e; <font color="#009900">// 17</font>
+      <font color="#009900">// throw e.fillInStackTrace(); // 18</font>
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font>
+  main(String[] args) <font color="#0000ff">throws</font> Throwable {
+    <font color="#0000ff">try</font> {
+      g();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println(
+        "Caught in main, e.printStackTrace()");
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+important line numbers are marked inside of comments. With line 17 un-commented
+(as shown), the output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>originating the exception in f()
+Inside g(), e.printStackTrace()
+java.lang.Exception: thrown from f()
+        at Rethrowing.f(Rethrowing.java:8)
+        at Rethrowing.g(Rethrowing.java:12)
+        at Rethrowing.main(Rethrowing.java:24)
+Caught in main, e.printStackTrace()
+java.lang.Exception: thrown from f()
+        at Rethrowing.f(Rethrowing.java:8)
+        at Rethrowing.g(Rethrowing.java:12)
+        at Rethrowing.main(Rethrowing.java:24) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+the exception stack trace always remembers its true point of origin, no matter
+how many times it gets rethrown.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+line 17 commented and line 18 un-commented, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillInStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used instead, and the result is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>originating the exception in f()
+Inside g(), e.printStackTrace()
+java.lang.Exception: thrown from f()
+        at Rethrowing.f(Rethrowing.java:8)
+        at Rethrowing.g(Rethrowing.java:12)
+        at Rethrowing.main(Rethrowing.java:24)
+Caught in main, e.printStackTrace()
+java.lang.Exception: thrown from f()
+        at Rethrowing.g(Rethrowing.java:18)
+        at Rethrowing.main(Rethrowing.java:24) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillInStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+line 18 becomes the new <A NAME="Index938"></A>point
+of origin of the exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must appear in the exception specification for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillInStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Since <A NAME="Index939"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a base class of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s possible to get an object that&#8217;s a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the handler for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">might
+miss it. To make sure everything is in order, the compiler forces an exception
+specification for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For example, the exception in the following program is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+caught in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ThrowOut.java</font>
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ThrowOut {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font>
+  main(String[] args) <font color="#0000ff">throws</font> Throwable {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Throwable(); 
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println("Caught in main()");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+also possible to rethrow a different exception from the one you caught. If you
+do this, you get a similar effect as when you use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fillInStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the information about the original site of the exception is lost, and what
+you&#8217;re left with is the information pertaining to the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throw</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RethrowNew.java</font>
+<font color="#009900">// Rethrow a different object from the one that</font>
+<font color="#009900">// was caught</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RethrowNew {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> f() <font color="#0000ff">throws</font> Exception {
+    System.out.println(
+      "originating the exception in f()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Exception("thrown from f()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      f();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println(
+        "Caught in main, e.printStackTrace()");
+      e.printStackTrace();
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> NullPointerException("from main");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>originating the exception in f()
+Caught in main, e.printStackTrace()
+java.lang.Exception: thrown from f()
+        at RethrowNew.f(RethrowNew.java:8)
+        at RethrowNew.main(RethrowNew.java:13)
+java.lang.NullPointerException: from main
+        at RethrowNew.main(RethrowNew.java:18) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+final exception knows only that it came from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and not from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t necessary in any of the exception specifications.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+never have to worry about cleaning up the previous exception, or any exceptions
+for that matter. They&#8217;re all heap-based objects created with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the garbage collector automatically cleans them all up.
+</FONT><a name="_Toc375545370"></a><a name="_Toc408018597"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn42" HREF="#fnB42">[42]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This is a significant improvement over C++ exception handling, which
+doesn&#8217;t catch violations of exception specifications until run time, when
+it&#8217;s not very useful.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0097.html">Prev</a> | <a href="tij0099.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,89 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0109.html">Prev</a> | <a href="tij0111.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Off
+by itself: 
+<P>RandomAccessFile<P><A NAME="Index1045"></A><A NAME="Index1046"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used for files containing records of known size so that you can move from
+one record to another using <A NAME="Index1047"></A><A NAME="Index1048"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>seek(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then read or change the records. The records don&#8217;t have to be the same
+size; you just have to be able to determine how big they are and where they are
+placed in the file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+first it&#8217;s a little bit hard to believe that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchy. It has no association with those hierarchies other than that it
+happens to implement the <A NAME="Index1049"></A><A NAME="Index1050"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInput</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1051"></A><A NAME="Index1052"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutput</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interfaces (which are also implemented by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+It doesn&#8217;t even use any of the functionality of the existing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes &#8211; it&#8217;s a completely separate class, written from scratch,
+with all of its own (mostly native) methods. The reason for this may be that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has essentially different behavior than the other IO types, since you can move
+forward and backward within a file. In any event, it stands alone, as a direct
+descendant of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Essentially,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pasted together with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+the methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getFilePointer(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to find out where you are in the file, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>seek(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to move to a new point in the file, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to determine the maximum size of the file. In addition, the constructors
+require a second argument (identical to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fopen(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+C) indicating whether you are just randomly reading (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;r&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+or reading and writing (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;rw&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+There&#8217;s no support for write-only files, which could suggest that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+might have worked well if it were inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What&#8217;s
+even more frustrating is that you could easily imagine wanting to seek within
+other types of streams, such as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArrayInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but the seeking methods are available only in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which works for files only. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does allow you to <A NAME="Index1053"></A><A NAME="Index1054"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mark(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a position (whose value is held in a single internal variable) and <A NAME="Index1055"></A><A NAME="Index1056"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reset(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to that position, but this is limited and not too useful.
+</FONT><a name="_Toc375545390"></a><a name="_Toc408018617"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0109.html">Prev</a> | <a href="tij0111.html">Next</a>
+</div>
+</body></html>
+

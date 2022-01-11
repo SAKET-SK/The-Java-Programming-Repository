@@ -1,0 +1,167 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0098.html">Prev</a> | <a href="tij0100.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Standard
+Java exceptions
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+contains a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that describes anything that can be thrown as an exception. There are two
+general types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects (&#8220;types of&#8221; = &#8220;inherited from&#8221;). <A NAME="Index940"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Error</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents compile-time and system errors that you don&#8217;t worry about
+catching (except in special cases). <A NAME="Index941"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the basic type that can be thrown from any of the standard Java library
+class methods and from your methods and run-time accidents.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+best way to get an overview of the exceptions is to browse online Java
+documentation from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://java.sun.com.</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Of course, it&#8217;s easier to download it first.) It&#8217;s worth doing
+this once just to get a feel for the various exceptions, but you&#8217;ll soon
+see that there isn&#8217;t anything special between one exception and the next
+except for the name. Also, the number of exceptions in Java keeps expanding;
+basically it&#8217;s pointless to print them in a book. Any new library you get
+from a third-party vendor will probably have its own exceptions as well. The
+important thing to understand is the concept and what you should do with the
+exceptions.
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java.lang.Exception
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is the basic exception class your program can catch. Other exceptions are
+derived from this. The basic idea is that the name of the exception represents
+the problem that occurred and the exception name is intended to be relatively
+self-explanatory. The exceptions are not all defined in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.lang</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+some are created to support other libraries such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>net,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>io</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which you can see from their full class names or what they are inherited from.
+For example, all IO exceptions are inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.io.IOException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545372"></a><a name="_Toc408018598"></a><P></DIV>
+<A NAME="Heading292"></A><H3 ALIGN=LEFT>
+The
+special case of RuntimeException
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first example in this chapter was
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">if(t
+== null)
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ throw new NullPointerException();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+can be a bit horrifying to think that you must check for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on every handle that is passed into a method (since you can&#8217;t know if the
+caller has passed you a valid handle). Fortunately, you don&#8217;t &#8211;
+this is part of the standard run-time checking that Java performs for you, and
+if any call is made to a null handle, Java will automatically throw a <A NAME="Index942"></A><A NAME="Index943"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NullPointerException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So the above bit of code is always superfluous. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a whole group of exception types that are in this category. They&#8217;re
+always thrown automatically by Java and you don&#8217;t need to include them in
+your exception specifications. Conveniently enough, they&#8217;re all grouped
+together by putting them under a single base class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a perfect example of inheritance: it establishes a family of types
+that have some characteristics and behaviors in common. Also, you never need to
+write an exception specification saying that a method might throw a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since that&#8217;s just assumed. Because they indicate bugs, you virtually
+never catch a <A NAME="Index944"></A><A NAME="Index945"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; it&#8217;s dealt with automatically. If you were forced to check for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+your code could get messy. Even though you don&#8217;t typically catch 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeExceptions</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+your own packages you might choose to throw some of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+happens when you don&#8217;t catch such exceptions? Since the compiler
+doesn&#8217;t enforce exception specifications for these, it&#8217;s quite
+plausible that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could percolate all the way out to your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+without being caught. To see what happens in this case, try the following
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: NeverCaught.java</font>
+<font color="#009900">// Ignoring RuntimeExceptions</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> NeverCaught {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f() {
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> RuntimeException("From f()");
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> g() {
+    f();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    g();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can already see that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(or
+anything inherited from it) is a special case, since the compiler doesn&#8217;t
+require an exception specification for these types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>java.lang.RuntimeException: From f()
+        at NeverCaught.f(NeverCaught.java:9)
+        at NeverCaught.g(NeverCaught.java:12)
+        at NeverCaught.main(NeverCaught.java:15) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+the answer is: If a RuntimeException gets all the way out to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without being caught, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printStackTrace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called for that exception as the program exits.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Keep
+in mind that it&#8217;s possible to ignore only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+in your coding, since all other handling is carefully enforced by the compiler.
+The reasoning is that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RuntimeException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents a programming error:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+error you cannot catch (receiving a null handle handed to your method by a
+client programmer, for example) 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+error that you, as a programmer, should have checked for in your code (such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayIndexOutOfBoundsException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where you should have paid attention to the size of the array). 
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see what a tremendous benefit it is to have exceptions in this case, since
+they help in the debugging process.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+interesting to notice that you cannot classify Java exception handling as a
+single-purpose tool. Yes, it is designed to handle those pesky run-time errors
+that will occur because of forces outside your code&#8217;s control, but
+it&#8217;s also essential for certain types of programming bugs that the
+compiler cannot detect.
+</FONT><a name="_Toc375545373"></a><a name="_Toc408018599"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0098.html">Prev</a> | <a href="tij0100.html">Next</a>
+</div>
+</body></html>
+

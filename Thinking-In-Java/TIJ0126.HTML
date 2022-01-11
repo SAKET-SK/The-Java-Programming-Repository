@@ -1,0 +1,190 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0125.html">Prev</a> | <a href="tij0127.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Passing
+handles around
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you pass a <A NAME="Index1441"></A><A NAME="Index1442"></A><A NAME="Index1443"></A>handle
+into a method, you&#8217;re still pointing to the same object. A simple
+experiment demonstrates this: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PassHandles.java</font>
+<font color="#009900">// Passing handles around</font>
+<font color="#0000ff">package</font> c12;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PassHandles {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f(PassHandles h) {
+    System.out.println("h inside f(): " + h);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    PassHandles p = <font color="#0000ff">new</font> PassHandles();
+    System.out.println("p inside main(): " + p);
+    f(p);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is automatically invoked in the print statements, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PassHandles</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inherits directly from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with no redefinition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+used, which prints out the class of the object followed by the address where
+that object is located (not the handle, but the actual object storage). The
+output looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>p inside main(): PassHandles@1653748
+h inside f(): PassHandles@1653748 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+refer to the same object. This is far more efficient than duplicating a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PassHandles</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object just so that you can send an argument to a method. But it brings up an
+important issue.
+</FONT><a name="_Toc375545423"></a><a name="_Toc408018655"></a><P></DIV>
+<A NAME="Heading366"></A><H3 ALIGN=LEFT>
+Aliasing<P><A NAME="Index1444"></A><A NAME="Index1445"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Aliasing
+means that more than one handle is tied to the same object, as in the above
+example. The problem with aliasing occurs when someone 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>writes</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to that object. If the owners of the other handles aren&#8217;t expecting that
+object to change, they&#8217;ll be surprised. This can be demonstrated with a
+simple example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Alias1.java</font>
+<font color="#009900">// Aliasing two handles to one object</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Alias1 {
+  <font color="#0000ff">int</font> i;
+  Alias1(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Alias1 x = <font color="#0000ff">new</font> Alias1(7);
+    Alias1 y = x; <font color="#009900">// Assign the handle</font>
+    System.out.println("x: " + x.i);
+    System.out.println("y: " + y.i);
+    System.out.println("Incrementing x");
+    x.i++;
+    System.out.println("x: " + x.i);
+    System.out.println("y: " + y.i);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Alias1
+y = x; // Assign the handle
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">a
+new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Alias1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is created, but instead of being assigned to a fresh object created with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it&#8217;s assigned to an existing handle. So the contents of handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is the address of the object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is pointing to, is assigned to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and thus both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are attached to the same object. So when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is incremented in the statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">x.i++;</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+be affected as well. This can be seen in the output:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>x: 7
+y: 7
+Incrementing x
+x: 8
+y: 8 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+good solution in this case is to simply not do it: don&#8217;t consciously
+alias more than one handle to an object at the same scope. Your code will be
+much easier to understand and debug. However, when you&#8217;re passing a
+handle in as an argument &#8211; which is the way Java is supposed to work
+&#8211; you automatically alias because the local handle that&#8217;s created
+can modify the &#8220;outside object&#8221; (the object that was created
+outside the scope of the method). Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Alias2.java</font>
+<font color="#009900">// Method calls implicitly alias their</font>
+<font color="#009900">// arguments.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Alias2 {
+  <font color="#0000ff">int</font> i;
+  Alias2(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f(Alias2 handle) {
+    handle.i++;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Alias2 x = <font color="#0000ff">new</font> Alias2(7);
+    System.out.println("x: " + x.i);
+    System.out.println("Calling f(x)");
+    f(x);
+    System.out.println("x: " + x.i);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>x: 7
+Calling f(x)
+x: 8 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+method is changing its argument, the outside object. When this kind of
+situation arises, you must decide whether it makes sense, whether the user
+expects it, and whether it&#8217;s going to cause problems.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, you call a method in order to produce a return value and/or a change
+of state in the object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that
+the method is called for
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(A method is how you &#8220;send a message&#8221; to that object.) It&#8217;s
+much less common to call a method in order to manipulate its arguments; this is
+referred to as &#8220;calling a method for its <A NAME="Index1446"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>side
+effects
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+Thus, when you create a method that modifies its arguments the user must be
+clearly instructed and warned about the use of that method and its potential
+surprises. Because of the confusion and pitfalls, it&#8217;s much better to
+avoid changing the argument.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you need to modify an argument during a method call and you don&#8217;t intend
+to modify the outside argument, then you should protect that argument by making
+a copy inside your method. That&#8217;s the subject of much of this chapter.
+</FONT><a name="_Toc408018656"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0125.html">Prev</a> | <a href="tij0127.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,1426 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0115.html">Prev</a> | <a href="tij0117.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Object
+serialization
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index1302"></A>
+has added an interesting feature called <A NAME="Index1303"></A><A NAME="Index1304"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>object
+serialization
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that allows you to take any object that implements the <A NAME="Index1305"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface and turn it into a sequence of bytes that can later be restored fully
+into the original object. This is even true across a network, which means that
+the serialization mechanism automatically compensates for differences in
+operating systems. That is, you can create an object on a Windows machine,
+serialize it, and send it across the network to a Unix machine where it will be
+correctly reconstructed. You don&#8217;t have to worry about the data
+representations on the different machines, the byte ordering, or any other
+details.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+itself, object serialization is interesting because it allows you to implement <A NAME="Index1306"></A><A NAME="Index1307"></A><A NAME="Index1308"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lightweight
+persistence
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Remember that persistence means an object&#8217;s lifetime is not determined by
+whether a program is executing &#8211; the object lives 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>in</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>between</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+invocations of the program. By taking a serializable object and writing it to
+disk, then restoring that object when the program is re-invoked, you&#8217;re
+able to produce the effect of persistence. The reason it&#8217;s called
+&#8220;lightweight&#8221; is that you can&#8217;t simply define an object using
+some kind of &#8220;persistent&#8221; keyword and let the system take care of
+the details (although this might happen in the future). Instead, you must
+explicitly serialize and de-serialize the objects in your program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Object
+serialization was added to the language to support two major features. Java 1.1<A NAME="Index1309"></A>&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>remote
+method invocation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(RMI) allows objects that live on other machines to behave as if they live on
+your machine. When sending messages to remote objects, object serialization is
+necessary to transport the arguments and return values. RMI is discussed in
+Chapter 15.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Object
+serialization is also necessary for Java Beans, introduced in Java 1.1<A NAME="Index1310"></A>.
+When a Bean is used, its state information is generally configured at design
+time. This state information must be stored and later recovered when the
+program is started; object serialization performs this task.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Serializing
+an object is quite simple, as long as the object implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface (this interface is just a flag and has no methods). In Java 1.1<A NAME="Index1311"></A>,
+many standard library classes have been changed so they&#8217;re serializable,
+including all of the wrappers for the primitive types, all of the collection
+classes, and many others. Even 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects can be serialized. (See Chapter 11 for the implications of this.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+serialize an object, you create some sort of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and then wrap it inside an <A NAME="Index1312"></A><A NAME="Index1313"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. At this point you need only call <A NAME="Index1314"></A><A NAME="Index1315"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and your object is serialized and sent to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To reverse the process, you wrap an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and call <A NAME="Index1316"></A><A NAME="Index1317"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+What comes back is, as usual, a handle to an upcast 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you must downcast to set things straight.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+particularly clever aspect of object serialization is that it not only saves an
+image of your object but it also follows all the handles contained in your
+object and saves 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>those
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects,
+and follows all the handles in each of those objects, etc. This is sometimes
+referred to as the &#8220;<A NAME="Index1318"></A><A NAME="Index1319"></A>web
+of objects&#8221; that a single object can be connected to, and it includes
+arrays of handles to objects as well as member objects. If you had to maintain
+your own object serialization scheme, maintaining the code to follow all these
+links would be a bit mind&#8211;boggling. However, Java object serialization
+seems to pull it off flawlessly, no doubt using an optimized algorithm that
+traverses the web of objects. The following example tests the serialization
+mechanism by making a &#8220;worm&#8221; of linked objects, each of which has a
+link to the next segment in the worm as well as an array of handles to objects
+of a different class, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Data</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Worm.java</font>
+<font color="#009900">// Demonstrates object serialization in Java 1.1</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> Data <font color="#0000ff">implements</font> Serializable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  Data(<font color="#0000ff">int</font> x) { i = x; }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> Integer.toString(i);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Worm <font color="#0000ff">implements</font> Serializable {
+  <font color="#009900">// Generate a random int value:</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> r() {
+    <font color="#0000ff">return</font> (<font color="#0000ff">int</font>)(Math.random() * 10);
+  }
+  <font color="#0000ff">private</font> Data[] d = {
+    <font color="#0000ff">new</font> Data(r()), <font color="#0000ff">new</font> Data(r()), <font color="#0000ff">new</font> Data(r())
+  };
+  <font color="#0000ff">private</font> Worm next;
+  <font color="#0000ff">private</font> <font color="#0000ff">char</font> c;
+  <font color="#009900">// Value of i == number of segments</font>
+  Worm(<font color="#0000ff">int</font> i, <font color="#0000ff">char</font> x) {
+    System.out.println(" Worm constructor: " + i);
+    c = x;
+    <font color="#0000ff">if</font>(--i &gt; 0)
+      next = <font color="#0000ff">new</font> Worm(i, (<font color="#0000ff">char</font>)(x + 1));
+  }
+  Worm() {
+    System.out.println("Default constructor");
+  }
+  <font color="#0000ff">public</font> String toString() {
+    String s = ":" + c + "(";
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; d.length; i++)
+      s += d[i].toString();
+    s += ")";
+    <font color="#0000ff">if</font>(next != <font color="#0000ff">null</font>)
+      s += next.toString();
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Worm w = <font color="#0000ff">new</font> Worm(6, 'a');
+    System.out.println("w = " + w);
+    <font color="#0000ff">try</font> {
+      ObjectOutputStream out =
+        <font color="#0000ff">new</font> ObjectOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("worm.out"));
+      out.writeObject("Worm storage");
+      out.writeObject(w);
+      out.close(); <font color="#009900">// Also flushes output</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> FileInputStream("worm.out"));
+      String s = (String)in.readObject();
+      Worm w2 = (Worm)in.readObject();
+      System.out.println(s + ", w2 = " + w2);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">try</font> {
+      ByteArrayOutputStream bout =
+        <font color="#0000ff">new</font> ByteArrayOutputStream();
+      ObjectOutputStream out =
+        <font color="#0000ff">new</font> ObjectOutputStream(bout);
+      out.writeObject("Worm storage");
+      out.writeObject(w);
+      out.flush();
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> ByteArrayInputStream(
+            bout.toByteArray()));
+      String s = (String)in.readObject();
+      Worm w3 = (Worm)in.readObject();
+      System.out.println(s + ", w3 = " + w3);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+make things interesting, the array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Data</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are initialized with random numbers. (This way you don&#8217;t suspect the
+compiler of keeping some kind of meta-information.) Each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+segment is labeled with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s automatically generated in the process of recursively generating
+the linked list of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+When you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you tell the constructor how long you want it to be. To make the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle it calls the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor with a length of one less, etc. The final 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is left as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+indicating the end of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Worm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+point of all this was to make something reasonably complex that couldn&#8217;t
+easily be serialized. The act of serializing, however, is quite simple. Once the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created from some other stream, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+serializes the object. Notice the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as well. You can also write all the primitive data types using the same methods
+as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(they share the same interface).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two separate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+blocks that look similar. The first writes and reads a file and the second, for
+variety, writes and reads a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can read and write an object using serialization to any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+including, as you will see in the networking chapter, a network. The output
+from one run was:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Worm constructor: 6
+Worm constructor: 5
+Worm constructor: 4
+Worm constructor: 3
+Worm constructor: 2
+Worm constructor: 1
+w = :a(262):b(100):c(396):d(480):e(316):f(398)
+Worm storage, w2 = :a(262):b(100):c(396):d(480):e(316):f(398)
+Worm storage, w3 = :a(262):b(100):c(396):d(480):e(316):f(398) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the deserialized object really does contain all of the links that
+were in the original object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that no constructor, not even the default constructor, is called in the process
+of deserializing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. The entire object is restored by recovering data from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Object
+serialization is another Java 1.1<A NAME="Index1320"></A>
+feature that is not part of the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies, but instead uses the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies. Thus you might encounter situations in which you&#8217;re forced
+to mix the two hierarchies.
+</FONT><a name="_Toc408018639"></a><P></DIV>
+<A NAME="Heading344"></A><H3 ALIGN=LEFT>
+Finding
+the class
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might wonder what&#8217;s necessary for an object to be recovered from its
+serialized state. For example, suppose you serialize an object and send it as a
+file or through a network to another machine. Could a program on the other
+machine reconstruct the object using only the contents of the file?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+best way to answer this question is (as usual) by performing an experiment. The
+following file goes in the subdirectory for this chapter:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Alien.java</font>
+<font color="#009900">// A serializable class</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Alien <font color="#0000ff">implements</font> Serializable {
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+file that creates and serializes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Alien
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+goes in the same directory:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FreezeAlien.java</font>
+<font color="#009900">// Create a serialized output file</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FreezeAlien {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> Exception {
+    ObjectOutput out = 
+      <font color="#0000ff">new</font> ObjectOutputStream(
+        <font color="#0000ff">new</font> FileOutputStream("file.x"));
+    Alien zorcon = <font color="#0000ff">new</font> Alien();
+    out.writeObject(zorcon); 
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Rather
+than catching and handling exceptions, this program takes the quick and dirty
+approach of passing the exceptions out of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so they&#8217;ll be reported on the command line.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the program is compiled and run, copy the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>file.x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a subdirectory called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>xfiles</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+where the following code goes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ThawAlien.java</font>
+<font color="#009900">// Try to recover a serialized file without the </font>
+<font color="#009900">// class of object that's stored in that file.</font>
+<font color="#0000ff">package</font> c10.xfiles;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ThawAlien {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> Exception {
+    ObjectInputStream in =
+      <font color="#0000ff">new</font> ObjectInputStream(
+        <font color="#0000ff">new</font> FileInputStream("file.x"));
+    Object mystery = in.readObject();
+    System.out.println(
+      mystery.getClass().toString());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program opens the file and reads in the object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mystery</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+successfully. However, as soon as you try to find out anything about the object
+&#8211; which requires the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Alien</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; the Java Virtual Machine (JVM) cannot find 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Alien.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(unless it happens to be in the Classpath, which it shouldn&#8217;t be in this
+example). You&#8217;ll get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassNotFoundException.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Once again, all evidence of alien life vanishes before proof of its existence
+can be verified!)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you expect to do much after you&#8217;ve recovered an object that has been
+serialized, you must make sure that the JVM can find the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file either in the local class path or somewhere on the Internet.
+</FONT><a name="_Toc408018640"></a><P></DIV>
+<A NAME="Heading345"></A><H3 ALIGN=LEFT>
+Controlling
+serialization
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you can see, the default serialization mechanism is trivial to use. But what if
+you have special needs? Perhaps you have special security issues and you
+don&#8217;t want to serialize portions of your object, or perhaps it just
+doesn&#8217;t make sense for one sub-object to be serialized if that part needs
+to be created anew when the object is recovered.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can <A NAME="Index1321"></A><A NAME="Index1322"></A>control
+the process of serialization by implementing the <A NAME="Index1323"></A><A NAME="Index1324"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface instead of the <A NAME="Index1325"></A><A NAME="Index1326"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface extends the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface and adds two methods, <A NAME="Index1327"></A><A NAME="Index1328"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeExternal(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1329"></A><A NAME="Index1330"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readExternal(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that
+<a name="which"></a>
+are automatically called for your object during serialization and
+deserialization so that you can perform your special operations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example shows simple implementations of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface methods. Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are nearly identical except for a subtle difference (see if you can discover it
+by looking at the code):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Blips.java</font>
+<font color="#009900">// Simple use of Externalizable &amp; a pitfall</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Blip1 <font color="#0000ff">implements</font> Externalizable {
+  <font color="#0000ff">public</font> Blip1() {
+    System.out.println("Blip1 Constructor");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writeExternal(ObjectOutput out)
+      <font color="#0000ff">throws</font> IOException {
+    System.out.println("Blip1.writeExternal");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> readExternal(ObjectInput in)
+     <font color="#0000ff">throws</font> IOException, ClassNotFoundException {
+    System.out.println("Blip1.readExternal");
+  }
+}
+
+<font color="#0000ff">class</font> Blip2 <font color="#0000ff">implements</font> Externalizable {
+  Blip2() {
+    System.out.println("Blip2 Constructor");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writeExternal(ObjectOutput out)
+      <font color="#0000ff">throws</font> IOException {
+    System.out.println("Blip2.writeExternal");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> readExternal(ObjectInput in)
+     <font color="#0000ff">throws</font> IOException, ClassNotFoundException {
+    System.out.println("Blip2.readExternal");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Blips {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println("Constructing objects:");
+    Blip1 b1 = <font color="#0000ff">new</font> Blip1();
+    Blip2 b2 = <font color="#0000ff">new</font> Blip2();
+    <font color="#0000ff">try</font> {
+      ObjectOutputStream o =
+        <font color="#0000ff">new</font> ObjectOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("Blips.out"));
+      System.out.println("Saving objects:");
+      o.writeObject(b1);
+      o.writeObject(b2);
+      o.close();
+      <font color="#009900">// Now get them back:</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> FileInputStream("Blips.out"));
+      System.out.println("Recovering b1:");
+      b1 = (Blip1)in.readObject();
+      <font color="#009900">// OOPS! Throws an exception:</font>
+<font color="#009900">//!   System.out.println("Recovering b2:");</font>
+<font color="#009900">//!   b2 = (Blip2)in.readObject();</font>
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Constructing objects:
+Blip1 Constructor
+Blip2 Constructor
+Saving objects:
+Blip1.writeExternal
+Blip2.writeExternal
+Recovering b1:
+Blip1 Constructor
+Blip1.readExternal</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is not recovered is that trying to do so causes an exception. Can you
+see the difference between 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+The constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+while the constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not, and that causes the exception upon recovery. Try making 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+constructor 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+removing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>//!
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">comments
+to see the correct results.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is recovered, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blip1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+default constructor is called. This is different from recovering a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, in which the object is constructed entirely from its stored bits, with
+no constructor calls. With an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, all the normal default construction behavior occurs (including the
+initializations at the point of field definition), and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>then</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readExternal(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called. You need to be aware of this &#8211; in particular the fact that all
+the default construction always takes place &#8211; to produce the correct
+behavior in your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that shows what you must do to fully store and retrieve an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Blip3.java</font>
+<font color="#009900">// Reconstructing an externalizable object</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Blip3 <font color="#0000ff">implements</font> Externalizable {
+  <font color="#0000ff">int</font> i;
+  String s; <font color="#009900">// No initialization</font>
+  <font color="#0000ff">public</font> Blip3() {
+    System.out.println("Blip3 Constructor");
+    <font color="#009900">// s, i not initialized</font>
+  }
+  <font color="#0000ff">public</font> Blip3(String x, <font color="#0000ff">int</font> a) {
+    System.out.println("Blip3(String x, <font color="#0000ff">int</font> a)");
+    s = x;
+    i = a;
+    <font color="#009900">// s &amp; i initialized only in non-default</font>
+    <font color="#009900">// constructor.</font>
+  }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> s + i; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> writeExternal(ObjectOutput out)
+      <font color="#0000ff">throws</font> IOException {
+    System.out.println("Blip3.writeExternal");
+    <font color="#009900">// You must do this:</font>
+    out.writeObject(s); out.writeInt(i);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> readExternal(ObjectInput in)
+     <font color="#0000ff">throws</font> IOException, ClassNotFoundException {
+    System.out.println("Blip3.readExternal");
+    <font color="#009900">// You must do this:</font>
+    s = (String)in.readObject(); 
+    i =in.readInt();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println("Constructing objects:");
+    Blip3 b3 = <font color="#0000ff">new</font> Blip3("A String ", 47);
+    System.out.println(b3.toString());
+    <font color="#0000ff">try</font> {
+      ObjectOutputStream o =
+        <font color="#0000ff">new</font> ObjectOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("Blip3.out"));
+      System.out.println("Saving object:");
+      o.writeObject(b3);
+      o.close();
+      <font color="#009900">// Now get it back:</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> FileInputStream("Blip3.out"));
+      System.out.println("Recovering b3:");
+      b3 = (Blip3)in.readObject();
+      System.out.println(b3.toString());
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fields 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+initialized only in the second constructor, but not in the default constructor.
+This means that if you don&#8217;t initialize 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readExternal</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(since the storage for the object gets wiped to zero in the first step of
+object creation). If you comment out the two lines of code following the
+phrases &#8220;You must do this&#8221; and run the program, you&#8217;ll see
+that when the object is recovered, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is zero.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you are inheriting from an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, you&#8217;ll typically call the base-class versions of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeExternal(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readExternal(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to provide proper storage and retrieval of the base-class components.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+to make things work correctly you must not only write the important data from
+the object during the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeExternal(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+(there is no default behavior that writes any of the member objects for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object), but you must also recover that data in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readExternal(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. This can be a bit confusing at first because the default construction
+behavior for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object can make it seem like some kind of storage and retrieval takes place
+automatically. It does not.
+</FONT><P></DIV>
+<A NAME="Heading346"></A><H4 ALIGN=LEFT>
+The
+transient keyword
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you&#8217;re controlling serialization, there might be a particular subobject
+that you don&#8217;t want Java&#8217;s serialization mechanism to automatically
+save and restore. This is commonly the case if that subobject represents
+sensitive information that you don&#8217;t want to serialize, such as a
+password. Even if that information is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+the object, once it&#8217;s serialized it&#8217;s possible for someone to
+access it by reading a file or intercepting a network transmission.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+way to prevent sensitive parts of your object from being serialized is to
+implement your class as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as shown previously. Then nothing is automatically serialized and you can
+explicitly serialize only the necessary parts inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeExternal(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re working with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object,
+however, all serialization happens automatically. To control this, you can turn
+off serialization on a field-by-field basis using the <A NAME="Index1331"></A><A NAME="Index1332"></A><A NAME="Index1333"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, which says &#8220;Don&#8217;t bother saving or restoring this &#8211;
+I&#8217;ll take care of it.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+example, consider a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Login
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+that keeps information about a particular login session. Suppose that, once you
+verify the login, you want to store the data, but without the password. The
+easiest way to do this is by implementing <A NAME="Index1334"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and marking the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>password</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here&#8217;s what it looks like:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Logon.java</font>
+<font color="#009900">// Demonstrates the "transient" keyword</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Logon <font color="#0000ff">implements</font> Serializable {
+  <font color="#0000ff">private</font> Date date = <font color="#0000ff">new</font> Date();
+  <font color="#0000ff">private</font> String username;
+  <font color="#0000ff">private</font> <font color="#0000ff">transient</font> String password;
+  Logon(String name, String pwd) {
+    username = name;
+    password = pwd;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    String pwd =
+      (password == <font color="#0000ff">null</font>) ? "(n/a)" : password;
+    <font color="#0000ff">return</font> "logon info: \n   " +
+      "username: " + username +
+      "\n   date: " + date.toString() +
+      "\n   password: " + pwd;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Logon a = <font color="#0000ff">new</font> Logon("Hulk", "myLittlePony");
+    System.out.println( "logon a = " + a);
+    <font color="#0000ff">try</font> {
+      ObjectOutputStream o =
+        <font color="#0000ff">new</font> ObjectOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("Logon.out"));
+      o.writeObject(a);
+      o.close();
+      <font color="#009900">// Delay:</font>
+      <font color="#0000ff">int</font> seconds = 5;
+      <font color="#0000ff">long</font> t = System.currentTimeMillis()
+             + seconds * 1000;
+      <font color="#0000ff">while</font>(System.currentTimeMillis() &lt; t)
+        ;
+      <font color="#009900">// Now get them back:</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> FileInputStream("Logon.out"));
+      System.out.println(
+        "Recovering object at " + <font color="#0000ff">new</font> Date());
+      a = (Logon)in.readObject();
+      System.out.println( "logon a = " + a);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>date</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>username</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields are ordinary (not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and thus are automatically serialized. However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>password</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and so is not stored to disk; also the serialization mechanism makes no attempt
+to recover it. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>logon a = logon info:
+   username: Hulk
+   date: Sun Mar 23 18:25:53 PST 1997
+   password: myLittlePony
+Recovering object at Sun Mar 23 18:25:59 PST 1997
+logon a = logon info:
+   username: Hulk
+   date: Sun Mar 23 18:25:53 PST 1997
+   password: (n/a) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the object is recovered, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>password</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must check for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>password
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">because
+if you try to assemble a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object using the overloaded &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+operator, and that operator encounters a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle, you&#8217;ll get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NullPointerException.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Newer versions of Java might contain code to avoid this problem.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>date</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is stored to and recovered from disk and not generated anew.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects do not store any of their fields by default, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword is for use with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects only.
+</FONT><P></DIV>
+<A NAME="Heading347"></A><H4 ALIGN=LEFT>
+An
+alternative to Externalizable
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re not keen on implementing the <A NAME="Index1335"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Externalizable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">interface,
+there&#8217;s another approach. You can implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>add
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(notice
+I say &#8220;add&#8221; and not &#8220;override&#8221; or
+&#8220;implement&#8221;) methods called <A NAME="Index1336"></A><A NAME="Index1337"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1338"></A><A NAME="Index1339"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that will automatically be called when the object is serialized and
+deserialized, respectively. That is, if you provide these two methods they will
+be used instead of the default serialization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+methods must have these exact signatures:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">private</font> <font color="#0000ff">void</font> 
+  writeObject(ObjectOutputStream stream)
+    <font color="#0000ff">throws</font> IOException;
+
+<font color="#0000ff">private</font> <font color="#0000ff">void</font> 
+  readObject(ObjectInputStream stream)
+    <font color="#0000ff">throws</font> IOException, ClassNotFoundException </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">From
+a design standpoint, things get really weird here. First of all, you might
+think that because these methods are not part of a base class or the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface, they ought to be defined in their own interface(s). But notice that
+they are defined as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means they are to be called only by other members of this class. However,
+you don&#8217;t actually call them from other members of this class, but
+instead the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects call your object&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. (Notice my tremendous restraint in not launching into a long diatribe
+about using the same method names here. In a word: confusing.) You might wonder
+how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects have access to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods of your class. We can only assume that this is part of the
+serialization magic.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+any event, anything defined in an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then they can&#8217;t be part of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since you must follow the signatures exactly, the effect is the same as if
+you&#8217;re implementing an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+would appear that when you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream.writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that you pass it to is interrogated (using reflection, no doubt) to see
+if it implements its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If so, the normal serialization process is skipped and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called. The same sort of situation exists for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+one other twist. Inside your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can choose to perform the default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+action by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultWriteObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Likewise, inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultReadObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here is a simple example that demonstrates how you can control the storage and
+retrieval of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SerialCtl.java</font>
+<font color="#009900">// Controlling serialization by adding your own</font>
+<font color="#009900">// writeObject() and readObject() methods.</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SerialCtl <font color="#0000ff">implements</font> Serializable {
+  String a;
+  <font color="#0000ff">transient</font> String b;
+  <font color="#0000ff">public</font> SerialCtl(String aa, String bb) {
+    a = "Not Transient: " + aa;
+    b = "Transient: " + bb;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> a + "\n" + b;
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> 
+    writeObject(ObjectOutputStream stream)
+      <font color="#0000ff">throws</font> IOException {
+    stream.defaultWriteObject();
+    stream.writeObject(b);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> 
+    readObject(ObjectInputStream stream)
+      <font color="#0000ff">throws</font> IOException, ClassNotFoundException {
+    stream.defaultReadObject();
+    b = (String)stream.readObject();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    SerialCtl sc = 
+      <font color="#0000ff">new</font> SerialCtl("Test1", "Test2");
+    System.out.println("Before:\n" + sc);
+    ByteArrayOutputStream buf = 
+      <font color="#0000ff">new</font> ByteArrayOutputStream();
+    <font color="#0000ff">try</font> {
+      ObjectOutputStream o =
+        <font color="#0000ff">new</font> ObjectOutputStream(buf);
+      o.writeObject(sc);
+      <font color="#009900">// Now get it back:</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> ByteArrayInputStream(
+            buf.toByteArray()));
+      SerialCtl sc2 = (SerialCtl)in.readObject();
+      System.out.println("After:\n" + sc2);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this example, one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is ordinary and the other is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to prove that the non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is saved by the <A NAME="Index1340"></A><A NAME="Index1341"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultWriteObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is saved and restored explicitly. The fields are initialized inside the
+constructor rather than at the point of definition to prove that they are not
+being initialized by some automatic mechanism during deserialization.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you are going to use the default mechanism to write the non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+parts of your object, you must call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultWriteObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the first operation in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1342"></A><A NAME="Index1343"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultReadObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the first operation in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These are strange method calls. It would appear, for example, that you are
+calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>defaultWriteObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and passing it no arguments, and yet it somehow turns around and knows the
+handle to your object and how to write all the non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+parts. Spooky.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+storage and retrieval of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects uses more familiar code. And yet, think about what happens here. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SerialCtl</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created, and then it&#8217;s serialized to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Notice in this case that a buffer is used instead of a file &#8211; it&#8217;s
+all the same to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ObjectOutputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+The serialization occurs in the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">o.writeObject(sc);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must be examining 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sc</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to see if it has its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. (Not by checking the interface &#8211; there isn&#8217;t one &#8211; or
+the class type, but by actually hunting for the method using reflection.) If it
+does, it uses that. A similar approach holds true for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readObject(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Perhaps this was the only practical way that they could solve the problem, but
+it&#8217;s certainly strange.
+</FONT><P></DIV>
+<A NAME="Heading348"></A><H4 ALIGN=LEFT>
+Versioning<P><A NAME="Index1344"></A><A NAME="Index1345"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+possible that you might want to change the version of a serializable class
+(objects of the original class might be stored in a database, for example).
+This is supported but you&#8217;ll probably do it only in special cases, and it
+requires an extra depth of understanding that we will not attempt to achieve
+here. The JDK1.1 HTML documents downloadable from Sun (which might be part of
+your Java package&#8217;s online documents) cover this topic quite thoroughly.
+</FONT><a name="_Toc408018641"></a><P></DIV>
+<A NAME="Heading349"></A><H3 ALIGN=LEFT>
+Using
+persistence
+<P><A NAME="Index1346"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+quite appealing to use <A NAME="Index1347"></A>serialization
+technology to store some of the state of your program so that you can easily
+restore the program to the current state later. But before you can do this,
+some questions must be answered. What happens if you serialize two objects that
+both have a handle to a third object? When you restore those two objects from
+their serialized state, do you get only one occurrence of the third object?
+What if you serialize your two objects to separate files and deserialize them
+in different parts of your code?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that shows the problem:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MyWorld.java</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> House <font color="#0000ff">implements</font> Serializable {}
+
+<font color="#0000ff">class</font> Animal <font color="#0000ff">implements</font> Serializable {
+  String name;
+  House preferredHouse;
+  Animal(String nm, House h) { 
+    name = nm; 
+    preferredHouse = h;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> name + "[" + <font color="#0000ff">super</font>.toString() + 
+      "], " + preferredHouse + "\n";
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MyWorld {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    House house = <font color="#0000ff">new</font> House();
+    Vector  animals = <font color="#0000ff">new</font> Vector();
+    animals.addElement(
+      <font color="#0000ff">new</font> Animal("Bosco the dog", house));
+    animals.addElement(
+      <font color="#0000ff">new</font> Animal("Ralph the hamster", house));
+    animals.addElement(
+      <font color="#0000ff">new</font> Animal("Fronk the cat", house));
+    System.out.println("animals: " + animals);
+
+    <font color="#0000ff">try</font> {
+      ByteArrayOutputStream buf1 = 
+        <font color="#0000ff">new</font> ByteArrayOutputStream();
+      ObjectOutputStream o1 =
+        <font color="#0000ff">new</font> ObjectOutputStream(buf1);
+      o1.writeObject(animals);
+      o1.writeObject(animals); <font color="#009900">// Write a 2nd set</font>
+      <font color="#009900">// Write to a different stream:</font>
+      ByteArrayOutputStream buf2 = 
+        <font color="#0000ff">new</font> ByteArrayOutputStream();
+      ObjectOutputStream o2 =
+        <font color="#0000ff">new</font> ObjectOutputStream(buf2);
+      o2.writeObject(animals);
+      <font color="#009900">// Now get them back:</font>
+      ObjectInputStream in1 =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> ByteArrayInputStream(
+            buf1.toByteArray()));
+      ObjectInputStream in2 =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> ByteArrayInputStream(
+            buf2.toByteArray()));
+      Vector animals1 = (Vector)in1.readObject();
+      Vector animals2 = (Vector)in1.readObject();
+      Vector animals3 = (Vector)in2.readObject();
+      System.out.println("animals1: " + animals1);
+      System.out.println("animals2: " + animals2);
+      System.out.println("animals3: " + animals3);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+thing that&#8217;s interesting here is that it&#8217;s possible to use object
+serialization to and from a byte array as a way of doing a &#8220;deep
+copy&#8221; of any object that&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(A deep copy means that you&#8217;re duplicating the entire web of objects,
+rather than just the basic object and its handles.) Copying is covered in depth
+in Chapter 12.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Animal</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects contain fields of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>House</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of these 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Animal</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is created and it is serialized twice to one stream and then again to a
+separate stream. When these are deserialized and printed, you see the following
+results for one run (the objects will be in different memory locations each run):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>animals: [Bosco the dog[Animal@1cc76c], House@1cc769
+, Ralph the hamster[Animal@1cc76d], House@1cc769
+, Fronk the cat[Animal@1cc76e], House@1cc769
+]
+animals1: [Bosco the dog[Animal@1cca0c], House@1cca16
+, Ralph the hamster[Animal@1cca17], House@1cca16
+, Fronk the cat[Animal@1cca1b], House@1cca16
+]
+animals2: [Bosco the dog[Animal@1cca0c], House@1cca16
+, Ralph the hamster[Animal@1cca17], House@1cca16
+, Fronk the cat[Animal@1cca1b], House@1cca16
+]
+animals3: [Bosco the dog[Animal@1cca52], House@1cca5c
+, Ralph the hamster[Animal@1cca5d], House@1cca5c
+, Fronk the cat[Animal@1cca61], House@1cca5c
+]</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course you expect that the deserialized objects have different addresses from
+their originals. But notice that in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>animals1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>animals2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the same addresses appear, including the references to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>House
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+that both share. On the other hand, when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>animals3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+recovered the system has no way of knowing that the objects in this other
+stream are aliases of the objects in the first stream, so it makes a completely
+different web of objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+long as you&#8217;re serializing everything to a single stream, you&#8217;ll be
+able to recover the same web of objects that you wrote, with no accidental
+duplication of objects. Of course, you can change the state of your objects in
+between the time you write the first and the last, but that&#8217;s your
+responsibility &#8211; the objects will be written in whatever state they are
+in (and with whatever connections they have to other objects) at the time you
+serialize them.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+safest thing to do if you want to save the state of a system is to serialize as
+an &#8220;atomic&#8221; operation. If you serialize some things, do some other
+work, and serialize some more, etc., then you will not be storing the system
+safely. Instead, put all the objects that comprise the state of your system in
+a single collection and simply write that collection out in one operation. Then
+you can restore it with a single method call as well.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example is an imaginary computer-aided design (CAD) system that
+demonstrates the approach. In addition, it throws in the issue of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields &#8211; if you look at the documentation you&#8217;ll see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it should be easy to store the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields by simply serializing the <A NAME="Index1348"></A><A NAME="Index1349"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. That seems like a sensible approach, anyway.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CADState.java</font>
+<font color="#009900">// Saving and restoring the state of a </font>
+<font color="#009900">// pretend CAD system.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">abstract</font> <font color="#0000ff">class</font> Shape <font color="#0000ff">implements</font> Serializable {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> 
+    RED = 1, BLUE = 2, GREEN = 3;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> xPos, yPos, dimension;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Random r = <font color="#0000ff">new</font> Random();
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> counter = 0;
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(<font color="#0000ff">int</font> newColor);
+  <font color="#0000ff">abstract</font> <font color="#0000ff">public</font> <font color="#0000ff">int</font> getColor();
+  <font color="#0000ff">public</font> Shape(<font color="#0000ff">int</font> xVal, <font color="#0000ff">int</font> yVal, <font color="#0000ff">int</font> dim) {
+    xPos = xVal;
+    yPos = yVal;
+    dimension = dim;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> getClass().toString() + 
+      " color[" + getColor() +
+      "] xPos[" + xPos +
+      "] yPos[" + yPos +
+      "] dim[" + dimension + "]\n";
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Shape randomFactory() {
+    <font color="#0000ff">int</font> xVal = r.nextInt() % 100;
+    <font color="#0000ff">int</font> yVal = r.nextInt() % 100;
+    <font color="#0000ff">int</font> dim = r.nextInt() % 100;
+    <font color="#0000ff">switch</font>(counter++ % 3) {
+      <font color="#0000ff">default</font>: 
+      <font color="#0000ff">case</font> 0: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Circle(xVal, yVal, dim);
+      <font color="#0000ff">case</font> 1: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Square(xVal, yVal, dim);
+      <font color="#0000ff">case</font> 2: <font color="#0000ff">return</font> <font color="#0000ff">new</font> Line(xVal, yVal, dim);
+    }
+  }
+}
+
+<font color="#0000ff">class</font> Circle <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> color = RED;
+  <font color="#0000ff">public</font> Circle(<font color="#0000ff">int</font> xVal, <font color="#0000ff">int</font> yVal, <font color="#0000ff">int</font> dim) {
+    <font color="#0000ff">super</font>(xVal, yVal, dim);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(<font color="#0000ff">int</font> newColor) { 
+    color = newColor;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getColor() { 
+    <font color="#0000ff">return</font> color;
+  }
+}
+
+<font color="#0000ff">class</font> Square <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> color;
+  <font color="#0000ff">public</font> Square(<font color="#0000ff">int</font> xVal, <font color="#0000ff">int</font> yVal, <font color="#0000ff">int</font> dim) {
+    <font color="#0000ff">super</font>(xVal, yVal, dim);
+    color = RED;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(<font color="#0000ff">int</font> newColor) { 
+    color = newColor;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getColor() { 
+    <font color="#0000ff">return</font> color;
+  }
+}
+
+<font color="#0000ff">class</font> Line <font color="#0000ff">extends</font> Shape {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> color = RED;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  serializeStaticState(ObjectOutputStream os)
+      <font color="#0000ff">throws</font> IOException {
+    os.writeInt(color);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  deserializeStaticState(ObjectInputStream os)
+      <font color="#0000ff">throws</font> IOException {
+    color = os.readInt();
+  }
+  <font color="#0000ff">public</font> Line(<font color="#0000ff">int</font> xVal, <font color="#0000ff">int</font> yVal, <font color="#0000ff">int</font> dim) {
+    <font color="#0000ff">super</font>(xVal, yVal, dim);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(<font color="#0000ff">int</font> newColor) { 
+    color = newColor;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getColor() { 
+    <font color="#0000ff">return</font> color;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CADState {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> Exception {
+    Vector shapeTypes, shapes;
+    <font color="#0000ff">if</font>(args.length == 0) {
+      shapeTypes = <font color="#0000ff">new</font> Vector();
+      shapes = <font color="#0000ff">new</font> Vector();
+      <font color="#009900">// Add handles to the class objects:</font>
+      shapeTypes.addElement(Circle.<font color="#0000ff">class</font>);
+      shapeTypes.addElement(Square.<font color="#0000ff">class</font>);
+      shapeTypes.addElement(Line.<font color="#0000ff">class</font>);
+      <font color="#009900">// Make some shapes:</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+        shapes.addElement(Shape.randomFactory());
+      <font color="#009900">// Set all the static colors to GREEN:</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+        ((Shape)shapes.elementAt(i))
+          .setColor(Shape.GREEN);
+      <font color="#009900">// Save the state vector:</font>
+      ObjectOutputStream out =
+        <font color="#0000ff">new</font> ObjectOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("CADState.out"));
+      out.writeObject(shapeTypes);
+      Line.serializeStaticState(out);
+      out.writeObject(shapes);
+    } <font color="#0000ff">else</font> { <font color="#009900">// There's a command-line argument</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> FileInputStream(args[0]));
+      <font color="#009900">// Read in the same order they were written:</font>
+      shapeTypes = (Vector)in.readObject();
+      Line.deserializeStaticState(in);
+      shapes = (Vector)in.readObject();
+    }
+    <font color="#009900">// Display the shapes:</font>
+    System.out.println(shapes);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements
+<A NAME="Index1350"></A>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so anything that is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well. Each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains data, and each derived 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field that determines the color of all of those types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(Placing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field in the base class would result in only one field, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields are not duplicated in derived classes.) Methods in the base class can be
+overridden to set the color for the various types (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are not dynamically bound, so these are normal methods). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>randomFactory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method creates a different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+each time you call it, using random values for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are straightforward extensions of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+the only difference is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initializes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>color</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at the point of definition and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initializes it in the constructor. We&#8217;ll leave the discussion of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Line</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to hold the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and the other to hold the shapes. If you don&#8217;t provide a command
+line argument the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>shapeTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are added, and then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>shapes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are added. Next, all the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>color</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values are set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GREEN</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and everything is serialized to the file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CADState.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you provide a command line argument (presumably 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CADState.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+that file is opened and used to restore the state of the program. In both
+situations, the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is printed out. The results from one run are:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&gt;java CADState
+[<font color="#0000ff">class</font> Circle color[3] xPos[-51] yPos[-99] dim[38]
+, <font color="#0000ff">class</font> Square color[3] xPos[2] yPos[61] dim[-46]
+, <font color="#0000ff">class</font> Line color[3] xPos[51] yPos[73] dim[64]
+, <font color="#0000ff">class</font> Circle color[3] xPos[-70] yPos[1] dim[16]
+, <font color="#0000ff">class</font> Square color[3] xPos[3] yPos[94] dim[-36]
+, <font color="#0000ff">class</font> Line color[3] xPos[-84] yPos[-21] dim[-35]
+, <font color="#0000ff">class</font> Circle color[3] xPos[-75] yPos[-43] dim[22]
+, <font color="#0000ff">class</font> Square color[3] xPos[81] yPos[30] dim[-45]
+, <font color="#0000ff">class</font> Line color[3] xPos[-29] yPos[92] dim[17]
+, <font color="#0000ff">class</font> Circle color[3] xPos[17] yPos[90] dim[-76]
+]
+
+&gt;java CADState CADState.out
+[<font color="#0000ff">class</font> Circle color[1] xPos[-51] yPos[-99] dim[38]
+, <font color="#0000ff">class</font> Square color[0] xPos[2] yPos[61] dim[-46]
+, <font color="#0000ff">class</font> Line color[3] xPos[51] yPos[73] dim[64]
+, <font color="#0000ff">class</font> Circle color[1] xPos[-70] yPos[1] dim[16]
+, <font color="#0000ff">class</font> Square color[0] xPos[3] yPos[94] dim[-36]
+, <font color="#0000ff">class</font> Line color[3] xPos[-84] yPos[-21] dim[-35]
+, <font color="#0000ff">class</font> Circle color[1] xPos[-75] yPos[-43] dim[22]
+, <font color="#0000ff">class</font> Square color[0] xPos[81] yPos[30] dim[-45]
+, <font color="#0000ff">class</font> Line color[3] xPos[-29] yPos[92] dim[17]
+, <font color="#0000ff">class</font> Circle color[1] xPos[17] yPos[90] dim[-76]
+]</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the values of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>xPos</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yPos,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dim</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+were all stored and recovered successfully, but there&#8217;s something wrong
+with the retrieval of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+information. It&#8217;s all &#8216;3&#8217; going in, but it doesn&#8217;t come
+out that way. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+have a value of 1 (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RED</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is the definition), and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+have a value of 0 (remember, they are initialized in the constructor).
+It&#8217;s as if the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+didn&#8217;t get serialized at all! That&#8217;s right &#8211; even though class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it doesn&#8217;t do what you expect. So if you want to serialize 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>statics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must do it yourself.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is what the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>serializeStaticState(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>deserializeStaticState(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Line</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are for. You can see that they are explicitly called as part of the storage and
+retrieval process. (Note that the order of writing to the serialize file and
+reading back from it must be maintained.) Thus to make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CADState.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+run correctly you must (1) Add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>serializeStaticState(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>deserializeStaticState(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the shapes, (2) Remove the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+shapeTypes
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all code related to it, and (3) Add calls to the new serialize and
+deserialize static methods in the shapes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+issue you might have to think about is security, since serialization also saves 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data. If you have a security issue, those fields should be marked as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>transient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But then you have to design a secure way to store that information so that when
+you do a restore you can reset those 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variables. 
+</FONT><a name="_Toc408018642"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0115.html">Prev</a> | <a href="tij0117.html">Next</a>
+</div>
+</body></html>
+

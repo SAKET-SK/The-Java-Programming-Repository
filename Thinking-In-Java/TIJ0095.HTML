@@ -1,0 +1,130 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0094.html">Prev</a> | <a href="tij0096.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exercises</H2>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a new class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+gerbilNumber 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that&#8217;s
+initialized in the constructor (similar to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mouse
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">example
+in this chapter). Give it a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that prints out which gerbil number this is and that it&#8217;s hopping. Create
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and add a bunch of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Now use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to move through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+Exercise 1 so you use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to move through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+while calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+change the example so it uses a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Take
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class in Exercise 1 and put it into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead, associating the name of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(the key) for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(the
+value) you put in the table. Get an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and use it to move through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+looking up the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each key and printing out the key and telling the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Change
+Exercise 1 in Chapter 7 to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to hold the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Rodent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to move through the sequence of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Rodent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Remember that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+so you must use a cast (i.e.: RTTI) when accessing individual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Rodent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Intermediate)
+In Chapter 7, locate the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example, which consists of three files. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Controller.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just a collection. Change the code to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This will require more than just replacing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+you&#8217;ll also need to use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to cycle through the set of events. You&#8217;ll probably find it easier if at
+times you treat the collection as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and at other times as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Challenging).
+Find the source code for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the Java source code library that comes with all Java distributions. Copy
+this code and make a special version called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>intVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that holds only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Consider what it would take to make a special version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all the primitive types. Now consider what happens if you want to make a
+linked list class that works with all the primitive types. If parameterized
+types are ever implemented in Java, they will provide a way to do this work for
+you automatically (as well as many other benefits).
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">e</FONT><a name="Chapter_9"></a><a name="_Toc375545361"></a><a name="_Toc407441453"></a><a name="_Toc408018588"></a></OL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0094.html">Prev</a> | <a href="tij0096.html">Next</a>
+</div>
+</body></html>
+

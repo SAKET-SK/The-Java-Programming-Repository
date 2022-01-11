@@ -1,0 +1,775 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0113.html">Prev</a> | <a href="tij0115.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Java
+1.1 IO streams
+<P><A NAME="Index1181"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point you might be scratching your head, wondering if there is another
+design for IO streams that could require 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>more</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+typing. Could someone have come up with an odder design?&#8221; Prepare
+yourself: Java 1.1 makes some significant modifications to the IO stream
+library. When you see the <A NAME="Index1182"></A><A NAME="Index1183"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1184"></A><A NAME="Index1185"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes your first thought (like mine) might be that these were meant to
+replace the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. But that&#8217;s not the case. Although some aspects of the original
+streams library are deprecated (if you use them you will receive a warning from
+the compiler), the old streams have been left in for backwards compatibility and:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	New
+classes have been put into the old hierarchy, so it&#8217;s obvious that Sun is
+not abandoning the old streams.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There
+are times when you&#8217;re supposed to use classes in the old hierarchy 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>in
+combination
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with classes in the new hierarchy and to accomplish this there are
+&#8220;bridge&#8221; classes: <A NAME="Index1186"></A><A NAME="Index1187"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStreamReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+converts an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+<A NAME="Index1188"></A><A NAME="Index1189"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStreamWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+converts an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a result there are situations in which you have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>more</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+layers of wrapping with the new IO stream library than with the old. Again,
+this is a drawback of the decorator pattern &#8211; the price you pay for added
+flexibility.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most important reason for adding the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies in Java 1.1<A NAME="Index1190"></A>
+is for <A NAME="Index1191"></A><A NAME="Index1192"></A>internationalization.
+The old IO stream hierarchy supports only 8-bit byte streams and doesn&#8217;t
+handle the 16-bit Unicode characters well. Since Unicode is used for
+internationalization (and Java&#8217;s native 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+16-bit <A NAME="Index1193"></A><A NAME="Index1194"></A>Unicode),
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies were added to support Unicode in all IO operations. In addition,
+the new libraries are designed for faster operations than the old.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+is the practice in this book, I will attempt to provide an overview of the
+classes but assume that you will use online documentation to determine all the
+details, such as the exhaustive list of methods.
+</FONT><a name="_Toc408018629"></a><P></DIV>
+<A NAME="Heading334"></A><H3 ALIGN=LEFT>
+Sources
+and sinks of data
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Almost
+all of the Java 1.0<A NAME="Index1195"></A>
+IO stream classes have corresponding Java 1.1<A NAME="Index1196"></A>
+classes to provide native Unicode manipulation. It would be easiest to say
+&#8220;Always use the new classes, never use the old ones,&#8221; but things
+are not that simple. Sometimes you are forced into using the Java 1.0 IO stream
+classes because of the library design; in particular, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util.zip</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+libraries are new additions to the old stream library and they rely on old
+stream components. So the most sensible approach to take is to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>try</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes whenever you can, and you&#8217;ll discover the situations when you
+have to drop back into the old libraries because your code won&#8217;t compile.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is a table that shows the correspondence between the sources and sinks of
+information (that is, where the data physically comes from or goes to) in the
+old and new libraries.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="144">
+      <COL width="175">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sources
+&amp; Sinks:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.0<A NAME="Index1197"></A>
+class
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Corresponding
+Java 1.1<A NAME="Index1198"></A>
+class
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1199"></A><A NAME="Index1200"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">converter:
+<A NAME="Index1201"></A><A NAME="Index1202"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStreamReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1203"></A><A NAME="Index1204"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">converter:
+<A NAME="Index1205"></A><A NAME="Index1206"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStreamWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1207"></A><A NAME="Index1208"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileOutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1209"></A><A NAME="Index1210"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1211"></A><A NAME="Index1212"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(no
+corresponding class)
+</FONT><P></DIV>
+</TD>
+<A NAME="Index1213"></A><A NAME="Index1214"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArrayInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1215"></A><A NAME="Index1216"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CharArrayReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArrayOutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1217"></A><A NAME="Index1218"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CharArrayWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1219"></A><A NAME="Index1220"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedOutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1221"></A><A NAME="Index1222"></A><TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, you&#8217;ll find that the interfaces in the old library components
+and the new ones are similar if not identical.
+</FONT><a name="_Toc408018630"></a><P></DIV>
+<A NAME="Heading335"></A><H3 ALIGN=LEFT>
+Modifying
+stream behavior
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java 1.0<A NAME="Index1223"></A>,
+streams were adapted for particular needs using &#8220;decorator&#8221;
+subclasses of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Java 1.1<A NAME="Index1224"></A>
+IO streams continues the use of this idea, but the model of deriving all of the
+decorators from the same &#8220;filter&#8221; base class is not followed. This
+can make it a bit confusing if you&#8217;re trying to understand it by looking
+at the class hierarchy.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following table, the correspondence is a rougher approximation than in the
+previous table. The difference is because of the class organization: while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which, even though it is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+has no subclasses and so appears to have been put in either as a placeholder or
+simply so you wouldn&#8217;t wonder where it was). However, the interfaces to
+the classes are quite a close match and it&#8217;s apparent that you&#8217;re
+supposed to use the new versions instead of the old whenever possible (that is,
+except in cases where you&#8217;re forced to produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="139">
+      <COL width="198">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Filters:</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.0<A NAME="Index1225"></A>
+class
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Corresponding
+Java 1.1<A NAME="Index1226"></A>
+class
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1227"></A><A NAME="Index1228"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1229"></A><A NAME="Index1230"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class with no subclasses)
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1231"></A><A NAME="Index1232"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(also
+has <A NAME="Index1233"></A><A NAME="Index1234"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedOutputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1235"></A><A NAME="Index1236"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">use
+<A NAME="Index1237"></A><A NAME="Index1238"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Except
+when you need to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+when you should use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1239"></A><A NAME="Index1240"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1241"></A><A NAME="Index1242"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberReader</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1243"></A><A NAME="Index1244"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(use
+constructor that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead)
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=139 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PushBackInputStream</B></FONT><P></DIV>
+</TD>
+<A NAME="Index1245"></A><A NAME="Index1246"></A><TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PushBackReader</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+one direction that&#8217;s quite clear: Whenever you want to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you shouldn&#8217;t do it with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+any more (this is met with a deprecation message at compile time), but instead
+use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Other than this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is still a &#8220;preferred&#8221; member of the Java 1.1 IO library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+make the transition to using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+easier, it has constructors that take any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has no more support for formatting than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does; the interfaces are virtually the same.
+</FONT><a name="_Toc408018631"></a><P></DIV>
+<A NAME="Heading336"></A><H3 ALIGN=LEFT>
+Unchanged
+Classes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Apparently,
+the Java library designers felt that they got some of the classes right the
+first time so there were no changes to these and you can go on using them as
+they are:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="166">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.0<A NAME="Index1247"></A>
+classes without corresponding Java 1.1<A NAME="Index1248"></A>
+classes
+</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1249"></A><A NAME="Index1250"></A><TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1251"></A><A NAME="Index1252"></A><TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1253"></A><A NAME="Index1254"></A><TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1255"></A><A NAME="Index1256"></A><TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SequenceInputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in particular, is used without change, so for storing and retrieving data in a
+transportable format you&#8217;re forced to stay in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hierarchies.
+</FONT><a name="_Toc408018632"></a><P></DIV>
+<A NAME="Heading337"></A><H3 ALIGN=LEFT>
+An
+example
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+see the effect of the new classes, let&#8217;s look at the appropriate portion
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IOStreamDemo.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example modified to use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: NewIODemo.java</font>
+<font color="#009900">// Java 1.1 IO typical usage</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> NewIODemo {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// 1. Reading input by lines:</font>
+      BufferedReader in =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> FileReader(args[0]));
+      String s, s2 = <font color="#0000ff">new</font> String();
+      <font color="#0000ff">while</font>((s = in.readLine())!= <font color="#0000ff">null</font>)
+        s2 += s + "\n";
+      in.close();
+
+      <font color="#009900">// 1b. Reading standard input:</font>
+      BufferedReader stdin =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> InputStreamReader(System.in));      
+      System.out.print("Enter a line:");
+      System.out.println(stdin.readLine());
+
+      <font color="#009900">// 2. Input from memory</font>
+      StringReader in2 = <font color="#0000ff">new</font> StringReader(s2);
+      <font color="#0000ff">int</font> c;
+      <font color="#0000ff">while</font>((c = in2.read()) != -1)
+        System.out.print((<font color="#0000ff">char</font>)c);
+
+      <font color="#009900">// 3. Formatted memory input</font>
+      <font color="#0000ff">try</font> {
+        DataInputStream in3 =
+          <font color="#0000ff">new</font> DataInputStream(
+            <font color="#009900">// Oops: must use deprecated class:</font>
+            <font color="#0000ff">new</font> StringBufferInputStream(s2));
+        <font color="#0000ff">while</font>(<font color="#0000ff">true</font>)
+          System.out.print((<font color="#0000ff">char</font>)in3.readByte());
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println("End of stream");
+      }
+
+      <font color="#009900">// 4. Line numbering &amp; file output</font>
+      <font color="#0000ff">try</font> {
+        LineNumberReader li =
+          <font color="#0000ff">new</font> LineNumberReader(
+            <font color="#0000ff">new</font> StringReader(s2));
+        BufferedReader in4 =
+          <font color="#0000ff">new</font> BufferedReader(li);
+        PrintWriter out1 =
+          <font color="#0000ff">new</font> PrintWriter(
+            <font color="#0000ff">new</font> BufferedWriter(
+              <font color="#0000ff">new</font> FileWriter("IODemo.out")));
+        <font color="#0000ff">while</font>((s = in4.readLine()) != <font color="#0000ff">null</font> )
+          out1.println(
+            "Line " + li.getLineNumber() + s);
+        out1.close();
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println("End of stream");
+      }
+
+      <font color="#009900">// 5. Storing &amp; recovering data</font>
+      <font color="#0000ff">try</font> {
+        DataOutputStream out2 =
+          <font color="#0000ff">new</font> DataOutputStream(
+            <font color="#0000ff">new</font> BufferedOutputStream(
+              <font color="#0000ff">new</font> FileOutputStream("Data.txt")));
+        out2.writeDouble(3.14159);
+        out2.writeBytes("That was pi");
+        out2.close();
+        DataInputStream in5 =
+          <font color="#0000ff">new</font> DataInputStream(
+            <font color="#0000ff">new</font> BufferedInputStream(
+              <font color="#0000ff">new</font> FileInputStream("Data.txt")));
+        BufferedReader in5br =
+          <font color="#0000ff">new</font> BufferedReader(
+            <font color="#0000ff">new</font> InputStreamReader(in5));
+        <font color="#009900">// Must use DataInputStream for data:</font>
+        System.out.println(in5.readDouble());
+        <font color="#009900">// Can now use the "proper" readLine():</font>
+        System.out.println(in5br.readLine());
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println("End of stream");
+      }
+
+      <font color="#009900">// 6. Reading and writing random access</font>
+      <font color="#009900">// files is the same as before.</font>
+      <font color="#009900">// (not repeated here)</font>
+
+    } <font color="#0000ff">catch</font>(FileNotFoundException e) {
+      System.out.println(
+        "File Not Found:" + args[1]);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println("IO Exception");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, you&#8217;ll see that the conversion is fairly straightforward and the
+code looks quite similar. There are some important differences, though. First
+of all, since random access files have not changed, section 6 is not repeated.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Section
+1 shrinks a bit because if all you&#8217;re doing is reading line input you
+need only to wrap a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+around a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Section 1b shows the new way to wrap <A NAME="Index1257"></A><A NAME="Index1258"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for reading <A NAME="Index1259"></A><A NAME="Index1260"></A><A NAME="Index1261"></A>console
+input, and this expands because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStreamReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is brought in to perform the translation.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+section 2 you can see that if you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and want to read from it you just use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the rest of the code is identical.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Section
+3 shows a bug in the design of the new IO stream library. If you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and you want to read from it, you&#8217;re 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+supposed to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+any more. When you compile code involving a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor, you get a deprecation message telling you to not use it. Instead,
+you&#8217;re supposed to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, if you want to do formatted memory input as in section 3, you&#8217;re
+forced to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; there is no &#8220;DataReader&#8221; to replace it &#8211; and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor requires an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument. So you have no choice but to use the deprecated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. The compiler will give you a deprecation message but there&#8217;s
+nothing you can do about it.
+</FONT><A NAME="fnB48" HREF="#fn48">[48]</A><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Section
+4 is a reasonably straightforward translation from the old streams to the new,
+with no surprises. In section 5, you&#8217;re forced to use all the old streams
+classes because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+require them and there are no alternatives. However, you don&#8217;t get any
+deprecation messages at compile time. If a stream is deprecated, typically its
+constructor produces a deprecation message to prevent you from using the entire
+class, but in the case of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is deprecated since you&#8217;re supposed to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(but a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all other formatted input).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you compare section 5 with that section in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IOStreamDemo.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll notice that in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>this</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+version, the data is written 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the text. That&#8217;s because a bug was introduced in Java 1.1<A NAME="Index1262"></A>,
+which is shown in the following code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: IOBug.java</font>
+<font color="#009900">// Java 1.1 (and higher?) IO Bug</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> IOBug {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+  <font color="#0000ff">throws</font> Exception {
+    DataOutputStream out =
+      <font color="#0000ff">new</font> DataOutputStream(
+        <font color="#0000ff">new</font> BufferedOutputStream(
+          <font color="#0000ff">new</font> FileOutputStream("Data.txt")));
+    out.writeDouble(3.14159);
+    out.writeBytes("That was the value of pi\n");
+    out.writeBytes("This is pi/2:\n");
+    out.writeDouble(3.14159/2);
+    out.close();
+
+    DataInputStream in =
+      <font color="#0000ff">new</font> DataInputStream(
+        <font color="#0000ff">new</font> BufferedInputStream(
+          <font color="#0000ff">new</font> FileInputStream("Data.txt")));
+    BufferedReader inbr =
+      <font color="#0000ff">new</font> BufferedReader(
+        <font color="#0000ff">new</font> InputStreamReader(in));
+    <font color="#009900">// The doubles written BEFORE the line of text</font>
+    <font color="#009900">// read back correctly:</font>
+    System.out.println(in.readDouble());
+    <font color="#009900">// Read the lines of text:</font>
+    System.out.println(inbr.readLine());
+    System.out.println(inbr.readLine());
+    <font color="#009900">// Trying to read the doubles after the line</font>
+    <font color="#009900">// produces an end-of-file exception:</font>
+    System.out.println(in.readDouble());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+appears that anything you write after a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not recoverable. This is a rather limiting bug, and we can hope that it will
+be fixed by the time you read this. You should run the above program to test
+it; if you don&#8217;t get an exception and the values print correctly then
+you&#8217;re out of the woods.
+</FONT><a name="_Toc408018633"></a><P></DIV>
+<A NAME="Heading338"></A><H3 ALIGN=LEFT>
+Redirecting
+standard IO
+<P><A NAME="Index1263"></A><A NAME="Index1264"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index1265"></A>
+has added methods in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that allow you to redirect the standard input, output, and error IO streams
+using simple static method calls:
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index1266"></A><A NAME="Index1267"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setIn(InputStream)
+</B></FONT><P><A NAME="Index1268"></A><A NAME="Index1269"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setOut(PrintStream)</B></FONT><P><A NAME="Index1270"></A><A NAME="Index1271"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setErr(PrintStream)
+</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Redirecting
+output is especially useful if you suddenly start creating a large amount of
+output on your screen and it&#8217;s scrolling past faster than you can read
+it. Redirecting input is valuable for a command-line program in which you want
+to test a particular user-input sequence repeatedly. Here&#8217;s a simple
+example that shows the use of these methods:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Redirecting.java</font>
+<font color="#009900">// Demonstrates the use of redirection for </font>
+<font color="#009900">// standard IO in Java 1.1</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> Redirecting {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      BufferedInputStream in = 
+        <font color="#0000ff">new</font> BufferedInputStream(
+          <font color="#0000ff">new</font> FileInputStream(
+            "Redirecting.java"));
+      <font color="#009900">// Produces deprecation message:</font>
+      PrintStream out =
+        <font color="#0000ff">new</font> PrintStream(
+          <font color="#0000ff">new</font> BufferedOutputStream(
+            <font color="#0000ff">new</font> FileOutputStream("test.out")));
+      System.setIn(in);
+      System.setOut(out);
+      System.setErr(out);
+
+      BufferedReader br = 
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> InputStreamReader(System.in));
+      String s;
+      <font color="#0000ff">while</font>((s = br.readLine()) != <font color="#0000ff">null</font>)
+        System.out.println(s);
+      out.close(); <font color="#009900">// Remember this!</font>
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program attaches standard input to a file, and redirects standard output and
+standard error to another file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is another example in which a deprecation message is inevitable. The message
+you can get when compiling with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-deprecation
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">flag
+is: 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Note:
+The constructor java.io.PrintStream(java.io.OutputStream) 
+</I></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>has
+been deprecated.
+</I></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.setOut(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.setErr(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+require a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as an argument, so you are forced to call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. You might wonder, if Java 1.1<A NAME="Index1272"></A>
+deprecates the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class by deprecating the constructor, why the library designers, at the same
+time as they added this deprecation, also add new methods to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that required a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rather than a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is the new and preferred replacement. It&#8217;s a mystery.
+</FONT><a name="_Toc408018634"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn48" HREF="#fnB48">[48]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Perhaps by the time you read this, the bug will be fixed.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0113.html">Prev</a> | <a href="tij0115.html">Next</a>
+</div>
+</body></html>
+

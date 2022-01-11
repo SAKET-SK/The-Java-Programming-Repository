@@ -1,0 +1,75 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0122.html">Prev</a> | <a href="tij0124.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary<P><A NAME="Index1436"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">RTTI
+allows you to discover type information from an anonymous base-class handle.
+Thus, it&#8217;s ripe for misuse <A NAME="Index1437"></A>by
+the novice since it might make sense before polymorphic method calls do. For
+many people coming from a procedural background, it&#8217;s difficult not to
+organize their programs into sets of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements. They could accomplish this with RTTI and thus lose the important
+value of polymorphism <A NAME="Index1438"></A>in
+code development and maintenance. The intent of Java is that you use
+polymorphic method calls throughout your code, and you use RTTI only when you
+must.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+using polymorphic method calls as they are intended requires that you have
+control of the base-class definition because at some point in the extension of
+your program you might discover that the base class doesn&#8217;t include the
+method you need. If the base class comes from a library or is otherwise
+controlled by someone else, a solution to the problem is RTTI: You can inherit
+a new type and add your extra method. Elsewhere in the code you can detect your
+particular type and call that special method. This doesn&#8217;t destroy the
+polymorphism and extensibility of the program because adding a new type will
+not require you to hunt for switch statements in your program. However, when
+you add new code in your main body that requires your new feature, you must use
+RTTI to detect your particular type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Putting
+a feature in a base class might mean that, for the benefit of one particular
+class, all of the other classes derived from that base require some meaningless
+stub of a method. This makes the interface less clear and annoys those who must
+override abstract methods when they derive from that base class. For example,
+consider a class hierarchy representing musical instruments. Suppose you wanted
+to clear the spit valves of all the appropriate instruments in your orchestra.
+One option is to put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClearSpitValve(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+in the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Instrument</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but this is confusing because it implies that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Percussion</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Electronic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instruments also have spit valves. RTTI provides a much more reasonable
+solution in this case because you can place the method in the specific class (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Wind
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+this case), where it&#8217;s appropriate. However, a more appropriate solution
+is to put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>prepareInstrument(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the base class, but you might not see this when you&#8217;re first
+solving the problem and could mistakenly assume that you must use RTTI.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+RTTI will sometimes solve efficiency problems. If your code nicely uses
+polymorphism, but it turns out that one of your objects reacts to this general
+purpose code in a horribly inefficient way, you can pick out that type using
+RTTI and write case-specific code to improve the efficiency.
+</FONT><a name="_Toc408018652"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0122.html">Prev</a> | <a href="tij0124.html">Next</a>
+</div>
+</body></html>
+

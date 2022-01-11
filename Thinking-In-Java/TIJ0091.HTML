@@ -1,0 +1,353 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0090.html">Prev</a> | <a href="tij0092.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Sorting</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the things missing in the Java 1.0<A NAME="Index812"></A>
+and 1.1 libraries is algorithmic operations, even simple <A NAME="Index813"></A>sorting.
+So it makes sense to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that sorts itself using the classic <A NAME="Index814"></A>Quicksort.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+problem with writing generic sorting code is that sorting must perform
+comparisons based on the actual type of the object. Of course, one approach is
+to write a different sorting method for every different type, but you should be
+able to recognize that this does not produce code that is easily re-used for
+new types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+primary goal of programming design is to &#8220;separate things that change
+from things that stay the same,&#8221; and here, the code that stays the same
+is the general sort algorithm, but the thing that changes from one use to the
+next is the way objects are compared. So instead of hard-wiring the comparison
+code into many different sort routines, the technique of the <A NAME="Index815"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>callback</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be used. With a callback, the part of the code that varies from case to
+case is encapsulated inside its own class, and the part of the code
+that&#8217;s always the same will call back to the code that changes. That way
+you can make different objects to express different ways of comparison and feed
+them to the same sorting code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+describes how to compare two objects, and thus encapsulates &#8220;the things
+that change&#8221; for this particular problem:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Compare.java</font>
+<font color="#009900">// Interface for sorting callback:</font>
+<font color="#0000ff">package</font> c08;
+
+<font color="#0000ff">interface</font> Compare {
+  <font color="#0000ff">boolean</font> lessThan(Object lhs, Object rhs);
+  <font color="#0000ff">boolean</font> lessThanOrEqual(Object lhs, Object rhs);
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+both methods, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lhs</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents the &#8220;left hand&#8221; object and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rhs</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents the &#8220;right hand&#8221; object in the comparison.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be created that implements the Quicksort using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Compare</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The algorithm, which is known for its speed, will not be explained here. For
+details, see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Practical
+Algorithms for Programmers
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+by Binstock &amp; Rex, Addison-Wesley 1995.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SortVector.java</font>
+<font color="#009900">// A generic sorting vector</font>
+<font color="#0000ff">package</font> c08;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SortVector <font color="#0000ff">extends</font> Vector {
+  <font color="#0000ff">private</font> Compare compare; <font color="#009900">// To hold the callback</font>
+  <font color="#0000ff">public</font> SortVector(Compare comp) {
+    compare = comp;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> sort() {
+    quickSort(0, size() - 1);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> quickSort(<font color="#0000ff">int</font> left, <font color="#0000ff">int</font> right) {
+    <font color="#0000ff">if</font>(right &gt; left) {
+      Object o1 = elementAt(right);
+      <font color="#0000ff">int</font> i = left - 1;
+      <font color="#0000ff">int</font> j = right;
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        <font color="#0000ff">while</font>(compare.lessThan(
+              elementAt(++i), o1))
+          ;
+        <font color="#0000ff">while</font>(j &gt; 0)
+          <font color="#0000ff">if</font>(compare.lessThanOrEqual(
+             elementAt(--j), o1))
+            <font color="#0000ff">break</font>; <font color="#009900">// out of while</font>
+        <font color="#0000ff">if</font>(i &gt;= j) <font color="#0000ff">break</font>;
+        swap(i, j);
+      }
+      swap(i , right);
+      quickSort(left, i-1);
+      quickSort(i+1, right);
+    }
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> swap(<font color="#0000ff">int</font> loc1, <font color="#0000ff">int</font> loc2) {
+    Object tmp = elementAt(loc1);
+    setElementAt(elementAt(loc2), loc1);
+    setElementAt(tmp, loc2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can now see the reason for the term &#8220;callback,&#8221; since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>quickSort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method &#8220;calls back&#8221; to the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Compare</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can also see how this technique has produced generic, reusable code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must create a class that implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Compare</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the kind of objects that you&#8217;re sorting. This is a place where an
+inner class is not essential, but it can make sense for code organization.
+Here&#8217;s an example for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: StringSortTest.java</font>
+<font color="#009900">// Testing the generic sorting Vector</font>
+<font color="#0000ff">package</font> c08;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> StringSortTest {
+  <font color="#0000ff">static</font> <font color="#0000ff">class</font> StringCompare <font color="#0000ff">implements</font> Compare {
+    <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> lessThan(Object l, Object r) {
+      <font color="#0000ff">return</font> ((String)l).toLowerCase().compareTo(
+        ((String)r).toLowerCase()) &lt; 0;
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+    lessThanOrEqual(Object l, Object r) {
+      <font color="#0000ff">return</font> ((String)l).toLowerCase().compareTo(
+        ((String)r).toLowerCase()) &lt;= 0;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    SortVector sv = 
+      <font color="#0000ff">new</font> SortVector(<font color="#0000ff">new</font> StringCompare());
+    sv.addElement("d");
+    sv.addElement("A");
+    sv.addElement("C");
+    sv.addElement("c");
+    sv.addElement("b");
+    sv.addElement("B");
+    sv.addElement("D");
+    sv.addElement("a");
+    sv.sort();
+    Enumeration e = sv.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      System.out.println(e.nextElement());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inner class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because it does not need a link to an outer class in order for it to function.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see how, once the framework is set up, it&#8217;s easy to reuse a design
+like this &#8211; you simply write the class that encapsulates &#8220;the
+things that change&#8221; and hand an object to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+comparison forces the strings to lower case, so that the capital 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+end up next to the small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+and not in some entirely different place. This example shows, however, a slight
+deficiency in this approach, since the test code above puts the uppercase and
+lowercase single letters of the same letter in the order that they appear: A a
+b B c C d D. This is not usually much of a problem, because you&#8217;re
+usually working with longer strings and in that situation the effect
+doesn&#8217;t show up. (The Java 1.2<A NAME="Index816"></A>
+collections provide sorting functionality that solves this problem.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inheritance
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is used here to create a new type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; that is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is
+a 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with some added functionality. The use of inheritance here is powerful but it
+presents problems. It turns out that some methods are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(described
+in Chapter 7), so you cannot override them. If you want to create a sorted 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that accepts and produces only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+you run into a wall, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and these are precisely the methods you&#8217;d need to override so they accept
+and produce only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. No luck there.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">On
+the other hand, consider <A NAME="Index817"></A>composition:
+the placing of an object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>inside</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a new class. Rather than rewrite the above code to accomplish this, we can
+simply use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the new class. In this case, the inner class to implement the interface 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Compare
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+be created anonymously:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: StrSortVector.java</font>
+<font color="#009900">// Automatically sorted Vector that </font>
+<font color="#009900">// accepts and produces only Strings</font>
+<font color="#0000ff">package</font> c08;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> StrSortVector {
+  <font color="#0000ff">private</font> SortVector v = <font color="#0000ff">new</font> SortVector(
+    <font color="#009900">// Anonymous inner class:</font>
+    <font color="#0000ff">new</font> Compare() {
+      <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+      lessThan(Object l, Object r) {
+        <font color="#0000ff">return</font> 
+          ((String)l).toLowerCase().compareTo(
+          ((String)r).toLowerCase()) &lt; 0;
+      }
+      <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+      lessThanOrEqual(Object l, Object r) {
+        <font color="#0000ff">return</font> 
+          ((String)l).toLowerCase().compareTo(
+          ((String)r).toLowerCase()) &lt;= 0;
+      }
+    }
+  );
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> sorted = <font color="#0000ff">false</font>;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addElement(String s) {
+    v.addElement(s);
+    sorted = <font color="#0000ff">false</font>;
+  }
+  <font color="#0000ff">public</font> String elementAt(<font color="#0000ff">int</font> index) {
+    <font color="#0000ff">if</font>(!sorted) {
+      v.sort();
+      sorted = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">return</font> (String)v.elementAt(index);
+  }
+  <font color="#0000ff">public</font> Enumeration elements() {
+    <font color="#0000ff">if</font>(!sorted) {
+      v.sort();
+      sorted = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">return</font> v.elements();
+  }
+  <font color="#009900">// Test it:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    StrSortVector sv = <font color="#0000ff">new</font> StrSortVector();
+    sv.addElement("d");
+    sv.addElement("A");
+    sv.addElement("C");
+    sv.addElement("c");
+    sv.addElement("b");
+    sv.addElement("B");
+    sv.addElement("D");
+    sv.addElement("a");
+    Enumeration e = sv.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      System.out.println(e.nextElement());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+quickly reuses the code from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create the desired functionality. However, not all of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+appear in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StrSortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When reusing code this way, you can make a definition in the new class for each
+one in the contained class, or you can start with just a few and periodically
+go back and add more when you need them. Eventually the new class design will
+settle down.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+advantage to this approach is that it will take only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and produce only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, and the checking happens at compile time instead of run time. Of
+course, that&#8217;s only true for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+still produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is untyped at compile time. Type checking for the <A NAME="Index818"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StrSortVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+still happens, of course, it just happens at run-time by throwing exceptions if
+you do something wrong. It&#8217;s a trade-off: do you find out about something 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>for
+sure
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at compile time or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>probably</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at run-time? (That is, &#8220;probably not while you&#8217;re testing the
+code&#8221; and &#8220;probably when the program user tries something you
+didn&#8217;t test for.&#8221;) Given the choices and the hassle, it&#8217;s
+easier to use inheritance and just grit your teeth while casting &#8211; again,
+if <A NAME="Index819"></A>parameterized
+types are ever added to Java, they will solve this problem.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see there&#8217;s a flag called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sorted</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in this class. You could sort the vector every time 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called, and constantly keep it in a sorted state. But usually people add a
+lot of elements to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">before
+beginning to read it. So sorting after every 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would be less efficient than waiting until someone wants to read the vector and
+then sorting it, which is what is done here. The technique of delaying a
+process until it is absolutely necessary is called <A NAME="Index820"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lazy
+evaluation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(There is an analogous technique called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>lazy
+initialization
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which waits until a field value is necessary before initializing it.)
+</FONT><a name="_Toc408018576"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0090.html">Prev</a> | <a href="tij0092.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,338 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0101.html">Prev</a> | <a href="tij0103.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Performing
+cleanup 
+<P>with
+finally
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+often some piece of code that you want to execute whether or not an exception
+occurs in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block. This usually pertains to some operation other than memory recovery
+(since that&#8217;s taken care of by the garbage collector). To achieve this
+effect, you use a <A NAME="Index951"></A><A NAME="Index952"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause
+</FONT><A NAME="fnB44" HREF="#fn44">[44]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at the end of all the exception handlers. The full picture of an
+exception-handling section is thus:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+{
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // The guarded region:
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // Dangerous stuff that might throw A, B, or C 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">}
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(A
+a1) {
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // Handle A
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">}
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(B b1) {
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // Handle B
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">}
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(C c1) {
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // Handle C
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">}
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+{
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ // Stuff that happens every time
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">}</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+demonstrate that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause always runs, try this program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FinallyWorks.java</font>
+<font color="#009900">// The finally clause is always executed</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FinallyWorks {
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">try</font> {
+        <font color="#009900">// post-increment is zero first time:</font>
+        <font color="#0000ff">if</font>(count++ == 0)
+          <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Exception();
+        System.out.println("No exception");
+      } <font color="#0000ff">catch</font>(Exception e) {
+        System.out.println("Exception thrown");
+      } <font color="#0000ff">finally</font> {
+        System.out.println("in <font color="#0000ff">finally</font> clause");
+        <font color="#0000ff">if</font>(count == 2) <font color="#0000ff">break</font>; <font color="#009900">// out of "while"</font>
+      }
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program also gives a hint for how you can deal with the fact that exceptions in
+Java (like exceptions in C++) do not allow you to resume back to where the
+exception was thrown, as discussed earlier. If you place your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block in a loop, you can establish a condition that must be met before you
+continue the program. You can also add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+counter or some other device to allow the loop to try several different
+approaches before giving up. This way you can build a greater level of
+robustness into your programs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Exception thrown
+in <font color="#0000ff">finally</font> clause
+No exception
+in <font color="#0000ff">finally</font> clause </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Whether
+an exception is thrown or not, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause is always executed.
+</FONT><a name="_Toc375545375"></a><a name="_Toc408018602"></a><P></DIV>
+<A NAME="Heading296"></A><H3 ALIGN=LEFT>
+What&#8217;s
+finally for?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+a language without garbage collection 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without automatic <A NAME="Index953"></A>destructor
+calls,
+</FONT><A NAME="fnB45" HREF="#fn45">[45]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is important because it allows the programmer to guarantee the release of
+memory regardless of what happens in the <A NAME="Index954"></A><A NAME="Index955"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block. But Java has garbage collection, so releasing memory is virtually never
+a problem. Also, it has no destructors to call. So when do you need to use <A NAME="Index956"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is necessary when you need to set something 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>other</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+than memory back to its original state. This is usually something like an open
+file or network connection, something you&#8217;ve drawn on the screen or even
+a switch in the outside world, as modeled in the following example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: OnOffSwitch.java</font>
+<font color="#009900">// Why use finally?</font>
+
+<font color="#0000ff">class</font> Switch {
+  <font color="#0000ff">boolean</font> state = <font color="#0000ff">false</font>;
+  <font color="#0000ff">boolean</font> read() { <font color="#0000ff">return</font> state; }
+  <font color="#0000ff">void</font> on() { state = <font color="#0000ff">true</font>; }
+  <font color="#0000ff">void</font> off() { state = <font color="#0000ff">false</font>; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> OnOffSwitch {
+  <font color="#0000ff">static</font> Switch sw = <font color="#0000ff">new</font> Switch();
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      sw.on();
+      <font color="#009900">// Code that can throw exceptions...</font>
+      sw.off();
+    } <font color="#0000ff">catch</font>(NullPointerException e) {
+      System.out.println("NullPointerException");
+      sw.off();
+    } <font color="#0000ff">catch</font>(IllegalArgumentException e) {
+      System.out.println("IOException");
+      sw.off();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+goal here is to make sure that the switch is off when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is completed, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sw.off(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is placed at the end of the try block and at the end of each exception handler.
+But it&#8217;s possible that an exception could be thrown that isn&#8217;t
+caught here, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sw.off(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">would
+be missed. However, with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can place the closure code from a try block in just one place:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: WithFinally.java</font>
+<font color="#009900">// Finally Guarantees cleanup</font>
+
+<font color="#0000ff">class</font> Switch2 {
+  <font color="#0000ff">boolean</font> state = <font color="#0000ff">false</font>;
+  <font color="#0000ff">boolean</font> read() { <font color="#0000ff">return</font> state; }
+  <font color="#0000ff">void</font> on() { state = <font color="#0000ff">true</font>; }
+  <font color="#0000ff">void</font> off() { state = <font color="#0000ff">false</font>; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WithFinally {
+  <font color="#0000ff">static</font> Switch2 sw = <font color="#0000ff">new</font> Switch2();
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      sw.on();
+      <font color="#009900">// Code that can throw exceptions...</font>
+    } <font color="#0000ff">catch</font>(NullPointerException e) {
+      System.out.println("NullPointerException");
+    } <font color="#0000ff">catch</font>(IllegalArgumentException e) {
+      System.out.println("IOException");
+    } <font color="#0000ff">finally</font> {
+      sw.off();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sw.off(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been moved to just one place, where it&#8217;s guaranteed to run no matter
+what happens.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+in cases in which the exception is not caught in the current set of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clauses, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be executed before the exception-handling mechanism continues its search
+for a handler at the next higher level:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AlwaysFinally.java</font>
+<font color="#009900">// Finally is always executed</font>
+
+<font color="#0000ff">class</font> Ex <font color="#0000ff">extends</font> Exception {}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AlwaysFinally {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println(
+      "Entering first <font color="#0000ff">try</font> block");
+    <font color="#0000ff">try</font> {
+      System.out.println(
+        "Entering second <font color="#0000ff">try</font> block");
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">throw</font> <font color="#0000ff">new</font> Ex();
+      } <font color="#0000ff">finally</font> {
+        System.out.println(
+          "<font color="#0000ff">finally</font> in 2nd <font color="#0000ff">try</font> block");
+      }
+    } <font color="#0000ff">catch</font>(Ex e) {
+      System.out.println(
+        "Caught Ex in first <font color="#0000ff">try</font> block");
+    } <font color="#0000ff">finally</font> {
+      System.out.println(
+        "<font color="#0000ff">finally</font> in 1st <font color="#0000ff">try</font> block");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for this program shows you what happens:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Entering first <font color="#0000ff">try</font> block
+Entering second <font color="#0000ff">try</font> block
+<font color="#0000ff">finally</font> in 2nd <font color="#0000ff">try</font> block
+Caught Ex in first <font color="#0000ff">try</font> block
+<font color="#0000ff">finally</font> in 1st <font color="#0000ff">try</font> block </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement will also be executed in situations in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements are involved. Note that, along with the labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and labeled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+eliminates the need for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>goto
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statement
+in Java.
+</FONT><a name="_Toc408018603"></a><P></DIV>
+<A NAME="Heading297"></A><H3 ALIGN=LEFT>
+Pitfall:
+the lost exception
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, Java&#8217;s exception implementation is quite outstanding, but
+unfortunately there&#8217;s a flaw. Although exceptions are an indication of a
+crisis in your program and should never be ignored, it&#8217;s possible for an
+exception to simply be <A NAME="Index957"></A>lost.
+This happens with a particular configuration using a <A NAME="Index958"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: LostMessage.java</font>
+<font color="#009900">// How an exception can be lost</font>
+
+<font color="#0000ff">class</font> VeryImportantException <font color="#0000ff">extends</font> Exception {
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> "A very important exception!";
+  }
+}
+
+<font color="#0000ff">class</font> HoHumException <font color="#0000ff">extends</font> Exception {
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> "A trivial exception";
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> LostMessage {
+  <font color="#0000ff">void</font> f() <font color="#0000ff">throws</font> VeryImportantException {
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> VeryImportantException();
+  }
+  <font color="#0000ff">void</font> dispose() <font color="#0000ff">throws</font> HoHumException {
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> HoHumException();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> Exception {
+    LostMessage lm = <font color="#0000ff">new</font> LostMessage();
+    <font color="#0000ff">try</font> {
+      lm.f();
+    } <font color="#0000ff">finally</font> {
+      lm.dispose();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>A trivial exception
+        at LostMessage.dispose(LostMessage.java:21)
+        at LostMessage.main(LostMessage.java:29) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that there&#8217;s no evidence of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>VeryImportantException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is simply replaced by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HoHumException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause. This is a rather serious pitfall, since it means that an exception can
+be completely lost, and in a far more subtle and difficult-to-detect fashion
+than the example above. In contrast, C++ treats the situation in which a second
+exception is thrown before the first one is handled as a dire programming
+error. Perhaps a future version of Java will repair the problem. (The above
+results were produced with Java 1.1.<A NAME="Index959"></A>)</FONT><a name="_Toc305593300"></a><a name="_Toc305628772"></a><a name="_Toc312374122"></a><a name="_Toc375545376"></a><a name="_Toc408018604"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn44" HREF="#fnB44">[44]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+C++ exception handling does not have the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+clause because it relies on destructors to accomplish this sort of cleanup.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn45" HREF="#fnB45">[45]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+A destructor is a function that&#8217;s always called when an object becomes
+unused. You always know exactly where and when the destructor gets called. C++
+has automatic destructor calls, but Delphi&#8217;s Object Pascal versions 1 and
+2 do not (which changes the meaning and use of the concept of a destructor for
+that language).
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0101.html">Prev</a> | <a href="tij0103.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,381 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0112.html">Prev</a> | <a href="tij0114.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+StreamTokenizer</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+<A NAME="Index1170"></A><A NAME="Index1171"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it works only with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, so it rightfully belongs in the IO portion of the library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is used to break any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a sequence of<A NAME="Index1172"></A>
+&#8220;tokens,&#8221; which are bits of text delimited by whatever you choose.
+For example, your tokens could be words, and then they would be delimited by
+white space and punctuation. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+a program to count the occurrence of words in a text file:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SortedWordCount.java</font>
+<font color="#009900">// Counts words in a file, outputs</font>
+<font color="#009900">// results in sorted form.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> c08.*; <font color="#009900">// Contains StrSortVector</font>
+
+<font color="#0000ff">class</font> Counter {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i = 1;
+  <font color="#0000ff">int</font> read() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">void</font> increment() { i++; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SortedWordCount {
+  <font color="#0000ff">private</font> FileInputStream file;
+  <font color="#0000ff">private</font> StreamTokenizer st;
+  <font color="#0000ff">private</font> Hashtable counts = <font color="#0000ff">new</font> Hashtable();
+  SortedWordCount(String filename)
+    <font color="#0000ff">throws</font> FileNotFoundException {
+    <font color="#0000ff">try</font> {
+      file = <font color="#0000ff">new</font> FileInputStream(filename);
+      st = <font color="#0000ff">new</font> StreamTokenizer(file);
+      st.ordinaryChar('.');
+      st.ordinaryChar('-');
+    } <font color="#0000ff">catch</font>(FileNotFoundException e) {
+      System.out.println(
+        "Could not open " + filename);
+      <font color="#0000ff">throw</font> e;
+    }
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    <font color="#0000ff">try</font> {
+      file.close();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println(
+        "file.close() unsuccessful");
+    }
+  }
+  <font color="#0000ff">void</font> countWords() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>(st.nextToken() !=
+        StreamTokenizer.TT_EOF) {
+        String s;
+        <font color="#0000ff">switch</font>(st.ttype) {
+          <font color="#0000ff">case</font> StreamTokenizer.TT_EOL:
+            s = <font color="#0000ff">new</font> String("EOL");
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_NUMBER:
+            s = Double.toString(st.nval);
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">case</font> StreamTokenizer.TT_WORD:
+            s = st.sval; <font color="#009900">// Already a String</font>
+            <font color="#0000ff">break</font>;
+          <font color="#0000ff">default</font>: <font color="#009900">// single character in ttype</font>
+            s = String.valueOf((<font color="#0000ff">char</font>)st.ttype);
+        }
+        <font color="#0000ff">if</font>(counts.containsKey(s))
+          ((Counter)counts.get(s)).increment();
+        <font color="#0000ff">else</font>
+          counts.put(s, <font color="#0000ff">new</font> Counter());
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println(
+        "st.nextToken() unsuccessful");
+    }
+  }
+  Enumeration values() {
+    <font color="#0000ff">return</font> counts.elements();
+  }
+  Enumeration keys() { <font color="#0000ff">return</font> counts.keys(); }
+  Counter getCounter(String s) {
+    <font color="#0000ff">return</font> (Counter)counts.get(s);
+  }
+  Enumeration sortedKeys() {
+    Enumeration e = counts.keys();
+    StrSortVector sv = <font color="#0000ff">new</font> StrSortVector();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      sv.addElement((String)e.nextElement());
+    <font color="#009900">// This call forces a sort:</font>
+    <font color="#0000ff">return</font> sv.elements();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      SortedWordCount wc =
+        <font color="#0000ff">new</font> SortedWordCount(args[0]);
+      wc.countWords();
+      Enumeration keys = wc.sortedKeys();
+      <font color="#0000ff">while</font>(keys.hasMoreElements()) {
+        String key = (String)keys.nextElement();
+        System.out.println(key + ": "
+                 + wc.getCounter(key).read());
+      }
+      wc.cleanup();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+makes sense to present these in a sorted form, but since Java 1.0<A NAME="Index1173"></A>
+and Java 1.1<A NAME="Index1174"></A>
+don&#8217;t have any sorting methods, that will have to be mixed in. This is
+easy enough to do with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StrSortVector.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(This was created in Chapter 8, and is part of the package created in that
+chapter. Remember that the starting directory for all the subdirectories in
+this book must be in your class path for the program to compile successfully.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+open the file, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used, and to turn the file into words a 
+<a name="StreamTokenizer"></a></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there is a default list of separators, and you can add more with a set of
+methods. Here, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ordinaryChar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to say &#8220;This character has no significance that I&#8217;m
+interested in,&#8221; so the parser doesn&#8217;t include it as part of any of
+the words that it creates. For example, saying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>st.ordinaryChar('.')</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means that periods will not be included as parts of the words that are parsed.
+You can find more information in the online documentation that comes with Java.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>countWords(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the tokens are pulled one at a time from the stream, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ttype</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+information is used to determine what to do with each token, since a token can
+be an end-of-line, a number, a string, or a single character.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+a token is found, the <A NAME="Index1175"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+counts
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is queried to see if it already contains the token as a key. If it does, the
+corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is incremented to indicate that another instance of this word has been
+found. If not, a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created &#8211; since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor initializes its value to one, this also acts to count the word.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortedWordCount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not a type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it wasn&#8217;t inherited. It performs a specific type of functionality, so
+even though the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>values(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods must be re-exposed, that still doesn&#8217;t mean that <A NAME="Index1176"></A><A NAME="Index1177"></A>inheritance
+should be used since a number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are inappropriate here. In addition, other methods like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getCounter(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which get the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sortedKeys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+finish the change in the shape of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortedWordCount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+interface.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see the use of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortedWordCount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to open and count the words in a file &#8211; it just takes two lines of code.
+Then an enumeration to a sorted list of keys (words) is extracted, and this is
+used to pull out each key and associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Count</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is necessary to ensure that the file is closed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+second example using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be found in Chapter 17.
+</FONT><a name="_Toc375545399"></a><a name="_Toc408018627"></a><P></DIV>
+<A NAME="Heading332"></A><H3 ALIGN=LEFT>
+StringTokenizer</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+it isn&#8217;t part of the IO library, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has sufficiently similar functionality to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that it will be described here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1178"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the tokens within a string one at a time. These tokens are consecutive
+characters delimited by tabs, spaces, and newlines. Thus, the tokens of the
+string &#8220;Where is my cat?&#8221; are &#8220;Where&#8221;,
+&#8220;is&#8221;, &#8220;my&#8221;, and &#8220;cat?&#8221; Like the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can tell the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to break up the input in any way that you want, but with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+do this by passing a second argument to the constructor, which is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">of
+the delimiters you wish to use. In general, if you need more sophistication,
+use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+ask a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for the next token in the string using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextToken(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which either returns the token or an empty string to indicate that no
+tokens remain. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an example, the following program performs a limited analysis of a sentence,
+looking for key phrase sequences to indicate whether happiness or sadness is
+implied. 
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AnalyzeSentence.java</font>
+<font color="#009900">// Look for particular sequences</font>
+<font color="#009900">// within sentences.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AnalyzeSentence {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    analyze("I am happy about <font color="#0000ff">this</font>");
+    analyze("I am not happy about <font color="#0000ff">this</font>");
+    analyze("I am not! I am happy");
+    analyze("I am sad about <font color="#0000ff">this</font>");
+    analyze("I am not sad about <font color="#0000ff">this</font>");
+    analyze("I am not! I am sad");
+    analyze("Are you happy about <font color="#0000ff">this</font>?");
+    analyze("Are you sad about <font color="#0000ff">this</font>?");
+    analyze("It's you! I am happy");
+    analyze("It's you! I am sad");
+  }
+  <font color="#0000ff">static</font> StringTokenizer st;
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> analyze(String s) {
+    prt("\nnew sentence &gt;&gt; " + s);
+    <font color="#0000ff">boolean</font> sad = <font color="#0000ff">false</font>;
+    st = <font color="#0000ff">new</font> StringTokenizer(s);
+    <font color="#0000ff">while</font> (st.hasMoreTokens()) {
+      String token = next();
+      <font color="#009900">// Look until you find one of the</font>
+      <font color="#009900">// two starting tokens:</font>
+      <font color="#0000ff">if</font>(!token.equals("I") &amp;&amp;
+         !token.equals("Are"))
+        <font color="#0000ff">continue</font>; <font color="#009900">// Top of while loop</font>
+      <font color="#0000ff">if</font>(token.equals("I")) {
+        String tk2 = next();
+        <font color="#0000ff">if</font>(!tk2.equals("am")) <font color="#009900">// Must be after I</font>
+          <font color="#0000ff">break</font>; <font color="#009900">// Out of while loop</font>
+        <font color="#0000ff">else</font> {
+          String tk3 = next();
+          <font color="#0000ff">if</font>(tk3.equals("sad")) {
+            sad = <font color="#0000ff">true</font>;
+            <font color="#0000ff">break</font>; <font color="#009900">// Out of while loop</font>
+          }
+          <font color="#0000ff">if</font> (tk3.equals("not")) {
+            String tk4 = next();
+            <font color="#0000ff">if</font>(tk4.equals("sad"))
+              <font color="#0000ff">break</font>; <font color="#009900">// Leave sad false</font>
+            <font color="#0000ff">if</font>(tk4.equals("happy")) {
+              sad = <font color="#0000ff">true</font>;
+              <font color="#0000ff">break</font>;
+            }
+          }
+        }
+      }
+      <font color="#0000ff">if</font>(token.equals("Are")) {
+        String tk2 = next();
+        <font color="#0000ff">if</font>(!tk2.equals("you"))
+          <font color="#0000ff">break</font>; <font color="#009900">// Must be after Are</font>
+        String tk3 = next();
+        <font color="#0000ff">if</font>(tk3.equals("sad"))
+          sad = <font color="#0000ff">true</font>;
+        <font color="#0000ff">break</font>; <font color="#009900">// Out of while loop</font>
+      }
+    }
+    <font color="#0000ff">if</font>(sad) prt("Sad detected");
+  }
+  <font color="#0000ff">static</font> String next() {
+    <font color="#0000ff">if</font>(st.hasMoreTokens()) {
+      String s = st.nextToken();
+      prt(s);
+      <font color="#0000ff">return</font> s;
+    } 
+    <font color="#0000ff">else</font>
+      <font color="#0000ff">return</font> "";
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> prt(String s) {
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+each string being analyzed, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop is entered and tokens are pulled off the string. Notice the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, which says to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>continue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(go back to the beginning of the loop and start again) if the token is neither
+an &#8220;I&#8221; nor an &#8220;Are.&#8221; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+means that it will get tokens until an &#8220;I&#8221; or an &#8220;Are&#8221;
+is found. You might think to use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of the <A NAME="Index1179"></A><A NAME="Index1180"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, but that won&#8217;t work correctly, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+compares handle values while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+compares contents.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+logic of the rest of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>analyze(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is that the pattern that&#8217;s being searched for is &#8220;I am
+sad,&#8221; &#8220;I am not happy,&#8221; or &#8220;Are you sad?&#8221; Without
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>break</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, the code for this would be even messier than it is. You should be
+aware that a typical parser (this is a primitive example of one) normally has a
+table of these tokens and a piece of code that moves through the states in the
+table as new tokens are read.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+should think of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only as shorthand for a simple and specific kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, if you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you want to tokenize and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is too limited, all you have to do is turn it into a stream with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then use that to create a much more powerful 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StreamTokenizer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018628"></a><a name="_Toc375545400"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0112.html">Prev</a> | <a href="tij0114.html">Next</a>
+</div>
+</body></html>
+

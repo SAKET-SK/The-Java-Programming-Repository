@@ -1,0 +1,135 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0096.html">Prev</a> | <a href="tij0098.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Basic
+exceptions
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+<A NAME="Index905"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exceptional
+condition
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a problem that prevents the continuation of the method or scope that
+you&#8217;re in. It&#8217;s important to distinguish an exceptional condition
+from a normal problem, in which you have enough information in the current
+context to somehow cope with the difficulty. With an exceptional condition, you
+cannot continue processing because you don&#8217;t have the information
+necessary to deal with the problem 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>in
+the current context
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All you can do is jump out of the current context and relegate that problem to
+a higher context. This is what happens when you throw an exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+simple example is a divide. If you&#8217;re about to divide by zero, it&#8217;s
+worth checking to make sure you don&#8217;t go ahead and perform the divide.
+But what does it mean that the denominator is zero? Maybe you know, in the
+context of the problem you&#8217;re trying to solve in that particular method,
+how to deal with a zero denominator. But if it&#8217;s an unexpected value, you
+can&#8217;t deal with it and so must throw an exception rather than continuing
+along that path.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you throw an <A NAME="Index906"></A>exception,
+several things happen. First, the exception object is created in the same way
+that any Java object is created: on the heap, with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then the current path of execution (the one you couldn&#8217;t continue,
+remember) is stopped and the handle for the exception object is ejected from
+the current context. At this point the exception-handling mechanism takes over
+and begins to look for an appropriate place to continue executing the program.
+This appropriate place is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>exception
+handler
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whose job is to recover from the problem so the program can either try another
+tack or simply continue.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a simple example of throwing an exception, consider an object handle called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s possible that you might be passed a handle that hasn&#8217;t been
+initialized, so you might want to check before trying to call a method using
+that object handle. You can send information about the error into a larger
+context by creating an object representing your information and
+&#8220;throwing&#8221; it out of your current context. This is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>throwing
+an exception
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here&#8217;s what it looks like:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">if(t
+== null)
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ throw new NullPointerException();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+throws the exception, which allows you &#8211; in the current context &#8211;
+to abdicate responsibility for thinking about the issue further. It&#8217;s
+just magically handled somewhere else. Precisely 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>where
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+be shown shortly.
+</FONT><a name="_Toc375545363"></a><a name="_Toc408018590"></a><P></DIV>
+<A NAME="Heading283"></A><H3 ALIGN=LEFT>
+Exception
+arguments
+<P><A NAME="Index907"></A><A NAME="Index908"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+any object in Java, you always create exceptions on the heap using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a constructor gets called. There are two constructors in all the standard
+exceptions; the first is the default constructor, and the second takes a string
+argument so you can place pertinent information in the exception:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">if(t
+== null)
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ throw new NullPointerException("t = null");
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+string can later be extracted using various methods, as will be shown later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index909"></A>keyword
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throw</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+causes a number of relatively magical things to happen. First it executes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-expression
+to create
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">an
+object that isn&#8217;t there under normal program execution, and of course,
+the constructor is called for that object. Then the object is, in effect,
+&#8220;returned&#8221; from the method, even though that object type
+isn&#8217;t normally what the method is designed to return. A simplistic way to
+think about exception handling is as an alternate return mechanism, although
+you get into trouble if you take that analogy too far. You can also exit from
+ordinary scopes by throwing an exception. But a value is returned, and the
+method or scope exits.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Any
+similarity to an ordinary return from a method ends here, because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>where</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you return is someplace completely different from where you return for a normal
+method call. (You end up in an appropriate exception handler that might be
+miles away &#8211; many levels lower on the call stack &#8211; from where the
+exception was thrown.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, you can throw any type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Throwable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that you want. Typically, you&#8217;ll throw a different class of
+exception for each different type of error. The idea is to store the
+information in the exception object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the type of exception object chosen, so someone in the bigger context can
+figure out what to do with your exception. (Often, the only information is the
+type of exception object, and nothing meaningful is stored within the exception
+object.)
+</FONT><a name="_Toc305593298"></a><a name="_Toc305628770"></a><a name="_Toc312374113"></a><a name="_Toc375545364"></a><a name="_Toc408018591"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0096.html">Prev</a> | <a href="tij0098.html">Next</a>
+</div>
+</body></html>
+

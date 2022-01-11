@@ -1,0 +1,202 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0120.html">Prev</a> | <a href="tij0122.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+RTTI
+syntax
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+performs its <A NAME="Index1398"></A><A NAME="Index1399"></A>RTTI
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, even if you&#8217;re doing something like a cast. The class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also has a number of other ways you can use RTTI.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+you must get a handle to the appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. One way to do this, as shown in the previous example, is to use a
+string and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. This is convenient because you don&#8217;t need an object of that type
+in order to get the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. However, if you do already have an object of the type you&#8217;re
+interested in, you can fetch the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle by calling a method that&#8217;s part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+root class:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index1400"></A><A NAME="Index1401"></A>getClass(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This returns the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle representing the actual type of the object. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has several interesting and sometimes useful methods, demonstrated in the
+following example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ToyTest.java</font>
+<font color="#009900">// Testing class Class</font>
+
+<font color="#0000ff">interface</font> HasBatteries {}
+<font color="#0000ff">interface</font> Waterproof {}
+<font color="#0000ff">interface</font> ShootsThings {}
+<font color="#0000ff">class</font> Toy {
+  <font color="#009900">// Comment out the following default</font>
+  <font color="#009900">// constructor to see </font>
+  <font color="#009900">// NoSuchMethodError from (*1*)</font>
+  Toy() {} 
+  Toy(<font color="#0000ff">int</font> i) {} 
+}
+
+<font color="#0000ff">class</font> FancyToy <font color="#0000ff">extends</font> Toy 
+    <font color="#0000ff">implements</font> HasBatteries, 
+      Waterproof, ShootsThings {
+  FancyToy() { <font color="#0000ff">super</font>(1); }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ToyTest {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Class c = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      c = Class.forName("FancyToy");
+    } <font color="#0000ff">catch</font>(ClassNotFoundException e) {}
+    printInfo(c);
+    Class[] faces = c.getInterfaces();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; faces.length; i++)
+      printInfo(faces[i]);
+    Class cy = c.getSuperclass();
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Requires default constructor:</font>
+      o = cy.newInstance(); <font color="#009900">// (*1*)</font>
+    } <font color="#0000ff">catch</font>(InstantiationException e) {}
+      <font color="#0000ff">catch</font>(IllegalAccessException e) {}
+    printInfo(o.getClass());
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> printInfo(Class cc) {
+    System.out.println(
+      "Class name: " + cc.getName() +
+      " is <font color="#0000ff">interface</font>? [" +
+      cc.isInterface() + "]");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class
+FancyToy
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite complicated, since it inherits from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HasBatteries</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Waterproof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ShootsThings</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is created and initialized to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FancyToy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside an appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.getInterfaces(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index1402"></A><A NAME="Index1403"></A>method
+returns an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects representing the interfaces that are contained in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object of interest.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object you can also ask it for its direct base class using <A NAME="Index1404"></A><A NAME="Index1405"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getSuperclass(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This, of course, returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle that you can further query. This means that, at run time, you can
+discover an object&#8217;s entire class hierarchy.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1406"></A><A NAME="Index1407"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can, at first, seem like just another way to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an object. However, you can create a new object with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an existing object, as seen here, because there is no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a handle to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is a way to implement a &#8220;virtual constructor,&#8221; which
+allows you to say &#8220;I don&#8217;t know exactly what type you are, but
+create yourself properly anyway.&#8221; In the example above, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle with no further type information known at compile time. And when you
+create a new instance, you get back an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. But that handle is pointing to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Of course, before you can send any messages other than those accepted by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you have to investigate it a bit and do some casting. In addition, the class
+that&#8217;s being created with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must have a default constructor. There&#8217;s no way to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+create objects that have non-default constructors, so this can be a bit
+limiting in Java 1. However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reflection</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+API in Java 1.1<A NAME="Index1408"></A>
+(discussed in the next section) allows you to dynamically use any constructor
+in a class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+final method in the listing is <A NAME="Index1409"></A><A NAME="Index1410"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printInfo(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle and gets its name with <A NAME="Index1411"></A><A NAME="Index1412"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getName(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and finds out whether it&#8217;s an interface with <A NAME="Index1413"></A><A NAME="Index1414"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isInterface(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output from this program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Class name: FancyToy is <font color="#0000ff">interface</font>? [<font color="#0000ff">false</font>]
+Class name: HasBatteries is <font color="#0000ff">interface</font>? [<font color="#0000ff">true</font>]
+Class name: Waterproof is <font color="#0000ff">interface</font>? [<font color="#0000ff">true</font>]
+Class name: ShootsThings is <font color="#0000ff">interface</font>? [<font color="#0000ff">true</font>]
+Class name: Toy is <font color="#0000ff">interface</font>? [<font color="#0000ff">false</font>] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object you can find out just about everything you want to know about an object.
+</FONT><a name="_Toc375545410"></a><a name="_Toc408018649"></a><a name="_Toc312374147"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0120.html">Prev</a> | <a href="tij0122.html">Next</a>
+</div>
+</body></html>
+

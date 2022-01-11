@@ -1,0 +1,205 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0099.html">Prev</a> | <a href="tij0101.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Creating
+your own exceptions
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;re
+not stuck using the Java <A NAME="Index946"></A>exceptions.
+This is important because you&#8217;ll often need to create your own exceptions
+to denote a special error that your library is capable of creating, but which
+was not foreseen when the Java hierarchy was created.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create your own exception class, you&#8217;re forced to inherit from an
+existing type of exception, preferably one that is close in meaning to your new
+exception. Inheriting an exception is quite simple:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Inheriting.java</font>
+<font color="#009900">// Inheriting your own exceptions</font>
+
+<font color="#0000ff">class</font> MyException <font color="#0000ff">extends</font> Exception {
+  <font color="#0000ff">public</font> MyException() {}
+  <font color="#0000ff">public</font> MyException(String msg) {
+    <font color="#0000ff">super</font>(msg);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Inheriting {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> f() <font color="#0000ff">throws</font> MyException {
+    System.out.println(
+      "Throwing MyException from f()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> MyException();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> g() <font color="#0000ff">throws</font> MyException {
+    System.out.println(
+      "Throwing MyException from g()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> MyException("Originated in g()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      f();
+    } <font color="#0000ff">catch</font>(MyException e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">try</font> {
+      g();
+    } <font color="#0000ff">catch</font>(MyException e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inheritance occurs in the creation of the new class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> MyException <font color="#0000ff">extends</font> Exception {
+  <font color="#0000ff">public</font> MyException() {}
+  <font color="#0000ff">public</font> MyException(String msg) {
+    <font color="#0000ff">super</font>(msg);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+key phrase here is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends
+Exception
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which says &#8220;it&#8217;s everything an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Exception</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is and more.&#8221; The added code is small &#8211; the addition of two
+constructors that define the way 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created. Remember that the compiler automatically calls the base-class
+default constructor if you don&#8217;t explicitly call a base-class
+constructor, as in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyException(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+default constructor. In the second constructor, the base-class constructor with
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument is explicitly invoked by using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output of the program is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Throwing MyException from f()
+MyException
+        at Inheriting.f(Inheriting.java:16)
+        at Inheriting.main(Inheriting.java:24)
+Throwing MyException from g()
+MyException: Originated in g()
+        at Inheriting.g(Inheriting.java:20)
+        at Inheriting.main(Inheriting.java:29) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the absence of the detail message in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thrown from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+process of creating your own exceptions can be taken further. You can add extra
+constructors and members:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Inheriting2.java</font>
+<font color="#009900">// Inheriting your own exceptions</font>
+
+<font color="#0000ff">class</font> MyException2 <font color="#0000ff">extends</font> Exception {
+  <font color="#0000ff">public</font> MyException2() {}
+  <font color="#0000ff">public</font> MyException2(String msg) {
+    <font color="#0000ff">super</font>(msg);
+  }
+  <font color="#0000ff">public</font> MyException2(String msg, <font color="#0000ff">int</font> x) {
+    <font color="#0000ff">super</font>(msg);
+    i = x;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> val() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Inheriting2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> f() <font color="#0000ff">throws</font> MyException2 {
+    System.out.println(
+      "Throwing MyException2 from f()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> MyException2();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> g() <font color="#0000ff">throws</font> MyException2 {
+    System.out.println(
+      "Throwing MyException2 from g()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> MyException2("Originated in g()");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> h() <font color="#0000ff">throws</font> MyException2 {
+    System.out.println(
+      "Throwing MyException2 from h()");
+    <font color="#0000ff">throw</font> <font color="#0000ff">new</font> MyException2(
+      "Originated in h()", 47);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      f();
+    } <font color="#0000ff">catch</font>(MyException2 e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">try</font> {
+      g();
+    } <font color="#0000ff">catch</font>(MyException2 e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">try</font> {
+      h();
+    } <font color="#0000ff">catch</font>(MyException2 e) {
+      e.printStackTrace();
+      System.out.println("e.val() = " + e.val());
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+data member 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been added, along with a method that reads that value and an additional
+constructor that sets it. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Throwing MyException2 from f()
+MyException2
+        at Inheriting2.f(Inheriting2.java:22)
+        at Inheriting2.main(Inheriting2.java:34)
+Throwing MyException2 from g()
+MyException2: Originated in g()
+        at Inheriting2.g(Inheriting2.java:26)
+        at Inheriting2.main(Inheriting2.java:39)
+Throwing MyException2 from h()
+MyException2: Originated in h()
+        at Inheriting2.h(Inheriting2.java:30)
+        at Inheriting2.main(Inheriting2.java:44)
+e.val() = 47 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+an exception is just another kind of object, you can continue this process of
+embellishing the power of your exception classes. Keep in mind, however, that
+all this dressing up might be lost on the client programmers using your
+packages, since they might simply look for the exception to be thrown and
+nothing more. (That&#8217;s the way most of the Java library exceptions are
+used.) If this is the case, it&#8217;s
+<a name="its"></a>
+possible to create a new exception type with almost no code at all:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SimpleException.java</font>
+<font color="#0000ff">class</font> SimpleException <font color="#0000ff">extends</font> Exception {
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+relies on the compiler to create the default constructor (which automatically
+calls the base-class default constructor). Of course, in this case you
+don&#8217;t get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SimpleException(String)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor, but in practice that isn&#8217;t used much.
+</FONT><a name="_Toc408018600"></a><a name="_Toc375545374"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0099.html">Prev</a> | <a href="tij0101.html">Next</a>
+</div>
+</body></html>
+

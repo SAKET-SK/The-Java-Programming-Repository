@@ -1,0 +1,3073 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0092.html">Prev</a> | <a href="tij0094.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+new collections
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+me, collection classes are one of the most powerful tools for raw programming.
+You might have gathered that I&#8217;m somewhat disappointed in the collections
+provided in Java through version 1.1. As a result, it&#8217;s a tremendous
+pleasure to see that collections were given proper attention in <A NAME="Index828"></A><A NAME="Index829"></A><A NAME="Index830"></A><A NAME="Index831"></A>Java
+1.2, and thoroughly redesigned (by Joshua Bloch at Sun). I consider the new
+collections to be one of the two major features in Java 1.2 (the other is the
+Swing library, covered in Chapter 13) because they significantly increase your
+programming muscle and help bring Java in line with more mature programming
+systems.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+of the redesign makes things tighter and more sensible. For example, many names
+are shorter, cleaner, and easier to understand, as well as to type. Some names
+are changed to conform to accepted terminology: a particular favorite of mine
+is &#8220;iterator&#8221; instead of &#8220;enumeration.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+redesign also fills out the functionality of the collections library. You can
+now have the behavior of <A NAME="Index832"></A>linked
+lists, <A NAME="Index833"></A>queues,
+and <A NAME="Index834"></A>dequeues
+(double-ended queues, pronounced &#8220;decks&#8221;).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+design of a collections library is difficult (true of most library design
+problems). In <A NAME="Index835"></A><A NAME="Index836"></A>C++,
+the STL covered the bases with many different classes. This was better than
+what was available prior to the STL (nothing), but it didn&#8217;t translate
+well into Java. The result was a rather confusing morass of classes. On the
+other extreme, I&#8217;ve seen a collections library that consists of a single
+class, &#8220;collection,&#8221; which acts like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">at
+the same time. The designers of the new collections library wanted to strike a
+balance: the full functionality that you expect from a mature collections
+library, but easier to learn and use than the STL and other similar collections
+libraries. The result can seem a bit odd in places. Unlike some of the
+decisions made in the early Java libraries, these oddities were not accidents,
+but carefully considered decisions based on tradeoffs in complexity. It might
+take you a little while to get comfortable with some aspects of the library,
+but I think you&#8217;ll find yourself rapidly acquiring and using these new
+tools.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new collections library takes the issue of &#8220;holding your objects&#8221;
+and divides it into two distinct concepts:
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index837"></A><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+a group of individual elements, often with some rule applied to them. A <A NAME="Index838"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must hold the elements in a particular sequence, and a <A NAME="Index839"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot have any duplicate elements. (A <A NAME="Index840"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>bag</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is not implemented in the new collections library since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+provide you with that functionality, has no such rules.)
+</FONT><LI><A NAME="Index841"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+a group of key-value object pairs (what you&#8217;ve seen up until now as a <A NAME="Index842"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+At first glance, this might seem like it ought to be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of pairs, but when you try to implement it that way the design gets awkward, so
+it&#8217;s clearer to make it a separate concept. On the other hand, it&#8217;s
+convenient to look at portions of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by creating a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to represent that portion. Thus, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can return a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of its keys, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">of
+its values, or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">of
+its pairs. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+like arrays, can easily be expanded to multiple dimensions without adding new
+concepts: you simply make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+whose values are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+(and the values of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>those</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+etc.).
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+may be implemented in many different ways, according to your programming needs.
+It&#8217;s helpful to look at a diagram of the new collections:
+</FONT><a name="Collections_Diagram"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+diagram can be a bit overwhelming at first, but throughout the rest of this
+chapter you&#8217;ll see that there are really only three collection components: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only two or three implementations of each one
+</FONT><A NAME="fnB37" HREF="#fn37">[37]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(with, typically, a preferred version). When you see this, the new collections
+should not seem so daunting.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+dashed boxes represent 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+the dotted boxes represent 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes, and the solid boxes are regular (concrete) classes. The dashed arrows
+indicate that a particular class is implementing an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or in the case of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, partially implementing that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+The double-line arrows show that a class can produce objects of the class the
+arrow is pointing to. For example, any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can produce an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+while a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ListIterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(as well as an ordinary 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+interfaces that are concerned with holding objects are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Typically,
+you&#8217;ll write the bulk of your code to talk to these interfaces, and the
+only place where you&#8217;ll specify the precise type you&#8217;re using is at
+the point of creation. So you can create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">List
+x = new LinkedList();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, you can also decide to make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">a
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(instead
+of a generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+carry the precise type information around with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The beauty (and the intent) of using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that if you decide you want to change your implementation, all you need to
+do is change it at the point of creation, like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">List
+x = new ArrayList();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+rest of your code can remain untouched.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the class hierarchy, you can see a number of classes whose names begin with
+&#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,&#8221;
+and these can seem a bit confusing at first. They are simply tools that
+partially implement a particular interface. If you were making your own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, you wouldn&#8217;t start with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface and implement all the methods, instead you&#8217;d inherit from <A NAME="Index843"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and do the minimal necessary work to make your new class. However, the new
+collections library contains enough functionality to satisfy your needs
+virtually all the time. So for our purposes, you can ignore any class that
+begins with &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Therefore,
+when you look at the diagram, you&#8217;re really concerned with only those 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+at the top of the diagram and the concrete classes (those with solid boxes
+around them). You&#8217;ll typically make an object of a concrete class, upcast
+it to the corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+throughout the rest of your code. Here&#8217;s a simple example, which fills a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and then prints each element in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SimpleCollection.java</font>
+<font color="#009900">// A simple example using the new Collections</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SimpleCollection {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Collection c = <font color="#0000ff">new</font> ArrayList();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      c.add(Integer.toString(i));
+    Iterator it = c.iterator();
+    <font color="#0000ff">while</font>(it.hasNext())
+      System.out.println(it.next());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+the code examples for the new collections libraries will be placed in the
+subdirectory 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newcollections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you&#8217;ll be reminded that these work only with Java 1.2. As a result,
+you must invoke the program by saying:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+c08.newcollections.SimpleCollection
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+a similar syntax for the rest of the programs in the package.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the new collections are part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.util</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+library, so you don&#8217;t need to add any extra 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements to use them.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first line in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates an <A NAME="Index844"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and then upcasts it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since this example uses only the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods,
+any object of a class inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would work, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the typical workhorse 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and takes the place of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, as its name suggests, puts a new element in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, the documentation carefully states that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;ensures that this Collection contains the specified element.&#8221; This
+is to allow for the meaning of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which adds the element only if it isn&#8217;t already there. With an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or any sort of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+always means &#8220;put it in.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can produce an <A NAME="Index845"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+via their <A NAME="Index846"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iterator(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just like an <A NAME="Index847"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which it replaces, except:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+uses a name (iterator) that is historically understood and accepted in the OOP
+community.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+uses shorter method names than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+<A NAME="Index848"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasNext(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasMoreElements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and <A NAME="Index849"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It
+adds a new method, <A NAME="Index850"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>remove(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which removes the last element produced by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>remove(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only once for every time you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SimpleCollection.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see that an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and used to traverse the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+printing each element.
+</FONT><a name="_Toc408018578"></a><P></DIV>
+<A NAME="Heading263"></A><H3 ALIGN=LEFT>
+Using
+Collections
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following table shows everything you can do with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and thus, everything you can do with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also has additional functionality.) 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are not inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and will be treated separately.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="126">
+      <COL width="216">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+add(Object)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*Ensures
+that the Collection contains the argument. Returns false if it doesn&#8217;t
+add the argument.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+addAll(Collection)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*Adds
+all the elements in the argument. Returns true if any elements were added.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>void
+clear(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*Removes
+all the elements in the Collection. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+contains(Object)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">True
+if the Collection contains the argument. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+containsAll(Collection)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">True
+if the Collection contains all the elements in the argument. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+isEmpty(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">True
+if the Collection has no elements. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator
+iterator(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+an Iterator that you can use to move through the elements in the Collection. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+remove(Object)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*If
+the argument is in the Collection, one instance of that element is removed.
+Returns true if a removal occurred.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+removeAll(Collection)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*Removes
+all the elements that are contained in the argument. Returns true if any
+removals occurred.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+retainAll(Collection)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*Retains
+only elements that are contained in the argument (an &#8220;intersection&#8221;
+from set theory). Returns true if any changes occurred.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="126">
+      <COL width="216">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+size(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+the number of elements in the Collection. 
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object[]
+toArray(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+an array containing all the elements in the Collection.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=126 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=216 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">*This
+is an &#8220;optional&#8221; method, which means it might not be implemented by
+a particular Collection. If not, that method throws an
+UnsupportedOperationException. Exceptions will be covered in Chapter 9.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example demonstrates all of these methods. Again, these work with
+anything that inherits from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used as a kind of &#8220;least-common denominator&#8221;:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Collection1.java</font>
+<font color="#009900">// Things you can do with all Collections</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Collection1 {
+  <font color="#009900">// Fill with 'size' elements, start</font>
+  <font color="#009900">// counting at 'start':</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Collection 
+  fill(Collection c, <font color="#0000ff">int</font> start, <font color="#0000ff">int</font> size) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = start; i &lt; start + size; i++)
+      c.add(Integer.toString(i));
+    <font color="#0000ff">return</font> c;
+  }
+  <font color="#009900">// Default to a "start" of 0:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Collection 
+  fill(Collection c, <font color="#0000ff">int</font> size) {
+    <font color="#0000ff">return</font> fill(c, 0, size);
+  }
+  <font color="#009900">// Default to 10 elements:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Collection fill(Collection c) {
+    <font color="#0000ff">return</font> fill(c, 0, 10);
+  }
+  <font color="#009900">// Create &amp; upcast to Collection:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Collection newCollection() {
+    <font color="#0000ff">return</font> fill(<font color="#0000ff">new</font> ArrayList());
+    <font color="#009900">// ArrayList is used for simplicity, but it's</font>
+    <font color="#009900">// only seen as a generic Collection </font>
+    <font color="#009900">// everywhere else in the program.</font>
+  }
+  <font color="#009900">// Fill a Collection with a range of values:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Collection 
+  newCollection(<font color="#0000ff">int</font> start, <font color="#0000ff">int</font> size) {
+    <font color="#0000ff">return</font> fill(<font color="#0000ff">new</font> ArrayList(), start, size);
+  }
+  <font color="#009900">// Moving through a List with an iterator:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(Collection c) {
+    <font color="#0000ff">for</font>(Iterator x = c.iterator(); x.hasNext();)
+      System.out.print(x.next() + " ");
+    System.out.println();
+  }    
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Collection c = newCollection();
+    c.add("ten");
+    c.add("eleven");
+    print(c);
+    <font color="#009900">// Find max and min elements; this means</font>
+    <font color="#009900">// different things depending on the way</font>
+    <font color="#009900">// the Comparable interface is implemented:</font>
+    System.out.println("Collections.max(c) = " +
+      Collections.max(c));
+    System.out.println("Collections.min(c) = " +
+      Collections.min(c));
+    <font color="#009900">// Add a Collection to another Collection</font>
+    c.addAll(newCollection());
+    print(c);
+    c.remove("3"); <font color="#009900">// Removes the first one</font>
+    print(c);
+    c.remove("3"); <font color="#009900">// Removes the second one</font>
+    print(c);
+    <font color="#009900">// Remove all components that are in the</font>
+    <font color="#009900">// argument collection:</font>
+    c.removeAll(newCollection());
+    print(c);
+    c.addAll(newCollection());
+    print(c);
+    <font color="#009900">// Is an element in this Collection?</font>
+    System.out.println(
+      "c.contains(\"4\") = " + c.contains("4"));
+    <font color="#009900">// Is a Collection in this Collection?</font>
+    System.out.println(
+      "c.containsAll(newCollection()) = " + 
+      c.containsAll(newCollection()));
+    Collection c2 = newCollection(5, 3);
+    <font color="#009900">// Keep all the elements that are in both</font>
+    <font color="#009900">// c and c2 (an intersection of sets):</font>
+    c.retainAll(c2);
+    print(c);
+    <font color="#009900">// Throw away all the elements in c that</font>
+    <font color="#009900">// also appear in c2:</font>
+    c.removeAll(c2);
+    System.out.println("c.isEmpty() = " +
+      c.isEmpty());
+    c = newCollection();
+    print(c);
+    c.clear(); <font color="#009900">// Remove all elements</font>
+    System.out.println("after c.clear():");
+    print(c);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first methods provide a way to fill any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with test data, in this case just 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+converted to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+The second method will be used frequently throughout the rest of this chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two versions of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newCollection(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+create 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+containing different sets of data and return them as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, so it&#8217;s clear that nothing other than the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface is being used.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method will also be used throughout the rest of this section. Since it moves
+through a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can produce, it will work with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses simple exercises to show all of the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following sections compare the various implementations of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and indicate in each case (with an asterisk) which one should be your default
+choice. You&#8217;ll notice that the legacy classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+included because in all cases there are preferred classes within the new
+collections.
+</FONT><a name="_Toc408018579"></a><P></DIV>
+<A NAME="Heading264"></A><H3 ALIGN=LEFT>
+Using
+Lists
+</H3>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="63">
+      <COL width="265">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(interface)
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=265 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Order
+is the most important feature of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+it promises to maintain elements in a particular sequence. <A NAME="Index851"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+adds a number of methods to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that allow
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">insertion
+and removal of elements in the middle of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List.
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(This
+is recommended only for a <A NAME="Index852"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+produce a <A NAME="Index853"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ListIterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and using this you can traverse the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in both directions, as well as insert and remove elements in the middle of the
+list (again, recommended only for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index854"></A><TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList*</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=265 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">backed
+by an array. Use instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a general-purpose object holder. Allows rapid random access to elements, but
+is slow when inserting and removing elements from the middle of a list. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ListIterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be used only for back-and-forth traversal of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but not for inserting and removing elements, which is expensive compared to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=265 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Provides
+optimal sequential access, with inexpensive insertions and deletions from the
+middle of the list. Relatively slow for random access. (Use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead.) Also has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addFirst(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addLast(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getFirst(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLast(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeFirst(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeLast(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which are not defined in any interfaces or base classes) to allow it to be
+used as a stack, a queue, and a dequeue.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+methods in the following example each cover a different group of activities:
+things that every list can do (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>basicTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+moving around with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iterMotion(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">versus
+changing things with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iterManipulation(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+seeing the effects of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+manipulation (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>testVisual(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and operations available only to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: List1.java</font>
+<font color="#009900">// Things you can do with Lists</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> List1 {
+  <font color="#009900">// Wrap Collection1.fill() for convenience:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> List fill(List a) {
+    <font color="#0000ff">return</font> (List)Collection1.fill(a);
+  }
+  <font color="#009900">// You can use an Iterator, just as with a</font>
+  <font color="#009900">// Collection, but you can also use random</font>
+  <font color="#009900">// access with get():</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(List a) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.size(); i++)
+      System.out.print(a.get(i) + " ");
+    System.out.println();
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">boolean</font> b;
+  <font color="#0000ff">static</font> Object o;
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">static</font> Iterator it;
+  <font color="#0000ff">static</font> ListIterator lit;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> basicTest(List a) {
+    a.add(1, "x"); <font color="#009900">// Add at location 1</font>
+    a.add("x"); <font color="#009900">// Add at end</font>
+    <font color="#009900">// Add a collection:</font>
+    a.addAll(fill(<font color="#0000ff">new</font> ArrayList()));
+    <font color="#009900">// Add a collection starting at location 3:</font>
+    a.addAll(3, fill(<font color="#0000ff">new</font> ArrayList())); 
+    b = a.contains("1"); <font color="#009900">// Is it in there?</font>
+    <font color="#009900">// Is the entire collection in there?</font>
+    b = a.containsAll(fill(<font color="#0000ff">new</font> ArrayList()));
+    <font color="#009900">// Lists allow random access, which is cheap</font>
+    <font color="#009900">// for ArrayList, expensive for LinkedList:</font>
+    o = a.get(1); <font color="#009900">// Get object at location 1</font>
+    i = a.indexOf("1"); <font color="#009900">// Tell index of object</font>
+    <font color="#009900">// indexOf, starting search at location 2:</font>
+    i = a.indexOf("1", 2);
+    b = a.isEmpty(); <font color="#009900">// Any elements inside?</font>
+    it = a.iterator(); <font color="#009900">// Ordinary Iterator</font>
+    lit = a.listIterator(); <font color="#009900">// ListIterator</font>
+    lit = a.listIterator(3); <font color="#009900">// Start at loc 3</font>
+    i = a.lastIndexOf("1"); <font color="#009900">// Last match </font>
+    i = a.lastIndexOf("1", 2); <font color="#009900">// ...after loc 2</font>
+    a.remove(1); <font color="#009900">// Remove location 1</font>
+    a.remove("3"); <font color="#009900">// Remove this object</font>
+    a.set(1, "y"); <font color="#009900">// Set location 1 to "y"</font>
+    <font color="#009900">// Make an array from the List:</font>
+    Object[] array = a.toArray(); 
+    <font color="#009900">// Keep everything that's in the argument</font>
+    <font color="#009900">// (the intersection of the two sets):</font>
+    a.retainAll(fill(<font color="#0000ff">new</font> ArrayList()));
+    <font color="#009900">// Remove elements in this range:</font>
+    a.removeRange(0, 2);
+    <font color="#009900">// Remove everything that's in the argument:</font>
+    a.removeAll(fill(<font color="#0000ff">new</font> ArrayList()));
+    i = a.size(); <font color="#009900">// How big is it?</font>
+    a.clear(); <font color="#009900">// Remove all elements</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> iterMotion(List a) {
+    ListIterator it = a.listIterator();
+    b = it.hasNext();
+    b = it.hasPrevious();
+    o = it.next();
+    i = it.nextIndex();
+    o = it.previous();
+    i = it.previousIndex();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> iterManipulation(List a) {
+    ListIterator it = a.listIterator();
+    it.add("47");
+    <font color="#009900">// Must move to an element after add():</font>
+    it.next();
+    <font color="#009900">// Remove the element that was just produced:</font>
+    it.remove(); 
+    <font color="#009900">// Must move to an element after remove():</font>
+    it.next();
+    <font color="#009900">// Change the element that was just produced:</font>
+    it.set("47");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> testVisual(List a) {
+    print(a);
+    List b = <font color="#0000ff">new</font> ArrayList();
+    fill(b);
+    System.out.print("b = ");
+    print(b);
+    a.addAll(b);
+    a.addAll(fill(<font color="#0000ff">new</font> ArrayList()));
+    print(a);
+    <font color="#009900">// Shrink the list by removing all the </font>
+    <font color="#009900">// elements beyond the first 1/2 of the list</font>
+    System.out.println(a.size());
+    System.out.println(a.size()/2);
+    a.removeRange(a.size()/2, a.size()/2 + 2);
+    print(a);
+    <font color="#009900">// Insert, remove, and replace elements</font>
+    <font color="#009900">// using a ListIterator:</font>
+    ListIterator x = a.listIterator(a.size()/2);
+    x.add("one"); 
+    print(a);
+    System.out.println(x.next());
+    x.remove();
+    System.out.println(x.next());
+    x.set("47");
+    print(a);
+    <font color="#009900">// Traverse the list backwards:</font>
+    x = a.listIterator(a.size());
+    <font color="#0000ff">while</font>(x.hasPrevious())
+      System.out.print(x.previous() + " ");
+    System.out.println();
+    System.out.println("testVisual finished");
+  }
+  <font color="#009900">// There are some things that only</font>
+  <font color="#009900">// LinkedLists can do:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> testLinkedList() {
+    LinkedList ll = <font color="#0000ff">new</font> LinkedList();
+    Collection1.fill(ll, 5);
+    print(ll);
+    <font color="#009900">// Treat it like a stack, pushing:</font>
+    ll.addFirst("one");
+    ll.addFirst("two");
+    print(ll);
+    <font color="#009900">// Like "peeking" at the top of a stack:</font>
+    System.out.println(ll.getFirst());
+    <font color="#009900">// Like popping a stack:</font>
+    System.out.println(ll.removeFirst());
+    System.out.println(ll.removeFirst());
+    <font color="#009900">// Treat it like a queue, pulling elements</font>
+    <font color="#009900">// off the tail end:</font>
+    System.out.println(ll.removeLast());
+    <font color="#009900">// With the above operations, it's a dequeue!</font>
+    print(ll);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    <font color="#009900">// Make and fill a new list each time:</font>
+    basicTest(fill(<font color="#0000ff">new</font> LinkedList()));
+    basicTest(fill(<font color="#0000ff">new</font> ArrayList()));
+    iterMotion(fill(<font color="#0000ff">new</font> LinkedList()));
+    iterMotion(fill(<font color="#0000ff">new</font> ArrayList()));
+    iterManipulation(fill(<font color="#0000ff">new</font> LinkedList()));
+    iterManipulation(fill(<font color="#0000ff">new</font> ArrayList()));
+    testVisual(fill(<font color="#0000ff">new</font> LinkedList()));
+    testLinkedList();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>basicTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iterMotion(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the calls are simply made to show the proper syntax, and while the return value
+is captured, it is not used. In some cases, the return value isn&#8217;t
+captured since it isn&#8217;t typically used. You should look up the full usage
+of each of these methods in your online documentation before you use them.
+</FONT><a name="_Toc408018580"></a><P></DIV>
+<A NAME="Heading265"></A><H3 ALIGN=LEFT>
+Using
+Sets
+<P><A NAME="Index855"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has exactly the same interface as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so there isn&#8217;t any extra functionality as there is with the two different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Instead, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is exactly a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it just has different behavior. (This is the ideal use of inheritance and
+polymorphism: to express different behavior.) A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows only one instance of each object value to exist (what constitutes the
+&#8220;value&#8221; of an object is more complex, as you shall see).
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="58">
+      <COL width="279">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(interface)</FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+element that you add to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be unique; otherwise the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t add the duplicate element. Objects added to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must define 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to establish object uniqueness. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has exactly the same interface as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not guarantee it will maintain its elements in any particular order.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index856"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet*</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+all 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+except very small ones. Objects must also define <A NAME="Index857"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index858"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">backed
+by an array. Designed for very small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+especially those that are frequently created and destroyed. For small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+creation and iteration is substantially cheaper than for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Performance
+gets quite bad when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is large. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not required.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeSet</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+ordered 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+backed by a red-black tree.
+</FONT><A NAME="fnB38" HREF="#fn38">[38]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+This way, you can extract an ordered sequence from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+show everything you can do with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since the interface is the same as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and so was exercised in the previous example. Instead, this demonstrates the
+behavior that makes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+unique:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Set1.java</font>
+<font color="#009900">// Things you can do with Sets</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Set1 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> testVisual(Set a) {
+    Collection1.fill(a);
+    Collection1.fill(a);
+    Collection1.fill(a);
+    Collection1.print(a); <font color="#009900">// No duplicates!</font>
+    <font color="#009900">// Add another set to this one:</font>
+    a.addAll(a);
+    a.add("one"); 
+    a.add("one"); 
+    a.add("one");
+    Collection1.print(a);
+    <font color="#009900">// Look something up:</font>
+    System.out.println("a.contains(\"one\"): " +
+      a.contains("one"));
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    testVisual(<font color="#0000ff">new</font> HashSet());
+    testVisual(<font color="#0000ff">new</font> ArraySet());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Duplicate
+values are added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but when it is printed you&#8217;ll see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has accepted only one instance of each value.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run this program you&#8217;ll notice that the order maintained by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is different from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since each has a different way of storing elements so they can be located
+later. (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keeps them sorted, while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses a hashing function, which is designed specifically for rapid lookups.)
+When creating your own types, be aware that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs a way to maintain a storage order, just as with the
+&#8220;groundhog&#8221; examples shown earlier in this chapter. Here&#8217;s an
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Set2.java</font>
+<font color="#009900">// Putting your own type in a Set</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> MyType {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> MyType(<font color="#0000ff">int</font> n) { i = n;}
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> equals(Object o) {
+    <font color="#0000ff">if</font> ((o != <font color="#0000ff">null</font>) &amp;&amp; (o <font color="#0000ff">instanceof</font> MyType))
+      <font color="#0000ff">return</font> 
+        i == ((MyType)o).i;
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+  <font color="#009900">// Required for HashSet, not for ArraySet:  </font>
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> hashCode() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> i + " "; }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Set2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Set fill(Set a, <font color="#0000ff">int</font> size) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; size; i++)
+      a.add(<font color="#0000ff">new</font> MyType(i));
+    <font color="#0000ff">return</font> a;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Set fill(Set a) {
+    <font color="#0000ff">return</font> fill(a, 10);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> test(Set a) {
+    fill(a);
+    fill(a); <font color="#009900">// Try to add duplicates</font>
+    fill(a);
+    a.addAll(fill(<font color="#0000ff">new</font> ArraySet()));
+    Collection1.print(a);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    test(<font color="#0000ff">new</font> HashSet());
+    test(<font color="#0000ff">new</font> ArraySet());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+definitions for <A NAME="Index859"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+follow the form given in the &#8220;groundhog&#8221; examples. You must define
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in both cases, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is necessary only if the class will be placed in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is likely, since that should generally be your first choice as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implementation).
+</FONT><a name="_Toc408018581"></a><P></DIV>
+<A NAME="Heading266"></A><H3 ALIGN=LEFT>
+Using
+Maps
+<P><A NAME="Index860"></A></H3>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="67">
+      <COL width="270">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(interface)</FONT><P></DIV>
+</TD>
+<TD WIDTH=270 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Maintains
+key-value associations (pairs), so you can look up a value using a key.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index861"></A><TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap*</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=270 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Implementation
+based on a hash table. (Use this instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+Provides constant-time performance for inserting and locating pairs.
+Performance can be adjusted via constructors that allow you to set the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>capacity</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>load
+factor
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the hash table.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index862"></A><TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayMap</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=270 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+backed by an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Gives precise control over the order of iteration. Designed for very small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+especially those that are frequently created and destroyed. For very small 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+creation and iteration is substantially cheaper than for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Performance
+gets very bad when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is large.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index863"></A><TR VALIGN="TOP">
+<TD WIDTH=67 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=270 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Implementation
+based on a red-black tree. When you view the keys or the pairs, they will be in
+sorted order (determined by <A NAME="Index864"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or <A NAME="Index865"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+discussed later). The point of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that you get the results in sorted order. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+the only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>subMap(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which allows you to return a portion of the tree.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example contains two sets of test data and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fill(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that allows you to fill any map with any two-dimensional array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+These tools will be used in other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+examples, as well.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Map1.java</font>
+<font color="#009900">// Things you can do with Maps</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Map1 {
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> String[][] testData1 = {
+    { "Happy", "Cheerful disposition" },
+    { "Sleepy", "Prefers dark, quiet places" },
+    { "Grumpy", "Needs to work on attitude" },
+    { "Doc", "Fantasizes about advanced degree"},
+    { "Dopey", "'A' <font color="#0000ff">for</font> effort" },
+    { "Sneezy", "Struggles with allergies" },
+    { "Bashful", "Needs self-esteem workshop"},
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> String[][] testData2 = {
+    { "Belligerent", "Disruptive influence" },
+    { "Lazy", "Motivational problems" },
+    { "Comatose", "Excellent behavior" }
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Map fill(Map m, Object[][] o) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; o.length; i++)
+      m.put(o[i][0], o[i][1]);
+    <font color="#0000ff">return</font> m;
+  }
+  <font color="#009900">// Producing a Set of the keys:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> printKeys(Map m) {
+    System.out.print("Size = " + m.size() +", ");
+    System.out.print("Keys: ");
+    Collection1.print(m.keySet());
+  }
+  <font color="#009900">// Producing a Collection of the values:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> printValues(Map m) {
+    System.out.print("Values: ");
+    Collection1.print(m.values());
+  }
+  <font color="#009900">// Iterating through Map.Entry objects (pairs):</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(Map m) {
+    Collection entries = m.entries();
+    Iterator it = entries.iterator();
+    <font color="#0000ff">while</font>(it.hasNext()) {
+      Map.Entry e = (Map.Entry)it.next();
+      System.out.println("Key = " + e.getKey() +
+        ", Value = " + e.getValue());
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> test(Map m) {
+    fill(m, testData1);
+    <font color="#009900">// Map has 'Set' behavior for keys:</font>
+    fill(m, testData1);
+    printKeys(m);
+    printValues(m);
+    print(m);
+    String key = testData1[4][0];
+    String value = testData1[4][1];
+    System.out.println("m.containsKey(\"" + key +
+      "\"): " + m.containsKey(key));
+    System.out.println("m.get(\"" + key + "\"): "
+      + m.get(key));
+    System.out.println("m.containsValue(\"" 
+      + value + "\"): " + 
+      m.containsValue(value)); 
+    Map m2 = fill(<font color="#0000ff">new</font> ArrayMap(), testData2);
+    m.putAll(m2);
+    printKeys(m);
+    m.remove(testData2[0][0]);
+    printKeys(m);
+    m.clear();
+    System.out.println("m.isEmpty(): " 
+      + m.isEmpty());
+    fill(m, testData1);
+    <font color="#009900">// Operations on the Set change the Map:</font>
+    m.keySet().removeAll(m.keySet());
+    System.out.println("m.isEmpty(): " 
+      + m.isEmpty());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    System.out.println("Testing ArrayMap");
+    test(<font color="#0000ff">new</font> ArrayMap());
+    System.out.println("Testing HashMap");
+    test(<font color="#0000ff">new</font> HashMap());
+    System.out.println("Testing TreeMap");
+    test(<font color="#0000ff">new</font> TreeMap());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printKeys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printValues(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are not only useful utilities, they also demonstrate the production of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+views of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keySet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+backed by the keys in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+here, it is treated as only a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Similar treatment is given to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>values(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing all the values in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Note that keys must be unique, while values can contain duplicates.) Since
+these 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are backed by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+any changes in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be reflected in the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method grabs the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>entries</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and uses it to print both the key and value for each pair. The rest of the
+program provides simple examples of each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operation, and tests each type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+creating your own class to use as a key in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must deal with the same issues discussed previously for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><a name="_Toc408018582"></a><P></DIV>
+<A NAME="Heading267"></A><H3 ALIGN=LEFT>
+Choosing
+an implementation
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">From
+the diagram on page 
+<A HREF=" PAGE#Collections_Diagram">363</A>
+you can see that there are really only three collection components: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only two or three implementations of each interface. If you need to use the
+functionality offered by a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+how do you decide which particular implementation to use?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+understand the answer, you must be aware that each different implementation has
+its own features, strengths, and weaknesses. For example, you can see in the
+diagram that the &#8220;feature&#8221; of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that they are legacy classes, so that existing code doesn&#8217;t break. On
+the other hand, it&#8217;s best if you don&#8217;t use those for new (Java 1.2)
+code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+distinction between the other collections often comes down to what they are
+&#8221;backed by;&#8221; that is, the data structures that physically implement
+your desired 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that, for example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList,
+LinkedList
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is roughly equivalent to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">all
+implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface so your program will produce the same results regardless of the one
+you use. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+backed by an array, while the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is implemented in the usual way for a doubly-linked list, as individual objects
+each containing data along with handles to the previous and next elements in
+the list. Because of this, if you want to do many insertions and removals in
+the middle of a list a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the appropriate choice. (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also has additional functionality that is established in <A NAME="Index866"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractSequentialList.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+If not, an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is probably faster.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+another example, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be implemented as either an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is backed by an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and is designed to support only small numbers of elements, especially in
+situations in which you&#8217;re creating and destroying a lot of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. However, if you&#8217;re going to have larger quantities in your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the performance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will get very bad, very quickly. When you&#8217;re writing a program that needs
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you should choose 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by default, and change to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only in special cases where performance improvements are indicated and necessary.
+</FONT><P></DIV>
+<A NAME="Heading268"></A><H4 ALIGN=LEFT>
+Choosing
+between Lists
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most convincing way to see the differences between the implementations of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is with a performance test. The following code establishes an inner base class
+to use as a test framework, then creates an <A NAME="Index867"></A><A NAME="Index868"></A>anonymous
+inner class for each different test. Each of these inner classes is called by
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>test(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. This approach allows you to easily add and remove new kinds of tests.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ListPerformance.java</font>
+<font color="#009900">// Demonstrates performance differences in Lists</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ListPerformance {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> REPS = 100;
+  <font color="#0000ff">private</font> <font color="#0000ff">abstract</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> Tester {
+    String name;
+    <font color="#0000ff">int</font> size; <font color="#009900">// Test quantity</font>
+    Tester(String name, <font color="#0000ff">int</font> size) { 
+      <font color="#0000ff">this</font>.name = name;
+      <font color="#0000ff">this</font>.size = size;
+    }
+    <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> test(List a);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Tester[] tests = {
+    <font color="#0000ff">new</font> Tester("get", 300) { 
+      <font color="#0000ff">void</font> test(List a) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++) {
+          <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; a.size(); j++)
+            a.get(j);
+        }
+      }
+    },
+    <font color="#0000ff">new</font> Tester("iteration", 300) { 
+      <font color="#0000ff">void</font> test(List a) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++) {
+          Iterator it = a.iterator();
+          <font color="#0000ff">while</font>(it.hasNext())
+            it.next();
+        }
+      }
+    },
+    <font color="#0000ff">new</font> Tester("insert", 1000) { 
+      <font color="#0000ff">void</font> test(List a) {
+        <font color="#0000ff">int</font> half = a.size()/2;
+        String s = "test";
+        ListIterator it = a.listIterator(half);
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; size * 10; i++)
+          it.add(s);
+      }
+    },
+    <font color="#0000ff">new</font> Tester("remove", 5000) { 
+      <font color="#0000ff">void</font> test(List a) {
+        ListIterator it = a.listIterator(3);
+        <font color="#0000ff">while</font>(it.hasNext()) {
+          it.next();
+          it.remove();
+        }
+      }
+    },
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> test(List a) {
+    <font color="#009900">// A trick to print out the class name:</font>
+    System.out.println("Testing " + 
+      a.getClass().getName());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tests.length; i++) {
+      Collection1.fill(a, tests[i].size);
+      System.out.print(tests[i].name);
+      <font color="#0000ff">long</font> t1 = System.currentTimeMillis();
+      tests[i].test(a);
+      <font color="#0000ff">long</font> t2 = System.currentTimeMillis();
+      System.out.println(": " + (t2 - t1));
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    test(<font color="#0000ff">new</font> ArrayList());
+    test(<font color="#0000ff">new</font> LinkedList());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inner class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tester</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to provide a base class for the specific tests. It contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be printed when the test starts, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">parameter
+to be used by the test for quantity of elements or repetitions of tests, a
+constructor to initialize the fields, and an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>test(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that does the work. All the different types of tests are collected in one
+place, the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tests</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is initialized with different anonymous inner classes that inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tester</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To add or remove tests, simply add or remove an inner class definition from the
+array, and everything else happens automatically.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s handed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>test(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is first filled with elements, then each test in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>tests</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array is timed. The results will vary from machine to machine; they are
+intended to give only an order of magnitude comparison between the performance
+of the different collections. Here is a summary of one run:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="63">
+      <COL width="40">
+      <COL width="52">
+      <COL width="52">
+      <COL width="52">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Type</FONT><P></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Get</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Iteration</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Insert</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Remove</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">110</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">270</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1920</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">4780</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=40 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1870</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">7580</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">170</FONT><P></DIV>
+</TD>
+<TD WIDTH=52 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">110</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that random accesses (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and iterations are cheap for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and expensive for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+On the other hand, insertions and removals from the middle of a list are
+significantly cheaper for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+than for an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The best approach is probably to choose an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as your default and to change to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if you discover performance problems because of many insertions and removals
+from the middle of the list.
+</FONT><P></DIV>
+<A NAME="Heading269"></A><H4 ALIGN=LEFT>
+Choosing
+between Sets
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can choose between an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+depending on the size of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(if you need to produce an ordered sequence from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeSet</B></FONT><A NAME="fnB39" HREF="#fn39">[39]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following test program gives an indication of this tradeoff:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SetPerformance.java</font>
+<font color="#009900">// Demonstrates performance differences in Sets</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SetPerformance {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> REPS = 100;
+  <font color="#0000ff">private</font> <font color="#0000ff">abstract</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> Tester {
+    String name;
+    Tester(String name) { <font color="#0000ff">this</font>.name = name; }
+    <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> test(Set s, <font color="#0000ff">int</font> size);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Tester[] tests = {
+    <font color="#0000ff">new</font> Tester("add") { 
+      <font color="#0000ff">void</font> test(Set s, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++) {
+          s.clear();
+          Collection1.fill(s, size);
+        }
+      }
+    },
+    <font color="#0000ff">new</font> Tester("contains") { 
+      <font color="#0000ff">void</font> test(Set s, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++)
+          <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; size; j++)
+            s.contains(Integer.toString(j));
+      }
+    },
+    <font color="#0000ff">new</font> Tester("iteration") { 
+      <font color="#0000ff">void</font> test(Set s, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS * 10; i++) {
+          Iterator it = s.iterator();
+          <font color="#0000ff">while</font>(it.hasNext())
+            it.next();
+        }
+      }
+    },
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> test(Set s, <font color="#0000ff">int</font> size) {
+    <font color="#009900">// A trick to print out the class name:</font>
+    System.out.println("Testing " + 
+      s.getClass().getName() + " size " + size);
+    Collection1.fill(s, size);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tests.length; i++) {
+      System.out.print(tests[i].name);
+      <font color="#0000ff">long</font> t1 = System.currentTimeMillis();
+      tests[i].test(s, size);
+      <font color="#0000ff">long</font> t2 = System.currentTimeMillis();
+      System.out.println(": " + 
+        ((<font color="#0000ff">double</font>)(t2 - t1)/(<font color="#0000ff">double</font>)size));
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Small:</font>
+    test(<font color="#0000ff">new</font> ArraySet(), 10);
+    test(<font color="#0000ff">new</font> HashSet(), 10);
+    <font color="#009900">// Medium:</font>
+    test(<font color="#0000ff">new</font> ArraySet(), 100);
+    test(<font color="#0000ff">new</font> HashSet(), 100);
+    <font color="#009900">// Large:</font>
+    test(<font color="#0000ff">new</font> HashSet(), 1000);
+    test(<font color="#0000ff">new</font> ArraySet(), 500);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+last test of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is only 500 elements instead of 1000 because it is so slow.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="60">
+      <COL width="54">
+      <COL width="49">
+      <COL width="57">
+      <COL width="56">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Type</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Test
+size
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Add</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Contains</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Iteration</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">6.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">11.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">24.2</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">23.1</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">4.9</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">500</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100.18</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">97.12</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">4.5</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="60">
+      <COL width="54">
+      <COL width="49">
+      <COL width="57">
+      <COL width="56">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">6.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">16.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.5</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">6.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=60 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1000</FONT><P></DIV>
+</TD>
+<TD WIDTH=49 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">6.1</FONT><P></DIV>
+</TD>
+<TD WIDTH=57 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">6.09</FONT><P></DIV>
+</TD>
+<TD WIDTH=56 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.77</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is clearly superior to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>contains(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the performance is effectively independent of size. You&#8217;ll virtually
+never want to use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArraySet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for regular programming.
+</FONT><P></DIV>
+<A NAME="Heading270"></A><H4 ALIGN=LEFT>
+Choosing
+between Maps
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+choosing between implementations of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the size of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is what most strongly affects performance, and the following test program gives
+an indication of this tradeoff:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MapPerformance.java</font>
+<font color="#009900">// Demonstrates performance differences in Maps</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MapPerformance {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> REPS = 100;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Map fill(Map m, <font color="#0000ff">int</font> size) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; size; i++) {
+      String x = Integer.toString(i);
+      m.put(x, x);
+    }
+    <font color="#0000ff">return</font> m;
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">abstract</font> <font color="#0000ff">static</font> <font color="#0000ff">class</font> Tester {
+    String name;
+    Tester(String name) { <font color="#0000ff">this</font>.name = name; }
+    <font color="#0000ff">abstract</font> <font color="#0000ff">void</font> test(Map m, <font color="#0000ff">int</font> size);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> Tester[] tests = {
+    <font color="#0000ff">new</font> Tester("put") { 
+      <font color="#0000ff">void</font> test(Map m, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++) {
+          m.clear();
+          fill(m, size);
+        }
+      }
+    },
+    <font color="#0000ff">new</font> Tester("get") { 
+      <font color="#0000ff">void</font> test(Map m, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS; i++)
+          <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; size; j++)
+            m.get(Integer.toString(j));
+      }
+    },
+    <font color="#0000ff">new</font> Tester("iteration") { 
+      <font color="#0000ff">void</font> test(Map m, <font color="#0000ff">int</font> size) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; REPS * 10; i++) {
+          Iterator it = m.entries().iterator();
+          <font color="#0000ff">while</font>(it.hasNext())
+            it.next();
+        }
+      }
+    },
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> test(Map m, <font color="#0000ff">int</font> size) {
+    <font color="#009900">// A trick to print out the class name:</font>
+    System.out.println("Testing " + 
+      m.getClass().getName() + " size " + size);
+    fill(m, size);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; tests.length; i++) {
+      System.out.print(tests[i].name);
+      <font color="#0000ff">long</font> t1 = System.currentTimeMillis();
+      tests[i].test(m, size);
+      <font color="#0000ff">long</font> t2 = System.currentTimeMillis();
+      System.out.println(": " + 
+        ((<font color="#0000ff">double</font>)(t2 - t1)/(<font color="#0000ff">double</font>)size));
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Small:</font>
+    test(<font color="#0000ff">new</font> ArrayMap(), 10);
+    test(<font color="#0000ff">new</font> HashMap(), 10);
+    test(<font color="#0000ff">new</font> TreeMap(), 10);
+    <font color="#009900">// Medium:</font>
+    test(<font color="#0000ff">new</font> ArrayMap(), 100);
+    test(<font color="#0000ff">new</font> HashMap(), 100);
+    test(<font color="#0000ff">new</font> TreeMap(), 100);
+    <font color="#009900">// Large:</font>
+    test(<font color="#0000ff">new</font> HashMap(), 1000);
+    <font color="#009900">// You might want to comment these out since</font>
+    <font color="#009900">// they can take a while to run:</font>
+    test(<font color="#0000ff">new</font> ArrayMap(), 500);
+    test(<font color="#0000ff">new</font> TreeMap(), 500);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+the size of the map is the issue, you&#8217;ll see that the timing tests divide
+the time by the size to normalize each measurement. Here is one set of results.
+(Yours will probably be different.)
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="63">
+      <COL width="54">
+      <COL width="45">
+      <COL width="45">
+      <COL width="54">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Type
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Test
+size
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Put</FONT><P></DIV>
+</TH>
+<TH WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Get</FONT><P></DIV>
+</TH>
+<TH WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Iteration</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">22.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">44.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">17.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayMap</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">68.7</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">118.6</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">8.8</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">500</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">155.22</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">259.36</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">4.84</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">17.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">16.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">11.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">18.1</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">70.3</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">8.3</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">500</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">11.22</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">148.4</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">4.62</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">11.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">11.0</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">33.0</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">100</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">9.9</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10.4</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">12.1</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=63 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1000</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">13.18</FONT><P></DIV>
+</TD>
+<TD WIDTH=45 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10.65</FONT><P></DIV>
+</TD>
+<TD WIDTH=54 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">5.77</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+for size 10, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performance is worse than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; except for iteration, which is not usually what you&#8217;re concerned
+about when using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is generally the place where you&#8217;ll spend most of your time.) The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+respectable 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+iteration times, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+not so good. Why would you use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">if
+it has good 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+iteration times? So you could use it not as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">but
+as a way to create an ordered list. The behavior of a tree is such that
+it&#8217;s always in order and doesn&#8217;t have to be specially sorted. (The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>way</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it is ordered will be discussed later.) Once you fill a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can call <A NAME="Index869"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keySet(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+view of the keys, then <A NAME="Index870"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toArray(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce an array of those keys. You can then use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Array.binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(discussed later) to rapidly find objects in your sorted array. Of course, you
+would probably only do this if, for some reason, the behavior of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was unacceptable, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+designed to rapidly find things. In the end, when you&#8217;re using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">your
+first choice should be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and only rarely will you need to investigate the alternatives.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is another performance issue that the above table does not address, and that is
+speed of creation. The following program tests creation speed for different
+types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MapCreation.java</font>
+<font color="#009900">// Demonstrates time differences in Map creation</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MapCreation {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">final</font> <font color="#0000ff">long</font> REPS = 100000;
+    <font color="#0000ff">long</font> t1 = System.currentTimeMillis();
+    System.out.print("ArrayMap");
+    <font color="#0000ff">for</font>(<font color="#0000ff">long</font> i = 0; i &lt; REPS; i++)
+      <font color="#0000ff">new</font> ArrayMap();
+    <font color="#0000ff">long</font> t2 = System.currentTimeMillis();
+    System.out.println(": " + (t2 - t1));
+    t1 = System.currentTimeMillis();
+    System.out.print("TreeMap");
+    <font color="#0000ff">for</font>(<font color="#0000ff">long</font> i = 0; i &lt; REPS; i++)
+      <font color="#0000ff">new</font> TreeMap();
+    t2 = System.currentTimeMillis();
+    System.out.println(": " + (t2 - t1));
+    t1 = System.currentTimeMillis();
+    System.out.print("HashMap");
+    <font color="#0000ff">for</font>(<font color="#0000ff">long</font> i = 0; i &lt; REPS; i++)
+      <font color="#0000ff">new</font> HashMap();
+    t2 = System.currentTimeMillis();
+    System.out.println(": " + (t2 - t1));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+the time this program was written, the creation speed of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was dramatically faster than the other two types. (Although you should try it,
+since there was talk of performance improvements to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+This, along with the acceptable and consistent 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+suggests a possible strategy if you&#8217;re creating many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+and only later in your program doing many lookups: Create and fill 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+and when you start looking things up, convert the important 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap(Map)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. Again, you should only worry about this sort of thing after
+it&#8217;s been proven that you have a performance bottleneck. (&#8220;First
+make it work, then make it fast &#8211; if you must.&#8221;)
+</FONT><a name="_Toc408018583"></a><P></DIV>
+<A NAME="Heading271"></A><H3 ALIGN=LEFT>
+Unsupported
+operations
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+possible to turn an array into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+Arrays.toList(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Unsupported.java</font>
+<font color="#009900">// Sometimes methods defined in the Collection</font>
+<font color="#009900">// interfaces don't work!</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Unsupported {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> String[] s = {
+    "one", "two", "three", "four", "five",
+    "six", "seven", "eight", "nine", "ten",
+  };
+  <font color="#0000ff">static</font> List a = Arrays.toList(s);
+  <font color="#0000ff">static</font> List a2 = Arrays.toList(
+    <font color="#0000ff">new</font> String[] { s[3], s[4], s[5] });
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Collection1.print(a); <font color="#009900">// Iteration</font>
+    System.out.println(
+      "a.contains(" + s[0] + ") = " + 
+      a.contains(s[0]));
+    System.out.println(
+      "a.containsAll(a2) = " + 
+      a.containsAll(a2));
+    System.out.println("a.isEmpty() = " +
+      a.isEmpty());
+    System.out.println(
+      "a.indexOf(" + s[5] + ") = " + 
+      a.indexOf(s[5]));
+    <font color="#009900">// Traverse backwards:</font>
+    ListIterator lit = a.listIterator(a.size());
+    <font color="#0000ff">while</font>(lit.hasPrevious())
+      System.out.print(lit.previous());
+    System.out.println();
+    <font color="#009900">// Set the elements to different values:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.size(); i++)
+      a.set(i, "47");
+    Collection1.print(a);
+    <font color="#009900">// Compiles, but won't run:</font>
+    lit.add("X"); <font color="#009900">// Unsupported operation</font>
+    a.clear(); <font color="#009900">// Unsupported</font>
+    a.add("eleven"); <font color="#009900">// Unsupported</font>
+    a.addAll(a2); <font color="#009900">// Unsupported</font>
+    a.retainAll(a2); <font color="#009900">// Unsupported</font>
+    a.remove(s[0]); <font color="#009900">// Unsupported</font>
+    a.removeAll(a2); <font color="#009900">// Unsupported</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+discover that only a portion of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">interfaces
+are actually implemented. The rest of the methods cause the unwelcome
+appearance of something called an <A NAME="Index871"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsupportedOperationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll learn all about exceptions in the next chapter, but the short
+story is that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as well as some of the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+in the new collections library, contain <A NAME="Index872"></A>&#8220;optional&#8221;
+methods, which might or might not be &#8220;supported&#8221; in the concrete
+class that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Calling an <A NAME="Index873"></A>unsupported
+method causes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsupportedOperationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to indicate a programming error.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8220;What?!?&#8221;
+you say, incredulous. &#8220;The whole point of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and base classes is that they promise these methods will do something
+meaningful! This breaks that promise &#8211; it says that not only will calling
+some methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+perform a meaningful behavior, they will stop the program! Type safety was just
+thrown out the window!&#8221; It&#8217;s not quite that bad. With a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the compiler still restricts you to calling only the methods in that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it&#8217;s not like Smalltalk (in which you can call any method for any
+object, and find out only when you run the program whether your call does
+anything). In addition, most methods that take a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an argument only read from that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211;all the &#8220;read&#8221; methods of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+optional.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach prevents an explosion of interfaces in the design. Other designs for
+collection libraries always seem to end up with a confusing plethora of
+interfaces to describe each of the variations on the main theme and are thus
+difficult to learn. It&#8217;s not even possible to capture all of the special
+cases in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+because someone can always invent a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The &#8220;unsupported operation&#8221; approach achieves an important goal of
+the new collections library: it is simple to learn and use. For this approach
+to work, however:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsupportedOperationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be a rare event. That is, for most classes all operations should work, and
+only in special cases should an operation be unsupported. This is true in the
+new collections library, since the classes you&#8217;ll use 99 percent of the
+time &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ArrayList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LinkedList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HashMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as well as the other concrete implementations &#8211; support all of the
+operations. The design does provide a &#8220;back door&#8221; if you want to
+create a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without providing meaningful definitions for all the methods in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and yet still fit it into the existing library.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+an operation 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+unsupported, there should be reasonable likelihood that an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsupportedOperationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will appear at implementation time, rather than after you&#8217;ve shipped the
+product to the customer. After all, it indicates a programming error:
+you&#8217;ve used a class incorrectly. This point is less certain, and is where
+the experimental nature of this design comes into play. Only over time will we
+find out how well it works.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the example above, <A NAME="Index874"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays.toList(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is backed by a fixed-size array. Therefore it makes sense that the only
+supported operations are the ones that don&#8217;t change the size of the
+array. If, on the other hand, a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+were required to express this different kind of behavior (called, perhaps,
+&#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FixedSizeList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;),
+it would throw open the door to complexity and soon you wouldn&#8217;t know
+where to start when trying to use the library.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+documentation for a method that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an argument should specify which of the optional methods must be
+implemented. For example, sorting requires the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>set</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(&#160;)
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Iterator.set(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+but not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>remove(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><a name="_Toc408018584"></a><P></DIV>
+<A NAME="Heading272"></A><H3 ALIGN=LEFT>
+Sorting
+and searching
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.2 adds utilities to perform sorting and searching for <A NAME="Index875"></A>arrays
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+These utilities are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+of two new classes: <A NAME="Index876"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for sorting and searching arrays, and <A NAME="Index877"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for sorting and searching 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV>
+<A NAME="Heading273"></A><H4 ALIGN=LEFT>
+Arrays</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+has an overloaded <A NAME="Index878"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index879"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for arrays of all the primitive types, as well as for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here&#8217;s an example that shows sorting and searching an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(all the other primitives look the same) and an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Array1.java</font>
+<font color="#009900">// Testing the sorting &amp; searching in Arrays</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Array1 {
+  <font color="#0000ff">static</font> Random r = <font color="#0000ff">new</font> Random();
+  <font color="#0000ff">static</font> String ssource = 
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+    "abcdefghijklmnopqrstuvwxyz";
+  <font color="#0000ff">static</font> <font color="#0000ff">char</font>[] src = ssource.toCharArray();
+  <font color="#009900">// Create a random String</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String randString(<font color="#0000ff">int</font> length) {
+    <font color="#0000ff">char</font>[] buf = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[length];
+    <font color="#0000ff">int</font> rnd;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; length; i++) {
+      rnd = Math.abs(r.nextInt()) % src.length;
+      buf[i] = src[rnd];
+    }
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> String(buf);
+  }
+  <font color="#009900">// Create a random array of Strings:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> 
+  String[] randStrings(<font color="#0000ff">int</font> length, <font color="#0000ff">int</font> size) {
+    String[] s = <font color="#0000ff">new</font> String[size];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; size; i++)
+      s[i] = randString(length);
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(<font color="#0000ff">byte</font>[] b) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; b.length; i++)
+      System.out.print(b[i] + " ");
+    System.out.println();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(String[] s) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      System.out.print(s[i] + " ");
+    System.out.println();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">byte</font>[] b = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[15];
+    r.nextBytes(b); <font color="#009900">// Fill with random bytes</font>
+    print(b);
+    Arrays.sort(b);
+    print(b);
+    <font color="#0000ff">int</font> loc = Arrays.binarySearch(b, b[10]);
+    System.out.println("Location of " + b[10] +
+      " = " + loc);
+    <font color="#009900">// Test String sort &amp; search:</font>
+    String[] s = randStrings(4, 10);
+    print(s);
+    Arrays.sort(s);
+    print(s);
+    loc = Arrays.binarySearch(s, s[4]);
+    System.out.println("Location of " + s[4] +
+      " = " + loc);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first part of the class contains utilities to generate random 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects using an array of characters from which random letters can be selected. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>randString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns a string of any length, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>randStrings(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">creates
+an array of random 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+given the length of each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+the desired size of the array.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods simplify the display of the sample arrays. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index880"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Random</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fills the array argument with randomly-selected 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(There are no corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Random
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods
+to create arrays of the other primitive data types.) Once you have an array,
+you can see that it&#8217;s only a single method call to perform a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+There&#8217;s an important warning concerning 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+If you do not call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before you perform a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+unpredictable behavior can occur, including infinite loops.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sorting
+and searching with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+looks the same, but when you run the program you&#8217;ll notice something
+interesting: the sorting is <A NAME="Index881"></A>lexicographic,
+so uppercase letters precede lowercase letters in the character set. Thus, all
+the capital letters are at the beginning of the list, followed by the lowercase
+letters, so &#8216;Z&#8217; precedes &#8216;a&#8217;. It turns out that even
+telephone books are typically sorted this way.
+</FONT><P></DIV>
+<A NAME="Heading274"></A><H4 ALIGN=LEFT>
+Comparable
+and Comparator
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if this isn&#8217;t what you want? For example, the index in this book would
+not be too useful if you had to look in two places for everything that begins
+with &#8216;A&#8217; or &#8216;a&#8217;. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you want to sort an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there&#8217;s a problem. What determines the ordering of two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s?
+Unfortunately, the original Java designers didn&#8217;t consider this an
+important problem, or it would have been defined in the root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As a result, ordering must be imposed on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+from the outside, and the new collections library provides a standard way to do
+this (which is almost as good as defining it in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for arrays of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+of course, is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+takes a second argument: an object that implements the <A NAME="Index882"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface (part of the new collections library) and performs comparisons with
+its single <A NAME="Index883"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>compare(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. This method takes the two objects to be compared as its arguments and
+returns a negative integer if the first argument is less than the second, zero
+if they&#8217;re equal, and a positive integer if the first argument is greater
+than the second. With this knowledge, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+portion of the example above can be re-implemented to perform an alphabetic sort:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AlphaComp.java</font>
+<font color="#009900">// Using Comparator to perform an alphabetic sort</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AlphaComp <font color="#0000ff">implements</font> Comparator {
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> compare(Object o1, Object o2) {
+    <font color="#009900">// Assume it's used only for Strings...</font>
+    String s1 = ((String)o1).toLowerCase();
+    String s2 = ((String)o2).toLowerCase();
+    <font color="#0000ff">return</font> s1.compareTo(s2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    String[] s = Array1.randStrings(4, 10);
+    Array1.print(s);
+    AlphaComp ac = <font color="#0000ff">new</font> AlphaComp();
+    Arrays.sort(s, ac);
+    Array1.print(s);
+    <font color="#009900">// Must use the Comparator to search, also:</font>
+    <font color="#0000ff">int</font> loc = Arrays.binarySearch(s, s[3], ac);
+    System.out.println("Location of " + s[3] +
+     " = " + loc);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+casting to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>compare(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method implicitly tests to ensure that it is used only with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+&#8211; the run-time system will catch any discrepancies. After forcing both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to lower case, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.compareTo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces the desired results.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you use your own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must use that same 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class has another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that takes a single argument: an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but with no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must also have some way to compare two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+It uses the <A NAME="Index884"></A><A NAME="Index885"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>natural
+comparison method
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is imparted to a class by implementing the <A NAME="Index886"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a single method, <A NAME="Index887"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>compareTo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which compares the object to its argument and returns negative, zero, or
+positive depending on whether it is less than, equal to, or greater than the
+argument. A simple example demonstrates this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CompClass.java</font>
+<font color="#009900">// A class that implements Comparable</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CompClass <font color="#0000ff">implements</font> Comparable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> CompClass(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> compareTo(Object o) {
+    <font color="#009900">// Implicitly tests for correct type:</font>
+    <font color="#0000ff">int</font> argi = ((CompClass)o).i;
+    <font color="#0000ff">if</font>(i == argi) <font color="#0000ff">return</font> 0;
+    <font color="#0000ff">if</font>(i &lt; argi) <font color="#0000ff">return</font> -1;
+    <font color="#0000ff">return</font> 1;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(Object[] a) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++)
+      System.out.print(a[i] + " ");
+    System.out.println();
+  }
+  <font color="#0000ff">public</font> String toString() { <font color="#0000ff">return</font> i + ""; }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    CompClass[] a = <font color="#0000ff">new</font> CompClass[20];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++)
+      a[i] = <font color="#0000ff">new</font> CompClass(
+        (<font color="#0000ff">int</font>)(Math.random() *100));
+    print(a);
+    Arrays.sort(a);
+    print(a);
+    <font color="#0000ff">int</font> loc = Arrays.binarySearch(a, a[3]);
+    System.out.println("Location of " + a[3] +
+     " = " + loc);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>compareTo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method can be as complex as necessary.
+</FONT><P></DIV>
+<A NAME="Heading275"></A><H4 ALIGN=LEFT>
+Lists</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index888"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be sorted and searched in the same fashion as an array. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods to sort and search a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are contained in the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but they have similar signatures as the ones in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(List)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to sort a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of objects that implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to find an object in the list, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(List,
+Comparator)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to sort a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(List,
+Object, Comparator)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to find an object in that list.
+</FONT><A NAME="fnB40" HREF="#fn40">[40]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+This example uses the previously-defined 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CompClass</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AlphaComp</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to demonstrate the sorting tools in <A NAME="Index889"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ListSort.java</font>
+<font color="#009900">// Sorting and searching Lists with 'Collections'</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ListSort {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">final</font> <font color="#0000ff">int</font> SZ = 20;
+    <font color="#009900">// Using "natural comparison method":</font>
+    List a = <font color="#0000ff">new</font> ArrayList();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; SZ; i++)
+      a.add(<font color="#0000ff">new</font> CompClass(
+        (<font color="#0000ff">int</font>)(Math.random() *100)));
+    Collection1.print(a);
+    Collections.sort(a);
+    Collection1.print(a);
+    Object find = a.get(SZ/2);
+    <font color="#0000ff">int</font> loc = Collections.binarySearch(a, find);
+    System.out.println("Location of " + find +
+     " = " + loc);
+    <font color="#009900">// Using a Comparator:</font>
+    List b = <font color="#0000ff">new</font> ArrayList();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; SZ; i++)
+      b.add(Array1.randString(4));
+    Collection1.print(b);
+    AlphaComp ac = <font color="#0000ff">new</font> AlphaComp();
+    Collections.sort(b, ac);
+    Collection1.print(b);
+    find = b.get(SZ/2);
+    <font color="#009900">// Must use the Comparator to search, also:</font>
+    loc = Collections.binarySearch(b, find, ac);
+    System.out.println("Location of " + find +
+     " = " + loc);
+  }
+} <font color="#009900">///:~  </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of these methods is identical to the ones in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Arrays</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you&#8217;re using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of an array.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeMap</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must also order its objects according to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018585"></a><P></DIV>
+<A NAME="Heading276"></A><H3 ALIGN=LEFT>
+Utilities</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are a number of other useful utilities in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="162">
+      <COL width="175">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enumeration(Collection)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+an old-style 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the argument.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index890"></A><TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>max(Collection)
+</B></FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index891"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>min(Collection)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+the maximum or minimum element in the argument using the natural comparison
+method of the objects in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>max(Collection,
+Comparator) 
+</B></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>min(Collection,
+Comparator)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+the maximum or minimum element in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Comparator</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nCopies(int
+n, Object o) 
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+an immutable 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of size 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+whose handles all point to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>o</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index892"></A><TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>subList(List,
+int min, int max) 
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+backed by the specified argument 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is a window into that argument with indexes starting at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>min</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and stopping just before 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>max</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>min(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>max(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+work with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, not with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+so you don&#8217;t need to worry about whether the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be sorted or not. (As mentioned earlier, you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>do</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+need to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or an array before performing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>binarySearch(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)</FONT><P></DIV>
+<A NAME="Heading277"></A><H4 ALIGN=LEFT>
+Making
+a Collection or Map unmodifiable
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Often
+it is convenient to create a read-only version of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class allows you to do this by passing the original container into a method
+that hands back a read-only version. There are four variations on this method,
+one each for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(if you don&#8217;t want to treat a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collection
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">as
+a more specific type), 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Set,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Map</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This example shows the proper way to build read-only versions of each:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ReadOnly.java</font>
+<font color="#009900">// Using the Collections.unmodifiable methods</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ReadOnly {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Collection c = <font color="#0000ff">new</font> ArrayList();
+    Collection1.fill(c); <font color="#009900">// Insert useful data</font>
+    c = Collections.unmodifiableCollection(c);
+    Collection1.print(c); <font color="#009900">// Reading is OK</font>
+    <font color="#009900">//! c.add("one"); // Can't change it</font>
+    
+    List a = <font color="#0000ff">new</font> ArrayList();
+    Collection1.fill(a);
+    a = Collections.unmodifiableList(a);
+    ListIterator lit = a.listIterator();
+    System.out.println(lit.next()); <font color="#009900">// Reading OK</font>
+    <font color="#009900">//! lit.add("one"); // Can't change it</font>
+
+    Set s = <font color="#0000ff">new</font> HashSet();
+    Collection1.fill(s);
+    s = Collections.unmodifiableSet(s);
+    Collection1.print(s); <font color="#009900">// Reading OK</font>
+    <font color="#009900">//! s.add("one"); // Can't change it</font>
+    
+    Map m = <font color="#0000ff">new</font> HashMap();
+    Map1.fill(m, Map1.testData1);
+    m = Collections.unmodifiableMap(m);
+    Map1.print(m); <font color="#009900">// Reading OK</font>
+    <font color="#009900">//! m.put("Ralph", "Howdy!");</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+each case, you must fill the container with meaningful data 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you make it read-only. Once it is loaded, the best approach is to replace the
+existing handle with the handle that is produced by the &#8220;<A NAME="Index893"></A>unmodifiable&#8221;
+call. That way, you don&#8217;t run the risk of accidentally changing the
+contents once you&#8217;ve made it unmodifiable. On the other hand, this tool
+also allows you to keep a modifiable container as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+within a class and to return a read-only handle to that container from a method
+call. So you can change it from within the class but everyone else can only
+read it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Calling
+the &#8220;unmodifiable&#8221; method for a particular type does not cause
+compile-time checking, but once the transformation has occurred, any calls to
+methods that modify the contents of a particular container will produce an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnsupportedOperationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading278"></A><H4 ALIGN=LEFT>
+Synchronizing
+a Collection or Map
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index894"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword is an important part of the subject of <A NAME="Index895"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multithreading</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a more complicated topic that will not be introduced until Chapter 14. Here, I
+shall note only that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Collections</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class contains a way to automatically synchronize an entire container. The
+syntax is similar to the &#8220;unmodifiable&#8221; methods:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Synchronization.java</font>
+<font color="#009900">// Using the Collections.synchronized methods</font>
+<font color="#0000ff">package</font> c08.newcollections;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Synchronization {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Collection c = 
+      Collections.synchronizedCollection(
+        <font color="#0000ff">new</font> ArrayList());
+    List list = Collections.synchronizedList(
+      <font color="#0000ff">new</font> ArrayList());
+    Set s = Collections.synchronizedSet(
+      <font color="#0000ff">new</font> HashSet());
+    Map m = Collections.synchronizedMap(
+      <font color="#0000ff">new</font> HashMap());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this case, you immediately pass the new container through the appropriate
+&#8220;synchronized&#8221; method; that way there&#8217;s no chance of
+accidentally exposing the unsynchronized version.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new collections also have a mechanism to prevent more than one process from
+modifying the contents of a container. The problem occurs if you&#8217;re
+iterating through a container and some other process steps in and inserts,
+removes, or changes an object in that container. Maybe you&#8217;ve already
+passed that object, maybe it&#8217;s ahead of you, maybe the size of the
+container shrinks after you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; there are many scenarios for disaster. The new collections library
+incorporates a <A NAME="Index896"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>fail
+fast
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+mechanism that looks for any changes to the container other than the ones your
+process is personally responsible for. If it detects that someone else is
+modifying the container, it immediately produces a <A NAME="Index897"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ConcurrentModificationException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the &#8220;fail-fast&#8221; aspect &#8211; it doesn&#8217;t try to
+detect a problem later on using a more complex algorithm.
+</FONT><a name="_Toc408018586"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn37" HREF="#fnB37">[37]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+This chapter was written while Java 1.2 was still in beta, so the diagram does
+not show the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TreeSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that was added later.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><A NAME="fn38" HREF="#fnB38">[38]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+At the time of this writing, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>TreeSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+had only been announced and was not yet implemented, so there are no examples
+here that use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>TreeSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn39" HREF="#fnB39">[39]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>TreeSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+was not available at the time of this writing, but you can easily add a test
+for it into this example.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><A NAME="fn40" HREF="#fnB40">[40]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">At
+the time of this writing, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>Collections.stableSort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+had been announced, to perform a merge sort, but it was unavailable for testing.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0092.html">Prev</a> | <a href="tij0094.html">Next</a>
+</div>
+</body></html>
+

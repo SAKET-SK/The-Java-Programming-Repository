@@ -1,0 +1,253 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0102.html">Prev</a> | <a href="tij0104.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Constructors<P><A NAME="Index960"></A><A NAME="Index961"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+writing code with exceptions, it&#8217;s particularly important that you always
+ask, &#8220;If an exception occurs, will this be properly cleaned up?&#8221;
+Most of the time you&#8217;re fairly safe, but in constructors there&#8217;s a
+problem. The constructor puts the object into a safe starting state, but it
+might perform some operation &#8211; such as opening a file &#8211; that
+doesn&#8217;t get cleaned up until the user is finished with the object and
+calls a special cleanup method. If you throw an exception from inside a
+constructor, these cleanup behaviors might not occur properly. This means that
+you must be especially diligent while you write your constructor.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+you&#8217;ve just learned about <A NAME="Index962"></A><A NAME="Index963"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you might think that it is the correct solution. But it&#8217;s not quite that
+simple, because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">performs
+the cleanup code 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>every
+time
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+even in the situations in which you don&#8217;t want the cleanup code executed
+until the cleanup method runs. Thus, if you do perform cleanup in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must set some kind of flag when the constructor finishes normally and
+don&#8217;t do anything in the finally block if the flag is set. Because this
+isn&#8217;t particularly elegant (you are coupling your code from one place to
+another), it&#8217;s best if you try to avoid performing this kind of cleanup in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+unless you are forced to.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following example, a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created that opens a file and allows you to read it one line (converted into
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+at a time. It uses the classes <A NAME="Index964"></A><A NAME="Index965"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index966"></A><A NAME="Index967"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the Java standard IO library that will be discussed in Chapter 10, but
+which are simple enough that you probably won&#8217;t have any trouble
+understanding their basic use:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Cleanup.java</font>
+<font color="#009900">// Paying attention to exceptions</font>
+<font color="#009900">// in constructors</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> InputFile {
+  <font color="#0000ff">private</font> BufferedReader in;
+  InputFile(String fname) <font color="#0000ff">throws</font> Exception {
+    <font color="#0000ff">try</font> {
+      in = 
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> FileReader(fname));
+      <font color="#009900">// Other code that might throw exceptions</font>
+    } <font color="#0000ff">catch</font>(FileNotFoundException e) {
+      System.out.println(
+        "Could not open " + fname);
+      <font color="#009900">// Wasn't open, so don't close it</font>
+      <font color="#0000ff">throw</font> e;
+    } <font color="#0000ff">catch</font>(Exception e) {
+      <font color="#009900">// All other exceptions must close it</font>
+      <font color="#0000ff">try</font> {
+        in.close();
+      } <font color="#0000ff">catch</font>(IOException e2) {
+        System.out.println(
+          "in.close() unsuccessful");
+      }
+      <font color="#0000ff">throw</font> e;
+    } <font color="#0000ff">finally</font> {
+      <font color="#009900">// Don't close it here!!!</font>
+    }
+  }
+  String getLine() {
+    String s;
+    <font color="#0000ff">try</font> {
+      s = in.readLine();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println(
+        "readLine() unsuccessful");
+      s = "failed";
+    }
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">void</font> cleanup() {
+    <font color="#0000ff">try</font> {
+      in.close();
+    } <font color="#0000ff">catch</font>(IOException e2) {
+      System.out.println(
+        "in.close() unsuccessful");
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Cleanup {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      InputFile in = 
+        <font color="#0000ff">new</font> InputFile("Cleanup.java");
+      String s;
+      <font color="#0000ff">int</font> i = 1;
+      <font color="#0000ff">while</font>((s = in.getLine()) != <font color="#0000ff">null</font>)
+        System.out.println(""+ i++ + ": " + s);
+      in.cleanup();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println(
+        "Caught in main, e.printStackTrace()");
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example uses Java 1.1<A NAME="Index968"></A>
+IO classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument, which is the name of the file you want to open. Inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block, it creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using the file name. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t particularly useful until you turn around and use it to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you can actually talk to &#8211; notice that one of the benefits of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that it combines these two actions.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor is unsuccessful, it throws a <A NAME="Index969"></A><A NAME="Index970"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileNotFoundException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which must be caught separately because that&#8217;s the one case in which you
+don&#8217;t want to close the file since it wasn&#8217;t successfully opened.
+Any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>other</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+catch clauses must close the file because it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>was</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+opened by the time those catch clauses are entered. (Of course, this is
+trickier if more than one method can throw a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileNotFoundException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In that case, you might want to break things into several 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">blocks.)
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method throws an exception that is tried and caught even though it&#8217;s
+within the block of another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause &#8211; it&#8217;s just another pair of curly braces to the Java
+compiler. After performing local operations, the exception is re-thrown, which
+is appropriate because this constructor failed, and you wouldn&#8217;t want the
+calling method to assume that the object had been properly created and was valid.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this example, which doesn&#8217;t use the aforementioned flagging technique, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause is definitely 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the place to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the file, since that would close it every time the constructor completed. Since
+we want the file to be open for the useful lifetime of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object this would not be appropriate.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the next line in the file. It calls <A NAME="Index971"></A><A NAME="Index972"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which can throw an exception, but that exception is caught so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t throw any exceptions. One of the design issues with <A NAME="Index973"></A>exceptions
+is whether to handle an exception completely at this level, to handle it
+partially and pass the same exception (or a different one) on, or whether to
+simply pass it on. Passing it on, when appropriate, can certainly simplify
+coding. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method becomes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>String getLine() <font color="#0000ff">throws</font> IOException {
+  <font color="#0000ff">return</font> in.readLine();
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+of course, the caller is now responsible for handling any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IOException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that might arise.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cleanup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must be called by the user when they are finished using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to release the system resources (such as file handles) that are used by
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and/or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><A NAME="fnB46" HREF="#fn46">[46]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+You don&#8217;t want to do this until you&#8217;re finished with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, at the point you&#8217;re going to let it go. You might think of
+putting such functionality into a <A NAME="Index974"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, but as mentioned in Chapter 4 you can&#8217;t always be sure that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be called (even if you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be sure that it will be called, you don&#8217;t know 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>when</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+This is one of the downsides to Java &#8211; all cleanup other than memory
+cleanup doesn&#8217;t happen automatically, so you must inform the client
+programmer that they are responsible, and possibly guarantee that cleanup
+occurs using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cleanup.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created to open the same source file that creates the program, and this file
+is read in a line at a time, and line numbers are added. All exceptions are
+caught generically in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+although you could choose greater granularity.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the benefits of this example is to show you why exceptions are introduced at
+this point in the book. Exceptions are so integral to programming in Java,
+especially because the compiler enforces them, that you can accomplish only so
+much without knowing how to work with them.
+</FONT><a name="_Toc305593301"></a><a name="_Toc305628773"></a><a name="_Toc312374124"></a><a name="_Toc375545377"></a><a name="_Toc408018605"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn46" HREF="#fnB46">[46]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+In C++, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>destructor</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+would handle this for you.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0102.html">Prev</a> | <a href="tij0104.html">Next</a>
+</div>
+</body></html>
+

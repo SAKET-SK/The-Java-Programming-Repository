@@ -1,0 +1,50 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0124.html">Prev</a> | <a href="tij0126.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+12:
+Passing and returning objects
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">By
+this time you should be reasonably comfortable with the idea that when
+you&#8217;re &#8220;passing&#8221; an object, you&#8217;re actually passing a
+handle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+many programming languages, if not all of them, you can use that
+language&#8217;s &#8220;regular&#8221; way to pass objects around and most of
+the time everything works fine. But it always seems that there comes a point at
+which you must do something irregular and suddenly things get a bit more
+complicated (or in the case of C++, quite complicated). Java is no exception,
+and it&#8217;s important that you understand exactly what&#8217;s happening
+with them as you pass them around and assign to them. This chapter will provide
+that insight.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+way to pose the question of this chapter, if you&#8217;re coming from a
+programming language so equipped, is &#8220;Does <A NAME="Index1439"></A><A NAME="Index1440"></A>Java
+have pointers?&#8221; Some have claimed that pointers are hard and dangerous
+and therefore bad, and since Java is all goodness and light and will lift your
+earthly programming burdens, it cannot possibly contain such things. However,
+it&#8217;s more accurate to say that Java has pointers; indeed, every object
+identifier in Java (except for primitives) is one of these pointers, but their
+use is restricted and guarded not only by the compiler but by the run-time
+system. Or to put in another way, Java has pointers, but no pointer arithmetic.
+These are what I&#8217;ve been calling &#8220;handles,&#8221; and you can think
+of them as &#8220;safety pointers,&#8221; not unlike the safety scissors of
+elementary school- they aren&#8217;t sharp so you cannot hurt yourself without
+great effort, but they can sometimes be slow and tedious.
+</FONT><a name="_Toc375545422"></a><a name="_Toc408018654"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0124.html">Prev</a> | <a href="tij0126.html">Next</a>
+</div>
+</body></html>
+

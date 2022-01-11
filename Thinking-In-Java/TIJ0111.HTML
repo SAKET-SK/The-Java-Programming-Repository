@@ -1,0 +1,484 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0110.html">Prev</a> | <a href="tij0112.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+File class
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1057"></A><A NAME="Index1058"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+has a deceiving name &#8211; you might think it refers to a file, but it
+doesn&#8217;t. It can represent either the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>name</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of a particular file or the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>names</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of a set of files in a directory. If it&#8217;s a set of files, you can ask for
+the set with the <A NAME="Index1059"></A><A NAME="Index1060"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, and this returns an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It makes sense to return an array rather than one of the flexible collection
+classes because the number of elements is fixed, and if you want a different
+directory listing you just create a different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. In fact, &#8220;FilePath&#8221; would have been a better name. This
+section shows a complete example of the use of this class, including the
+associated <A NAME="Index1061"></A><A NAME="Index1062"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545391"></a><a name="_Toc408018618"></a><P></DIV>
+<A NAME="Heading312"></A><H3 ALIGN=LEFT>
+A
+directory lister
+<P><A NAME="Index1063"></A><A NAME="Index1064"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Suppose
+you&#8217;d like to see a directory listing. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object can be listed in two ways. If you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with no arguments, you&#8217;ll get the full list that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object contains. However, if you want a restricted list, for example, all of
+the files with an extension of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then you use a &#8220;directory filter,&#8221; which is a class that tells how
+to select the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects for display.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the code for the example: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DirList.java</font>
+<font color="#009900">// Displays directory listing</font>
+<font color="#0000ff">package</font> c10;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DirList {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      File path = <font color="#0000ff">new</font> File(".");
+      String[] list;
+      <font color="#0000ff">if</font>(args.length == 0)
+        list = path.list();
+      <font color="#0000ff">else</font> 
+        list = path.list(<font color="#0000ff">new</font> DirFilter(args[0]));
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+        System.out.println(list[i]);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+}
+
+<font color="#0000ff">class</font> DirFilter <font color="#0000ff">implements</font> FilenameFilter {
+  String afn;
+  DirFilter(String afn) { <font color="#0000ff">this</font>.afn = afn; }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> accept(File dir, String name) {
+    <font color="#009900">// Strip path information:</font>
+    String f = <font color="#0000ff">new</font> File(name).getName();
+    <font color="#0000ff">return</font> f.indexOf(afn) != -1;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class &#8220;implements&#8221; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(Interfaces were covered in Chapter 7.) It&#8217;s useful to see how simple the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">public</font> <font color="#0000ff">interface</font> FilenameFilter {
+  <font color="#0000ff">boolean</font> accept(File dir, String name);
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+says that all that this type of object does is provide a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The whole reason behind the creation of this class is to provide the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method so that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>call
+back
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to determine which file names should be included in the list. Thus, this
+technique is often referred to as a <A NAME="Index1065"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>callback</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or sometimes a <A NAME="Index1066"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>functor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(that is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a functor because its only job is to hold a method). Because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as its argument, it means that you can pass an object of any class that
+implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to choose (even at run-time) how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method will behave. The purpose of a callback is to provide flexibility in the
+behavior of code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows that just because an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains only a set of methods, you&#8217;re not restricted to writing only
+those methods. (You must at least provide definitions for all the methods in an
+interface, however.) In this case, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor is also created.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must accept a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object representing the directory that a particular file is found in, and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the name of that file. You might choose to use or ignore either of
+these arguments, but you will probably at least use the file name. Remember
+that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each of the file names in the directory object to see which one should be
+included &#8211; this is indicated by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+result returned by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+make sure that what you&#8217;re working with is only the name and contains no
+path information, all you have to do is take the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object out of it, then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which strips away all the path information (in a platform-independent way). Then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses the <A NAME="Index1067"></A><A NAME="Index1068"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to see if the search string 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>afn</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+appears anywhere in the name of the file. If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>afn</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is found within the string, the return value is the starting index of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>afn</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but if it&#8217;s not found the return value is -1. Keep in mind that this is a
+simple string search and does not have regular expression
+&#8220;wildcard&#8221; matching such as &#8220;fo?.b?r*&#8221; which is much
+more difficult to implement.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method returns an array. You can query this array for its length and then move
+through it selecting the array elements. This ability to easily pass an array
+in and out of a method is a tremendous improvement over the behavior of C and
+C++.
+</FONT><P></DIV>
+<A NAME="Heading313"></A><H4 ALIGN=LEFT>
+Anonymous
+inner classes
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example is ideal for rewriting using an <A NAME="Index1069"></A><A NAME="Index1070"></A><A NAME="Index1071"></A>anonymous
+inner class (described in Chapter 7). As a first cut, a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>filter(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+created that returns a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DirList2.java</font>
+<font color="#009900">// Uses Java 1.1 anonymous inner classes</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DirList2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> FilenameFilter 
+  filter(<font color="#0000ff">final</font> String afn) {
+    <font color="#009900">// Creation of anonymous inner class:</font>
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> FilenameFilter() {
+      String fn = afn;
+      <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> accept(File dir, String n) {
+        <font color="#009900">// Strip path information:</font>
+        String f = <font color="#0000ff">new</font> File(n).getName();
+        <font color="#0000ff">return</font> f.indexOf(fn) != -1;
+      }
+    }; <font color="#009900">// End of anonymous inner class</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      File path = <font color="#0000ff">new</font> File(".");
+      String[] list;
+      <font color="#0000ff">if</font>(args.length == 0)
+        list = path.list();
+      <font color="#0000ff">else</font> 
+        list = path.list(filter(args[0]));
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+        System.out.println(list[i]);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>filter(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be <A NAME="Index1072"></A><A NAME="Index1073"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is required by the anonymous inner class so that it can use an object from
+outside its scope.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+design is an improvement because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilenameFilter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is now tightly bound to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DirList2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, you can take this approach one step further and define the anonymous
+inner class as an argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in which case it&#8217;s even smaller:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DirList3.java</font>
+<font color="#009900">// Building the anonymous inner class "in-place"</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DirList3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(<font color="#0000ff">final</font> String[] args) {
+    <font color="#0000ff">try</font> {
+      File path = <font color="#0000ff">new</font> File(".");
+      String[] list;
+      <font color="#0000ff">if</font>(args.length == 0)
+        list = path.list();
+      <font color="#0000ff">else</font> 
+        list = path.list(
+          <font color="#0000ff">new</font> FilenameFilter() {
+            <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+            accept(File dir, String n) {
+              String f = <font color="#0000ff">new</font> File(n).getName();
+              <font color="#0000ff">return</font> f.indexOf(args[0]) != -1;
+            }
+          });
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+        System.out.println(list[i]);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is now 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since the anonymous inner class uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>args[0]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+directly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+shows you how anonymous inner classes allow the creation of quick-and-dirty
+classes to solve problems. Since everything in Java revolves around classes,
+this can be a useful coding technique. One benefit is that it keeps the code
+that solves a particular problem isolated together in one spot. On the other
+hand, it is not always as easy to read, so you must use it judiciously.
+</FONT><P></DIV>
+<A NAME="Heading314"></A><H4 ALIGN=LEFT>
+A
+sorted directory listing
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Ah,
+you say that you want the file names 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>sorted</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+Since there&#8217;s no support for sorting in Java 1.0 or Java 1.1<A NAME="Index1074"></A>
+(although sorting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+included in Java 1.2<A NAME="Index1075"></A>),
+it will have to be added into the program directly using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SortVector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">created
+in Chapter 8:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SortedDirList.java</font>
+<font color="#009900">// Displays sorted directory listing</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> c08.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SortedDirList {
+  <font color="#0000ff">private</font> File path;
+  <font color="#0000ff">private</font> String[] list;
+  <font color="#0000ff">public</font> SortedDirList(<font color="#0000ff">final</font> String afn) {
+    path = <font color="#0000ff">new</font> File(".");
+    <font color="#0000ff">if</font>(afn == <font color="#0000ff">null</font>)
+      list = path.list();
+    <font color="#0000ff">else</font>
+      list = path.list(
+          <font color="#0000ff">new</font> FilenameFilter() {
+            <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+            accept(File dir, String n) {
+              String f = <font color="#0000ff">new</font> File(n).getName();
+              <font color="#0000ff">return</font> f.indexOf(afn) != -1;
+            }
+          });
+    sort();
+  }
+  <font color="#0000ff">void</font> print() {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+      System.out.println(list[i]);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> sort() {
+    StrSortVector sv = <font color="#0000ff">new</font> StrSortVector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+      sv.addElement(list[i]);
+    <font color="#009900">// The first time an element is pulled from</font>
+    <font color="#009900">// the StrSortVector the list is sorted:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; list.length; i++)
+      list[i] = sv.elementAt(i);
+  }
+  <font color="#009900">// Test it:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    SortedDirList sd;
+    <font color="#0000ff">if</font>(args.length == 0)
+      sd = <font color="#0000ff">new</font> SortedDirList(<font color="#0000ff">null</font>);
+    <font color="#0000ff">else</font>
+      sd = <font color="#0000ff">new</font> SortedDirList(args[0]);
+    sd.print();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+few other improvements have been made. Instead of creating 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>path</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as local variables to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+they are members of the class so their values can be accessible for the
+lifetime of the object. In fact, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is now just a way to test the class. You can see that the constructor of the
+class automatically sorts the list once that list has been created.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+sort is case-insensitive so you don&#8217;t end up with a list of all the words
+starting with capital letters, followed by the rest of the words starting with
+all the lowercase letters. However, you&#8217;ll notice that within a group of
+file names that begin with the same letter the capitalized words are listed
+first, which is still not quite the desired behavior for the sort. This problem
+will be fixed in Java 1.2<A NAME="Index1076"></A>.</FONT><a name="_Toc375545392"></a><a name="_Toc408018619"></a><P></DIV>
+<A NAME="Heading315"></A><H3 ALIGN=LEFT>
+Checking
+for and creating directories
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is more than just a representation for an existing directory path, file,
+or group of files. You can also use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to create a new <A NAME="Index1077"></A><A NAME="Index1078"></A>directory
+or an entire directory path if it doesn&#8217;t exist. You can also look at the <A NAME="Index1079"></A><A NAME="Index1080"></A>characteristics
+of files (size, last modification date, read/write), see whether a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object represents a file or a directory, and delete a file. This program shows
+the remaining methods available with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MakeDirectories.java</font>
+<font color="#009900">// Demonstrates the use of the File class to</font>
+<font color="#009900">// create directories and manipulate files.</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MakeDirectories {
+  <font color="#0000ff">private</font> <font color="#0000ff">final</font> <font color="#0000ff">static</font> String usage =
+    "Usage:MakeDirectories path1 ...\n" +
+    "Creates each path\n" +
+    "Usage:MakeDirectories -d path1 ...\n" +
+    "Deletes each path\n" +
+    "Usage:MakeDirectories -r path1 path2\n" +
+    "Renames from path1 to path2\n";
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> usage() {
+    System.err.println(usage);
+    System.exit(1);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> fileData(File f) {
+    System.out.println(
+      "Absolute path: " + f.getAbsolutePath() +
+      "\n Can read: " + f.canRead() +
+      "\n Can write: " + f.canWrite() +
+      "\n getName: " + f.getName() +
+      "\n getParent: " + f.getParent() +
+      "\n getPath: " + f.getPath() +
+      "\n length: " + f.length() +
+      "\n lastModified: " + f.lastModified());
+    <font color="#0000ff">if</font>(f.isFile())
+      System.out.println("it's a file");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(f.isDirectory())
+      System.out.println("it's a directory");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length &lt; 1) usage();
+    <font color="#0000ff">if</font>(args[0].equals("-r")) {
+      <font color="#0000ff">if</font>(args.length != 3) usage();
+      File 
+        old = <font color="#0000ff">new</font> File(args[1]),
+        rname = <font color="#0000ff">new</font> File(args[2]);
+      old.renameTo(rname);
+      fileData(old);
+      fileData(rname);
+      <font color="#0000ff">return</font>; <font color="#009900">// Exit main</font>
+    }
+    <font color="#0000ff">int</font> count = 0;
+    <font color="#0000ff">boolean</font> del = <font color="#0000ff">false</font>;
+    <font color="#0000ff">if</font>(args[0].equals("-d")) {
+      count++;
+      del = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">for</font>( ; count &lt; args.length; count++) {
+      File f = <font color="#0000ff">new</font> File(args[count]);
+      <font color="#0000ff">if</font>(f.exists()) {
+        System.out.println(f + " exists");
+        <font color="#0000ff">if</font>(del) {
+          System.out.println("deleting..." + f);
+          f.delete();
+        }
+      } 
+      <font color="#0000ff">else</font> { <font color="#009900">// Doesn't exist</font>
+        <font color="#0000ff">if</font>(!del) {
+          f.mkdirs();
+          System.out.println("created " + f);
+        }
+      }
+      fileData(f);
+    }  
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fileData(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see the various file investigation methods put to use to display
+information about the file or directory path.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first method that&#8217;s exercised by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is <A NAME="Index1081"></A><A NAME="Index1082"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>renameTo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which allows you to rename (or move) a file to an entirely new path represented
+by the argument, which is another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This also works with directories of any length.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you experiment with the above program, you&#8217;ll find that you can make a
+directory path of any complexity because <A NAME="Index1083"></A><A NAME="Index1084"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mkdirs(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will do all the work for you. In Java 1.0<A NAME="Index1085"></A>,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>-d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag reports that the directory is deleted but it&#8217;s still there; in Java
+1.1<A NAME="Index1086"></A>
+the directory is actually deleted.
+</FONT><a name="_Toc375545393"></a><a name="_Toc408018620"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0110.html">Prev</a> | <a href="tij0112.html">Next</a>
+</div>
+</body></html>
+

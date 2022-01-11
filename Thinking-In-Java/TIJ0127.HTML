@@ -1,0 +1,1110 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0126.html">Prev</a> | <a href="tij0128.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Making
+local copies
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+review: all argument passing in Java is performed by passing handles. That is,
+when you pass &#8220;an object,&#8221; you&#8217;re really passing only a
+handle to an object that lives outside the method, so if you perform any
+modifications with that handle, you modify the outside object. In addition:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Aliasing
+happens automatically during argument passing.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are no local objects, only local handles.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Handles
+have scopes, objects do not.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Object
+lifetime is never an issue in Java.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is no language support (e.g. const) to prevent objects from being modified (to
+prevent negative effects of aliasing).
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re only reading information from an object and not modifying it,
+passing a handle is the most efficient form of argument passing. This is nice;
+the default way of doing things is also the most efficient. However, sometimes
+it&#8217;s necessary to be able to treat the object as if it were
+&#8220;local&#8221; so that changes you make affect only a local copy and do
+not modify the outside object. Many programming languages support the ability
+to automatically make a local copy of the outside object, inside the method.
+</FONT><A NAME="fnB49" HREF="#fn49">[49]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Java does not, but it allows you to produce this effect.
+</FONT><a name="_Toc408018657"></a><P></DIV>
+<A NAME="Heading368"></A><H3 ALIGN=LEFT>
+Pass
+by value
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+brings up the terminology issue, which always seems good for an argument. The
+term is &#8220;<A NAME="Index1447"></A>pass
+by value,&#8221; and the meaning depends on how you perceive the operation of
+the program. The general meaning is that you get a local copy of whatever
+you&#8217;re passing, but the real question is how you think about what
+you&#8217;re passing. When it comes to the meaning of &#8220;pass by
+value,&#8221; there are two fairly distinct camps:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+passes everything by value. When you&#8217;re passing primitives into a method,
+you get a distinct copy of the primitive. When you&#8217;re passing a handle
+into a method, you get a copy of the handle. Ergo, everything is pass by value.
+Of course, the assumption is that you&#8217;re always thinking (and caring)
+that handles are being passed, but it seems like the Java design has gone a
+long way toward allowing you to ignore (most of the time) that you&#8217;re
+working with a handle. That is, it seems to allow you to think of the handle as
+&#8220;the object,&#8221; since it implicitly dereferences it whenever you make
+a method call.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+passes primitives by value (no argument there), but objects are passed by
+reference. This is the world view that the handle is an alias for the object,
+so you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>don&#8217;t</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+think about passing handles, but instead say &#8220;I&#8217;m passing the
+object.&#8221; Since you don&#8217;t get a local copy of the object when you
+pass it into a method, objects are clearly not passed by value. There appears
+to be some support for this view within Sun, since one of the &#8220;reserved
+but not implemented&#8221; keywords is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byvalue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(There&#8217;s no knowing, however, whether that keyword will ever see the
+light of day.)
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Having
+given both camps a good airing and after saying &#8220;It depends on how you
+think of a handle,&#8221; I will attempt to sidestep the issue for the rest of
+the book. In the end, it isn&#8217;t 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+important &#8211; what is important is that you understand that passing a
+handle allows the caller&#8217;s object to be changed unexpectedly.
+</FONT><a name="_Toc375545425"></a><a name="_Toc408018658"></a><P></DIV>
+<A NAME="Heading369"></A><H3 ALIGN=LEFT>
+Cloning
+objects
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most likely reason for making a local copy of an object is if you&#8217;re
+going to modify that object and you don&#8217;t want to modify the
+caller&#8217;s object. If you decide that you want to make a local copy, you
+simply use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to perform the operation. This is a method that&#8217;s defined as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and which you must override as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+any derived classes that you want to clone. For example, the standard library
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+overrides 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so we can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Cloning.java</font>
+<font color="#009900">// The clone() operation works for only a few</font>
+<font color="#009900">// items in the standard Java library.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Int {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> Int(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> increment() { i++; }
+  <font color="#0000ff">public</font> String toString() { 
+    <font color="#0000ff">return</font> Integer.toString(i); 
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Cloning {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++ )
+      v.addElement(<font color="#0000ff">new</font> Int(i));
+    System.out.println("v: " + v);
+    Vector v2 = (Vector)v.clone();
+    <font color="#009900">// Increment all v2's elements:</font>
+    <font color="#0000ff">for</font>(Enumeration e = v2.elements();
+        e.hasMoreElements(); )
+      ((Int)e.nextElement()).increment();
+    <font color="#009900">// See if it changed v's elements:</font>
+    System.out.println("v: " + v);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which must then be recast to the proper type. This example shows how 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does
+not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically try to clone each of the objects that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains &#8211; the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the cloned 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are aliased to the same objects. This is often called a <A NAME="Index1448"></A><A NAME="Index1449"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>shallow
+copy
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since it&#8217;s copying only the &#8220;surface&#8221; portion of an object.
+The actual object consists of this &#8220;surface&#8221; plus all the objects
+that the handles are pointing to, plus all the objects 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>those
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+are pointing to, etc. This is often referred to as the &#8220;<A NAME="Index1450"></A><A NAME="Index1451"></A>web
+of objects.&#8221; Copying the entire mess is called a <A NAME="Index1452"></A><A NAME="Index1453"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>deep
+copy
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the effect of the shallow copy in the output, where the actions
+performed on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">affect
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE>v: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+v: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Not
+trying to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+objects contained in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+probably a fair assumption because there&#8217;s no guarantee that those objects 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>are</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cloneable.
+</FONT><A NAME="fnB50" HREF="#fn50">[50]</A><a name="_Toc375545426"></a><a name="_Toc408018659"></a><P></DIV>
+<A NAME="Heading370"></A><H3 ALIGN=LEFT>
+Adding
+cloneability to a class
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+though the clone method is defined in the base-of-all-classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+cloning is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">automatically
+available in every class.
+</FONT><A NAME="fnB51" HREF="#fn51">[51]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+This would seem to be counterintuitive to the idea that base-class methods are
+always available in derived classes. Cloning in Java goes against this idea; if
+you want it to exist for a class, you must specifically add code to make
+cloning work.
+</FONT><P></DIV>
+<A NAME="Heading371"></A><H4 ALIGN=LEFT>
+Using
+a trick with protected
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+prevent default clonability in every class you create, the <A NAME="Index1454"></A><A NAME="Index1455"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Not only does this mean that it&#8217;s not available by default to the client
+programmer who is simply using the class (not subclassing it), but it also
+means that you cannot call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+via a handle to the base class. (Although that might seem to be useful in some
+situations, such as to polymorphically clone a bunch of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.)
+It is in effect a way to give you, at compile time, the information that your
+object is not cloneable &#8211; and oddly enough most classes in the standard
+Java library are not cloneable. Thus, if you say:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    Integer x = <font color="#0000ff">new</font> Integer(1);
+    x = x.clone(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+will get, at compile time, an error message that says 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+not accessible (since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t override it and it defaults to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+version). 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If,
+however, you&#8217;re in a class derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(as
+all classes are), then you have permission to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">because
+it&#8217;s <A NAME="Index1456"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+you&#8217;re an inheritor. The base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+useful functionality &#8211; it performs the actual bitwise duplication 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>of
+the derived-class object
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+thus acting as the common cloning operation. However, you then need to make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>your</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clone operation 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for it to be accessible. So two key issues when you clone are: virtually always
+call <A NAME="Index1457"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+make your clone 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+probably want to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+any further derived classes, otherwise your (now 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be used, and that might not do the right thing (although, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+makes a copy of the actual object, it might). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+trick works only once, the first time you inherit from a class that has no
+clonability and you want to make a class that&#8217;s cloneable. In any classes
+inherited from your class the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+is available since it&#8217;s not possible in Java to reduce the access of a
+method during derivation. That is, once a class is cloneable, everything
+derived from it is cloneable unless you use provided mechanisms (described
+later) to &#8220;turn off&#8221; cloning.
+</FONT><P></DIV>
+<A NAME="Heading372"></A><H4 ALIGN=LEFT>
+Implementing
+the Cloneable interface
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+one more thing you need to do to complete the clonability of an object:
+implement the <A NAME="Index1458"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This <A NAME="Index1459"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a bit strange because it&#8217;s empty!
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">interface
+Cloneable {}
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason for implementing this empty 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is obviously not because you are going to upcast to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and call one of its methods. The use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+here is considered by some to be a &#8220;hack&#8221; because it&#8217;s using
+a feature for something other than its original intent. Implementing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+acts as a kind of a flag, wired into the type of the class. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are two reasons for the existence of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+First, you might have an upcast handle to a base type and not know whether
+it&#8217;s possible to clone that object. In this case, you can use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword (described in Chapter 11) to find out whether the handle is connected
+to an object that can be cloned:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">if(myHandle
+instanceof Cloneable) // ...
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second reason is that mixed into this design for clonability was the thought
+that maybe you didn&#8217;t want all types of objects to be cloneable. So 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+verifies that a class implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. If not, it throws a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CloneNotSupportedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception. So in general, you&#8217;re forced to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implement
+Cloneable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as part of support for cloning.
+</FONT><a name="_Toc375545427"></a><a name="_Toc408018660"></a><P></DIV>
+<A NAME="Heading373"></A><H3 ALIGN=LEFT>
+Successful
+cloning
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you understand the details of implementing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, you&#8217;re able to create classes that can be easily duplicated to
+provide a local copy:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: LocalCopy.java</font>
+<font color="#009900">// Creating local copies with clone()</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> MyObject <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">int</font> i;
+  MyObject(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      System.out.println("MyObject can't clone");
+    }
+    <font color="#0000ff">return</font> o;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> Integer.toString(i);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> LocalCopy {
+  <font color="#0000ff">static</font> MyObject g(MyObject v) {
+    <font color="#009900">// Passing a handle, modifies outside object:</font>
+    v.i++;
+    <font color="#0000ff">return</font> v;
+  }
+  <font color="#0000ff">static</font> MyObject f(MyObject v) {
+    v = (MyObject)v.clone(); <font color="#009900">// Local copy</font>
+    v.i++;
+    <font color="#0000ff">return</font> v;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    MyObject a = <font color="#0000ff">new</font> MyObject(11);
+    MyObject b = g(a);
+    <font color="#009900">// Testing handle equivalence,</font>
+    <font color="#009900">// not object equivalence:</font>
+    <font color="#0000ff">if</font>(a == b) 
+      System.out.println("a == b");
+    <font color="#0000ff">else</font> 
+      System.out.println("a != b");
+    System.out.println("a = " + a);
+    System.out.println("b = " + b);
+    MyObject c = <font color="#0000ff">new</font> MyObject(47);
+    MyObject d = f(c);
+    <font color="#0000ff">if</font>(c == d) 
+      System.out.println("c == d");
+    <font color="#0000ff">else</font> 
+      System.out.println("c != d");
+    System.out.println("c = " + c);
+    System.out.println("d = " + d);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First
+of all, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be accessible so you must make it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Second, for the initial part of your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operation you should call the base-class version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s being called here is the one that&#8217;s predefined inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you can call it because it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and thereby accessible in derived classes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+figures out how big the object is, creates enough memory for a new one, and
+copies all the bits from the old to the new. This is called a <A NAME="Index1460"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>bitwise
+copy
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and is typically what you&#8217;d expect a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to do. But before 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performs its operations, it first checks to see if a class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+that is, whether it implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. If it doesn&#8217;t, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+throws a <A NAME="Index1461"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CloneNotSupportedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to indicate that you can&#8217;t clone it. Thus, you&#8217;ve got to surround
+your call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a try-catch block, to catch an exception that should never happen (because
+you&#8217;ve implemented the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LocalCopy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the two methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+demonstrate the difference between the two approaches for argument passing. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows passing by reference in which it modifies the outside object and returns
+a reference to that outside object, while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clones the argument, thereby decoupling it and leaving the original object
+alone. It can then proceed to do whatever it wants, and even to return a handle
+to this new object without any ill effects to the original. Notice the somewhat
+curious-looking statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">v
+= (MyObject)v.clone();
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is where the local copy is created. To prevent confusion by such a statement,
+remember that this rather strange coding idiom is perfectly feasible in Java
+because everything that has a name is actually a handle. So the handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>v</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a copy of what it refers to, and this returns a handle to the base type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(because it&#8217;s defined that way in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+that must then be cast to the proper type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the difference between the effects of the two different argument-passing
+approaches in the two different methods is tested. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>a == b
+a = 12
+b = 12
+c != d
+c = 47
+d = 48 </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+important to notice that the equivalence tests in Java do not look inside the
+objects being compared to see if their values are the same. The <A NAME="Index1462"></A><A NAME="Index1463"></A><A NAME="Index1464"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>==</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>!=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operators are simply comparing the contents of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>handles</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If the addresses inside the <A NAME="Index1465"></A><A NAME="Index1466"></A>handles
+are the same, the handles are pointing to the same object and are therefore
+&#8220;equal.&#8221; So what the operators are really testing is whether the
+handles are aliased to the same object!
+</FONT><a name="_Toc375545428"></a><a name="_Toc408018661"></a><P></DIV>
+<A NAME="Heading374"></A><H3 ALIGN=LEFT>
+The
+effect of Object.clone(&#160;)
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+actually happens when <A NAME="Index1467"></A><A NAME="Index1468"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called that makes it so essential to call <A NAME="Index1469"></A><A NAME="Index1470"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when you override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in your class? The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the root class is responsible for creating the correct amount of
+storage and making the bitwise copy of the bits from the original object into
+the new object&#8217;s storage. That is, it doesn&#8217;t just make storage and
+copy an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; it actually figures out the size of the precise object that&#8217;s
+being copied and duplicates that. Since all this is happening from the code in
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method defined in the root class (that has no idea what&#8217;s being inherited
+from it), you can guess that the process involves <A NAME="Index1471"></A>RTTI
+to determine the actual object that&#8217;s being cloned. This way, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method can create the proper amount of storage and do the correct bitcopy for
+that type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Whatever
+you do, the first part of the cloning process should normally be a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This establishes the groundwork for the cloning operation by making an exact
+duplicate. At this point you can perform other operations necessary to complete
+the cloning.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+know for sure what those other operations are, you need to understand exactly
+what 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+buys you. In particular, does it automatically clone the destination of all the
+handles? The following example tests this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Snake.java</font>
+<font color="#009900">// Tests cloning to see if destination of</font>
+<font color="#009900">// handles are also cloned.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Snake <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">private</font> Snake next;
+  <font color="#0000ff">private</font> <font color="#0000ff">char</font> c;
+  <font color="#009900">// Value of i == number of segments</font>
+  Snake(<font color="#0000ff">int</font> i, <font color="#0000ff">char</font> x) {
+    c = x;
+    <font color="#0000ff">if</font>(--i &gt; 0)
+      next = <font color="#0000ff">new</font> Snake(i, (<font color="#0000ff">char</font>)(x + 1));
+  }
+  <font color="#0000ff">void</font> increment() {
+    c++;
+    <font color="#0000ff">if</font>(next != <font color="#0000ff">null</font>)
+      next.increment();
+  }
+  <font color="#0000ff">public</font> String toString() {
+    String s = ":" + c;
+    <font color="#0000ff">if</font>(next != <font color="#0000ff">null</font>)
+      s += next.toString();
+    <font color="#0000ff">return</font> s;
+  }
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {}
+    <font color="#0000ff">return</font> o;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Snake s = <font color="#0000ff">new</font> Snake(5, 'a');
+    System.out.println("s = " + s);
+    Snake s2 = (Snake)s.clone();
+    System.out.println("s2 = " + s2);
+    s.increment();
+    System.out.println(
+      "after s.increment, s2 = " + s2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Snake</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is made up of a bunch of segments, each of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Snake</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus, it&#8217;s a singly-linked list. The segments are created recursively,
+decrementing the first constructor argument for each segment until zero is
+reached. To give each segment a unique tag, the second argument, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is incremented for each recursive constructor call.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>increment(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method recursively increments each tag so you can see the change, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+recursively prints each tag. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>s = :a:b:c:d:e
+s2 = :a:b:c:d:e
+after s.increment, s2 = :a:c:d:e:f </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+means that only the first segment is duplicated by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it does a <A NAME="Index1472"></A>shallow
+copy. If you want the whole snake to be duplicated &#8211; a <A NAME="Index1473"></A>deep
+copy &#8211; you must perform the additional operations inside your overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+typically call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in any class derived from a cloneable class to make sure that all of the
+base-class operations (including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+take place. This is followed by an explicit call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+every handle in your object; otherwise those handles will be aliased to those
+of the original object. It&#8217;s analogous to the way constructors are called
+&#8211; base-class constructor first, then the next-derived constructor, and so
+on to the most-derived constructor. The difference is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not a constructor so there&#8217;s nothing to make it happen automatically.
+You must make sure to do it yourself.
+</FONT><a name="_Toc408018662"></a><P></DIV>
+<A NAME="Heading375"></A><H3 ALIGN=LEFT>
+Cloning
+a composed object
+<P><A NAME="Index1474"></A><A NAME="Index1475"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a problem you&#8217;ll encounter when trying to deep copy a composed object.
+You must assume that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the member objects will in turn perform a deep copy on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>their</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles, and so on. This is quite a commitment. It effectively means that for a
+deep copy to work you must either control all of the code in all of the
+classes, or at least have enough knowledge about all of the classes involved in
+the deep copy to know that they are performing their own deep copy correctly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example shows what you must do to accomplish a deep copy when dealing with a
+composed object:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DeepCopy.java</font>
+<font color="#009900">// Cloning a composed object</font>
+
+<font color="#0000ff">class</font> DepthReading <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> depth;
+  <font color="#0000ff">public</font> DepthReading(<font color="#0000ff">double</font> depth) { 
+    <font color="#0000ff">this</font>.depth = depth;
+  }
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">return</font> o;
+  }
+}
+
+<font color="#0000ff">class</font> TemperatureReading <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">private</font> <font color="#0000ff">long</font> time;
+  <font color="#0000ff">private</font> <font color="#0000ff">double</font> temperature;
+  <font color="#0000ff">public</font> TemperatureReading(<font color="#0000ff">double</font> temperature) {
+    time = System.currentTimeMillis();
+    <font color="#0000ff">this</font>.temperature = temperature;
+  }
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    <font color="#0000ff">return</font> o;
+  }
+}
+
+<font color="#0000ff">class</font> OceanReading <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">private</font> DepthReading depth;
+  <font color="#0000ff">private</font> TemperatureReading temperature;
+  <font color="#0000ff">public</font> OceanReading(<font color="#0000ff">double</font> tdata, <font color="#0000ff">double</font> ddata){
+    temperature = <font color="#0000ff">new</font> TemperatureReading(tdata);
+    depth = <font color="#0000ff">new</font> DepthReading(ddata);
+  }
+  <font color="#0000ff">public</font> Object clone() {
+    OceanReading o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = (OceanReading)<font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    <font color="#009900">// Must clone handles:</font>
+    o.depth = (DepthReading)o.depth.clone();
+    o.temperature = 
+      (TemperatureReading)o.temperature.clone();
+    <font color="#0000ff">return</font> o; <font color="#009900">// Upcasts back to Object</font>
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DeepCopy {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    OceanReading reading = 
+      <font color="#0000ff">new</font> OceanReading(33.9, 100.5);
+    <font color="#009900">// Now clone it:</font>
+    OceanReading r = 
+      (OceanReading)reading.clone();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DepthReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TemperatureReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are quite similar; they both contain only primitives. Therefore, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method can be quite simple: it calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and returns the result. Note that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+code for both classes is identical.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OceanReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is composed of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DepthReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TemperatureReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and so, to produce a deep copy, its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must clone the handles inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OceanReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To accomplish this, the result of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be cast to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OceanReading</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (so you can access the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>depth</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>temperature</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles).
+</FONT><a name="_Toc408018663"></a><P></DIV>
+<A NAME="Heading376"></A><H3 ALIGN=LEFT>
+A
+deep copy with Vector
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Let&#8217;s
+revisit the <A NAME="Index1476"></A><A NAME="Index1477"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example from earlier in this chapter. This time the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is cloneable so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be deep copied:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AddingClone.java</font>
+<font color="#009900">// You must go through a few gyrations to</font>
+<font color="#009900">// add cloning to your own class.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Int2 <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> Int2(<font color="#0000ff">int</font> ii) { i = ii; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> increment() { i++; }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> Integer.toString(i);
+  }
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      System.out.println("Int2 can't clone");
+    }
+    <font color="#0000ff">return</font> o;
+  }
+}
+
+<font color="#009900">// Once it's cloneable, inheritance</font>
+<font color="#009900">// doesn't remove cloneability:</font>
+<font color="#0000ff">class</font> Int3 <font color="#0000ff">extends</font> Int2 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> j; <font color="#009900">// Automatically duplicated</font>
+  <font color="#0000ff">public</font> Int3(<font color="#0000ff">int</font> i) { <font color="#0000ff">super</font>(i); }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AddingClone {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Int2 x = <font color="#0000ff">new</font> Int2(10);
+    Int2 x2 = (Int2)x.clone();
+    x2.increment();
+    System.out.println(
+      "x = " + x + ", x2 = " + x2);
+    <font color="#009900">// Anything inherited is also cloneable:</font>
+    Int3 x3 = <font color="#0000ff">new</font> Int3(7);
+    x3 = (Int3)x3.clone();
+
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++ )
+      v.addElement(<font color="#0000ff">new</font> Int2(i));
+    System.out.println("v: " + v);
+    Vector v2 = (Vector)v.clone();
+    <font color="#009900">// Now clone each element:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; v.size(); i++)
+      v2.setElementAt(
+        ((Int2)v2.elementAt(i)).clone(), i);
+    <font color="#009900">// Increment all v2's elements:</font>
+    <font color="#0000ff">for</font>(Enumeration e = v2.elements();
+        e.hasMoreElements(); )
+      ((Int2)e.nextElement()).increment();
+    <font color="#009900">// See if it changed v's elements:</font>
+    System.out.println("v: " + v);
+    System.out.println("v2: " + v2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a new primitive member 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+j 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+added. You might think that you&#8217;d need to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+again to make sure 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>j</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is copied, but that&#8217;s not the case. When 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which determines that it&#8217;s working with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and duplicates all the bits in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Int3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As long as you don&#8217;t add handles that need to be cloned, the one call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performs all of the necessary duplication, regardless of how far down in the
+hierarchy 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is defined.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see what&#8217;s necessary in order to do a deep copy of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+after the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is cloned, you have to step through and clone each one of the objects pointed
+to by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;d have to do something similar to this to do a deep copy of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+remainder of the example shows that the cloning did happen by showing that,
+once an object is cloned, you can change it and the original object is left
+untouched.
+</FONT><a name="_Toc408018664"></a><a name="_Toc375545429"></a><P></DIV>
+<A NAME="Heading377"></A><H3 ALIGN=LEFT>
+Deep
+copy via serialization
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you consider Java 1.1<A NAME="Index1478"></A>
+object serialization (introduced in Chapter 10), you might observe that an
+object that&#8217;s serialized and then deserialized is, in effect, cloned.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+why not use <A NAME="Index1479"></A><A NAME="Index1480"></A>serialization
+to perform deep copying? Here&#8217;s an example that compares the two
+approaches by timing them:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Compete.java</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> Thing1 <font color="#0000ff">implements</font> Serializable {}
+<font color="#0000ff">class</font> Thing2 <font color="#0000ff">implements</font> Serializable {
+  Thing1 o1 = <font color="#0000ff">new</font> Thing1();
+}
+
+<font color="#0000ff">class</font> Thing3 <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">public</font> Object clone() {
+    Object o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      System.out.println("Thing3 can't clone");
+    }
+    <font color="#0000ff">return</font> o;
+  }
+}
+
+<font color="#0000ff">class</font> Thing4 <font color="#0000ff">implements</font> Cloneable {
+  Thing3 o3 = <font color="#0000ff">new</font> Thing3();
+  <font color="#0000ff">public</font> Object clone() {
+    Thing4 o = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      o = (Thing4)<font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      System.out.println("Thing4 can't clone");
+    }
+    <font color="#009900">// Clone the field, too:</font>
+    o.o3 = (Thing3)o3.clone();
+    <font color="#0000ff">return</font> o;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Compete {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> SIZE = 5000;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Thing2[] a = <font color="#0000ff">new</font> Thing2[SIZE];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++)
+      a[i] = <font color="#0000ff">new</font> Thing2();
+    Thing4[] b = <font color="#0000ff">new</font> Thing4[SIZE];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; b.length; i++)
+      b[i] = <font color="#0000ff">new</font> Thing4();
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">long</font> t1 = System.currentTimeMillis();
+      ByteArrayOutputStream buf = 
+        <font color="#0000ff">new</font> ByteArrayOutputStream();
+      ObjectOutputStream o =
+        <font color="#0000ff">new</font> ObjectOutputStream(buf);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; a.length; i++)
+        o.writeObject(a[i]);
+      <font color="#009900">// Now get copies:</font>
+      ObjectInputStream in =
+        <font color="#0000ff">new</font> ObjectInputStream(
+          <font color="#0000ff">new</font> ByteArrayInputStream(
+            buf.toByteArray()));
+      Thing2[] c = <font color="#0000ff">new</font> Thing2[SIZE];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; c.length; i++)
+        c[i] = (Thing2)in.readObject();
+      <font color="#0000ff">long</font> t2 = System.currentTimeMillis();
+      System.out.println(
+        "Duplication via serialization: " +
+        (t2 - t1) + " Milliseconds");
+      <font color="#009900">// Now try cloning:</font>
+      t1 = System.currentTimeMillis();
+      Thing4[] d = <font color="#0000ff">new</font> Thing4[SIZE];
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; d.length; i++)
+        d[i] = (Thing4)b[i].clone();
+      t2 = System.currentTimeMillis();
+      System.out.println(
+        "Duplication via cloning: " +
+        (t2 - t1) + " Milliseconds");
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thing2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thing4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contain member objects so that there&#8217;s some deep copying going on.
+It&#8217;s interesting to notice that while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes are easy to set up, there&#8217;s much more work going on to duplicate
+them. Cloning involves a lot of work to set up the class, but the actual
+duplication of objects is relatively simple. The results really tell the tale.
+Here is the output from three different runs:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Duplication via serialization: 3400 Milliseconds
+Duplication via cloning: 110 Milliseconds
+
+Duplication via serialization: 3410 Milliseconds
+Duplication via cloning: 110 Milliseconds
+
+Duplication via serialization: 3520 Milliseconds
+Duplication via cloning: 110 Milliseconds </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Despite
+the obviously huge time difference between serialization and cloning,
+you&#8217;ll also notice that the serialization technique seems to vary
+significantly in its duration, while cloning takes the same amount of time
+every time.
+</FONT><a name="_Toc408018665"></a><P></DIV>
+<A NAME="Heading378"></A><H3 ALIGN=LEFT>
+Adding
+cloneability 
+<P>further
+down a hierarchy
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you create a new class, its base class defaults to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which defaults to non-clonability (as you&#8217;ll see in the next section). As
+long as you don&#8217;t explicitly add clonability, you won&#8217;t get it. <A NAME="Index1481"></A><A NAME="Index1482"></A>But
+you can add it in at any layer and it will then be cloneable from that layer
+downward, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: HorrorFlick.java</font>
+<font color="#009900">// You can insert Cloneability at any</font>
+<font color="#009900">// level of inheritance.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Person {}
+<font color="#0000ff">class</font> Hero <font color="#0000ff">extends</font> Person {}
+<font color="#0000ff">class</font> Scientist <font color="#0000ff">extends</font> Person 
+    <font color="#0000ff">implements</font> Cloneable {
+  <font color="#0000ff">public</font> Object clone() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.clone();
+    } <font color="#0000ff">catch</font> (CloneNotSupportedException e) {
+      <font color="#009900">// this should never happen:</font>
+      <font color="#009900">// It's Cloneable already!</font>
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> InternalError();
+    }
+  }
+}
+<font color="#0000ff">class</font> MadScientist <font color="#0000ff">extends</font> Scientist {}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> HorrorFlick {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Person p = <font color="#0000ff">new</font> Person();
+    Hero h = <font color="#0000ff">new</font> Hero();
+    Scientist s = <font color="#0000ff">new</font> Scientist();
+    MadScientist m = <font color="#0000ff">new</font> MadScientist();
+
+    <font color="#009900">// p = (Person)p.clone(); // Compile error</font>
+    <font color="#009900">// h = (Hero)h.clone(); // Compile error</font>
+    s = (Scientist)s.clone();
+    m = (MadScientist)m.clone();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Before
+clonability was added, the compiler stopped you from trying to clone things.
+When clonability is added in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scientist</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scientist</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all its descendants are cloneable.
+</FONT><a name="_Toc375545430"></a><a name="_Toc408018666"></a><P></DIV>
+<A NAME="Heading379"></A><H3 ALIGN=LEFT>
+Why
+this strange design?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+all this seems to be a strange scheme, that&#8217;s because it is. You might
+wonder why it worked out this way. What is the meaning behind this design? What
+follows is not a substantiated story &#8211; probably because much of the
+marketing around Java makes it out to be a perfectly-designed language &#8211;
+but it does go a long way toward explaining how things ended up the way they did.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Originally,
+Java was designed as a language to control hardware boxes, and definitely not
+with the Internet in mind. In a general-purpose language like this, it makes
+sense that the programmer be able to clone any object. Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was placed in the root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>but</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it was a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method so you could always clone any object. This seemed to be the most
+flexible approach, and after all, what could it hurt?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Well,
+when Java was seen as the ultimate Internet programming language, things
+changed. Suddenly, there are security issues, and of course, these issues are
+dealt with using objects, and you don&#8217;t necessarily want anyone to be
+able to clone your security objects. So what you&#8217;re seeing is a lot of
+patches applied on the original simple and straightforward scheme: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is now 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+You must override it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implement
+Cloneable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+deal with the exceptions.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+worth noting that you must use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">if
+you&#8217;re going to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+method, since that method checks at run-time to make sure that your class
+implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But for consistency (and since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is empty anyway) you should implement it.
+</FONT><a name="_Toc375545431"></a><a name="_Toc408018667"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn49" HREF="#fnB49">[49]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+In C, which generally handles small bits of data, the default is pass-by-value.
+C++ had to follow this form, but with objects pass-by-value isn&#8217;t usually
+the most efficient way. In addition, coding classes to support pass-by-value in
+C++ is a big headache.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn50" HREF="#fnB50">[50]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This is not the dictionary spelling of the word, but it&#8217;s what is used in
+the Java library, so I&#8217;ve used it here, too, in some hopes of reducing
+confusion.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn51" HREF="#fnB51">[51]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+You can apparently create a simple counter-example to this statement, like this:
+</FONT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">public
+class Cloneit implements Cloneable {
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">
+ public static void main (String[] args) 
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">
+ throws CloneNotSupportedException {
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">
+   Cloneit a = new Cloneit();
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">
+   Cloneit b = (Cloneit)a.clone();
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">
+ }
+</FONT></TT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">}</FONT></TT><P><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">However,
+this only works because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+is a method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>Cloneit</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+and thus has permission to call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>protected</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+base-class method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">.
+If you call it from a different class, it won&#8217;t compile.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0126.html">Prev</a> | <a href="tij0128.html">Next</a>
+</div>
+</body></html>
+

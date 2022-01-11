@@ -1,0 +1,641 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0111.html">Prev</a> | <a href="tij0113.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Typical
+uses of IO streams
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+there are a lot of IO stream classes in the library that can be combined in
+many different ways, there are just a few ways that you&#8217;ll probably end
+up using them. However, they require attention to get the correct combinations.
+The following rather long example shows the creation and use of <A NAME="Index1087"></A>typical
+IO configurations so you can use it as a reference when writing your own code.
+Note that each configuration begins with a commented number and title that
+corresponds to the heading for the appropriate explanation that follows in the
+text.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: IOStreamDemo.java</font>
+<font color="#009900">// Typical IO Stream Configurations</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> com.bruceeckel.tools.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> IOStreamDemo {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// 1. Buffered input file</font>
+      DataInputStream in =
+        <font color="#0000ff">new</font> DataInputStream(
+          <font color="#0000ff">new</font> BufferedInputStream(
+            <font color="#0000ff">new</font> FileInputStream(args[0])));
+      String s, s2 = <font color="#0000ff">new</font> String();
+      <font color="#0000ff">while</font>((s = in.readLine())!= <font color="#0000ff">null</font>)
+        s2 += s + "\n";
+      in.close();
+
+      <font color="#009900">// 2. Input from memory</font>
+      StringBufferInputStream in2 =
+          <font color="#0000ff">new</font> StringBufferInputStream(s2);
+      <font color="#0000ff">int</font> c;
+      <font color="#0000ff">while</font>((c = in2.read()) != -1)
+        System.out.print((<font color="#0000ff">char</font>)c);
+
+      <font color="#009900">// 3. Formatted memory input</font>
+      <font color="#0000ff">try</font> {
+        DataInputStream in3 =
+          <font color="#0000ff">new</font> DataInputStream(
+            <font color="#0000ff">new</font> StringBufferInputStream(s2));
+        <font color="#0000ff">while</font>(<font color="#0000ff">true</font>)
+          System.out.print((<font color="#0000ff">char</font>)in3.readByte());
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println(
+          "End of stream encountered");
+      }
+
+      <font color="#009900">// 4. Line numbering &amp; file output</font>
+      <font color="#0000ff">try</font> {
+        LineNumberInputStream li =
+          <font color="#0000ff">new</font> LineNumberInputStream(
+            <font color="#0000ff">new</font> StringBufferInputStream(s2));
+        DataInputStream in4 =
+          <font color="#0000ff">new</font> DataInputStream(li);
+        PrintStream out1 =
+          <font color="#0000ff">new</font> PrintStream(
+            <font color="#0000ff">new</font> BufferedOutputStream(
+              <font color="#0000ff">new</font> FileOutputStream(
+                "IODemo.out")));
+        <font color="#0000ff">while</font>((s = in4.readLine()) != <font color="#0000ff">null</font> )
+          out1.println(
+            "Line " + li.getLineNumber() + s);
+        out1.close(); <font color="#009900">// finalize() not reliable!</font>
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println(
+          "End of stream encountered");
+      }
+
+      <font color="#009900">// 5. Storing &amp; recovering data</font>
+      <font color="#0000ff">try</font> {
+        DataOutputStream out2 =
+          <font color="#0000ff">new</font> DataOutputStream(
+            <font color="#0000ff">new</font> BufferedOutputStream(
+              <font color="#0000ff">new</font> FileOutputStream("Data.txt")));
+        out2.writeBytes(
+          "Here's the value of pi: \n");
+        out2.writeDouble(3.14159);
+        out2.close();
+        DataInputStream in5 =
+          <font color="#0000ff">new</font> DataInputStream(
+            <font color="#0000ff">new</font> BufferedInputStream(
+              <font color="#0000ff">new</font> FileInputStream("Data.txt")));
+        System.out.println(in5.readLine());
+        System.out.println(in5.readDouble());
+      } <font color="#0000ff">catch</font>(EOFException e) {
+        System.out.println(
+          "End of stream encountered");
+      }
+
+      <font color="#009900">// 6. Reading/writing random access files</font>
+      RandomAccessFile rf =
+        <font color="#0000ff">new</font> RandomAccessFile("rtest.dat", "rw");
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+        rf.writeDouble(i*1.414);
+      rf.close();
+
+      rf =
+        <font color="#0000ff">new</font> RandomAccessFile("rtest.dat", "rw");
+      rf.seek(5*8);
+      rf.writeDouble(47.0001);
+      rf.close();
+
+      rf =
+        <font color="#0000ff">new</font> RandomAccessFile("rtest.dat", "r");
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+        System.out.println(
+          "Value " + i + ": " +
+          rf.readDouble());
+      rf.close();
+
+      <font color="#009900">// 7. File input shorthand</font>
+      InFile in6 = <font color="#0000ff">new</font> InFile(args[0]);
+      String s3 = <font color="#0000ff">new</font> String();
+      System.out.println(
+        "First line in file: " +
+        in6.readLine());
+        in6.close();
+
+      <font color="#009900">// 8. Formatted file output shorthand</font>
+      PrintFile out3 = <font color="#0000ff">new</font> PrintFile("Data2.txt");
+      out3.print("Test of PrintFile");
+      out3.close();
+
+      <font color="#009900">// 9. Data file output shorthand</font>
+      OutFile out4 = <font color="#0000ff">new</font> OutFile("Data3.txt");
+      out4.writeBytes("Test of outDataFile\n\r");
+      out4.writeChars("Test of outDataFile\n\r");
+      out4.close();
+
+    } <font color="#0000ff">catch</font>(FileNotFoundException e) {
+      System.out.println(
+        "File Not Found:" + args[0]);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.out.println("IO Exception");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><a name="_Toc375545394"></a><a name="_Toc408018621"></a><P></DIV>
+<A NAME="Heading317"></A><H3 ALIGN=LEFT>
+Input
+streams
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, one common thing you&#8217;ll want to do is print formatted output to
+the console, but that&#8217;s already been simplified in the package 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel.tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+created in Chapter 5.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Parts
+1 through 4 demonstrate the creation and use of input streams (although part 4
+also shows the simple use of an output stream as a testing tool).
+</FONT><P></DIV>
+<A NAME="Heading318"></A><H4 ALIGN=LEFT>
+1.
+Buffered input file
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+open a file for input, you use a <A NAME="Index1088"></A><A NAME="Index1089"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as the file name. For speed, you&#8217;ll want that file to be buffered
+so you give the resulting handle to the constructor for a <A NAME="Index1090"></A><A NAME="Index1091"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To read input in a formatted fashion, you give that resulting handle to the
+constructor for a <A NAME="Index1092"></A><A NAME="Index1093"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is your final object and the interface you read from.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this example, only the <A NAME="Index1094"></A><A NAME="Index1095"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is used, but of course any of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are available. When you reach the end of the file, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that is used to break out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+s2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to accumulate the entire contents of the file (including newlines that
+must be added since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+strips them off). 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+then used in the later portions of this program. Finally, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called to close the file. Technically, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be called when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is run, and this is supposed to happen (whether or not garbage collection
+occurs) as the program exits. However, Java 1.0<A NAME="Index1096"></A>
+has a rather important bug, so this doesn&#8217;t happen. In Java 1.1<A NAME="Index1097"></A>
+you must explicitly call <A NAME="Index1098"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.runFinalizersOnExit(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to guarantee that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be called for every object in the system. The safest approach is to
+explicitly call <A NAME="Index1099"></A><A NAME="Index1100"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for files.
+</FONT><P></DIV>
+<A NAME="Heading319"></A><H4 ALIGN=LEFT>
+2.
+Input from memory
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+piece takes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+s2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that now contains the entire contents of the file and uses it to create a <A NAME="Index1101"></A><A NAME="Index1102"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not a <A NAME="Index1103"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is required as the constructor argument.) Then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to read each character one at a time and send it out to the console.
+Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the next byte as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and thus it must be cast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to print properly.
+</FONT><P></DIV>
+<A NAME="Heading320"></A><H4 ALIGN=LEFT>
+3.
+Formatted memory input
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+interface for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBufferInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is limited, so you usually enhance it by wrapping it inside a <A NAME="Index1104"></A><A NAME="Index1105"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, if you choose to read the characters out a byte at a time using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readByte(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+any value is valid so the return value cannot be used to detect the end of
+input. Instead, you can use the <A NAME="Index1106"></A><A NAME="Index1107"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>available(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+to find out how many more characters are available. Here&#8217;s an example
+that shows how to read a file one byte at a time:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TestEOF.java</font>
+<font color="#009900">// Testing for the end of file while reading</font>
+<font color="#009900">// a byte at a time.</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TestEOF {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">try</font> {
+      DataInputStream in = 
+        <font color="#0000ff">new</font> DataInputStream(
+         <font color="#0000ff">new</font> BufferedInputStream(
+          <font color="#0000ff">new</font> FileInputStream("TestEof.java")));
+      <font color="#0000ff">while</font>(in.available() != 0)
+        System.out.print((<font color="#0000ff">char</font>)in.readByte());
+    } <font color="#0000ff">catch</font> (IOException e) {
+      System.err.println("IOException");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>available(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works differently depending on what sort of medium you&#8217;re reading from
+&#8211; it&#8217;s literally &#8220;the number of bytes that can be read 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without
+blocking
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;<A NAME="Index1108"></A><A NAME="Index1109"></A>
+With a file this means the whole file, but with a different kind of stream this
+might not be true, so use it thoughtfully.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+could also detect the end of input in cases like these by catching an
+exception. However, the use of exceptions for control flow is considered a
+misuse of that feature.
+</FONT><P></DIV>
+<A NAME="Heading321"></A><H4 ALIGN=LEFT>
+4.
+Line numbering and file output
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example shows the use of the <A NAME="Index1110"></A><A NAME="Index1111"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to keep track of the input line numbers. Here, you cannot simply gang all the
+constructors together, since you have to keep a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberInputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Note that this is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an inheritance situation, so you cannot simply cast 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>in4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberInputStream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>li</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds the handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LineNumberInputStream,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is then used to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for easy reading.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also shows how to write formatted data to a file. First, a <A NAME="Index1112"></A><A NAME="Index1113"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created to connect to the file. For efficiency, this is made a <A NAME="Index1114"></A><A NAME="Index1115"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is what you&#8217;ll virtually always want to do, but you&#8217;re forced
+to do it explicitly. Then for the formatting it&#8217;s turned into a <A NAME="Index1116"></A><A NAME="Index1117"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The data file created this way is readable as an ordinary text file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the methods that indicates when a <A NAME="Index1118"></A><A NAME="Index1119"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is exhausted is <A NAME="Index1120"></A><A NAME="Index1121"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when there are no more strings to read. Each line is printed to the file along
+with its line number, which is acquired through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>li</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+see an explicit 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which would make sense 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>if</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the program were to turn around and read the same file again. However, this
+program ends without ever looking at the file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IODemo.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As mentioned before, if you don&#8217;t call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all your output files, you might discover that the buffers don&#8217;t get
+flushed so they&#8217;re incomplete.
+</FONT><a name="_Toc375545395"></a><a name="_Toc408018622"></a><P></DIV>
+<A NAME="Heading322"></A><H3 ALIGN=LEFT>
+Output
+streams
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two primary kinds of output streams are separated by the way they write data:
+one writes it for human consumption, and the other writes it to be re-acquired
+by a <A NAME="Index1122"></A><A NAME="Index1123"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The <A NAME="Index1124"></A><A NAME="Index1125"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+stands alone, although its data format is compatible with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1126"></A><A NAME="Index1127"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading323"></A><H4 ALIGN=LEFT>
+5.
+Storing and recovering data
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1128"></A><A NAME="Index1129"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+formats data so it&#8217;s readable by a human. To output data so that it can
+be recovered by another stream, you use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to write the data and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to recover the data. Of course, these streams could be anything, but here a
+file is used, buffered for both reading and writing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the character string is written using <A NAME="Index1130"></A><A NAME="Index1131"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and not <A NAME="Index1132"></A><A NAME="Index1133"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeChars(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you use the latter, you&#8217;ll be writing the 16-bit Unicode characters.
+Since there is no complementary &#8220;readChars&#8221; method in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;re stuck pulling these characters off one at a time with <A NAME="Index1134"></A><A NAME="Index1135"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readChar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So for ASCII, it&#8217;s easier to write the characters as bytes followed by a
+newline; then use <A NAME="Index1136"></A><A NAME="Index1137"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to read back the bytes as a regular ASCII line.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1138"></A><A NAME="Index1139"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>writeDouble(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+stores the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+number to the stream and the complementary <A NAME="Index1140"></A><A NAME="Index1141"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readDouble(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+recovers it. But for any of the reading methods to work correctly, you must
+know the exact placement of the data item in the stream, since it would be
+equally possible to read the stored 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a simple sequence of bytes, or as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. So you must either have a fixed format for the data in the file or extra
+information must be stored in the file that you parse to determine where the
+data is located.
+</FONT><P></DIV>
+<A NAME="Heading324"></A><H4 ALIGN=LEFT>
+6.
+Reading and writing random access files
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+previously noted, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is almost totally isolated from the rest of the IO hierarchy, save for the fact
+that it implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInput</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutput</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interfaces. So you cannot combine it with any of the aspects of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subclasses. Even though it might make sense to treat a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArrayInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a random access element, you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to only open a file. You must assume a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is properly buffered since you cannot add that.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+one option you have is in the second constructor argument: you can open a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to read (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;r&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+or read and write (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;rw&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Using
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RandomAccessFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is like using a combined 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(because it implements the equivalent interfaces). In addition, you can see that <A NAME="Index1142"></A><A NAME="Index1143"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>seek(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to move about in the file and change one of the values.
+</FONT><a name="_Toc375545396"></a><a name="_Toc408018623"></a><P></DIV>
+<A NAME="Heading325"></A><H3 ALIGN=LEFT>
+Shorthand
+for file manipulation
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+there are certain canonical forms that you&#8217;ll be using regularly with
+files, you may wonder why you have to do all of that typing &#8211; this is one
+of the drawbacks of the decorator pattern. This portion shows the creation and
+use of shorthand versions of typical file reading and writing configurations.
+These shorthands are placed in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel.tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that was begun in Chapter 5 (See page 
+<A HREF=" PAGE#COM_EckelObjects_tools">196</A>).
+To add each class to the library, simply place it in the appropriate directory
+and add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement.
+</FONT><P></DIV>
+<A NAME="Heading326"></A><H4 ALIGN=LEFT>
+7.
+File input shorthand
+<P><A NAME="Index1144"></A><A NAME="Index1145"></A><A NAME="Index1146"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+creation of an object that reads a file from a buffered 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be encapsulated into a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InFile</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: InFile.java</font>
+<font color="#009900">// Shorthand class for opening an input file</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> InFile <font color="#0000ff">extends</font> DataInputStream {
+  <font color="#0000ff">public</font> InFile(String filename)
+    <font color="#0000ff">throws</font> FileNotFoundException {
+    <font color="#0000ff">super</font>(
+      <font color="#0000ff">new</font> BufferedInputStream(
+        <font color="#0000ff">new</font> FileInputStream(filename)));
+  }
+  <font color="#0000ff">public</font> InFile(File file)
+    <font color="#0000ff">throws</font> FileNotFoundException {
+    <font color="#0000ff">this</font>(file.getPath());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+versions of the constructor and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+versions are included, to parallel the creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can reduce your chances of repetitive stress syndrome while creating files,
+as seen in the example.
+</FONT><P></DIV>
+<A NAME="Heading327"></A><H4 ALIGN=LEFT>
+8.
+Formatted file output shorthand
+<P><A NAME="Index1147"></A><A NAME="Index1148"></A><A NAME="Index1149"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+same kind of approach can be taken to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that writes to a buffered file. Here&#8217;s the extension to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.bruceeckel.tools</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PrintFile.java</font>
+<font color="#009900">// Shorthand class for opening an output file</font>
+<font color="#009900">// for human-readable output.</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PrintFile <font color="#0000ff">extends</font> PrintStream {
+  <font color="#0000ff">public</font> PrintFile(String filename)
+    <font color="#0000ff">throws</font> IOException {
+    <font color="#0000ff">super</font>(
+      <font color="#0000ff">new</font> BufferedOutputStream(
+        <font color="#0000ff">new</font> FileOutputStream(filename)));
+  }
+  <font color="#0000ff">public</font> PrintFile(File file)
+    <font color="#0000ff">throws</font> IOException {
+    <font color="#0000ff">this</font>(file.getPath());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that it is not possible for a constructor to catch an exception that&#8217;s
+thrown by a base-class constructor.
+</FONT><P></DIV>
+<A NAME="Heading328"></A><H4 ALIGN=LEFT>
+9.
+Data file output shorthand
+<P><A NAME="Index1150"></A><A NAME="Index1151"></A><A NAME="Index1152"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+the same kind of shorthand can create a buffered output file for data storage
+(as opposed to human-readable storage):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: OutFile.java</font>
+<font color="#009900">// Shorthand class for opening an output file</font>
+<font color="#009900">// for data storage.</font>
+<font color="#0000ff">package</font> com.bruceeckel.tools;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> OutFile <font color="#0000ff">extends</font> DataOutputStream {
+  <font color="#0000ff">public</font> OutFile(String filename)
+    <font color="#0000ff">throws</font> IOException {
+    <font color="#0000ff">super</font>(
+      <font color="#0000ff">new</font> BufferedOutputStream(
+        <font color="#0000ff">new</font> FileOutputStream(filename)));
+  }
+  <font color="#0000ff">public</font> OutFile(File file)
+    <font color="#0000ff">throws</font> IOException {
+    <font color="#0000ff">this</font>(file.getPath());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is curious (and unfortunate) that the Java library designers didn&#8217;t think
+to provide these conveniences as part of their standard.
+</FONT><a name="_Toc408018624"></a><a name="_Toc375545397"></a><P></DIV>
+<A NAME="Heading329"></A><H3 ALIGN=LEFT>
+Reading
+from standard input
+<P><A NAME="Index1153"></A><A NAME="Index1154"></A><A NAME="Index1155"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Following
+the approach pioneered in Unix of &#8220;standard input,&#8221; &#8220;standard
+output,&#8221; and &#8220;standard error output,&#8221; Java has <A NAME="Index1156"></A><A NAME="Index1157"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index1158"></A><A NAME="Index1159"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1160"></A><A NAME="Index1161"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.err</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Throughout the book you&#8217;ve seen how to write to standard output using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is already pre-wrapped as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.err</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is likewise a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a raw 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+with no wrapping. This means that while you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.err</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+right away, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be wrapped before you can read from it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Typically,
+you&#8217;ll want to read input a line at a time using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you&#8217;ll want to wrap 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the &#8220;old&#8221; Java 1.0<A NAME="Index1162"></A>
+way to do line input. A bit later in the chapter you&#8217;ll see the Java 1.1<A NAME="Index1163"></A>
+solution. Here&#8217;s an example that simply echoes each line that you type in:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Echo.java</font>
+<font color="#009900">// How to read from standard input</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Echo {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    DataInputStream in =
+      <font color="#0000ff">new</font> DataInputStream(
+        <font color="#0000ff">new</font> BufferedInputStream(System.in));
+    String s;
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>((s = in.readLine()).length() != 0)
+        System.out.println(s);
+      <font color="#009900">// An empty line terminates the program</font>
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block is that <A NAME="Index1164"></A><A NAME="Index1165"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can throw an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IOException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should also be buffered, as with most streams
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+a bit inconvenient that you&#8217;re forced to wrap 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in each program, but perhaps it was designed this way to allow maximum
+flexibility.
+</FONT><a name="_Toc408018625"></a><P></DIV>
+<A NAME="Heading330"></A><H3 ALIGN=LEFT>
+Piped
+streams
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1166"></A><A NAME="Index1167"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1168"></A><A NAME="Index1169"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have been mentioned only briefly in this chapter. This is not to suggest that
+they aren&#8217;t useful, but their value is not apparent until you begin to
+understand multithreading, since the piped streams are used to communicate
+between threads. This is covered along with an example in Chapter 14.
+</FONT><a name="_Toc375545398"></a><a name="_Toc408018626"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0111.html">Prev</a> | <a href="tij0113.html">Next</a>
+</div>
+</body></html>
+

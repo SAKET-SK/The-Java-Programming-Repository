@@ -1,0 +1,73 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0116.html">Prev</a> | <a href="tij0118.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java IO stream library does seem to satisfy the basic requirements: you can
+perform reading and writing with the console, a file, a block of memory, or
+even across the Internet (as you will see in Chapter 15). It&#8217;s possible
+(by inheriting from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+to create new types of input and output objects. And you can even add a simple
+extensibility to the kinds of objects a stream will accept by redefining the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that&#8217;s automatically called when you pass an object to a method
+that&#8217;s expecting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Java&#8217;s limited &#8220;automatic type conversion&#8221;). 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are questions left unanswered by the documentation and design of the IO stream
+library. For example, it would have been nice if you could say that you want an
+exception thrown if you try to overwrite a file when opening it for output
+&#8211; some programming systems allow you to specify that you want to open an
+output file, but only if it doesn&#8217;t already exist. In Java, it appears
+that you are supposed to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to determine whether a file exists, because if you open it as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileWriter
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it
+will always get overwritten. By representing both files and directory paths, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class also suggests poor design by violating the maxim &#8220;Don&#8217;t try
+to do too much in a single class.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+IO stream library brings up mixed feelings. It does much of the job and
+it&#8217;s portable. But if you don&#8217;t already understand the decorator
+pattern, the design is non-intuitive, so there&#8217;s extra overhead in
+learning and teaching it. It&#8217;s also incomplete: there&#8217;s no support
+for the kind of output formatting that almost every other language&#8217;s IO
+package supports. (This was not remedied in Java 1.1, which missed the
+opportunity to change the library design completely, and instead added even
+more special cases and complexity.<A NAME="Index1351"></A>)
+The Java 1.1 changes to the IO library haven&#8217;t been replacements, but
+rather additions, and it seems that the library designers couldn&#8217;t quite
+get straight which features are deprecated and which are preferred, resulting
+in annoying deprecation messages that show up the contradictions in the library
+design.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+once you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>do</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+understand the decorator pattern and begin using the library in situations that
+require its flexibility, you can begin to benefit from this design, at which
+point its cost in extra lines of code may not bother you as much.
+</FONT><a name="_Toc375545401"></a><a name="_Toc408018643"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0116.html">Prev</a> | <a href="tij0118.html">Next</a>
+</div>
+</body></html>
+

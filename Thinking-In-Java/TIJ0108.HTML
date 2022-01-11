@@ -1,0 +1,422 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0107.html">Prev</a> | <a href="tij0109.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Input
+and output
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java library classes for IO are divided by <A NAME="Index987"></A>input
+and <A NAME="Index988"></A>output,
+as you can see by looking at the online Java class hierarchy with your Web
+browser. By inheritance, all classes derived from <A NAME="Index989"></A><A NAME="Index990"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have basic methods called <A NAME="Index991"></A><A NAME="Index992"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+reading a single byte or array of bytes. Likewise, all classes derived from <A NAME="Index993"></A><A NAME="Index994"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">have
+basic methods called <A NAME="Index995"></A><A NAME="Index996"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>write(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+writing a single byte or array of bytes. However, you won&#8217;t generally use
+these methods; they exist so more sophisticated classes can use them as they
+provide a more useful interface. Thus, you&#8217;ll rarely create your stream
+object by using a single class, but instead will layer multiple objects
+together to provide your desired functionality. The fact that you create more
+than one object to create a single resulting stream is the primary reason that
+Java&#8217;s stream library is confusing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+helpful to categorize the classes by their functionality. The library designers
+started by deciding that all classes that had anything to do with input would
+be inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all classes that were associated with output would be inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><a name="_Toc375545383"></a><a name="_Toc408018611"></a><P></DIV>
+<A NAME="Heading305"></A><H3 ALIGN=LEFT>
+Types
+of InputStream
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+job is to represent classes that produce input from different sources. These
+sources can be (and each has an associated subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">):
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+array of bytes
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+file
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+&#8220;pipe,&#8221; which works like a physical <A NAME="Index997"></A><A NAME="Index998"></A>pipe:
+you put things in one end and they come out the other
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+sequence of other streams, so you can collect them together into a single stream
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Other
+sources, such as an Internet connection. (This will be discussed in a later
+chapter.)
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is also a type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to provide a base class for "decorator" classes that attach attributes or
+useful interfaces to input streams. This is discussed later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+10-1. Types of InputStream
+</B></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="76">
+      <COL width="90">
+      <COL width="162">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Class</FONT><P></DIV>
+</TH>
+<TH WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Function</FONT><P></DIV>
+</TH>
+<TH WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor
+Arguments
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TH WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">How
+to use it
+</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index999"></A><A NAME="Index1000"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArray-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Allows
+a buffer in memory to be used as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+buffer from which to extract the bytes.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a source of data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1001"></A><A NAME="Index1002"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Converts
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The underlying implementation actually uses a <A NAME="Index1003"></A><A NAME="Index1004"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a source of data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1005"></A><A NAME="Index1006"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+reading information from a file.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representing the file name, or a <A NAME="Index1007"></A><A NAME="Index1008"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or <A NAME="Index1009"></A><A NAME="Index1010"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a source of data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index1011"></A><A NAME="Index1012"></A><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="76">
+      <COL width="90">
+      <COL width="162">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Piped-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+the data that&#8217;s being written to the associated <A NAME="Index1013"></A><A NAME="Index1014"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedOutput-Stream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Implements the &#8220;piping&#8221; concept.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedOutputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a source of data in multithreading. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1015"></A><A NAME="Index1016"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sequence-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Coverts
+two or more 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects into a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Two
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects or an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a container of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a source of data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1017"></A><A NAME="Index1018"></A><TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Filter-InputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=90 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Abstract
+class which is an interface for decorators that provide useful functionality to
+the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. See Table 10-3.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">See
+Table 10-3.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=162 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">See
+Table 10-3.
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545385"></a><a name="_Toc408018612"></a></TABLE></DIV>
+<A NAME="Heading306"></A><H3 ALIGN=LEFT>
+Types
+of OutputStream
+<P><A NAME="Index1019"></A><A NAME="Index1020"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+category includes the classes that decide where your output will go: an array
+of bytes (no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+however; presumably you can create one using the array of bytes), a file, or a
+&#8220;pipe.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides a base class for "decorator" classes that attach attributes or useful
+interfaces to output streams. This is discussed later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Table
+10-2. Types of OutputStream
+</B></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="85">
+      <COL width="94">
+      <COL width="157">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Class</FONT><P></DIV>
+</TH>
+<TH WIDTH=94 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Function</FONT><P></DIV>
+</TH>
+<TH WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor
+Arguments
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TH WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">How
+to use it
+</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1021"></A><A NAME="Index1022"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ByteArray-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=94 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Creates
+a buffer in memory. All the data that you send to the stream is placed in this
+buffer.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Optional
+initial size of the buffer.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+designate the destination of your data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1023"></A><A NAME="Index1024"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=94 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+sending information to a file.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representing the file name, or a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>File</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+designate the destination of your data. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1025"></A><A NAME="Index1026"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Piped-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=94 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Any
+information you write to this automatically ends up as input for the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedInput-Stream.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Implements the &#8220;piping&#8221; concept.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedInputStream</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+designate the destination of your data for multithreading. Connect it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FilterOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to provide a useful interface.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1027"></A><A NAME="Index1028"></A><TR VALIGN="TOP">
+<TD WIDTH=85 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Filter-OutputStream</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=94 COLSPAN=1 ROWSPAN=2 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Abstract
+class which is an interface for decorators that provide useful functionality to
+the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. See Table 
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">10-4.</FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">See
+Table 10-4.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">See
+Table 10-4.
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545386"></a><a name="_Toc408018613"></a></TABLE></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0107.html">Prev</a> | <a href="tij0109.html">Next</a>
+</div>
+</body></html>
+

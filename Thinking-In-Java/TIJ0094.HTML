@@ -1,0 +1,96 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0093.html">Prev</a> | <a href="tij0095.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+review the collections provided in the standard Java (1.0 and 1.1) library (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not included here since it&#8217;s more of a special-purpose class):
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	An
+<A NAME="Index898"></A>array
+associates numerical indices to objects. It holds objects of a known type so
+you don&#8217;t have to cast the result when you&#8217;re looking up an object.
+It can be multidimensional, and it can hold primitives. However, its size
+cannot be changed once you create it.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+<A NAME="Index899"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also associates numerical indices to objects &#8211; you can think of arrays and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+as random-access collections. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically resizes itself as you add more elements. But a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can hold only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles, so it won&#8217;t hold primitives and you must always cast the result
+when you pull an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle out of a collection.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+<A NAME="Index900"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a way to associate, not numbers, but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>objects</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with other objects. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also supports random access to objects, in fact, its whole design is focused
+around rapid access.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+<A NAME="Index901"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a last-in, first-out (LIFO) queue.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re familiar with data structures, you might wonder why there&#8217;s
+not a larger set of collections. From a functionality standpoint, do you really 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>need</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a larger set of collections? With a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can put things in and find them quickly, and with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can iterate through the sequence and perform an operation on every element
+in the sequence. That&#8217;s a powerful tool, and maybe it should be enough.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+no concept of order. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and arrays give you a linear order, but it&#8217;s expensive to insert an
+element into the middle of either one. In addition, queues, dequeues, priority
+queues, and trees are about 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>ordering</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the elements, not just putting them in and later finding them or moving through
+them linearly. These data structures are also useful, and that&#8217;s why they
+were included in Standard C++. For this reason, you should consider the
+collections in the standard Java library only as a starting point, and, if you
+must use Java 1.0 or 1.1, use the JGL when your needs go beyond that.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you can use Java 1.2 you should use only the new collections, which are likely
+to satisfy all your needs. Note that the bulk of this book was created using
+Java 1.1, so you&#8217;ll see that the collections used through the rest of the
+book are the ones that are available only in Java 1.1: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is a somewhat painful restriction at times, but it provides better
+backward compatibility with older Java code. If you&#8217;re writing new code
+in Java 1.2, the new collections will serve you much better.
+</FONT><a name="_Toc375545360"></a><a name="_Toc408018587"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0093.html">Prev</a> | <a href="tij0095.html">Next</a>
+</div>
+</body></html>
+

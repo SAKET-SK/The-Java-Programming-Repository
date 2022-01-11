@@ -1,0 +1,881 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0119.html">Prev</a> | <a href="tij0121.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+need for RTTI
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+the now familiar example of a class hierarchy that uses polymorphism. The
+generic type is the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape<A NAME="Index1354"></A><A NAME="Index1355"></A></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the specific derived types are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a typical class hierarchy diagram, with the base class at the top and the
+derived classes growing downward. The normal goal in object-oriented programming<A NAME="Index1356"></A><A NAME="Index1357"></A>
+is for the bulk of your code to manipulate handles to the base type (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in this case), so if you decide to extend the program by adding a new class (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Rhomboid</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example), the bulk of the code is not affected. In this example, the
+dynamically bound method in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the intent is for the client programmer to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+through a generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is overridden in all of the derived classes, and because it is a dynamically
+bound method, the proper behavior will occur even though it is called through a
+generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. That&#8217;s <A NAME="Index1358"></A>polymorphism.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+you generally create a specific object (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+upcast it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(forgetting the specific type of the object), and use that anonymous 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">handle
+in the rest of the program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a brief review of polymorphism and <A NAME="Index1359"></A>upcasting,
+you might code the above example as follows: (See page 
+<A HREF=" PAGE#Running_programs">97</A>
+if you have trouble executing this program.)
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Shapes.java</font>
+<font color="#0000ff">package</font> c11;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">interface</font> Shape {
+  <font color="#0000ff">void</font> draw();
+}
+
+<font color="#0000ff">class</font> Circle <font color="#0000ff">implements</font> Shape {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> draw() {
+    System.out.println("Circle.draw()");
+  }
+}
+
+<font color="#0000ff">class</font> Square <font color="#0000ff">implements</font> Shape {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> draw() {
+    System.out.println("Square.draw()");
+  }
+}
+
+<font color="#0000ff">class</font> Triangle <font color="#0000ff">implements</font> Shape {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> draw() {
+    System.out.println("Triangle.draw()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Shapes {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector s = <font color="#0000ff">new</font> Vector();
+    s.addElement(<font color="#0000ff">new</font> Circle());
+    s.addElement(<font color="#0000ff">new</font> Square());
+    s.addElement(<font color="#0000ff">new</font> Triangle());
+    Enumeration e = s.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      ((Shape)e.nextElement()).draw();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+base class could be coded as an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, or an ordinary class. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+no concrete members (that is, members with definitions), and it&#8217;s not
+intended that you ever create a plain 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, the most appropriate and flexible representation is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s also cleaner because you don&#8217;t have all those 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keywords lying about.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+of the derived classes overrides the base-class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method so it behaves differently. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+specific types of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are created and then added to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is the point at which the upcast occurs because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Since everything in Java (with the exception of primitives) is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can also hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. But during an upcast to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">it
+also loses any specific information, including the fact that the objects are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+To the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+they are just 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+the point you fetch an element out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+things get a little busy. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+naturally produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle. But we know it&#8217;s really a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle, and we want to send 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+messages to that object. So a <A NAME="Index1360"></A><A NAME="Index1361"></A>cast
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+necessary using the traditional &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>(Shape)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+cast. This is the most basic form of RTTI, since in Java all casts are checked
+at run-time for correctness. That&#8217;s exactly what RTTI means: at run-time,
+the type of an object is identified.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this case, the RTTI cast is only partial: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is cast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and not all the way to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That&#8217;s because the only thing we 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>know</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at this point is that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is full of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+At compile-time, this is enforced only by your own self-imposed rules, but at
+run-time the cast ensures it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+polymorphism takes over and the exact method that&#8217;s called for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is determined by whether the handle is for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Square</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Triangle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+And in general, this is how it should be; you want the bulk of your code to
+know as little as possible about 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>specific</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+types of objects, and to just deal with the general representation of a family
+of objects (in this case, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+As a result, your code will be easier to write, read, and maintain, and your
+designs will be easier to implement, understand, and change. So polymorphism is
+the general goal in object-oriented programming.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+what if you have a special programming problem that&#8217;s easiest to solve if
+you know the exact type of a generic handle<A NAME="Index1362"></A><A NAME="Index1363"></A>?
+For example, suppose you want to allow your users to highlight all the shapes
+of any particular type by turning them purple. This way, they can find all the
+triangles on the screen by highlighting them. This is what RTTI accomplishes:
+you can ask a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exactly what type it&#8217;s referring to.
+</FONT><a name="_Toc375545406"></a><a name="_Toc408018646"></a><a name="_Toc312374135"></a><P></DIV>
+<A NAME="Heading354"></A><H3 ALIGN=LEFT>
+The
+Class object
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+understand how RTTI works in Java, you must first know how type information is
+represented at run time. This is accomplished through a special kind of object
+called the <A NAME="Index1364"></A><A NAME="Index1365"></A><A NAME="Index1366"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Class
+object,
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which contains information about the class. (This is sometimes called a <A NAME="Index1367"></A><A NAME="Index1368"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>meta-class.</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+In fact, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is used to create all of the &#8220;regular&#8221; objects of your class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for each class that is part of your program. That is, each time you
+write a new class, a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is also created (and stored, appropriately enough, in an identically
+named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file).
+At run time, when you want to make an object of that class, the <A NAME="Index1369"></A><A NAME="Index1370"></A>Java
+Virtual Machine (JVM) that&#8217;s executing your program first checks to see
+if the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for that type is loaded. If not, the JVM loads it by finding the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+with that name. Thus, a Java program isn&#8217;t completely loaded before it
+begins, which is different from many traditional languages.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for that type is in memory, it is used to create all objects of that type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+this seems shadowy or if you don&#8217;t really believe it, here&#8217;s a
+demonstration program to prove it:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SweetShop.java</font>
+<font color="#009900">// Examination of the way the class loader works</font>
+
+<font color="#0000ff">class</font> Candy {
+  <font color="#0000ff">static</font> {
+    System.out.println("Loading Candy");
+  }
+}
+
+<font color="#0000ff">class</font> Gum {
+  <font color="#0000ff">static</font> {
+    System.out.println("Loading Gum");
+  }
+}
+
+<font color="#0000ff">class</font> Cookie {
+  <font color="#0000ff">static</font> {
+    System.out.println("Loading Cookie");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SweetShop {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.out.println("inside main");
+    <font color="#0000ff">new</font> Candy();
+    System.out.println("After creating Candy");
+    <font color="#0000ff">try</font> {
+      Class.forName("Gum");
+    } <font color="#0000ff">catch</font>(ClassNotFoundException e) {
+      e.printStackTrace();
+    }
+    System.out.println(
+      "After Class.forName(\"Gum\")");
+    <font color="#0000ff">new</font> Cookie();
+    System.out.println("After creating Cookie");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+of the classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Candy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cookie</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a <A NAME="Index1371"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause that is executed as the class is loaded for the first time. Information
+will be printed out to tell you when loading occurs for that class. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the object creations are spread out between print statements to help detect the
+time of loading.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+particularly interesting line is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Class.forName("Gum");</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+method is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(to which all 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects belong). A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is like any other object and so you can get and manipulate a handle to
+it. (That&#8217;s what the loader does.) One of the ways to get a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is <A NAME="Index1372"></A><A NAME="Index1373"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the textual name (watch the spelling and capitalization!) of the
+particular class you want a handle for. It returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output of this program for one JVM is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>inside main
+Loading Candy
+After creating Candy
+Loading Gum
+After Class.forName("Gum")
+Loading Cookie
+After creating Cookie </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is loaded only when it&#8217;s needed, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+initialization is performed upon class loading.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Interestingly
+enough, a different JVM yielded:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Loading Candy
+Loading Cookie
+inside main
+After creating Candy
+Loading Gum
+After Class.forName("Gum")
+After creating Cookie </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+appears that this JVM anticipated the need for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Candy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cookie</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by examining the code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but could not see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gum</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because it was created by a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and not through a more typical call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+While this JVM produces the desired effect because it does get the classes
+loaded before they&#8217;re needed, it&#8217;s uncertain whether the behavior
+shown is precisely correct.
+</FONT><P></DIV>
+<A NAME="Heading355"></A><H4 ALIGN=LEFT>
+Class
+literals
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java 1.1<A NAME="Index1374"></A>
+you have a second way to produce the handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object: use the <A NAME="Index1375"></A><A NAME="Index1376"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>class
+literal
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the above program this would look like:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Gum.class;</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+is not only simpler, but also safer since it&#8217;s checked at compile time.
+Because it eliminates the method call, it&#8217;s also more efficient.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Class
+literals work with regular classes as well as interfaces, arrays, and primitive
+types. In addition, there&#8217;s a standard field called <A NAME="Index1377"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TYPE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that exists for each of the primitive wrapper classes. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TYPE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field produces a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for the associated primitive type, such that:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="89">
+      <COL width="95">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=185 COLSPAN=2 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=CENTER><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">...
+is equivalent to ...
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">boolean.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Boolean.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">char.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Character.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">byte.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Byte.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">short.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Short.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">int.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Integer.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">long.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Long.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">float.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Float.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">double.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Double.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=89 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">void.class</FONT></TT><P></DIV>
+</TD>
+<TD WIDTH=95 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Void.TYPE</FONT></TT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545408"></a><a name="_Toc408018647"></a></TABLE></DIV>
+<A NAME="Heading356"></A><H3 ALIGN=LEFT>
+Checking
+before a cast
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far, you&#8217;ve seen RTTI forms including:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+classic cast, e.g. &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>(Shape),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+which uses RTTI to make sure the cast is correct and throws a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassCastException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if you&#8217;ve performed a bad cast.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object representing the type of your object. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object can be queried for useful runtime information.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+C++, the classic cast &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>(Shape)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">perform
+RTTI. It simply tells the compiler to treat the object as the new type. In
+Java, which does perform the type check, this cast is often called a
+&#8220;type safe downcast<A NAME="Index1378"></A><A NAME="Index1379"></A><A NAME="Index1380"></A>.&#8221;
+The reason for the term &#8220;downcast&#8221; is the historical arrangement of
+the class hierarchy diagram. If casting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an upcast, then casting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a downcast. However, you know a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is also a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the compiler freely allows an upcast assignment, but you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>don&#8217;t</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+know that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is necessarily a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Circle</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so the compiler doesn&#8217;t allow you to perform a <A NAME="Index1381"></A><A NAME="Index1382"></A>downcast
+assignment without using an explicit cast. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a third form of RTTI in Java. This is the <A NAME="Index1383"></A><A NAME="Index1384"></A>keyword
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that tells you if an object is an instance of a particular type. It returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">so
+you use it in the form of a question, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">if</font>(x <font color="#0000ff">instanceof</font> Dog)
+  ((Dog)x).bark(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+above 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement checks to see if the object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+belongs to the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+casting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s important to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before a downcast when you don&#8217;t have other information that tells you
+the type of the object; otherwise you&#8217;ll end up with a <A NAME="Index1385"></A><A NAME="Index1386"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassCastException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Ordinarily,
+you might be hunting for one type (triangles to turn purple, for example), but
+the following program shows how to tally 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the objects using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PetCount.java</font>
+<font color="#009900">// Using instanceof</font>
+<font color="#0000ff">package</font> c11.petcount;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Pet {}
+<font color="#0000ff">class</font> Dog <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Pug <font color="#0000ff">extends</font> Dog {}
+<font color="#0000ff">class</font> Cat <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Rodent <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Gerbil <font color="#0000ff">extends</font> Rodent {}
+<font color="#0000ff">class</font> Hamster <font color="#0000ff">extends</font> Rodent {}
+
+<font color="#0000ff">class</font> Counter { <font color="#0000ff">int</font> i; }
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PetCount {
+  <font color="#0000ff">static</font> String[] typenames = {
+    "Pet", "Dog", "Pug", "Cat",
+    "Rodent", "Gerbil", "Hamster",
+  };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector pets = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">try</font> {
+      Class[] petTypes = {
+        Class.forName("c11.petcount.Dog"),
+        Class.forName("c11.petcount.Pug"),
+        Class.forName("c11.petcount.Cat"),
+        Class.forName("c11.petcount.Rodent"),
+        Class.forName("c11.petcount.Gerbil"),
+        Class.forName("c11.petcount.Hamster"),
+      };
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 15; i++)
+        pets.addElement(
+          petTypes[
+            (<font color="#0000ff">int</font>)(Math.random()*petTypes.length)]
+            .newInstance());
+    } <font color="#0000ff">catch</font>(InstantiationException e) {}
+      <font color="#0000ff">catch</font>(IllegalAccessException e) {}
+      <font color="#0000ff">catch</font>(ClassNotFoundException e) {}
+    Hashtable h = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; typenames.length; i++)
+      h.put(typenames[i], <font color="#0000ff">new</font> Counter());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++) {
+      Object o = pets.elementAt(i);
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Pet)
+        ((Counter)h.get("Pet")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Dog)
+        ((Counter)h.get("Dog")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Pug)
+        ((Counter)h.get("Pug")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Cat)
+        ((Counter)h.get("Cat")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Rodent)
+        ((Counter)h.get("Rodent")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Gerbil)
+        ((Counter)h.get("Gerbil")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Hamster)
+        ((Counter)h.get("Hamster")).i++;
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++)
+      System.out.println(
+        pets.elementAt(i).getClass().toString());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; typenames.length; i++)
+      System.out.println(
+        typenames[i] + " quantity: " +
+        ((Counter)h.get(typenames[i])).i);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><a name="_Toc305593310"></a><a name="_Toc305628782"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a rather narrow restriction on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+Java 1.0<A NAME="Index1387"></A>:
+You can compare it to a named type only, and not to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. In the example above you might feel that it&#8217;s tedious to write
+out all of those 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions, and you&#8217;re right. But in Java 1.0 there is no way to
+cleverly automate it by creating a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and comparing it to those instead. This isn&#8217;t as great a
+restriction as you might think, because you&#8217;ll eventually understand that
+your design is probably flawed if you end up writing a lot of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course this example is contrived &#8211; you&#8217;d probably put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data member in each type and increment it in the constructor to keep track of
+the counts. You would do something like that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>if</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you had control of the source code for the class and could change it. Since
+this is not always the case, RTTI can come in handy.
+</FONT><P></DIV>
+<A NAME="Heading357"></A><H4 ALIGN=LEFT>
+Using
+class literals
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+interesting to see how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PetCount.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example can be rewritten using Java 1.1<A NAME="Index1388"></A>
+class literals<A NAME="Index1389"></A><A NAME="Index1390"></A>.
+The result is cleaner in many ways:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PetCount2.java</font>
+<font color="#009900">// Using Java 1.1 class literals</font>
+<font color="#0000ff">package</font> c11.petcount2;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Pet {}
+<font color="#0000ff">class</font> Dog <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Pug <font color="#0000ff">extends</font> Dog {}
+<font color="#0000ff">class</font> Cat <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Rodent <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Gerbil <font color="#0000ff">extends</font> Rodent {}
+<font color="#0000ff">class</font> Hamster <font color="#0000ff">extends</font> Rodent {}
+
+<font color="#0000ff">class</font> Counter { <font color="#0000ff">int</font> i; }
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PetCount2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector pets = <font color="#0000ff">new</font> Vector();
+    Class[] petTypes = {
+      <font color="#009900">// Class literals work in Java 1.1+ only:</font>
+      Pet.<font color="#0000ff">class</font>,
+      Dog.<font color="#0000ff">class</font>,
+      Pug.<font color="#0000ff">class</font>,
+      Cat.<font color="#0000ff">class</font>,
+      Rodent.<font color="#0000ff">class</font>,
+      Gerbil.<font color="#0000ff">class</font>,
+      Hamster.<font color="#0000ff">class</font>,
+    };
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 15; i++) {
+        <font color="#009900">// Offset by one to eliminate Pet.class:</font>
+        <font color="#0000ff">int</font> rnd = 1 + (<font color="#0000ff">int</font>)(
+          Math.random() * (petTypes.length - 1));
+        pets.addElement(
+          petTypes[rnd].newInstance());
+      }
+    } <font color="#0000ff">catch</font>(InstantiationException e) {}
+      <font color="#0000ff">catch</font>(IllegalAccessException e) {}
+    Hashtable h = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; petTypes.length; i++)
+      h.put(petTypes[i].toString(),
+        <font color="#0000ff">new</font> Counter());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++) {
+      Object o = pets.elementAt(i);
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Pet)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Pet")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Dog)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Dog")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Pug)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Pug")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Cat)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Cat")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Rodent)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Rodent")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Gerbil)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Gerbil")).i++;
+      <font color="#0000ff">if</font>(o <font color="#0000ff">instanceof</font> Hamster)
+        ((Counter)h.get(
+          "<font color="#0000ff">class</font> c11.petcount2.Hamster")).i++;
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++)
+      System.out.println(
+        pets.elementAt(i).getClass().toString());
+    Enumeration keys = h.keys();
+    <font color="#0000ff">while</font>(keys.hasMoreElements()) {
+      String nm = (String)keys.nextElement();
+      Counter cnt = (Counter)h.get(nm);
+      System.out.println(
+        nm.substring(nm.lastIndexOf('.') + 1) + 
+        " quantity: " + cnt.i);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>typenames</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array has been removed in favor of getting the type name strings from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Notice the extra work for this: the class name is not, for example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Gerbil,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but instead 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c11.petcount2.Gerbil</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since the package name is included. Notice also that the system can distinguish
+between classes and interfaces.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also see that the creation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>petTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not need to be surrounded by a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block since it&#8217;s evaluated at compile time and thus won&#8217;t throw any
+exceptions, unlike 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are dynamically created, you can see that the random number is
+restricted so it is between 1 and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>petTypes.length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and does not include zero. That&#8217;s because zero refers to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pet.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and presumably a generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is not interesting. However, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pet.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>petTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the result is that all of the pets get counted.
+</FONT><P></DIV>
+<A NAME="Heading358"></A><H4 ALIGN=LEFT>
+A
+dynamic instanceof
+<P><A NAME="Index1391"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index1392"></A>
+has added the <A NAME="Index1393"></A><A NAME="Index1394"></A><A NAME="Index1395"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isInstance</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This allows you to dynamically call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operator, which you could do only statically in Java 1.0<A NAME="Index1396"></A>
+(as previously shown). Thus, all those tedious 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements can be removed in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PetCount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PetCount3.java</font>
+<font color="#009900">// Using Java 1.1 isInstance()</font>
+<font color="#0000ff">package</font> c11.petcount3;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Pet {}
+<font color="#0000ff">class</font> Dog <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Pug <font color="#0000ff">extends</font> Dog {}
+<font color="#0000ff">class</font> Cat <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Rodent <font color="#0000ff">extends</font> Pet {}
+<font color="#0000ff">class</font> Gerbil <font color="#0000ff">extends</font> Rodent {}
+<font color="#0000ff">class</font> Hamster <font color="#0000ff">extends</font> Rodent {}
+
+<font color="#0000ff">class</font> Counter { <font color="#0000ff">int</font> i; }
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PetCount3 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector pets = <font color="#0000ff">new</font> Vector();
+    Class[] petTypes = {
+      Pet.<font color="#0000ff">class</font>,
+      Dog.<font color="#0000ff">class</font>,
+      Pug.<font color="#0000ff">class</font>,
+      Cat.<font color="#0000ff">class</font>,
+      Rodent.<font color="#0000ff">class</font>,
+      Gerbil.<font color="#0000ff">class</font>,
+      Hamster.<font color="#0000ff">class</font>,
+    };
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 15; i++) {
+        <font color="#009900">// Offset by one to eliminate Pet.class:</font>
+        <font color="#0000ff">int</font> rnd = 1 + (<font color="#0000ff">int</font>)(
+          Math.random() * (petTypes.length - 1));
+        pets.addElement(
+          petTypes[rnd].newInstance());
+      }
+    } <font color="#0000ff">catch</font>(InstantiationException e) {}
+      <font color="#0000ff">catch</font>(IllegalAccessException e) {}
+    Hashtable h = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; petTypes.length; i++)
+      h.put(petTypes[i].toString(),
+        <font color="#0000ff">new</font> Counter());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++) {
+      Object o = pets.elementAt(i);
+      <font color="#009900">// Using isInstance to eliminate individual</font>
+      <font color="#009900">// instanceof expressions:</font>
+      <font color="#0000ff">for</font> (<font color="#0000ff">int</font> j = 0; j &lt; petTypes.length; ++j)
+        <font color="#0000ff">if</font> (petTypes[j].isInstance(o)) {
+          String key = petTypes[j].toString();
+          ((Counter)h.get(key)).i++;
+        }
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; pets.size(); i++)
+      System.out.println(
+        pets.elementAt(i).getClass().toString());
+    Enumeration keys = h.keys();
+    <font color="#0000ff">while</font>(keys.hasMoreElements()) {
+      String nm = (String)keys.nextElement();
+      Counter cnt = (Counter)h.get(nm);
+      System.out.println(
+        nm.substring(nm.lastIndexOf('.') + 1) + 
+        " quantity: " + cnt.i);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the Java 1.1<A NAME="Index1397"></A>
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method has eliminated the need for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions. In addition, this means that you can add new types of pets simply
+by changing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>petTypes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array; the rest of the program does not need modification (as it did when using
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions).
+</FONT><a name="_Toc375545407"></a><a name="_Toc408018648"></a><a name="_Toc305593313"></a><a name="_Toc305628785"></a><a name="_Toc312374146"></a><a name="_Toc375545409"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0119.html">Prev</a> | <a href="tij0121.html">Next</a>
+</div>
+</body></html>
+

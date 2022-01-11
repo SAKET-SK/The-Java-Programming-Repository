@@ -1,0 +1,233 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0088.html">Prev</a> | <a href="tij0090.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Enumerators
+(iterators)
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+any collection class, you must have a way to put things in and a way to get
+things out. After all, that&#8217;s the primary job of a collection &#8211; to
+hold things. In the <A NAME="Index762"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the way that you insert objects, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>one</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+way to get things out. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite flexible &#8211; you can select anything at any time, and select
+multiple elements at once using different indexes.<A NAME="Index763"></A><A NAME="Index764"></A></FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want to start thinking at a higher level, there&#8217;s a drawback: you
+need to know the exact type of the collection in order to use it. This might
+not seem bad at first, but what if you start out using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and later on in your program you decide, for efficiency, that you want to
+change to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is part of the Java 1.2<A NAME="Index765"></A>
+collections library)? Or you&#8217;d like to write a piece of code that
+doesn&#8217;t know or care what type of collection it&#8217;s working with.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+concept of an <A NAME="Index766"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>iterator
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">can
+be used to achieve this next level of abstraction. This is an object whose job
+is to move through a sequence of objects and select each object in that
+sequence without the client programmer knowing or caring about the underlying
+structure of that sequence. In addition, an iterator is usually what&#8217;s
+called a &#8220;light-weight&#8221; object; that is, one that&#8217;s cheap to
+create. For that reason, you&#8217;ll often find seemingly strange constraints
+for iterators; for example, some iterators can move in only one direction.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><A NAME="fnB33" HREF="#fn33">[33]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an example of an iterator with these kinds of constraints. There&#8217;s not
+much you can do with one except:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Ask
+a collection to hand you an <A NAME="Index767"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">using
+a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+be ready to return the first element in the sequence on your first call to its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Get
+the next object in the sequence with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;).</B></FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	See
+if there 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>are</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+any more objects in the sequence with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasMoreElements(&#160;).</B></FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That&#8217;s
+all. It&#8217;s a simple implementation of an iterator, but still powerful. To
+see how it works, let&#8217;s revisit the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CatsAndDogs.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+program from earlier in the chapter. In the original version, the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was used to select each element, but in the following modified version an
+enumeration is used:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CatsAndDogs2.java</font>
+<font color="#009900">// Simple collection with Enumeration</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Cat2 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> catNumber;
+  Cat2(<font color="#0000ff">int</font> i) {
+    catNumber = i;
+  }
+  <font color="#0000ff">void</font> print() {
+    System.out.println("Cat number " +catNumber);
+  }
+}
+
+<font color="#0000ff">class</font> Dog2 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> dogNumber;
+  Dog2(<font color="#0000ff">int</font> i) {
+    dogNumber = i;
+  }
+  <font color="#0000ff">void</font> print() {
+    System.out.println("Dog number " +dogNumber);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CatsAndDogs2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector cats = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 7; i++)
+      cats.addElement(<font color="#0000ff">new</font> Cat2(i));
+    <font color="#009900">// Not a problem to add a dog to cats:</font>
+    cats.addElement(<font color="#0000ff">new</font> Dog2(7));
+    Enumeration e = cats.elements();
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      ((Cat2)e.nextElement()).print();
+    <font color="#009900">// Dog is detected only at run-time</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the only change is in the last few lines. Instead of:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; cats.size(); i++)
+      ((Cat)cats.elementAt(i)).print(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">an
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to step through the sequence:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">while</font>(e.hasMoreElements())
+      ((Cat2)e.nextElement()).print(); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you don&#8217;t need to worry about the number of elements in the collection.
+That&#8217;s taken care of for you by <A NAME="Index768"></A><A NAME="Index769"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hasMoreElements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index770"></A><A NAME="Index771"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+another example, consider the creation of a general-purpose printing method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: HamsterMaze.java</font>
+<font color="#009900">// Using an Enumeration</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Hamster {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> hamsterNumber;
+  Hamster(<font color="#0000ff">int</font> i) {
+    hamsterNumber = i;
+  }
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> "This is Hamster #" + hamsterNumber;
+  }
+}
+
+<font color="#0000ff">class</font> Printer {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> printAll(Enumeration e) {
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      System.out.println(
+        e.nextElement().toString());
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> HamsterMaze {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 3; i++)
+      v.addElement(<font color="#0000ff">new</font> Hamster(i));
+    Printer.printAll(v.elements());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Look
+closely at the printing method:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">static</font> <font color="#0000ff">void</font> printAll(Enumeration e) {
+  <font color="#0000ff">while</font>(e.hasMoreElements())
+    System.out.println(
+      e.nextElement().toString());
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that there&#8217;s no information about the type of sequence. All you have is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that&#8217;s all you need to know about the sequence: that you can get the
+next object, and that you can know when you&#8217;re at the end. This idea of
+taking a collection of objects and passing through it to perform an operation
+on each one is powerful and will be seen throughout this book.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+particular example is even more generic, since it uses the ubiquitous <A NAME="Index772"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method (ubiquitous only because it&#8217;s part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class). An alternative way to call print (although probably slightly less
+efficient, if you could even notice the difference) is: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println(""
++ e.nextElement());
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index773"></A><A NAME="Index774"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+uses the &#8220;automatic conversion to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+that&#8217;s wired into Java. When the compiler sees a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+followed by a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+it expects another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to follow and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically. (In <A NAME="Index775"></A>Java
+1.1, the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is unnecessary; any object will be converted to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+You can also perform a cast, which has the effect of calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">System.out.println((String)e.nextElement());</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, however, you&#8217;ll want to do something more than call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, so you&#8217;ll run up against the type-casting issue again. You must
+assume you&#8217;ve gotten an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a sequence of the particular type you&#8217;re interested in, and cast the
+resulting objects to that type (getting a run-time exception if you&#8217;re
+wrong).
+</FONT><a name="_Toc375545353"></a><a name="_Toc408018569"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn33" HREF="#fnB33">[33]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+The term 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>iterator
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">is
+common in C++ and elsewhere in OOP, so it&#8217;s difficult to know why the
+Java team used a strange name. The collections library in Java 1.2 fixes this
+as well as many other problems.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0088.html">Prev</a> | <a href="tij0090.html">Next</a>
+</div>
+</body></html>
+

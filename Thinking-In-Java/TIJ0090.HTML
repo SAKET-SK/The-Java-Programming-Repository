@@ -1,0 +1,1039 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0089.html">Prev</a> | <a href="tij0091.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Types
+of collections
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+standard Java 1.0<A NAME="Index776"></A>
+and 1.1 library comes with a bare minimum set of collection classes, but
+they&#8217;re probably enough to get by with for many of your programming
+projects. (As you&#8217;ll see at the end of this chapter, Java 1.2<A NAME="Index777"></A>
+provides a radically redesigned and filled-out library of collections.) 
+</FONT><a name="_Ref348399519"></a><a name="_Toc375545354"></a><a name="_Toc408018570"></a><P></DIV>
+<A NAME="Heading252"></A><H3 ALIGN=LEFT>
+Vector<P><A NAME="Index778"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite simple to use, as you&#8217;ve seen so far. Although most of the time
+you&#8217;ll just use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to insert objects, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get them out one at a time, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the sequence, there&#8217;s also a set of other methods that can be useful.
+As usual with the Java libraries, we won&#8217;t use or talk about them all
+here, but be sure to look them up in the electronic documentation to get a feel
+for what they can do.
+</FONT><P></DIV>
+<A NAME="Heading253"></A><H4 ALIGN=LEFT>
+Crashing
+Java
+<P><A NAME="Index779"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java standard collections contain a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method so they can produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representation of themselves, including the objects they hold. Inside of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+steps through the elements of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each one. Suppose you&#8217;d like to print out the address of your class.
+It seems to make sense to simply refer to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(in
+particular, C++ programmers are prone to this approach):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CrashJava.java</font>
+<font color="#009900">// One way to crash Java</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CrashJava {
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">return</font> "CrashJava address: " + <font color="#0000ff">this</font> + "\n";
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      v.addElement(<font color="#0000ff">new</font> CrashJava());
+    System.out.println(v);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+turns out that if you simply create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CrashJava</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and print it out, you&#8217;ll get an endless sequence of exceptions.
+However, if you place the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CrashJava</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and print out that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as shown here, it can&#8217;t handle it and you don&#8217;t even get an
+exception; Java just crashes. (But at least it didn&#8217;t bring down my
+operating system.) This was tested with Java 1.1<A NAME="Index780"></A>.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What&#8217;s
+happening is automatic type conversion for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+When you say: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">"CrashJava
+address: " + this
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+compiler sees a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+followed by a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">something
+that&#8217;s not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so it tries to convert 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It does this conversion by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which produces a <A NAME="Index781"></A><A NAME="Index782"></A>recursive
+call. When this occurs inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it appears that the <A NAME="Index783"></A><A NAME="Index784"></A>stack
+overflows without the exception-handling mechanism getting a chance to respond.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you really do want to print the address of the object in this case, the
+solution is to call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which does just that. So instead of saying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;d say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(This only works if you're directly inheriting from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or if none of your parent classes have overridden the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method).
+</FONT><a name="_Toc375545355"></a><a name="_Toc408018571"></a><P></DIV>
+<A NAME="Heading254"></A><H3 ALIGN=LEFT>
+BitSet</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index785"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is really a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of bits, and it is used if you want to efficiently store a lot of on-off
+information. It&#8217;s efficient only from the standpoint of size; if
+you&#8217;re looking for efficient access, it is slightly slower than using an
+array of some native type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, the minimum size of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that of a long: 64 bits. This implies that if you&#8217;re storing anything
+smaller, like 8 bits, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be wasteful, so you&#8217;re better off creating your own class to hold
+your flags.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+a normal 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the collection will expand as you add more elements. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does this as well &#8211; sort of. That is, sometimes it works and sometimes it
+doesn&#8217;t, which makes it appear that the Java version 1.0 implementation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just badly done. (It is fixed in Java 1.1.<A NAME="Index786"></A>)
+The following example shows how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">works
+and demonstrates the version 1.0 bug:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Bits.java</font>
+<font color="#009900">// Demonstration of BitSet</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Bits {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Random rand = <font color="#0000ff">new</font> Random();
+    <font color="#009900">// Take the LSB of nextInt():</font>
+    <font color="#0000ff">byte</font> bt = (<font color="#0000ff">byte</font>)rand.nextInt();
+    BitSet bb = <font color="#0000ff">new</font> BitSet();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 7; i &gt;=0; i--)
+      <font color="#0000ff">if</font>(((1 &lt;&lt; i) &amp;  bt) != 0)
+        bb.set(i);
+      <font color="#0000ff">else</font>
+        bb.clear(i);
+    System.out.println("<font color="#0000ff">byte</font> value: " + bt);
+    printBitSet(bb);
+
+    <font color="#0000ff">short</font> st = (<font color="#0000ff">short</font>)rand.nextInt();
+    BitSet bs = <font color="#0000ff">new</font> BitSet();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 15; i &gt;=0; i--)
+      <font color="#0000ff">if</font>(((1 &lt;&lt; i) &amp;  st) != 0)
+        bs.set(i);
+      <font color="#0000ff">else</font>
+        bs.clear(i);
+    System.out.println("<font color="#0000ff">short</font> value: " + st);
+    printBitSet(bs);
+
+    <font color="#0000ff">int</font> it = rand.nextInt();
+    BitSet bi = <font color="#0000ff">new</font> BitSet();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 31; i &gt;=0; i--)
+      <font color="#0000ff">if</font>(((1 &lt;&lt; i) &amp;  it) != 0)
+        bi.set(i);
+      <font color="#0000ff">else</font>
+        bi.clear(i);
+    System.out.println("<font color="#0000ff">int</font> value: " + it);
+    printBitSet(bi);
+
+    <font color="#009900">// Test bitsets &gt;= 64 bits:</font>
+    BitSet b127 = <font color="#0000ff">new</font> BitSet();
+    b127.set(127);
+    System.out.println("set bit 127: " + b127);
+    BitSet b255 = <font color="#0000ff">new</font> BitSet(65);
+    b255.set(255);
+    System.out.println("set bit 255: " + b255);
+    BitSet b1023 = <font color="#0000ff">new</font> BitSet(512);
+<font color="#009900">// Without the following, an exception is thrown</font>
+<font color="#009900">// in the Java 1.0 implementation of BitSet:</font>
+<font color="#009900">//    b1023.set(1023);</font>
+    b1023.set(1024);
+    System.out.println("set bit 1023: " + b1023);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> printBitSet(BitSet b) {
+    System.out.println("bits: " + b);
+    String bbits = <font color="#0000ff">new</font> String();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; b.size() ; j++)
+      bbits += (b.get(j) ? "1" : "0");
+    System.out.println("bit pattern: " + bbits);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+random number generator is used to create a random 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>short</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and each one is transformed into a corresponding bit pattern in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This works fine because a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 64 bits, so none of these cause it to increase in size. But in Java 1.0<A NAME="Index787"></A>,
+when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is greater than 64 bits, some strange behavior occurs. If you set a bit
+that&#8217;s just one greater than the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+currently-allocated storage, it will expand nicely. But if you try to set bits
+at higher locations than that without first just touching the boundary,
+you&#8217;ll get an exception, since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+won&#8217;t expand properly in Java 1.0. The example shows a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of 512 bits being created. The constructor allocates storage for twice that
+number of bits. Then if you try to set bit 1024 or greater without first
+setting bit 1023, you&#8217;ll throw an exception in <A NAME="Index788"></A>Java
+1.0. Fortunately, this is fixed in Java 1.1,<A NAME="Index789"></A>
+but avoid using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BitSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if you write code for Java 1.0.
+</FONT><a name="_Toc375545356"></a><a name="_Toc408018572"></a><P></DIV>
+<A NAME="Heading255"></A><H3 ALIGN=LEFT>
+Stack</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index790"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is sometimes referred to as a &#8220;last-in, first-out&#8221; (LIFO)
+collection. That is, whatever you &#8220;push&#8221; on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+last is the first item you can &#8220;pop&#8221; out. Like all of the other
+collections in Java, what you push and pop are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+so you must cast what you pop.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What&#8217;s
+rather odd is that instead of using a <A NAME="Index791"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as a building block to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So it has all of the characteristics and behaviors of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>plus</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+some extra 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+behaviors. It&#8217;s difficult to know whether the designers explicitly
+decided that this was an especially useful way to do things, or whether it was
+just a na&iuml;ve design.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple demonstration of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that reads each line from an array and pushes it as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Stacks.java</font>
+<font color="#009900">// Demonstration of Stack Class</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Stacks {
+  <font color="#0000ff">static</font> String[] months = { 
+    "January", "February", "March", "April",
+    "May", "June", "July", "August", "September",
+    "October", "November", "December" };
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Stack stk = <font color="#0000ff">new</font> Stack();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; months.length; i++)
+      stk.push(months[i] + " ");
+    System.out.println("stk = " + stk);
+    <font color="#009900">// Treating a stack as a Vector:</font>
+    stk.addElement("The last line");
+    System.out.println(
+      "element 5 = " + stk.elementAt(5));
+    System.out.println("popping elements:");
+    <font color="#0000ff">while</font>(!stk.empty())
+      System.out.println(stk.pop());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+line in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>months
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">array
+is inserted into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>push(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and later fetched from the top of the stack with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To make a point, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">operations
+are also performed on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is possible because, by virtue of inheritance, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus, all operations that can be performed on a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can also be performed on a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545357"></a><a name="_Toc408018573"></a><P></DIV>
+<A NAME="Heading256"></A><H3 ALIGN=LEFT>
+Hashtable<P><A NAME="Index792"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to select from a sequence of objects using a number, so in a sense
+it associates numbers to objects. But what if you&#8217;d like to select from a
+sequence of objects using some other criterion? A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Stack</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an example: its selection criterion is &#8220;the last thing pushed on the
+stack.&#8221; A powerful twist on this idea of &#8220;selecting from a
+sequence&#8221; is alternately termed a <A NAME="Index793"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>map</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a <A NAME="Index794"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>dictionary,</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or an <A NAME="Index795"></A><A NAME="Index796"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>associative
+array
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Conceptually, it seems like a vector, but instead of looking up objects using a
+number, you look them up using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>another
+object
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">!
+This is often a key process in a program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+concept shows up in Java as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>abstract
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Dictionary
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The interface for this class is straightforward: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tells you how many elements are within, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isEmpty(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if there are no elements, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(Object
+key, Object value)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+adds a value (the thing you want), and associates it with a key (the thing you
+look it up with). 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(Object
+key)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces the value given the corresponding key, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>remove(Object
+key)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+removes the key-value pair from the list. There are enumerations: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the keys, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elements(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of all the values. That&#8217;s all there is to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t terribly difficult to implement. Here&#8217;s a simple approach,
+which uses two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+one for keys and one for values:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AssocArray.java</font>
+<font color="#009900">// Simple version of a Dictionary</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AssocArray <font color="#0000ff">extends</font> Dictionary {
+  <font color="#0000ff">private</font> Vector keys = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">private</font> Vector values = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> size() { <font color="#0000ff">return</font> keys.size(); }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> isEmpty() {
+    <font color="#0000ff">return</font> keys.isEmpty();
+  }
+  <font color="#0000ff">public</font> Object put(Object key, Object value) {
+    keys.addElement(key);
+    values.addElement(value);
+    <font color="#0000ff">return</font> key;
+  }
+  <font color="#0000ff">public</font> Object get(Object key) {
+    <font color="#0000ff">int</font> index = keys.indexOf(key);
+    <font color="#009900">// indexOf() Returns -1 if key not found:</font>
+    <font color="#0000ff">if</font>(index == -1) <font color="#0000ff">return</font> <font color="#0000ff">null</font>;
+    <font color="#0000ff">return</font> values.elementAt(index);
+  }
+  <font color="#0000ff">public</font> Object remove(Object key) {
+    <font color="#0000ff">int</font> index = keys.indexOf(key);
+    <font color="#0000ff">if</font>(index == -1) <font color="#0000ff">return</font> <font color="#0000ff">null</font>;
+    keys.removeElementAt(index);
+    Object returnval = values.elementAt(index);
+    values.removeElementAt(index);
+    <font color="#0000ff">return</font> returnval;
+  }
+  <font color="#0000ff">public</font> Enumeration keys() {
+    <font color="#0000ff">return</font> keys.elements();
+  }
+  <font color="#0000ff">public</font> Enumeration elements() {
+    <font color="#0000ff">return</font> values.elements();
+  }
+  <font color="#009900">// Test it:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    AssocArray aa = <font color="#0000ff">new</font> AssocArray();
+    <font color="#0000ff">for</font>(<font color="#0000ff">char</font> c = 'a'; c &lt;= 'z'; c++)
+      aa.put(String.valueOf(c),
+             String.valueOf(c)
+             .toUpperCase());
+    <font color="#0000ff">char</font>[] ca = { 'a', 'e', 'i', 'o', 'u' };
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; ca.length; i++)
+      System.out.println("Uppercase: " +
+             aa.get(String.valueOf(ca[i])));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first thing you see in the definition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends
+Dictionary
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is
+a type of 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you can make the same requests of it that you can a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you make your own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as is done here, all you need to do is fill in all the methods that are in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(And you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>must</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+override all the methods because all of them &#8211; with the exception of the
+constructor &#8211; are abstract.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>values</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are linked by a common index number. That is, if you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a key of &#8220;roof&#8221; and a value of &#8220;blue&#8221; (assuming
+you&#8217;re associating the various parts of a house with the colors they are
+to be painted) and there are already 100 elements in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then &#8220;roof&#8221; will be the 101 element of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and &#8220;blue&#8221; will be the 101 element of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>values</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+And if you look at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+when you pass &#8220;roof&#8221; in as the key, it produces the index number
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keys</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then uses that index number to produce the value in the associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>values</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+vector.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+test in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simple; it&#8217;s just a map of lowercase characters to uppercase
+characters, which could obviously be done in a number of more efficient ways.
+But it shows that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is functional.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+standard Java library contains only one embodiment of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><A NAME="fnB34" HREF="#fn34">[34]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Java&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has the same basic interface as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AssocArray
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(since
+they both inherit 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+but it
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">differs
+in one distinct way: efficiency. If you look at what must be done for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it seems pretty slow to search through a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the key. This is where 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+speeds things up. Instead of the tedious linear search for the key, it uses a
+special value called a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>hash
+code
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+hash code is a way to take some information in the object in question and turn
+it into a &#8220;relatively unique&#8221; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that object. All objects have a hash code, and <A NAME="Index797"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a method in the root class <A NAME="Index798"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">takes
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the object and uses it to quickly hunt for the key. This results in a
+dramatic performance improvement.
+</FONT><A NAME="fnB35" HREF="#fn35">[35]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>way</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works is beyond the scope of this book
+</FONT><A NAME="fnB36" HREF="#fn36">[36]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; all you need to know is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a fast 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dictionary</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a useful tool.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an example of the use of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+consider a program to check the randomness of Java&#8217;s <A NAME="Index799"></A><A NAME="Index800"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Ideally, it would produce a perfect distribution of random numbers, but
+to test this you need to generate a bunch of random numbers and count the ones
+that fall in the various ranges. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is perfect for this, since it associates objects with objects (in this case,
+the values produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the number of times those values appear):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Statistics.java</font>
+<font color="#009900">// Simple demonstration of Hashtable</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Counter { 
+  <font color="#0000ff">int</font> i = 1; 
+  <font color="#0000ff">public</font> String toString() { 
+    <font color="#0000ff">return</font> Integer.toString(i); 
+  }
+}
+
+<font color="#0000ff">class</font> Statistics {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Hashtable ht = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10000; i++) {
+      <font color="#009900">// Produce a number between 0 and 20:</font>
+      Integer r = 
+        <font color="#0000ff">new</font> Integer((<font color="#0000ff">int</font>)(Math.random() * 20));
+      <font color="#0000ff">if</font>(ht.containsKey(r))
+        ((Counter)ht.get(r)).i++;
+      <font color="#0000ff">else</font>
+        ht.put(r, <font color="#0000ff">new</font> Counter());
+    }
+    System.out.println(ht);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+each time a random number is generated it is wrapped inside an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object so that handle can be used with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(You can&#8217;t use a primitive with a collection, only an object handle.) The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>containsKey(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method checks to see if this key is already in the collection. (That is, has
+the number been found already?) If so, the <A NAME="Index801"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods gets the associated value for the key, which in this case is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. The value 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the counter is then incremented to indicate that one more of this
+particular random number has been found.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the key has not been found yet, the method <A NAME="Index802"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>put(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will place a new key-value pair into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically initializes its variable 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to one when it&#8217;s created, it indicates the first occurrence of this
+particular random number.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+display the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it is simply printed out. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method moves through all the key-value pairs and calls the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each one. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer
+toString(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is pre-defined, and you can see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The output from one run (with some line breaks added) is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>{19=526, 18=533, 17=460, 16=513, 15=521, 14=495,
+ 13=512, 12=483, 11=488, 10=487, 9=514, 8=523,
+ 7=497, 6=487, 5=480, 4=489, 3=509, 2=503, 1=475,
+ 0=505} </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might wonder at the necessity of the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which seems like it doesn&#8217;t even have the functionality of the wrapper
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Why not use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+Well, you can&#8217;t use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because all of the collections can hold only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles. After seeing collections the wrapper classes might begin to make a
+little more sense to you, since you can&#8217;t put any of the primitive types
+in collections. However, the only thing you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+do with the Java <A NAME="Index803"></A>wrappers
+is to initialize them to a particular value and read that value. That is,
+there&#8217;s no way to change a value once a wrapper object has been created.
+This makes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+wrapper immediately useless to solve our problem, so we&#8217;re forced to
+create a new class that does satisfy the need.
+</FONT><P></DIV>
+<A NAME="Heading257"></A><H4 ALIGN=LEFT>
+Creating
+&#8220;key&#8221; classes
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the previous example, a standard library class (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+was used as a key for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It worked fine as a key, because it has all the necessary wiring to make it
+work correctly as a key. But a common pitfall occurs when using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+when you create your own classes to be used as keys. For example, consider a
+weather predicting system that matches 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. It seems fairly straightforward: you create the two classes and use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the key and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the value:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SpringDetector.java</font>
+<font color="#009900">// Looks plausible, but doesn't work right.</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Groundhog {
+  <font color="#0000ff">int</font> ghNumber;
+  Groundhog(<font color="#0000ff">int</font> n) { ghNumber = n; }
+}
+
+<font color="#0000ff">class</font> Prediction {
+  <font color="#0000ff">boolean</font> shadow = Math.random() &gt; 0.5;
+  <font color="#0000ff">public</font> String toString() {
+    <font color="#0000ff">if</font>(shadow)
+      <font color="#0000ff">return</font> "Six more weeks of Winter!";
+    <font color="#0000ff">else</font>
+      <font color="#0000ff">return</font> "Early Spring!";
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SpringDetector {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Hashtable ht = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      ht.put(<font color="#0000ff">new</font> Groundhog(i), <font color="#0000ff">new</font> Prediction());
+    System.out.println("ht = " + ht + "\n");
+    System.out.println(
+      "Looking up prediction <font color="#0000ff">for</font> groundhog #3:");
+    Groundhog gh = <font color="#0000ff">new</font> Groundhog(3);
+    <font color="#0000ff">if</font>(ht.containsKey(gh))
+      System.out.println((Prediction)ht.get(gh));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is given an identity number, so you can look up a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by saying &#8220;Give me the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">associated
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+number 3.&#8221; The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is initialized using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Math.random(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that interprets the result for you. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is filled with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and their associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+printed so you can see that it has been filled. Then a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with an identity number of 3 is used to look up the prediction for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+#3.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+seems simple enough, but it doesn&#8217;t work. The problem is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from the common root class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is what happens if you don&#8217;t specify a base class, thus all
+classes are ultimately inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+It is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that is used to generate the hash code for each object, and by default
+it just uses the address of its object. Thus, the first instance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog(3)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produce a hash code equal to the hash code for the second instance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog(3)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that we tried to use as a lookup.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might think that all you need to do is write an appropriate override for <A NAME="Index804"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But it still won&#8217;t work until you&#8217;ve done one more thing: override
+the <A NAME="Index805"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is also part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This method is used by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when trying to determine if your key is equal to any of the keys in the table.
+Again, the default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+simply compares object addresses, so one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog(3)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not equal to another 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog(3)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+to use your own classes as keys in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must override both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as shown in the following solution to the problem above:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SpringDetector2.java</font>
+<font color="#009900">// If you create a class that's used as a key in</font>
+<font color="#009900">// a Hashtable, you must override hashCode()</font>
+<font color="#009900">// and equals().</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> Groundhog2 {
+  <font color="#0000ff">int</font> ghNumber;
+  Groundhog2(<font color="#0000ff">int</font> n) { ghNumber = n; }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> hashCode() { <font color="#0000ff">return</font> ghNumber; }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> equals(Object o) {
+    <font color="#0000ff">if</font> ((o != <font color="#0000ff">null</font>) &amp;&amp; (o <font color="#0000ff">instanceof</font> Groundhog2))
+      <font color="#0000ff">return</font> 
+        ghNumber == ((Groundhog2)o).ghNumber;
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">false</font>;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SpringDetector2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Hashtable ht = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      ht.put(<font color="#0000ff">new</font> Groundhog2(i),<font color="#0000ff">new</font> Prediction());
+    System.out.println("ht = " + ht + "\n");
+    System.out.println(
+      "Looking up prediction <font color="#0000ff">for</font> groundhog #3:");
+    Groundhog2 gh = <font color="#0000ff">new</font> Groundhog2(3);
+    <font color="#0000ff">if</font>(ht.containsKey(gh))
+      System.out.println((Prediction)ht.get(gh));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that this uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Prediction</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class from the previous example, so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SpringDetector.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be compiled first or you&#8217;ll get a compile-time error when you try to
+compile
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+SpringDetector2.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog2.hashCode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the ground hog number as an identifier. (In this example, the
+programmer is responsible for ensuring that no two ground hogs exist with the
+same ID number.) The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashCode(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+not required to return a unique identifier, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must be able to strictly determine whether two objects are equivalent.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method does two sanity checks: to see if the object is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if not, whether it is an instance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, which is fully explained in Chapter 11). It should be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Groundhog2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+even continue executing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The comparison, as you can see, is based on the actual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ghNumber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+This time, when you run the program, you&#8217;ll see it produces the correct
+output. (Many of the Java library classes override the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hashcode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods to be based upon their contents.)
+</FONT><P></DIV>
+<A NAME="Heading258"></A><H4 ALIGN=LEFT>
+Properties:
+a type of Hashtable
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the first example in this book, a type of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was used called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In that example, the lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Properties p = System.getProperties();
+p.list(System.out);</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">called
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method <A NAME="Index806"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getProperties(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get a special 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that described the system characteristics. The method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+sends the contents to any stream output that you choose. There&#8217;s also a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>save(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to allow you to write your property list to a file in a way that it can
+be retrieved later with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>load(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+the <A NAME="Index807"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it also 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>contains</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that acts to hold the list of &#8220;default&#8221; properties. So if a
+property isn&#8217;t found in the primary list, the defaults will be searched.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Properties</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is also available for use in your programs (an example is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ClassScanner.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Chapter 17). You can find more complete details in the Java library
+documentation.
+</FONT><a name="_Toc375545358"></a><a name="_Toc408018574"></a><P></DIV>
+<A NAME="Heading259"></A><H3 ALIGN=LEFT>
+Enumerators
+revisited
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">We
+can now demonstrate the true power of the <A NAME="Index808"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the ability to separate the operation of traversing a sequence from the
+underlying structure of that sequence. In the following example, the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to move through a sequence and call the <A NAME="Index809"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for every object. Two different types of collections are created, a <A NAME="Index810"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a <A NAME="Index811"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and they are each filled with, respectively, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mouse
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hamster
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects.
+(These classes are defined earlier in the chapter; notice you must have compiled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>HamsterMaze.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WorksAnyway.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the following program to compile.) Because an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">hides
+the structure of the underlying collection, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t know or care what kind of collection the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">comes
+from:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Enumerators2.java</font>
+<font color="#009900">// Revisiting Enumerations</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> PrintData {
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> print(Enumeration e) {
+    <font color="#0000ff">while</font>(e.hasMoreElements())
+      System.out.println(
+        e.nextElement().toString());
+  }
+}
+
+<font color="#0000ff">class</font> Enumerators2 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 5; i++)
+      v.addElement(<font color="#0000ff">new</font> Mouse(i));
+
+    Hashtable h = <font color="#0000ff">new</font> Hashtable();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 5; i++)
+      h.put(<font color="#0000ff">new</font> Integer(i), <font color="#0000ff">new</font> Hamster(i));
+
+    System.out.println("Vector");
+    PrintData.print(v.elements());
+    System.out.println("Hashtable");
+    PrintData.print(h.elements());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData.print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes advantage of the fact that the objects in these collections are of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so it can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s more likely that in your problem, you must make the assumption that
+your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is walking through a collection of some specific type. For example, you might
+assume that everything in the collection is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>draw(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Then you must downcast from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Enumeration.nextElement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">()
+returns to produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Shape</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545403"></a><a name="_Toc408018575"></a><a name="_Toc375545359"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn34" HREF="#fnB34">[34]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+If you plan to use RMI (described in Chapter 15), you should be aware that
+there&#8217;s a problem when putting remote objects into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">.
+(See 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Core
+Java
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+by Cornell &amp; Horstmann, Prentice-Hall 1997).
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><A NAME="fn35" HREF="#fnB35">[35]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+If these speedups still don&#8217;t meet your performance needs, you can
+further accelerate table lookup by writing your own hash table routine. This
+avoids delays due to casting to and from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">s
+and synchronization built into the Java Class Library hash table routine. To
+reach even higher levels of performance, speed enthusiasts can use Donald
+Knuth&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>The
+Art of Computer Programming, Volume 3: Sorting and Searching, Second Edition
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+to replace overflow bucket lists with arrays that have two additional benefits:
+they can be optimized for disk storage characteristics and they can save most
+of the time of creating and garbage collecting individual records
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<DIV ALIGN=LEFT><A NAME="fn36" HREF="#fnB36">[36]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+The best reference I know of is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Practical
+Algorithms for Programmers
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+by Andrew Binstock and John Rex, Addison-Wesley 1995.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0089.html">Prev</a> | <a href="tij0091.html">Next</a>
+</div>
+</body></html>
+

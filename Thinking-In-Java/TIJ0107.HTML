@@ -1,0 +1,58 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0106.html">Prev</a> | <a href="tij0108.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+10:
+The Java 
+<P>IO
+system
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Creating
+a good input/output (IO) system is one of the more difficult tasks for the
+language designer.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is evidenced by the number of different approaches. The challenge seems to be
+in covering all eventualities. Not only are there different kinds of IO that
+you want to communicate with (files, the console, network connections), but you
+need to talk to them in a wide variety of ways (sequential, random-access,
+binary, character, by lines, by words, etc.).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java library designers attacked the problem by creating lots of classes. In
+fact, there are so many classes for Java&#8217;s IO system that it can be
+intimidating at first (ironically, the Java IO design actually prevents an
+explosion of classes). There has also been a significant change in the IO <A NAME="Index981"></A>library
+between Java 1.0<A NAME="Index982"></A>
+and Java 1.1<A NAME="Index983"></A>.
+Instead of simply replacing the old library with a new one, the designers at
+Sun extended the old library and added the new one alongside it. As a result
+you can sometimes end up mixing the old and new libraries and creating even
+more intimidating code. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+chapter will help you understand the variety of IO classes in the standard Java
+library and how to use them. The first portion of the chapter will introduce
+the &#8220;old&#8221; Java 1.0<A NAME="Index984"></A>
+IO stream library, since there is a significant amount of existing code that
+uses that library. The remainder of the chapter will introduce the new features
+in the Java 1.1 IO library. Note that when you compile some of the code in the
+first part of the chapter with a Java 1.1 compiler you can get a &#8220;<A NAME="Index985"></A>deprecated
+feature&#8221; warning message at compile time. The code still works; the
+compiler is just suggesting that you use certain new features that are
+described in the latter part of this chapter. It is valuable, however, to see
+the difference between the old and new way of doing things and that&#8217;s why
+it was left in &#8211; to increase your understanding (and to allow you to read
+code written for Java 1.0<A NAME="Index986"></A>).</FONT><a name="_Toc375545382"></a><a name="_Toc408018610"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0106.html">Prev</a> | <a href="tij0108.html">Next</a>
+</div>
+</body></html>
+
