@@ -1,0 +1,92 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0136.html">Prev</a> | <a href="tij0138.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Text
+fields
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1606"></A><A NAME="Index1607"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a one line area that allows the user to enter and edit text. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+inherited from <A NAME="Index1608"></A><A NAME="Index1609"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+lets you select text, get the selected text as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+get or set the text, and set whether the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is editable, along with other associated methods that you can find in your
+online reference. The following example demonstrates some of the functionality
+of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+you can see that the method names are fairly obvious:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TextField1.java</font>
+<font color="#009900">// Using the text field control</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TextField1 <font color="#0000ff">extends</font> Applet {
+  Button
+    b1 = <font color="#0000ff">new</font> Button("Get Text"),
+    b2 = <font color="#0000ff">new</font> Button("Set Text");
+  TextField 
+    t = <font color="#0000ff">new</font> TextField("Starting text", 30);
+  String s = <font color="#0000ff">new</font> String();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(b1);
+    add(b2);
+    add(t);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b1)) {
+      getAppletContext().showStatus(t.getText());
+      s = t.getSelectedText();
+      <font color="#0000ff">if</font>(s.length() == 0) s = t.getText();
+      t.setEditable(<font color="#0000ff">true</font>);
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b2)) {
+      t.setText("Inserted by Button 2: " + s);
+      t.setEditable(<font color="#0000ff">false</font>);
+    }
+    <font color="#009900">// Let the base class handle it:</font>
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>; <font color="#009900">// We've handled it here</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are several ways to construct a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+the one shown here provides an initial string and sets the size of the field in
+characters.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Pressing
+button 1 either gets the text you&#8217;ve selected with the mouse or it gets
+all the text in the field and places the result in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+s
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It also allows the field to be edited. Pressing button 2 puts a message and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into the text field and prevents the field from being edited (although you can
+still select the text). The editability of the text is controlled by passing <A NAME="Index1610"></A><A NAME="Index1611"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setEditable(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545450"></a><a name="_Toc408018686"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0136.html">Prev</a> | <a href="tij0138.html">Next</a>
+</div>
+</body></html>
+

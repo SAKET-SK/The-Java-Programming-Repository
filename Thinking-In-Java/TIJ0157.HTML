@@ -1,0 +1,1109 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0156.html">Prev</a> | <a href="tij0158.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Blocking
+<P><A NAME="Index2520"></A><A NAME="Index2521"></A><A NAME="Index2522"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+thread can be in any one of four <A NAME="Index2523"></A>states:</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2524"></A><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>New</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the thread object has been created but it hasn&#8217;t been started yet so it
+cannot run.
+</FONT><LI><A NAME="Index2525"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2526"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Runnable</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+This means that a thread 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be run when the time-slicing mechanism has CPU cycles available for the thread.
+Thus, the thread might or might not be running, but there&#8217;s nothing to
+prevent it from being run if the scheduler can arrange it; it&#8217;s not dead
+or blocked.
+</FONT><LI><A NAME="Index2527"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2528"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Dead</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the normal way for a thread to die is by returning from its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method.
+You can also call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but this throws an exception that&#8217;s a subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Error</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which means you usually don&#8217;t catch it). Remember that throwing an
+exception should be a special event and not part of normal program execution;
+thus the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is discouraged (and it&#8217;s deprecated in Java 1.2<A NAME="Index2529"></A>).
+There&#8217;s also a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method (which has never been implemented) that you should never call if you can
+avoid it since it&#8217;s drastic and doesn&#8217;t release object locks.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>	Blocked</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+the thread could be run but there&#8217;s something that prevents it. While a
+thread is in the blocked state the scheduler will simply skip over it and not
+give it any CPU time. Until a thread re-enters the runnable state it
+won&#8217;t perform any operations.
+</FONT><a name="_Toc375545482"></a><a name="_Toc408018756"></a></OL><A NAME="Heading496"></A><H3 ALIGN=LEFT>
+Becoming
+blocked
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+blocked state is the most interesting and is worth further examination. A
+thread can become blocked for five reasons:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You&#8217;ve
+put the thread to sleep by calling <A NAME="Index2530"></A><A NAME="Index2531"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(milliseconds),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in which case it will not be run for the specified time.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You&#8217;ve
+suspended the execution of the thread with <A NAME="Index2532"></A><A NAME="Index2533"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It will not become runnable again until the thread gets the <A NAME="Index2534"></A><A NAME="Index2535"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+message.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You&#8217;ve
+suspended the execution of the thread with <A NAME="Index2536"></A><A NAME="Index2537"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It will not become runnable again until the thread gets the <A NAME="Index2538"></A><A NAME="Index2539"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or <A NAME="Index2540"></A><A NAME="Index2541"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyAll(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+message. (Yes, this looks just like number 2, but there&#8217;s a distinct
+difference that will be revealed.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+<A NAME="Index2542"></A><A NAME="Index2543"></A>thread
+is waiting for some IO to complete.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+thread is trying to call a <A NAME="Index2544"></A><A NAME="Index2545"></A><A NAME="Index2546"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+on another object and that object&#8217;s lock is not available.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also call <A NAME="Index2547"></A><A NAME="Index2548"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a method of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class)
+to voluntarily give up the CPU so that other threads can run. However, the same
+thing happens if the scheduler decides that your thread has had enough time and
+jumps to another thread. That is, nothing prevents the scheduler from
+re-starting your thread. When a thread is blocked, there&#8217;s some reason
+that it cannot continue running.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example shows all five ways of becoming blocked. It all exists in a
+single file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blocking.java,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but it will be examined here in discrete pieces. (You&#8217;ll notice the
+&#8220;Continued&#8221; and &#8220;Continuing&#8221; tags that allow the tool
+shown in Chapter 17 to piece everything together.) First, the basic framework:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Blocking.java</font>
+<font color="#009900">// Demonstrates the various ways a thread</font>
+<font color="#009900">// can be blocked.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#009900">//////////// The basic framework ///////////</font>
+<font color="#0000ff">class</font> Blockable <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Peeker peeker;
+  <font color="#0000ff">protected</font> TextField state = <font color="#0000ff">new</font> TextField(40);
+  <font color="#0000ff">protected</font> <font color="#0000ff">int</font> i;
+  <font color="#0000ff">public</font> Blockable(Container c) {
+    c.add(state);
+    peeker = <font color="#0000ff">new</font> Peeker(<font color="#0000ff">this</font>, c);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">int</font> read() { <font color="#0000ff">return</font> i; }
+  <font color="#0000ff">protected</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> update() {
+    state.setText(getClass().getName()
+      + " state: i = " + i);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> stopPeeker() { 
+    <font color="#009900">// peeker.stop(); Deprecated in Java 1.2</font>
+    peeker.terminate(); <font color="#009900">// The preferred approach</font>
+  }
+}
+
+<font color="#0000ff">class</font> Peeker <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Blockable b;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> session;
+  <font color="#0000ff">private</font> TextField status = <font color="#0000ff">new</font> TextField(40);
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> stop = <font color="#0000ff">false</font>;
+  <font color="#0000ff">public</font> Peeker(Blockable b, Container c) {
+    c.add(status);
+    <font color="#0000ff">this</font>.b = b;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> terminate() { stop = <font color="#0000ff">true</font>; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (!stop) {
+      status.setText(b.getClass().getName()
+        + " Peeker " + (++session)
+        + "; value = " + b.read());
+       <font color="#0000ff">try</font> {
+        sleep(100);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+} <font color="#009900">///:Continued </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+is meant to be a base class for all the classes in this example that
+demonstrate blocking. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>state</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is used to display information about the object. The method that displays
+this information is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can see it uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getClass(&#160;).getName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce the name of the class instead of just printing it out; this is
+because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot know the exact name of the class it is called for, since it will be a
+class derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+indicator of change in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+i,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which will be incremented by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of the derived class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a thread of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is started for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+job is to watch its associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to see changes in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">by
+calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and reporting them in its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>status
+TextField
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is important: Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means they require that the object lock be free.
+</FONT><P></DIV>
+<A NAME="Heading497"></A><H4 ALIGN=LEFT>
+Sleeping</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first test in this program is with <A NAME="Index2549"></A><A NAME="Index2550"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;):</B></FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">///:Continuing</font>
+<font color="#009900">///////////// Blocking via sleep() ///////////</font>
+<font color="#0000ff">class</font> Sleeper1 <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">public</font> Sleeper1(Container c) { <font color="#0000ff">super</font>(c); }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      i++;
+      update();
+       <font color="#0000ff">try</font> {
+        sleep(1000);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+  
+<font color="#0000ff">class</font> Sleeper2 <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">public</font> Sleeper2(Container c) { <font color="#0000ff">super</font>(c); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      change();
+       <font color="#0000ff">try</font> {
+        sleep(1000);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> change() {
+      i++;
+      update();
+  }
+} <font color="#009900">///:Continued </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sleeper1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+associated with this object will run along merrily 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>until</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you start the thread, and then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+stops cold. This is one form of blocking: since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sleeper1.run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and once the thread starts it&#8217;s always inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the method never gives up the object lock and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is blocked.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sleeper2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides a solution by making run un-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Only the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>change(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can access the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method it needs, namely 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here you&#8217;ll see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+continues running when you start the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sleeper2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread.
+</FONT><P></DIV>
+<A NAME="Heading498"></A><H4 ALIGN=LEFT>
+Suspending
+and resuming
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next part of the example introduces the concept of suspension. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class has a method <A NAME="Index2551"></A><A NAME="Index2552"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to temporarily halt the thread and <A NAME="Index2553"></A><A NAME="Index2554"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that re-starts it at the point it was halted. Presumably, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called by some thread outside the suspended one, and in this case
+there&#8217;s a separate class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Resumer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that does just that. Each of the classes demonstrating suspend/resume has an
+associated resumer:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">///:Continuing</font>
+<font color="#009900">/////////// Blocking via suspend() ///////////</font>
+<font color="#0000ff">class</font> SuspendResume <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">public</font> SuspendResume(Container c) {
+    <font color="#0000ff">super</font>(c);    
+    <font color="#0000ff">new</font> Resumer(<font color="#0000ff">this</font>); 
+  }
+}
+
+<font color="#0000ff">class</font> SuspendResume1 <font color="#0000ff">extends</font> SuspendResume {
+  <font color="#0000ff">public</font> SuspendResume1(Container c) { <font color="#0000ff">super</font>(c);}
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      i++;
+      update();
+      suspend(); <font color="#009900">// Deprecated in Java 1.2</font>
+    }
+  }
+}
+
+<font color="#0000ff">class</font> SuspendResume2 <font color="#0000ff">extends</font> SuspendResume {
+  <font color="#0000ff">public</font> SuspendResume2(Container c) { <font color="#0000ff">super</font>(c);}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      change();
+      suspend(); <font color="#009900">// Deprecated in Java 1.2</font>
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> change() {
+      i++;
+      update();
+  }
+}
+
+<font color="#0000ff">class</font> Resumer <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> SuspendResume sr;
+  <font color="#0000ff">public</font> Resumer(SuspendResume sr) {
+    <font color="#0000ff">this</font>.sr = sr;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+       <font color="#0000ff">try</font> {
+        sleep(1000);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+      sr.resume(); <font color="#009900">// Deprecated in Java 1.2</font>
+    }
+  }
+} <font color="#009900">///:Continued </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SuspendResume1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized
+run(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Again, when you start this thread you&#8217;ll see that its associated 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+gets blocked waiting for the lock to become available, which never happens.
+This is fixed as before in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SuspendResume2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which does not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronize</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method but instead uses a separate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>change(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+should be aware that Java 1.2<A NAME="Index2555"></A>
+deprecates the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds the object&#8217;s lock and is thus <A NAME="Index2556"></A>deadlock-prone.
+That is, you can easily get a number of locked objects waiting on each other,
+and this will cause your program to freeze. Although you might see them used in
+older programs you should not use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The proper solution is described later in this chapter.
+</FONT><P></DIV>
+<A NAME="Heading499"></A><H4 ALIGN=LEFT>
+Wait
+and notify
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+point with the first two examples is that both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>do
+not 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">release
+the lock as they are called. You must be aware of this when working with locks.
+On the other hand, the method <A NAME="Index2557"></A><A NAME="Index2558"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+release the lock when it is called, which means that other <A NAME="Index2559"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods in the thread object could be called during a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the following two classes, you&#8217;ll see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is fully 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in both cases, however, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+still has full access to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods during a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+releases the lock on the object as it suspends the method it&#8217;s called
+within.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+also see that there are two forms of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+The first takes an argument in milliseconds that has the same meaning as in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+pause for this period of time. The difference is that in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the object lock is released 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can come out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well as having the clock run out.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second form takes no arguments, and means that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will continue until a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+comes along and will not automatically terminate after a time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+fairly unique aspect of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that both methods are part of the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and not part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although this seems a bit strange at first &#8211; to have something
+that&#8217;s exclusively for threading as part of the universal base class
+&#8211; it&#8217;s essential because they manipulate the lock that&#8217;s also
+part of every object. As a result, you can put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, regardless of whether there&#8217;s any threading going on inside that
+particular class. In fact, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>only</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+place you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is within a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method or block. If you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+within a method that&#8217;s not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the program will compile, but when you run it you&#8217;ll get an <A NAME="Index2560"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IllegalMonitorStateException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the somewhat non-intuitive message &#8220;current thread not owner.&#8221;
+Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can all be called within non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods since they don&#8217;t manipulate the lock.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only for your own lock. Again, you can compile code that tries to use the wrong
+lock, but it will produce the same 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IllegalMonitorStateException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+message as before. You can&#8217;t fool with someone else&#8217;s lock, but you
+can ask another object to perform an operation that manipulates its own lock.
+So one approach is to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for its own object. However, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Notifier</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you&#8217;ll see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+call inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">synchronized</font>(wn2) {
+  wn2.notify();
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">where
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wn2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the object of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WaitNotify2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This method, which is not part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WaitNotify2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+acquires the lock on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wn2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, at which point it&#8217;s legal for it to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wn2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and you won&#8217;t get the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IllegalMonitorStateException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">///:Continuing</font>
+<font color="#009900">/////////// Blocking via wait() ///////////</font>
+<font color="#0000ff">class</font> WaitNotify1 <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">public</font> WaitNotify1(Container c) { <font color="#0000ff">super</font>(c); }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      i++;
+      update();
+       <font color="#0000ff">try</font> {
+        wait(1000);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+
+<font color="#0000ff">class</font> WaitNotify2 <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">public</font> WaitNotify2(Container c) {
+    <font color="#0000ff">super</font>(c);
+    <font color="#0000ff">new</font> Notifier(<font color="#0000ff">this</font>); 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      i++;
+      update();
+       <font color="#0000ff">try</font> {
+        wait();
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+
+<font color="#0000ff">class</font> Notifier <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> WaitNotify2 wn2;
+  <font color="#0000ff">public</font> Notifier(WaitNotify2 wn2) {
+    <font color="#0000ff">this</font>.wn2 = wn2;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+       <font color="#0000ff">try</font> {
+        sleep(2000);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+      <font color="#0000ff">synchronized</font>(wn2) {
+        wn2.notify();
+      }
+    }
+  }
+} <font color="#009900">///:Continued </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is typically used when you&#8217;ve gotten to the point where you&#8217;re
+waiting for some other condition, under the control of forces outside your
+thread, to change and you don&#8217;t want to idly wait by inside the thread. So 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to put the thread to sleep while waiting for the world to change,
+and only when a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyAll(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">occurs
+does the thread wake up and check for changes. Thus, it provides a way to
+synchronize between threads.
+</FONT><a name="_Ref368085592"></a><P></DIV>
+<A NAME="Heading500"></A><H4 ALIGN=LEFT>
+Blocking
+on IO
+<a name="PipedIO"></a><P><A NAME="Index2561"></A><A NAME="Index2562"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+a stream is waiting for some IO activity, it will automatically block. In the
+following portion of the example, the two classes work with generic <A NAME="Index2563"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2564"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects (using the Java 1.1<A NAME="Index2565"></A>
+Streams), but in the test framework a <A NAME="Index2566"></A><A NAME="Index2567"></A>piped
+stream will be set up to allow the two threads to safely pass data to each
+other (which is the purpose of piped streams).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+puts data into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and sleeps for a random amount of time. However, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Receiver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But when it does a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it automatically blocks when there is no more data.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">///:Continuing</font>
+<font color="#0000ff">class</font> Sender <font color="#0000ff">extends</font> Blockable { <font color="#009900">// send</font>
+  <font color="#0000ff">private</font> Writer out;
+  <font color="#0000ff">public</font> Sender(Container c, Writer out) { 
+    <font color="#0000ff">super</font>(c);
+    <font color="#0000ff">this</font>.out = out; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">char</font> c = 'A'; c &lt;= 'z'; c++) {
+         <font color="#0000ff">try</font> {
+          i++;
+          out.write(c);
+          state.setText("Sender sent: " 
+            + (<font color="#0000ff">char</font>)c);
+          sleep((<font color="#0000ff">int</font>)(3000 * Math.random()));
+        } <font color="#0000ff">catch</font> (InterruptedException e){}
+          <font color="#0000ff">catch</font> (IOException e) {}
+      }
+    }
+  }
+}
+
+<font color="#0000ff">class</font> Receiver <font color="#0000ff">extends</font> Blockable {
+  <font color="#0000ff">private</font> Reader in;
+  <font color="#0000ff">public</font> Receiver(Container c, Reader in) { 
+    <font color="#0000ff">super</font>(c);
+    <font color="#0000ff">this</font>.in = in; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        i++; <font color="#009900">// Show peeker it's alive</font>
+        <font color="#009900">// Blocks until characters are there:</font>
+        state.setText("Receiver read: "
+          + (<font color="#0000ff">char</font>)in.read());
+      }
+    } <font color="#0000ff">catch</font>(IOException e) { e.printStackTrace();}
+  }
+} <font color="#009900">///:Continued </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+classes also put information into their 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>state</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fields and change 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">so
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can see that the thread is running.
+</FONT><P></DIV>
+<A NAME="Heading501"></A><H4 ALIGN=LEFT>
+Testing</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+main applet class is surprisingly simple because most of the work has been put
+into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+framework. Basically, an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects is created, and since each one is a thread, they perform their own
+activities when you press the &#8220;start&#8221; button. There&#8217;s also a
+button and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause to stop all of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, which provides a demonstration of the alternative to the deprecated
+(in Java 1.2<A NAME="Index2568"></A>)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+set up a connection between the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Receiver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are created. Note that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>in
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">must
+be connected to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PipedWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">via
+a constructor argument. After that, anything that&#8217;s placed in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can later be extracted from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as if it passed through a pipe (hence the name). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are then passed to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Receiver</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructors, respectively, which treat them as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+of any type (that is, they are upcast).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>b</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is not initialized at its point of definition because the piped streams cannot
+be set up before that definition takes place (the need for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block prevents this). 
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">///:Continuing</font>
+<font color="#009900">/////////// Testing Everything ///////////</font>
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Blocking <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> Button 
+    start = <font color="#0000ff">new</font> Button("Start"),
+    stopPeekers = <font color="#0000ff">new</font> Button("Stop Peekers");
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> started = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> Blockable[] b;
+  <font color="#0000ff">private</font> PipedWriter out;
+  <font color="#0000ff">private</font> PipedReader in;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+     out = <font color="#0000ff">new</font> PipedWriter();
+    <font color="#0000ff">try</font> {
+      in = <font color="#0000ff">new</font> PipedReader(out);
+    } <font color="#0000ff">catch</font>(IOException e) {}
+    b = <font color="#0000ff">new</font> Blockable[] {
+      <font color="#0000ff">new</font> Sleeper1(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> Sleeper2(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> SuspendResume1(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> SuspendResume2(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> WaitNotify1(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> WaitNotify2(<font color="#0000ff">this</font>),
+      <font color="#0000ff">new</font> Sender(<font color="#0000ff">this</font>, out),
+      <font color="#0000ff">new</font> Receiver(<font color="#0000ff">this</font>, in)
+    };
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+    stopPeekers.addActionListener(
+      <font color="#0000ff">new</font> StopPeekersL());
+    add(stopPeekers);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(!started) {
+        started = <font color="#0000ff">true</font>;
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; b.length; i++)
+          b[i].start();
+      }
+    }
+  }
+  <font color="#0000ff">class</font> StopPeekersL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#009900">// Demonstration of the preferred </font>
+      <font color="#009900">// alternative to Thread.stop():</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; b.length; i++)
+        b[i].stopPeeker();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Blocking applet = <font color="#0000ff">new</font> Blocking();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Blocking");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(350,550);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+notice the loop that moves through the entire array and adds the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>state</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>peeker.status</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+text fields to the page.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">threads
+are initially created, each one automatically creates and starts its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So you&#8217;ll see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+running before the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+threads are started. This is essential, as some of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Peeker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+will get blocked and stop when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blockable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+threads start, and it&#8217;s essential to see this to understand that
+particular aspect of blocking.
+</FONT><a name="_Toc375545483"></a><a name="_Toc408018757"></a><P></DIV>
+<A NAME="Heading502"></A><H3 ALIGN=LEFT>
+Deadlock<P><A NAME="Index2569"></A><A NAME="Index2570"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+threads can become blocked 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+because objects can have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods that prevent threads from accessing that object until the
+synchronization lock is released, it&#8217;s possible for one thread to get
+stuck waiting for another thread, which in turn waits for another thread, etc.,
+until the chain leads back to a thread waiting on the first one. Thus,
+there&#8217;s a continuous loop of threads waiting on each other and no one can
+move. This is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>deadlock</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The claim is that it doesn&#8217;t happen that often, but when it happens to
+you it&#8217;s frustrating to debug. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is no language support to help prevent deadlock; it&#8217;s up to you to avoid
+it by careful design. These are not comforting words to the person who&#8217;s
+trying to debug a deadlocking program.
+</FONT><P></DIV>
+<A NAME="Heading503"></A><H4 ALIGN=LEFT>
+The
+deprecation of stop(&#160;), suspend(&#160;), 
+<P>resume(&#160;),
+and destroy(&#160;) in Java 1.2
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+change that has been made in Java 1.2<A NAME="Index2571"></A>
+to reduce the possibility of deadlock is the deprecation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+<A NAME="Index2572"></A><A NAME="Index2573"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2574"></A><A NAME="Index2575"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2576"></A><A NAME="Index2577"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2578"></A><A NAME="Index2579"></A>method
+is deprecated is because it is unsafe. It releases all the locks that the
+thread had acquired, and if the objects are in an inconsistent state
+(&#8220;damaged&#8221;) other threads can view and modify them in that state.
+The resulting problems can be subtle and difficult to detect. Instead of using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you should follow the example in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blocking.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and use a flag to tell the thread when to terminate itself by exiting its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are times when a thread blocks, such as when it is waiting for input, and it
+cannot poll a flag as it does in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blocking.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In these cases, you still shouldn&#8217;t use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but instead you can use the <A NAME="Index2580"></A><A NAME="Index2581"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interrupt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in <A NAME="Index2582"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to break out of the blocked code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Interrupt.java</font>
+<font color="#009900">// The alternative approach to using stop()</font>
+<font color="#009900">// when a thread is blocked</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> Blocked <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      wait(); <font color="#009900">// Blocks</font>
+    } <font color="#0000ff">catch</font>(InterruptedException e) {
+      System.out.println("InterruptedException");
+    }
+    System.out.println("Exiting run()");
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Interrupt <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> Button 
+    interrupt = <font color="#0000ff">new</font> Button("Interrupt");
+  <font color="#0000ff">private</font> Blocked blocked = <font color="#0000ff">new</font> Blocked();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(interrupt);
+    interrupt.addActionListener(
+      <font color="#0000ff">new</font> ActionListener() {
+        <font color="#0000ff">public</font> 
+        <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+          System.out.println("Button pressed");
+          <font color="#0000ff">if</font>(blocked == <font color="#0000ff">null</font>) <font color="#0000ff">return</font>;
+          Thread remove = blocked;
+          blocked = <font color="#0000ff">null</font>; <font color="#009900">// to release it</font>
+          remove.interrupt();
+        }
+      });
+    blocked.start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Interrupt applet = <font color="#0000ff">new</font> Interrupt();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Interrupt");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(200,100);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Blocked.run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces the blocked thread. When you press the button, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>blocked</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so the garbage collector will clean it up, and then the object&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interrupt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called. The first time you press the button you&#8217;ll see that the
+thread quits, but after that there&#8217;s no thread to kill so you just see
+that the button has been pressed.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2583"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods turn out to be inherently deadlock-prone. When you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the target thread stops but it still holds any locks that it has acquired up to
+that point. So no other thread can access the locked resources until the thread
+is resumed. Any thread that wants to resume the target thread and also tries to
+use any of the locked resources produces deadlock. You should not use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but instead put a flag in your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class to indicate whether the thread should be active or suspended. If the flag
+indicates that the thread is suspended,<A NAME="Index2584"></A><A NAME="Index2585"></A><A NAME="Index2586"></A><A NAME="Index2587"></A>
+the thread goes into a wait using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When the flag indicates that the thread should be resumed the thread is
+restarted with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+An example can be produced by modifying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although the effect is similar, you&#8217;ll notice that the code organization
+is quite different &#8211; <A NAME="Index2588"></A><A NAME="Index2589"></A><A NAME="Index2590"></A>anonymous
+inner classes are used for all of the listeners and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an inner class, which makes programming slightly more convenient since it
+eliminates some of the extra bookkeeping necessary in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Suspend.java</font>
+<font color="#009900">// The alternative approach to using suspend()</font>
+<font color="#009900">// and resume(), which have been deprecated</font>
+<font color="#009900">// in Java 1.2.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Suspend <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">private</font> Button 
+    suspend = <font color="#0000ff">new</font> Button("Suspend"),
+    resume = <font color="#0000ff">new</font> Button("Resume");
+  <font color="#0000ff">class</font> Suspendable <font color="#0000ff">extends</font> Thread {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+    <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> suspended = <font color="#0000ff">false</font>;
+    <font color="#0000ff">public</font> Suspendable() { start(); }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> fauxSuspend() { 
+      suspended = <font color="#0000ff">true</font>;
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> fauxResume() {
+      suspended = <font color="#0000ff">false</font>;
+      notify();
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+      <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+        <font color="#0000ff">try</font> {
+          sleep(100);
+          <font color="#0000ff">synchronized</font>(<font color="#0000ff">this</font>) {
+            <font color="#0000ff">while</font>(suspended)
+              wait();
+          }
+        } <font color="#0000ff">catch</font> (InterruptedException e){}
+        t.setText(Integer.toString(count++));
+      }
+    }
+  } 
+  <font color="#0000ff">private</font> Suspendable ss = <font color="#0000ff">new</font> Suspendable();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    suspend.addActionListener(
+      <font color="#0000ff">new</font> ActionListener() {
+        <font color="#0000ff">public</font> 
+        <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+          ss.fauxSuspend();
+        }
+      });
+    add(suspend);
+    resume.addActionListener(
+      <font color="#0000ff">new</font> ActionListener() {
+        <font color="#0000ff">public</font> 
+        <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+          ss.fauxResume();
+        }
+      });
+    add(resume);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Suspend applet = <font color="#0000ff">new</font> Suspend();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Suspend");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,100);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+flag 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspended</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Suspendable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to turn suspension on and off. To suspend, the flag is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fauxSuspend(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+this is detected inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as described earlier in this chapter, must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it has the object lock. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fauxResume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspended</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flag is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called &#8211; since this wakes up 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fauxResume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must also be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it acquires the lock before calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(thus the lock is available for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to wake up with). If you follow the style shown in this program you can avoid
+using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notify(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2591"></A><A NAME="Index2592"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+never been implemented; it&#8217;s like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that cannot resume, so it has the same deadlock issues as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, this is not a deprecated method and it might be implemented in a
+future version of Java (after 1.2) for special situations in which the risk of
+a deadlock is acceptable.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might wonder why these methods, now deprecated, were included in Java in the
+first place. It seems a clear admission of a rather significant mistake to
+simply remove them outright (and pokes yet another hole in the arguments for
+Java&#8217;s exceptional design and infallibility touted by Sun marketing
+people). The heartening part about the change is that it clearly indicates that
+the technical people and not the marketing people are running the show &#8211;
+they discovered a problem and they are fixing it. I find this much more
+promising and hopeful than leaving the problem in because fixing it would admit
+an error. It means that Java will continue to improve, even if it means a
+little discomfort on the part of Java programmers. I&#8217;d rather deal with
+the discomfort than watch the language stagnate.
+</FONT><a name="_Toc375545484"></a><a name="_Toc408018758"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0156.html">Prev</a> | <a href="tij0158.html">Next</a>
+</div>
+</body></html>
+

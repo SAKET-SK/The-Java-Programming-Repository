@@ -1,0 +1,777 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0166.html">Prev</a> | <a href="tij0168.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+A
+Web application
+<P><A NAME="Index2691"></A><A NAME="Index2692"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+let&#8217;s consider creating an application to run on the Web, which will show
+Java in all its glory. Part of this application will be a Java program running
+on the Web server, and the other part will be an <A NAME="Index2693"></A><A NAME="Index2694"></A>applet
+that&#8217;s downloaded to the browser. The applet collects information from
+the user and sends it back to the application running on the Web server. The
+task of the program will be simple: the applet will ask for the email address
+of the user, and after verifying that this address is reasonably legitimate (it
+doesn&#8217;t contain spaces, and it does contain an &#8216;@&#8217; symbol)
+the applet will send the email address to the Web server. The application
+running on the server will capture the data and check a data file in which all
+of the email addresses are kept. If that address is already in the file, it
+will send back a message to that effect, which is displayed by the applet. If
+the address isn&#8217;t in the file, it is placed in the list and the applet is
+informed that the address was added successfully.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Traditionally,
+the way to handle such a problem is to create an <A NAME="Index2695"></A><A NAME="Index2696"></A>HTML
+page with a text field and a &#8220;submit&#8221; button. The user can type
+whatever he or she wants into the text field, and it will be submitted to the
+server without question. As it submits the data, the Web page also tells the
+server what to do with the data by mentioning the <A NAME="Index2697"></A><A NAME="Index2698"></A><A NAME="Index2699"></A>Common
+Gateway Interface (CGI) program that the server should run after receiving this
+data. This CGI program is typically written in either Perl or C (and sometimes
+C++, if the server supports it), and it must handle everything. First it looks
+at the data and decides whether it&#8217;s in the correct format. If not, the
+CGI program must create an HTML page to describe the problem; this page is
+handed to the server, which sends it back to the user. The user must then back
+up a page and try again. If the data is correct, the CGI program opens the data
+file and either adds the email address to the file or discovers that the
+address is already in the file. In both cases it must format an appropriate
+HTML page for the server to return to the user.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+Java programmers, this seems like an awkward way for us to solve the problem,
+and naturally, we&#8217;d like to do the whole thing in Java. First,
+we&#8217;ll use a Java applet to take care of data validation at the client
+site, without all that tedious Web traffic and page formatting. Then
+let&#8217;s skip the Perl CGI script in favor of a Java application running on
+the server. In fact, let&#8217;s skip the Web server altogether and simply make
+our own network connection from the applet to the Java application on the server!
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+you&#8217;ll see, there are a number of issues that make this a more
+complicated problem than it seems. It would be ideal to write the applet using
+Java 1.1<A NAME="Index2700"></A>
+but that&#8217;s hardly practical. At this writing, the number of users running
+Java 1.1-enabled browsers is small, and although such browsers are now commonly
+available, you&#8217;ll probably need to take into account that a significant
+number of users will be slow to upgrade. So to be on the safe side, the applet
+will be programmed using only Java 1.0<A NAME="Index2701"></A>
+code. With this in mind, there will be no JAR files to combine 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files in the applet, so the applet should be designed to create as few 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files as possible to minimize download time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Well,
+it turns out the Web server (the one available to me when I wrote the example) 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have Java in it, but only Java 1.0<A NAME="Index2702"></A>!
+So the server application must also be written using Java 1.0.
+</FONT><a name="_Toc408018773"></a><P></DIV>
+<A NAME="Heading521"></A><H3 ALIGN=LEFT>
+The
+server application
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+consider the server application, which will be called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameCollector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+What happens if more than one user at a time tries to submit their email
+addresses? If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameCollector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses TCP/IP sockets, then it must use the multithreading approach shown earlier
+to handle more than one client at a time. But all of these threads will try to
+write to a single file where all the email addresses will be kept. This would
+require a locking mechanism to make sure that more than one thread
+doesn&#8217;t access the file at once. A semaphore will do the trick, but
+perhaps there&#8217;s a simpler way. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+we use datagrams instead, multithreading is unnecessary. A single <A NAME="Index2703"></A><A NAME="Index2704"></A>datagram
+socket will listen for incoming datagrams, and when one appears the program
+will process the message and send the reply as a datagram back to whomever sent
+the request. If the datagram gets lost, then the user will notice that no reply
+comes and can then re-submit the request.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the server application receives a datagram and unpacks it, it must extract the
+email address and check the file to see if that address is there already (and
+if it isn&#8217;t, add it). And now we run into another problem. It turns out
+that Java 1.0 doesn&#8217;t quite have the horsepower to easily manipulate the
+file containing the email addresses (Java 1.1<A NAME="Index2705"></A>
+does). However, the problem can be solved in C quite readily, and this will
+provide an excuse to show you the easiest way to <A NAME="Index2706"></A><A NAME="Index2707"></A><A NAME="Index2708"></A><A NAME="Index2709"></A>connect
+a non-Java program to a Java program. A <A NAME="Index2710"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runtime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for a program has a method called <A NAME="Index2711"></A><A NAME="Index2712"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>exec(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that will start up a separate program on the machine and return a <A NAME="Index2713"></A><A NAME="Index2714"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Process</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. You can get an <A NAME="Index2715"></A><A NAME="Index2716"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that connects to standard input for this separate program and an <A NAME="Index2717"></A><A NAME="Index2718"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that connects to standard output. All you need to do is write a program using
+any language that takes its input from standard input and writes the output to
+standard output. This is a convenient trick when you run into a problem that
+can&#8217;t be solved easily or quickly enough in Java (or when you have legacy
+code you don&#8217;t want to rewrite). You can also use Java&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>native
+methods
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(see Appendix A) but those are much more involved.
+</FONT><P></DIV>
+<A NAME="Heading522"></A><H4 ALIGN=LEFT>
+The
+C program
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+job of this non-Java application (written in C because Java wasn&#8217;t
+appropriate for CGI programming; if nothing else, the startup time is
+prohibitive) is to manage the list of email addresses. Standard input will
+accept an email address and the program will look up the name in the list to
+see if it&#8217;s already there. If not, it will add it and report success, but
+if the name is already there then it will report that. Don&#8217;t worry if you
+don&#8217;t completely understand what the following code means; it&#8217;s
+just one example of how you can write a program in another language and use it
+from Java. The particular programming language doesn&#8217;t really matter as
+long as it can read from standard input and write to standard output.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Listmgr.c</font>
+<font color="#009900">// Used by NameCollector.java to manage </font>
+<font color="#009900">// the email list file on the server</font>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#define BSIZE 250
+
+<font color="#0000ff">int</font> alreadyInList(FILE* list, <font color="#0000ff">char</font>* name) {
+  <font color="#0000ff">char</font> lbuf[BSIZE];
+  <font color="#009900">// Go to the beginning of the list:</font>
+  fseek(list, 0, SEEK_SET);
+  <font color="#009900">// Read each line in the list:</font>
+  <font color="#0000ff">while</font>(fgets(lbuf, BSIZE, list)) {
+    <font color="#009900">// Strip off the newline:</font>
+    <font color="#0000ff">char</font> * newline = strchr(lbuf, '\n');
+    <font color="#0000ff">if</font>(newline != 0) 
+      *newline = '\0';
+    <font color="#0000ff">if</font>(strcmp(lbuf, name) == 0)
+      <font color="#0000ff">return</font> 1;
+  }
+  <font color="#0000ff">return</font> 0;
+}
+
+<font color="#0000ff">int</font> main() {
+  <font color="#0000ff">char</font> buf[BSIZE];
+  FILE* list = fopen("emlist.txt", "a+t");
+  <font color="#0000ff">if</font>(list == 0) {
+    perror("could not open emlist.txt");
+    exit(1);
+  }
+  <font color="#0000ff">while</font>(1) {
+    gets(buf); <font color="#009900">/* From stdin */</font>
+    <font color="#0000ff">if</font>(alreadyInList(list, buf)) {
+      printf("Already in list: %s", buf);
+      fflush(stdout);
+    }
+    <font color="#0000ff">else</font> {
+      fseek(list, 0, SEEK_END);
+      fprintf(list, "%s\n", buf);
+      fflush(list);
+      printf("%s added to list", buf);
+      fflush(stdout);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+assumes that the C compiler accepts 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;//&#8217;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+style comments. (Many do, and you can also compile this program with a C++
+compiler.) If yours doesn&#8217;t, simply delete those comments.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first function in the file checks to see whether the name you hand it as a
+second argument (a pointer to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+in the file. Here, the file is passed as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FILE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointer to an already-opened file (the file is opened inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+The function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fseek(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+moves around in the file; here it is used to move to the top of the file. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fgets(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reads a line from the file 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into the buffer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lbuf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not exceeding the buffer size 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BSIZE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">loop
+so that each line in the file is read. Next, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>strchr(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to locate the newline character so that it can be stripped off. Finally, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>strcmp(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+used to compare the name you&#8217;ve passed into the function to the current
+line int the file. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>strcmp(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns zero if it finds a match. In this case the function exits and a one is
+returned to indicate that yes, the name was already in the list. (Note that the
+function returns as soon as it discovers the match, so it doesn&#8217;t waste
+time looking at the rest of the list.) If you get all the way through the list
+without a match, the function returns zero.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the file is opened using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fopen(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The first argument is the file name and the second is the way to open the file; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>a+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+means &#8220;Append, and open (or create if the file does not exist) for update
+at the end of the file.&#8221; The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fopen(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FILE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+pointer which, if it&#8217;s zero, means that the open was unsuccessful. This
+is dealt with by printing an error message with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>perror(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and terminating the program with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>exit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Assuming
+that the file was opened successfully, the program enters an infinite loop. The
+function call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gets(buf)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+gets a line from standard input (which will be connected to the Java program,
+remember) and places it in the buffer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is simply passed to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>alreadyInList(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function, and if it&#8217;s already in the list, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+sends that message to standard output (where the Java program is listening). 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fflush(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a way to flush the output buffer.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the name is not already in the list, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fseek(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to move to the end of the list and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>fprintf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;prints&#8221; the name to the end of the list. Then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to indicate that the name was added to the list (again flushing
+standard output) and the infinite loop goes back to waiting for a new name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Remember
+that you usually cannot compile this program on your computer and load it onto
+the Web server machine, since that machine might use a different processor and
+operating system. For example, my Web server runs on an Intel processor but it
+uses Linux, so I must download the source code and compile using remote
+commands (via telnet) with the C compiler that comes with the Linux distribution.
+</FONT><P></DIV>
+<A NAME="Heading523"></A><H4 ALIGN=LEFT>
+The
+Java program
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program will first start the C program above and make the necessary connections
+to talk to it. Then it will create a datagram socket that will be used to
+listen for datagram packets from the applet.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: NameCollector.java</font>
+<font color="#009900">// Extracts email names from datagrams and stores</font>
+<font color="#009900">// them inside a file, using Java 1.02.</font>
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> NameCollector {
+  <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> COLLECTOR_PORT = 8080;
+  <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> BUFFER_SIZE = 1000;
+  <font color="#0000ff">byte</font>[] buf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[BUFFER_SIZE];
+  DatagramPacket dp = 
+    <font color="#0000ff">new</font> DatagramPacket(buf, buf.length);
+  <font color="#009900">// Can listen &amp; send on the same socket:</font>
+  DatagramSocket socket;
+  Process listmgr;
+  PrintStream nameList;
+  DataInputStream addResult;
+  <font color="#0000ff">public</font> NameCollector() {
+    <font color="#0000ff">try</font> {
+      listmgr =
+        Runtime.getRuntime().exec("listmgr.exe");
+      nameList = <font color="#0000ff">new</font> PrintStream(
+        <font color="#0000ff">new</font> BufferedOutputStream(
+          listmgr.getOutputStream()));
+      addResult = <font color="#0000ff">new</font> DataInputStream(
+        <font color="#0000ff">new</font> BufferedInputStream(
+          listmgr.getInputStream()));
+
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.err.println(
+        "Cannot start listmgr.exe");
+      System.exit(1);
+    }
+    <font color="#0000ff">try</font> {
+      socket =
+        <font color="#0000ff">new</font> DatagramSocket(COLLECTOR_PORT);
+      System.out.println(
+        "NameCollector Server started");
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        <font color="#009900">// Block until a datagram appears:</font>
+        socket.receive(dp);
+        String rcvd = <font color="#0000ff">new</font> String(dp.getData(),
+            0, 0, dp.getLength());
+        <font color="#009900">// Send to listmgr.exe standard input:</font>
+        nameList.println(rcvd.trim());
+        nameList.flush();
+        <font color="#0000ff">byte</font>[] resultBuf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[BUFFER_SIZE];
+        <font color="#0000ff">int</font> byteCount = 
+          addResult.read(resultBuf);
+        <font color="#0000ff">if</font>(byteCount != -1) {
+          String result = 
+            <font color="#0000ff">new</font> String(resultBuf, 0).trim();
+          <font color="#009900">// Extract the address and port from </font>
+          <font color="#009900">// the received datagram to find out </font>
+          <font color="#009900">// where to send the reply:</font>
+          InetAddress senderAddress =
+            dp.getAddress();
+          <font color="#0000ff">int</font> senderPort = dp.getPort();
+          <font color="#0000ff">byte</font>[] echoBuf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[BUFFER_SIZE];
+          result.getBytes(
+            0, byteCount, echoBuf, 0);
+          DatagramPacket echo =
+            <font color="#0000ff">new</font> DatagramPacket(
+              echoBuf, echoBuf.length,
+              senderAddress, senderPort);
+          socket.send(echo);
+        }
+        <font color="#0000ff">else</font>
+          System.out.println(
+            "Unexpected lack of result from " +
+            "listmgr.exe");
+      }
+    } <font color="#0000ff">catch</font>(SocketException e) {
+      System.err.println("Can't open socket");
+      System.exit(1);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.err.println("Communication error");
+      e.printStackTrace();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">new</font> NameCollector();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first definitions in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameCollector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should look familiar: the port is chosen, a datagram packet is created, and
+there&#8217;s a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The next three definitions concern the connection to the C program: a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Process</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is what comes back when the C program is fired up by the Java program,
+and that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Process</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object produces the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects representing, respectively, the standard output and standard input of
+the C program. These must of course be &#8220;wrapped&#8221; as is usual with
+Java IO, so we end up with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+the work for this program happens inside the constructor. To start up the C
+program, the current 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runtime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is procured. This is used to call <A NAME="Index2719"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>exec(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Process</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. You can see that there are simple calls to produce the streams from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Process</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getOutputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getInputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+From this point on, all you need to consider is sending data to the stream 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nameList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and getting the results from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addResult</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+before, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is connected to a port. Inside the infinite 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop, the program calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which blocks until a datagram shows up. When the datagram appears, its contents
+are extracted into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+rcvd
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is trimmed to remove white space at each end and sent to the C program in
+the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">nameList.println(rcvd.trim());</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is only possible because Java&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>exec(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides access to any executable that reads from standard input and writes to
+standard output. There are other ways to talk to non-Java code, which are
+discussed in Appendix A.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Capturing
+the result from the C program is slightly more complicated. You must call <A NAME="Index2720"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and provide a buffer where the results will be placed. The return value for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the number of bytes that came from the C program, and if this value is -1 it
+means that something is wrong. Otherwise, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resultBuf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is turned into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the spaces are trimmed off. This string is then placed into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as before and shipped back to the same address that sent the request in the
+first place. Note that the sender&#8217;s address is part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+we received.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Remember
+that although the C program must be compiled on the Web server, the Java
+program can be compiled anywhere since the resulting byte codes will be the
+same regardless of the platform on which the program will be running.
+</FONT><a name="_Toc408018774"></a><P></DIV>
+<A NAME="Heading524"></A><H3 ALIGN=LEFT>
+The
+NameSender applet
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+mentioned earlier, the applet must be written with Java 1.0<A NAME="Index2721"></A>
+so that it will run on the largest number of browsers, so it&#8217;s best if
+the number of classes produced is minimized. Thus, instead of using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dgram</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class developed earlier, all of the <A NAME="Index2722"></A><A NAME="Index2723"></A>datagram
+manipulations will be placed in line. In addition, the applet needs a thread to
+listen for the reply from the server, and instead of making this a separate
+thread it&#8217;s integrated into the applet by implementing the <A NAME="Index2724"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. This isn&#8217;t as easy to read, but it produces a one-class (and
+one-server-hit) applet:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: NameSender.java</font>
+<font color="#009900">// An applet that sends an email address</font>
+<font color="#009900">// as a datagram, using Java 1.02.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> NameSender <font color="#0000ff">extends</font> Applet 
+    <font color="#0000ff">implements</font> Runnable {
+  <font color="#0000ff">private</font> Thread pl = <font color="#0000ff">null</font>;
+  <font color="#0000ff">private</font> Button send = <font color="#0000ff">new</font> Button(
+    "Add email address to mailing list");
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(
+    "type your email address here", 40);
+  <font color="#0000ff">private</font> String str = <font color="#0000ff">new</font> String();
+  <font color="#0000ff">private</font> Label 
+    l = <font color="#0000ff">new</font> Label(), l2 = <font color="#0000ff">new</font> Label();
+  <font color="#0000ff">private</font> DatagramSocket s; 
+  <font color="#0000ff">private</font> InetAddress hostAddress;
+  <font color="#0000ff">private</font> <font color="#0000ff">byte</font>[] buf = 
+    <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[NameCollector.BUFFER_SIZE];
+  <font color="#0000ff">private</font> DatagramPacket dp =
+    <font color="#0000ff">new</font> DatagramPacket(buf, buf.length);
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> vcount = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(2, 1));
+    p.add(t);
+    p.add(send);
+    add("North", p);
+    Panel labels = <font color="#0000ff">new</font> Panel();
+    labels.setLayout(<font color="#0000ff">new</font> GridLayout(2, 1));
+    labels.add(l);
+    labels.add(l2);
+    add("Center", labels);
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Auto-assign port number:</font>
+      s = <font color="#0000ff">new</font> DatagramSocket();
+      hostAddress = InetAddress.getByName(
+        getCodeBase().getHost());
+    } <font color="#0000ff">catch</font>(UnknownHostException e) {
+      l.setText("Cannot find host");
+    } <font color="#0000ff">catch</font>(SocketException e) {
+      l.setText("Can't open socket");
+    } 
+    l.setText("Ready to send your email address");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(send)) {
+      <font color="#0000ff">if</font>(pl != <font color="#0000ff">null</font>) {
+        <font color="#009900">// pl.stop(); Deprecated in Java 1.2</font>
+        Thread remove = pl;
+        pl = <font color="#0000ff">null</font>;
+        remove.interrupt();
+      }
+      l2.setText("");
+      <font color="#009900">// Check for errors in email name:</font>
+      str = t.getText().toLowerCase().trim();
+      <font color="#0000ff">if</font>(str.indexOf(' ') != -1) {
+        l.setText("Spaces not allowed in name");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf(',') != -1) {
+        l.setText("Commas not allowed in name");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf('@') == -1) {
+        l.setText("Name must include '@'");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf('@') == 0) {
+        l.setText("Name must preceed '@'");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      String end = 
+        str.substring(str.indexOf('@'));
+      <font color="#0000ff">if</font>(end.indexOf('.') == -1) {
+        l.setText("Portion after '@' must " +
+          "have an extension, such as '.com'");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#009900">// Everything's OK, so send the name. Get a</font>
+      <font color="#009900">// fresh buffer, so it's zeroed. For some </font>
+      <font color="#009900">// reason you must use a fixed size rather</font>
+      <font color="#009900">// than calculating the size dynamically:</font>
+      <font color="#0000ff">byte</font>[] sbuf = 
+        <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[NameCollector.BUFFER_SIZE];
+      str.getBytes(0, str.length(), sbuf, 0);
+      DatagramPacket toSend =
+        <font color="#0000ff">new</font> DatagramPacket(
+          sbuf, 100, hostAddress,
+          NameCollector.COLLECTOR_PORT);
+      <font color="#0000ff">try</font> {
+        s.send(toSend);
+      } <font color="#0000ff">catch</font>(Exception e) {
+        l.setText("Couldn't send datagram");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      l.setText("Sent: " + str);
+      send.setLabel("Re-send");
+      pl = <font color="#0000ff">new</font> Thread(<font color="#0000ff">this</font>);
+      pl.start();
+      l2.setText(
+        "Waiting <font color="#0000ff">for</font> verification " + ++vcount);
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#009900">// The thread portion of the applet watches for</font>
+  <font color="#009900">// the reply to come back from the server:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      s.receive(dp);
+    } <font color="#0000ff">catch</font>(Exception e) {
+      l2.setText("Couldn't receive datagram");
+      <font color="#0000ff">return</font>;
+    }
+    l2.setText(<font color="#0000ff">new</font> String(dp.getData(),
+      0, 0, dp.getLength()));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+UI for the applet is quite simple. There&#8217;s a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in which you type your email address, and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to send the email address to the server. Two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are used to report status back to the user.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+now you can recognize the <A NAME="Index2725"></A><A NAME="Index2726"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2727"></A><A NAME="Index2728"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+buffer, and <A NAME="Index2729"></A><A NAME="Index2730"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as trappings of the network connection. Lastly, you can see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that implements the thread portion so the applet can listen for the
+reply sent back by the server.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method sets up the GUI with the familiar layout tools, then creates the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that will be used both for sending and receiving datagrams.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2731"></A><A NAME="Index2732"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method (remember, we&#8217;re confined to Java 1.0<A NAME="Index2733"></A>
+now, so we can&#8217;t use any slick inner listener classes) watches only to
+see if you press the &#8220;send&#8221; button. When the button is pressed, the
+first action is to check the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread
+pl
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to see if it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If it&#8217;s not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there&#8217;s a live thread running. The first time the message is sent a
+thread is started up to watch for the reply. Thus, if a thread is running, it
+means this is not the first time the user has tried to send the message. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pl
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">handle
+is set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the old listener is interrupted. (This is the preferred approach, since <A NAME="Index2734"></A><A NAME="Index2735"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is deprecated in Java 1.2<A NAME="Index2736"></A>
+as explained in the previous chapter.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Regardless
+of whether this is the first time the button was pressed, the text in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>l2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is erased.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next group of statements checks the email name for errors. The <A NAME="Index2737"></A><A NAME="Index2738"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is used to search for illegal characters, and if one is found it is
+reported to the user. Note that all of this happens without any network
+activity, so it&#8217;s fast and it doesn&#8217;t bog down the Internet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the name is verified, it is packaged into a datagram and sent to the host
+address and port number in the same way that was described in the earlier
+datagram example. The first label is changed to show you that the send has
+occurred, and the button text is changed so that it reads
+&#8220;re-send.&#8221; At this point, the thread is started up and the second
+label informs you that the applet is waiting for a reply from the server. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for the thread uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that lives in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to <A NAME="Index2739"></A><A NAME="Index2740"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which blocks until the datagram packet comes from the server. The resulting
+packet is placed into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket
+dp
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The data is retrieved from the packet and placed into the second label in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+At this point, the thread terminates and becomes dead. If the reply
+doesn&#8217;t come back from the server in a reasonable amount of time, the
+user might become impatient and press the button again, thus terminating the
+current thread (and, after re-sending the data, starting a new one). Because a
+thread is used to listen for the reply, the user still has full use of the UI.
+</FONT><P></DIV>
+<A NAME="Heading525"></A><H4 ALIGN=LEFT>
+The
+Web page
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, the applet must go inside a Web page. Here is the complete Web page;
+you can see that it&#8217;s intended to be used to automatically collect names
+for my mailing list:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META CONTENT="text/html"&gt;
+&lt;TITLE&gt;
+Add Yourself to Bruce Eckel's Java Mailing List
+&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff"&gt;
+&lt;FONT SIZE=6&gt;&lt;P&gt;
+Add Yourself to Bruce Eckel's Java Mailing List
+&lt;/P&gt;&lt;/FONT&gt;
+The applet on <font color="#0000ff">this</font> page will automatically add your email address to the mailing list, so you will receive update information about changes to the online version of "Thinking in Java," notification when the book is in print, information about upcoming Java seminars, and notification about the &#8220;Hands-on Java Seminar&#8221; Multimedia CD. Type in your email address and press the button to automatically add yourself to <font color="#0000ff">this</font> mailing list. &lt;HR&gt;
+&lt;applet code=NameSender width=400 height=100&gt;
+&lt;/applet&gt;
+&lt;HR&gt;
+If after several tries, you <font color="#0000ff">do</font> not get verification it means that the Java application on the server is having problems. In <font color="#0000ff">this</font> <font color="#0000ff">case</font>, you can add yourself to the list by sending email to 
+&lt;A HREF="mailto:Bruce@EckelObjects.com"&gt;
+Bruce@EckelObjects.com&lt;/A&gt;
+&lt;/BODY&gt;</PRE></font><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=2 COLOR="Black">&lt;/HTML&gt;</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+applet tag is quite trivial, no different from the first one presented in
+Chapter 13.
+</FONT><a name="_Toc408018775"></a><P></DIV>
+<A NAME="Heading526"></A><H3 ALIGN=LEFT>
+Problems
+with this approach
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+certainly seems like an elegant approach. There&#8217;s no CGI programming and
+so there are no delays while the server starts up a CGI program. The datagram
+approach seems to produce a nice quick response. In addition, when Java 1.1<A NAME="Index2741"></A>
+is available everywhere, the server portion can be written entirely in Java.
+(Although it&#8217;s quite interesting to see how easy it is to connect to a
+non-Java program using standard input and output.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are problems, however. One problem is rather subtle: since the Java application
+is running constantly on the server and it spends most of its time blocked in
+the <A NAME="Index2742"></A><A NAME="Index2743"></A><A NAME="Index2744"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Datagram.receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, there 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>might</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be some CPU hogging going on. At least, that&#8217;s the way it appeared on the
+server where I was experimenting. On the other hand, there wasn&#8217;t much
+else happening on that server, and starting the program using
+&#8220;nice&#8221; (a Unix program to prevent a process from hogging the CPU)
+or its equivalent could solve the problem if you have a more heavily-loaded
+server. In any event, it&#8217;s worth keeping your eye on an application like
+this &#8211; a blocked 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could hog the CPU.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second problem is a show stopper. It concerns firewalls. A <A NAME="Index2745"></A><A NAME="Index2746"></A>firewall
+is a machine that sits between your network and the Internet. It monitors all
+traffic coming in from the Internet and going out to the Internet, and makes
+sure that traffic conforms to what it expects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Firewalls
+are conservative little beasts. They demand strict conformance to all the
+rules, and if you&#8217;re not conforming they assume that you&#8217;re doing
+something sinful and shut you out (not quite so bad as the Spanish Inquisition,
+but close). For example, if you are on a network behind a firewall and you
+start connecting to the Internet using a Web browser, the firewall expects that
+all your transactions will connect to the server using the accepted http port,
+which is 80. Now along comes this Java applet 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is trying to send a datagram to port 8080, which is way outside the range
+of the &#8220;protected&#8221; ports 0-1024. The firewall naturally assumes the
+worst &#8211; that someone has a virus &#8211; and it doesn&#8217;t allow the
+transaction to happen.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+long as your customers have raw connections to the Internet (for example, using
+a typical Internet service provider) there&#8217;s no problem, but you might
+have some important customers dwelling behind firewalls, and they won&#8217;t
+be able to use your program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is rather disheartening after learning so much Java, because it would seem that
+you must give up Java on the server and learn how to write CGI scripts in C or
+Perl. But as it turns out, despair is not in order.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+scenario is part of Sun&#8217;s grand scheme. If everything goes as planned,
+Web servers will be equipped with <A NAME="Index2747"></A><A NAME="Index2748"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>servlet
+servers
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These will take a request from the client (going through the firewall-accepted
+port 80) and instead of starting up a CGI program they will start up a Java
+program called a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>servlet</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is a little application that&#8217;s designed to run only on the server. A
+servlet server will automatically start up the servlet to handle the client
+request, which means you can write all your programs in Java (further enabling
+the &#8220;100 percent pure Java initiative&#8221;). It is admittedly an
+appealing idea: once you&#8217;re comfortable with Java, you don&#8217;t have
+to switch to a more primitive language to handle requests on the server.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+it&#8217;s only for handling requests on the server, the servlet API has no GUI
+abilities. This fits quite well with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameCollector.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which doesn&#8217;t have a GUI anyway.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this writing, a low-cost servlet server was available from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>java.sun.com</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In addition, Sun is encouraging other Web server manufacturers to add servlet
+capabilities to their servers.
+</FONT><a name="_Toc408018776"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0166.html">Prev</a> | <a href="tij0168.html">Next</a>
+</div>
+</body></html>
+

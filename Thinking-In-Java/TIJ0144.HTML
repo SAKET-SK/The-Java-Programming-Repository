@@ -1,0 +1,343 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0143.html">Prev</a> | <a href="tij0145.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Controlling
+layout
+<P><A NAME="Index1674"></A><A NAME="Index1675"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+way that you place components on a form in Java is probably different from any
+other GUI system you&#8217;ve used. First, it&#8217;s all code; there are no
+&#8220;resources&#8221; that control placement of components. Second, the way
+components are placed on a form is controlled by a &#8220;<A NAME="Index1676"></A>layout
+manager&#8221; that decides how the components lie based on the order that you <A NAME="Index1677"></A><A NAME="Index1678"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+them. The size, shape, and placement of components will be remarkably different
+from one layout manager to another. In addition, the layout managers adapt to
+the dimensions of your applet or application window, so if that window
+dimension is changed (for example, in the HTML page&#8217;s applet
+specification) the size, shape, and placement of the components could change.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+the <A NAME="Index1679"></A><A NAME="Index1680"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1681"></A><A NAME="Index1682"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">classes
+are derived from <A NAME="Index1683"></A><A NAME="Index1684"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whose job it is to contain and display 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a <A NAME="Index1685"></A><A NAME="Index1686"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so it can also react to events.) In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+there&#8217;s a method called <A NAME="Index1687"></A><A NAME="Index1688"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setLayout(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that allows you to choose a different layout manager.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this section we&#8217;ll explore the various layout managers by placing buttons
+in them (since that&#8217;s the simplest thing to do). There won&#8217;t be any
+capturing of button events since this is just intended to show how the buttons
+are laid out.
+</FONT><a name="_Toc375545458"></a><a name="_Toc408018694"></a><P></DIV>
+<A NAME="Heading410"></A><H3 ALIGN=LEFT>
+FlowLayout</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far, all the applets that have been created seem to have laid out their
+components using some mysterious internal logic. That&#8217;s because the
+applet uses a default layout scheme: the <A NAME="Index1689"></A><A NAME="Index1690"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This simply &#8220;flows&#8221; the components onto the form, from left to
+right until the top space is full, then moves down a row and continues flowing
+the components.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+an example that explicitly (redundantly) sets the layout manager in an applet to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then places buttons on the form. You&#8217;ll notice that with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the components take on their &#8220;natural&#8221; size. A <A NAME="Index1691"></A><A NAME="Index1692"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, will be the size of its string. 
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FlowLayout1.java</font>
+<font color="#009900">// Demonstrating the FlowLayout</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FlowLayout1 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> FlowLayout());
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 20; i++)
+      add(<font color="#0000ff">new</font> Button("Button " + i));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+components will be compacted to their smallest size in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you might get a little bit of surprising behavior. For example, a label will
+be the size of its string, so right-justifying it yields an unchanged display.
+</FONT><a name="_Toc375545459"></a><a name="_Toc408018695"></a><P></DIV>
+<A NAME="Heading411"></A><H3 ALIGN=LEFT>
+BorderLayout</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+layout manager has the concept of four border regions and a center area. When
+you add something to a panel that&#8217;s using a <A NAME="Index1693"></A><A NAME="Index1694"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you must use an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as its first argument, and that string must specify (with proper
+capitalization) &#8220;<A NAME="Index1695"></A><A NAME="Index1696"></A>North&#8221;
+(top), &#8220;<A NAME="Index1697"></A><A NAME="Index1698"></A>South&#8221;
+(bottom), &#8220;<A NAME="Index1699"></A><A NAME="Index1700"></A>East&#8221;
+(right), &#8220;<A NAME="Index1701"></A><A NAME="Index1702"></A>West&#8221;
+(left), or &#8220;Center.&#8221; If you misspell or mis-capitalize, you
+won&#8217;t get a compile-time error, but the applet simply won&#8217;t do what
+you expect. Fortunately, as you will see shortly, there&#8217;s a much-improved
+approach in Java 1.1<A NAME="Index1703"></A>.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BorderLayout1.java</font>
+<font color="#009900">// Demonstrating the BorderLayout</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BorderLayout1 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#0000ff">int</font> i = 0;
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add("North", <font color="#0000ff">new</font> Button("Button " + i++));
+    add("South", <font color="#0000ff">new</font> Button("Button " + i++));
+    add("East", <font color="#0000ff">new</font> Button("Button " + i++));
+    add("West", <font color="#0000ff">new</font> Button("Button " + i++));
+    add("Center", <font color="#0000ff">new</font> Button("Button " + i++));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+every placement but &#8220;Center,&#8221; the element that you add is
+compressed to fit in the smallest amount of space along one dimension while it
+is stretched to the maximum along the other dimension. &#8220;Center,&#8221;
+however, spreads out along both dimensions to occupy the middle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the default layout manager for applications and dialogs.
+</FONT><a name="_Toc375545460"></a><a name="_Toc408018696"></a><P></DIV>
+<A NAME="Heading412"></A><H3 ALIGN=LEFT>
+GridLayout</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1704"></A><A NAME="Index1705"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to build a table of components, and as you add them they are placed
+left-to-right and top-to-bottom in the grid. In the constructor you specify the
+number of rows and columns that you need and these are laid out in equal
+proportions.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GridLayout1.java</font>
+<font color="#009900">// Demonstrating the FlowLayout</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> GridLayout1 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(7,3));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 20; i++)
+      add(<font color="#0000ff">new</font> Button("Button " + i));
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this case there are 21 slots but only 20 buttons. The last slot is left empty;
+no &#8220;balancing&#8221; goes on with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545461"></a><a name="_Toc408018697"></a><P></DIV>
+<A NAME="Heading413"></A><H3 ALIGN=LEFT>
+CardLayout</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1706"></A><A NAME="Index1707"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows you to create the rough equivalent of a &#8220;tabbed dialog,&#8221;
+which in more sophisticated environments has actual file-folder tabs running
+across one edge, and all you have to do is press a tab to bring forward a
+different dialog. Not so in the AWT: The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simply a blank space and you&#8217;re responsible for bringing forward new
+cards. (The JFC/Swing library contains tabbed panes that look much better and
+take care of all the details for you.)
+</FONT><P></DIV>
+<A NAME="Heading414"></A><H4 ALIGN=LEFT>
+Combining
+layouts
+<P><A NAME="Index1708"></A><A NAME="Index1709"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example will combine more than one layout type, which seems rather difficult at
+first since only one layout manager can be operating for an applet or
+application. This is true, but if you create more <A NAME="Index1710"></A><A NAME="Index1711"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, each one of those 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can have its own layout manager and then be integrated into the applet or
+application as simply another component, using the applet or
+application&#8217;s layout manager. This gives you much greater flexibility as
+seen in the following example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CardLayout1.java</font>
+<font color="#009900">// Demonstrating the CardLayout</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.Applet;
+
+<font color="#0000ff">class</font> ButtonPanel <font color="#0000ff">extends</font> Panel {
+  ButtonPanel(String id) {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add("Center", <font color="#0000ff">new</font> Button(id));
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CardLayout1 <font color="#0000ff">extends</font> Applet {
+  Button
+    first = <font color="#0000ff">new</font> Button("First"),
+    second = <font color="#0000ff">new</font> Button("Second"),
+    third = <font color="#0000ff">new</font> Button("Third");
+  Panel cards = <font color="#0000ff">new</font> Panel();
+  CardLayout cl = <font color="#0000ff">new</font> CardLayout();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> FlowLayout());
+    p.add(first);
+    p.add(second);
+    p.add(third);
+    add("North", p);
+    cards.setLayout(cl);
+    cards.add("First card", 
+      <font color="#0000ff">new</font> ButtonPanel("The first one"));
+    cards.add("Second card", 
+      <font color="#0000ff">new</font> ButtonPanel("The second one"));
+    cards.add("Third card", 
+      <font color="#0000ff">new</font> ButtonPanel("The third one"));
+    add("Center", cards);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font> (evt.target.equals(first)) {
+      cl.first(cards);
+    } 
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font> (evt.target.equals(second)) {
+      cl.first(cards);
+      cl.next(cards);
+    } 
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font> (evt.target.equals(third)) {
+      cl.last(cards);
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example begins by creating a new kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ButtonPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This contains a single button, placed at the center of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that it will expand to fill the entire panel. The label on the
+button will let you know which panel you&#8217;re on in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the applet, both the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel
+cards
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where the cards will live and the layout manager 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cl</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be members of the class because you need to have access to those handles
+when you want to manipulate the cards.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+applet is changed to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of its default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created to hold three buttons (using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FlowLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and this panel is placed at the &#8220;North&#8221; end of the applet. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cards</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+panel is added to the &#8220;Center&#8221; of the applet, effectively occupying
+the rest of the real estate.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ButtonPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+(or whatever other components you want) to the panel of cards, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method&#8217;s first argument is not &#8220;North,&#8221; &#8220;South,&#8221;
+etc. Instead, it&#8217;s a string that describes the card. Although this string
+doesn&#8217;t show up anywhere on the card, you can use it if you want to flip
+that card using the string. This approach is not used in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+instead the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>first(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>last(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are used. Check your documentation for the other approach.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java, the use of some sort of &#8220;tabbed panel&#8221; mechanism is quite
+important because (as you&#8217;ll see later) in applet programming the use of
+pop-up dialogs is heavily discouraged. For Java 1.0<A NAME="Index1712"></A>
+applets, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the only viable way for the applet to have a number of different forms that
+&#8220;pop up&#8221; on command.
+</FONT><a name="_Toc375545462"></a><a name="_Toc408018698"></a><P></DIV>
+<A NAME="Heading415"></A><H3 ALIGN=LEFT>
+GridBagLayout</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+time ago, it was believed that all the stars, planets, the sun, and the moon
+revolved around the earth. It seemed intuitive from observation. But then
+astronomers became more sophisticated and started tracking the motion of
+individual objects, some of which seemed at times to go backward in their
+paths. Since it was known that everything revolved around the earth, those
+astronomers spent large amounts of time coming up with equations and theories
+to explain the motion of the stellar objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+trying to work with <A NAME="Index1713"></A><A NAME="Index1714"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can consider yourself the analog of one of those early astronomers. The basic
+precept (decreed, interestingly enough, by the designers at &#8220;Sun&#8221;)
+is that everything should be done in code. The Copernican revolution (again
+dripping with irony, the discovery that the planets in the solar system revolve
+around the sun) is the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>resources</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to determine the layout and make the programmer&#8217;s job easy. Until these
+are added to Java, you&#8217;re stuck (to continue the metaphor) in the Spanish
+Inquisition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagConstraints</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">My
+recommendation is to avoid 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Instead, use the other layout managers and especially the technique of
+combining several panels using different layout managers within a single
+program. Your applets won&#8217;t look 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>that</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+different; at least not enough to justify the trouble that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+entails. For my part, it&#8217;s just too painful to come up with an example
+for this (and I wouldn&#8217;t want to encourage this kind of library design).
+Instead, I&#8217;ll refer you to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Core
+Java
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by Cornell &amp; Horstmann (2
+</FONT><SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">nd</FONT></SUP><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+ed., Prentice-Hall, 1997) to get started.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+another light on the horizon: in the JFC/Swing library there is a new layout
+manager that uses Smalltalk&#8217;s popular &#8220;Springs and Struts,&#8221;
+and this could significantly reduce the need for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridBagLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545463"></a><a name="_Toc408018699"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0143.html">Prev</a> | <a href="tij0145.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,326 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0164.html">Prev</a> | <a href="tij0166.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Serving
+multiple clients
+<P><A NAME="Index2658"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JabberServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+works, but it can handle only one client at a time. In a typical server,
+you&#8217;ll want to be able to deal with many clients at once. The answer is <A NAME="Index2659"></A><A NAME="Index2660"></A>multithreading,
+and in languages that don&#8217;t directly support multithreading this means
+all sorts of complications. In Chapter 14 you saw that multithreading in Java
+is about as simple as possible, considering that multithreading is a rather
+complex topic. Because threading in Java is reasonably straightforward, making
+a server that handles multiple clients is relatively easy.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+basic scheme is to make a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the server and call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to wait for a new connection. When 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns, you take the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and use it to create a new thread whose job is to serve that particular client.
+Then you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+again to wait for a new client.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following server code, you can see that it looks similar to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JabberServer.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example except that all of the operations to serve a particular client have
+been moved inside a separate thread class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MultiJabberServer.java</font>
+<font color="#009900">// A server that uses multithreading to handle </font>
+<font color="#009900">// any number of clients.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">class</font> ServeOneJabber <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Socket socket;
+  <font color="#0000ff">private</font> BufferedReader in;
+  <font color="#0000ff">private</font> PrintWriter out;
+  <font color="#0000ff">public</font> ServeOneJabber(Socket s) 
+      <font color="#0000ff">throws</font> IOException {
+    socket = s;
+    in = 
+      <font color="#0000ff">new</font> BufferedReader(
+        <font color="#0000ff">new</font> InputStreamReader(
+          socket.getInputStream()));
+    <font color="#009900">// Enable auto-flush:</font>
+    out = 
+      <font color="#0000ff">new</font> PrintWriter(
+        <font color="#0000ff">new</font> BufferedWriter(
+          <font color="#0000ff">new</font> OutputStreamWriter(
+            socket.getOutputStream())), <font color="#0000ff">true</font>);
+    <font color="#009900">// If any of the above calls throw an </font>
+    <font color="#009900">// exception, the caller is responsible for</font>
+    <font color="#009900">// closing the socket. Otherwise the thread</font>
+    <font color="#009900">// will close it.</font>
+    start(); <font color="#009900">// Calls run()</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {  
+        String str = in.readLine();
+        <font color="#0000ff">if</font> (str.equals("END")) <font color="#0000ff">break</font>;
+        System.out.println("Echoing: " + str);
+        out.println(str);
+      }
+      System.out.println("closing...");
+    } <font color="#0000ff">catch</font> (IOException e) {
+    } <font color="#0000ff">finally</font> {
+      <font color="#0000ff">try</font> {
+        socket.close();
+      } <font color="#0000ff">catch</font>(IOException e) {}
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MultiJabberServer {  
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> PORT = 8080;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args)
+      <font color="#0000ff">throws</font> IOException {
+    ServerSocket s = <font color="#0000ff">new</font> ServerSocket(PORT);
+    System.out.println("Server Started");
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        <font color="#009900">// Blocks until a connection occurs:</font>
+        Socket socket = s.accept();
+        <font color="#0000ff">try</font> {
+          <font color="#0000ff">new</font> ServeOneJabber(socket);
+        } <font color="#0000ff">catch</font>(IOException e) {
+          <font color="#009900">// If it fails, close the socket,</font>
+          <font color="#009900">// otherwise the thread will close it:</font>
+          socket.close();
+        }
+      }
+    } <font color="#0000ff">finally</font> {
+      s.close();
+    }
+  } 
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">thread
+takes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that&#8217;s produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+every time a new client makes a connection. Then, as before, it creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and auto-flushed 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Finally, it calls the special 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which performs thread initialization and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This performs the same kind of action as in the previous example: reading
+something from the socket and then echoing it back until it reads the special
+&#8220;END&#8221; signal.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+responsibility for cleaning up the socket must again be carefully designed. In
+this case, the socket is created outside of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so the responsibility can be shared. If the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor fails, it will just throw the exception to the caller, who will
+then clean up the thread. But if the constructor succeeds, then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object takes over responsibility for cleaning up the thread, in its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the simplicity of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiJabberServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As before, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called to allow a new connection. But this time, the return value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+is passed to the constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which creates a new thread to handle that connection. When the connection is
+terminated, the thread simply goes away.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the creation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fails, the exception is again thrown through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But if it succeeds, the outer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try-finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+guarantees its cleanup. The inner 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try-catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+guards only against the failure of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor; if the constructor succeeds, then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServeOneJabber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread will close the associated socket.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+test that the server really does handle multiple clients, the following program
+creates many clients (using threads) that connect to the same server. Each
+thread has a limited lifetime, and when it goes away, that leaves space for the
+creation of a new thread. The maximum number of threads allowed is determined
+by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final
+int maxthreads
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll notice that this value is rather critical, since if you make it
+too high the threads seem to run out of resources and the program mysteriously
+fails.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MultiJabberClient.java</font>
+<font color="#009900">// Client that tests the MultiJabberServer</font>
+<font color="#009900">// by starting up multiple clients.</font>
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> JabberClientThread <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Socket socket;
+  <font color="#0000ff">private</font> BufferedReader in;
+  <font color="#0000ff">private</font> PrintWriter out;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> counter = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> id = counter++;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> threadcount = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> threadCount() { 
+    <font color="#0000ff">return</font> threadcount; 
+  }
+  <font color="#0000ff">public</font> JabberClientThread(InetAddress addr) {
+    System.out.println("Making client " + id);
+    threadcount++;
+    <font color="#0000ff">try</font> {
+      socket = 
+        <font color="#0000ff">new</font> Socket(addr, MultiJabberServer.PORT);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      <font color="#009900">// If the creation of the socket fails, </font>
+      <font color="#009900">// nothing needs to be cleaned up.</font>
+    }
+    <font color="#0000ff">try</font> {    
+      in = 
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> InputStreamReader(
+            socket.getInputStream()));
+      <font color="#009900">// Enable auto-flush:</font>
+      out = 
+        <font color="#0000ff">new</font> PrintWriter(
+          <font color="#0000ff">new</font> BufferedWriter(
+            <font color="#0000ff">new</font> OutputStreamWriter(
+              socket.getOutputStream())), <font color="#0000ff">true</font>);
+      start();
+    } <font color="#0000ff">catch</font>(IOException e) {
+      <font color="#009900">// The socket should be closed on any </font>
+      <font color="#009900">// failures other than the socket </font>
+      <font color="#009900">// constructor:</font>
+      <font color="#0000ff">try</font> {
+        socket.close();
+      } <font color="#0000ff">catch</font>(IOException e2) {}
+    }
+    <font color="#009900">// Otherwise the socket will be closed by</font>
+    <font color="#009900">// the run() method of the thread.</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 25; i++) {
+        out.println("Client " + id + ": " + i);
+        String str = in.readLine();
+        System.out.println(str);
+      }
+      out.println("END");
+    } <font color="#0000ff">catch</font>(IOException e) {
+    } <font color="#0000ff">finally</font> {
+      <font color="#009900">// Always close it:</font>
+      <font color="#0000ff">try</font> {
+        socket.close();
+      } <font color="#0000ff">catch</font>(IOException e) {}
+      threadcount--; <font color="#009900">// Ending this thread</font>
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MultiJabberClient {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> MAX_THREADS = 40;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> IOException, InterruptedException {
+    InetAddress addr = 
+      InetAddress.getByName(<font color="#0000ff">null</font>);
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">if</font>(JabberClientThread.threadCount() 
+         &lt; MAX_THREADS)
+        <font color="#0000ff">new</font> JabberClientThread(addr);
+      Thread.currentThread().sleep(100);
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JabberClientThread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor takes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and uses it to open a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;re probably starting to see the pattern: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is always used to create some kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and/or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(or
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and/or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+object, which is the only way that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used. (You can, of course, write a class or two to automate this process
+instead of doing all the typing if it becomes painful.) Again, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performs thread initialization and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, messages are sent to the server and information from the server is echoed
+to the screen. However, the thread has a limited lifetime and eventually
+completes. Note that the socket is cleaned up if the constructor fails after
+the socket is created but before the constructor completes. Otherwise the
+responsibility for calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>close(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the socket is relegated to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>threadcount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keeps track of how many 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JabberClientThread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects currently exist. It is incremented as part of the constructor and
+decremented as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exits (which means the thread is terminating). In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiJabberClient.main(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see that the number of threads is tested, and if there are too many, no
+more are created. Then the method sleeps. This way, some threads will
+eventually terminate and more can be created. You can experiment with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MAX_THREADS</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to see where your particular system begins to have trouble with too many
+connections.
+</FONT><a name="_Toc408018771"></a><a name="_Toc375545498"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0164.html">Prev</a> | <a href="tij0166.html">Next</a>
+</div>
+</body></html>
+

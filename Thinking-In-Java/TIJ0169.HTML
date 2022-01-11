@@ -1,0 +1,560 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0168.html">Prev</a> | <a href="tij0170.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Connecting
+to databases 
+<P>with
+JDBC
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+has been estimated that half of all software development involves client/server
+operations. A great promise of Java has been the ability to build
+platform-independent client/server database applications. In Java 1.1<A NAME="Index2828"></A>
+this has come to fruition with <A NAME="Index2829"></A><A NAME="Index2830"></A><A NAME="Index2831"></A>Java
+DataBase Connectivity (JDBC).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the major problems with databases has been the feature wars between the
+database companies. There is a &#8220;standard&#8221; database language, <A NAME="Index2832"></A><A NAME="Index2833"></A>Structured
+Query Language (SQL-92), but usually you must know which database vendor
+you&#8217;re working with despite the standard. JDBC is designed to be
+platform-independent, so you don&#8217;t need to worry about the database
+you&#8217;re using while you&#8217;re programming. However, it&#8217;s still
+possible to make vendor-specific calls from JDBC so you aren&#8217;t restricted
+from doing what you must.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JDBC,
+like many of the APIs in Java, is designed for simplicity. The method calls you
+make correspond to the logical operations you&#8217;d think of doing when
+gathering data from a database: connect to the database, create a statement and
+execute the query, and look at the result set.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+allow this platform independence, JDBC provides a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>driver
+manager
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that dynamically maintains all the driver objects that your database queries
+will need. So if you have three different kinds of vendor databases to connect
+to, you&#8217;ll need three different driver objects. The driver objects
+register themselves with the driver manager at the time of loading, and you can
+force the loading using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class.forName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+open a database, you must create a &#8220;<A NAME="Index2834"></A><A NAME="Index2835"></A>database
+URL&#8221; that specifies:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	That
+you&#8217;re using JDBC with &#8220;jdbc&#8221;
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+&#8220;subprotocol&#8221;: the name of the driver or the name of a database
+connectivity mechanism. Since the design of JDBC was inspired by <A NAME="Index2836"></A>ODBC,
+the first subprotocol available is the &#8220;jdbc-odbc bridge,&#8221;
+specified by &#8220;odbc&#8221;
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+database identifier. This varies with the database driver used, but it
+generally provides a logical name that is mapped by the database administration
+software to a physical directory where the database tables are located. For
+your database identifier to have any meaning, you must register the name using
+your database administration software. (The process of registration varies from
+platform to platform.)
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+this information is combined into one string, the &#8220;database URL.&#8221;
+For example, to connect through the ODBC subprotocol to a database identified
+as &#8220;people,&#8221; the database URL could be:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+dbUrl = "jdbc:odbc:people";
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;re connecting across a network, the database URL will also contain
+the information identifying the remote machine.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you&#8217;re ready to connect to the database, you call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DriverManager.getConnection(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+passing it the database URL, the user name, and a password to get into the
+database. You get back a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Connection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that you can then use to query and manipulate the database.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example opens a database of contact information and looks for a
+person&#8217;s last name as given on the command line. It selects only the
+names of people that have email addresses, then prints out all the ones that
+match the given last name:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Lookup.java</font>
+<font color="#009900">// Looks up email addresses in a </font>
+<font color="#009900">// local database using JDBC</font>
+<font color="#0000ff">import</font> java.sql.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Lookup {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    String dbUrl = "jdbc:odbc:people";
+    String user = "";
+    String password = "";
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Load the driver (registers itself)</font>
+      Class.forName(
+        "sun.jdbc.odbc.JdbcOdbcDriver");
+      Connection c = DriverManager.getConnection(
+        dbUrl, user, password);
+      Statement s = c.createStatement();
+      <font color="#009900">// SQL code:</font>
+      ResultSet r = 
+        s.executeQuery(
+          "SELECT FIRST, LAST, EMAIL " +
+          "FROM people.csv people " +
+          "WHERE " +
+          "(LAST='" + args[0] + "') " +
+          " AND (EMAIL Is Not Null) " +
+          "ORDER BY FIRST");
+      <font color="#0000ff">while</font>(r.next()) {
+        <font color="#009900">// Capitalization doesn't matter:</font>
+        System.out.println(
+          r.getString("Last") + ", " 
+          + r.getString("fIRST")
+          + ": " + r.getString("EMAIL") );
+      }
+      s.close(); <font color="#009900">// Also closes ResultSet</font>
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the creation of the database URL as previously described. In this
+example, there is no password protection on the database so the user name and
+password are empty strings.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the connection is made with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DriverManager.getConnection(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can use the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Connection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">create
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Statement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object using the <A NAME="Index2837"></A><A NAME="Index2838"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createStatement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. With the resulting <A NAME="Index2839"></A><A NAME="Index2840"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Statement</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can call <A NAME="Index2841"></A><A NAME="Index2842"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>executeQuery(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+passing in a string containing an SQL-92 standard SQL statement. (You&#8217;ll
+see shortly how you can generate this statement automatically, so you
+don&#8217;t have to know much about SQL.) 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>executeQuery(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+returns a <A NAME="Index2843"></A><A NAME="Index2844"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ResultSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which is quite a bit like an iterator: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method moves the iterator to the next record in the statement, or returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if the end of the result set has been reached. You&#8217;ll always get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ResultSet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object back from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>executeQuery(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+even if a query results in an empty set (that is, an exception is not thrown).
+Note that you must call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+once before trying to read any record data. If the result set is empty, this
+first call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>next(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>false</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For each record in the result set, you can select the fields using (among other
+approaches) the field name as a string. Also note that the capitalization of
+the field name is ignored &#8211; it doesn&#8217;t matter with an SQL database.
+You determine the type you&#8217;ll get back by calling <A NAME="Index2845"></A><A NAME="Index2846"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getInt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2847"></A><A NAME="Index2848"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2849"></A><A NAME="Index2850"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getFloat(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+etc. At this point, you&#8217;ve got your database data in Java native format
+and can do whatever you want with it using ordinary Java code.
+</FONT><a name="_Toc408018782"></a><P></DIV>
+<A NAME="Heading534"></A><H3 ALIGN=LEFT>
+Getting
+the example to work
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+JDBC, understanding the code is relatively simple. The confusing part is making
+it work on your particular system. The reason this is confusing is that it
+requires you to figure out how to get your JDBC driver to load properly, and
+how to set up a database using your database administration software.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, this process can vary radically from machine to machine, but the
+process I used to make it work under 32-bit Windows might give you clues to
+help you attack your own situation.
+</FONT><P></DIV>
+<A NAME="Heading535"></A><H4 ALIGN=LEFT>
+Step
+1: Find the JDBC Driver
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+program above contains the statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+implies a directory structure, which is deceiving. With this particular
+installation of JDK 1.1, there was no file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JdbcOdbcDriver.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so if you looked at this example and went searching for it you&#8217;d be
+frustrated. Other published examples use a pseudo name, such as
+&#8220;myDriver.ClassName,&#8221; which is less than helpful. In fact, the load
+statement above for the jdbc-odbc driver (the only one that actually comes with
+JDK 1.1) appears in only a few places in the online documentation (in
+particular, a page labeled &#8220;JDBC-ODBC Bridge Driver&#8221;). If the load
+statement above doesn&#8217;t work, then the name might have been changed as
+part of a Java version change, so you should hunt through the documentation
+again.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+the load statement is wrong, you&#8217;ll get an exception at this point. To
+test whether your driver load statement is working correctly, comment out the
+code after the statement and up to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>catch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause; if the program throws no exceptions it means that the driver is loading
+properly.
+</FONT><P></DIV>
+<A NAME="Heading536"></A><H4 ALIGN=LEFT>
+Step
+2: Configure the database
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Again,
+this is specific to 32-bit Windows; you might need to do some research to
+figure it out for your own platform.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+open the control panel. You might find two icons that say &#8220;ODBC.&#8221;
+You must use the one that says &#8220;32bit ODBC,&#8221; since the other one is
+for backwards compatibility with 16-bit ODBC software and will produce no
+results for JDBC. When you open the &#8220;32bit ODBC&#8221; icon, you&#8217;ll
+see a tabbed dialog with a number of tabs, including &#8220;User DSN,&#8221;
+&#8220;System DSN,&#8221; &#8220;File DSN,&#8221; etc., in which
+&#8220;DSN&#8221; means &#8220;Data Source Name.&#8221; It turns out that for
+the JDBC-ODBC bridge, the only place where it&#8217;s important to set up your
+database is &#8220;System DSN,&#8221; but you&#8217;ll also want to test your
+configuration and create queries, and for that you&#8217;ll also need to set up
+your database in &#8220;File DSN.&#8221; This will allow the Microsoft Query
+tool (that comes with Microsoft Office) to find the database. Note that other
+query tools are also available from other vendors.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most interesting database is one that you&#8217;re already using. Standard ODBC
+supports a number of different file formats including such venerable workhorses
+as DBase. However, it also includes the simple &#8220;comma-separated
+ASCII&#8221; format, which virtually every data tool has the ability to write.
+In my case, I just took my &#8220;people&#8221; database that I&#8217;ve been
+maintaining for years using various contact-management tools and exported it as
+a comma-separated ASCII file (these typically have an extension of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.csv</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+In the &#8220;File DSN&#8221; section I chose &#8220;Add,&#8221; chose the text
+driver to handle my comma-separated ASCII file, and then un-checked &#8220;use
+current directory&#8221; to allow me to specify the directory where I exported
+the data file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice when you do this that you don&#8217;t actually specify a file, only a
+directory. That&#8217;s because a database is typically represented as a
+collection of files under a single directory (although it could be represented
+in other forms as well). Each file usually contains a single table, and the SQL
+statements can produce results that are culled from multiple tables in the
+database (this is called a <A NAME="Index2851"></A><A NAME="Index2852"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>join</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+A database that contains only a single table (like this one) is usually called a <A NAME="Index2853"></A><A NAME="Index2854"></A><A NAME="Index2855"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>flat-file
+database
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Most problems that go beyond the simple storage and retrieval of data generally
+require multiple tables that must be related by joins to produce the desired
+results, and these are called <A NAME="Index2856"></A><A NAME="Index2857"></A><A NAME="Index2858"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>relational</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+databases.
+</FONT><P></DIV>
+<A NAME="Heading537"></A><H4 ALIGN=LEFT>
+Step
+3: Test the configuration
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+test the configuration you&#8217;ll need a way to discover whether the database
+is visible from a program that queries it. Of course, you can simply run the
+JDBC program example above up to and including the statement:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Connection
+c = DriverManager.getConnection(
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+ dbUrl, user, password);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+an exception is thrown, your configuration was incorrect.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+it&#8217;s useful to get a query-generation tool involved at this point. I used
+Microsoft Query that came with Microsoft Office, but you might prefer something
+else. The query tool must know where the database is, and Microsoft Query
+required that I go to the ODBC Administrator&#8217;s &#8220;File DSN&#8221; tab
+and add a new entry there, again specifying the text driver and the directory
+where my database lives. You can name the entry anything you want, but
+it&#8217;s helpful to use the same name you used in &#8220;System DSN.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you&#8217;ve done this, you will see that your database is available when you
+create a new query using your query tool.
+</FONT><P></DIV>
+<A NAME="Heading538"></A><H4 ALIGN=LEFT>
+Step
+4: Generate your SQL query
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+query that I created using Microsoft Query not only showed me that my database
+was there and in good order, but it also automatically created the SQL code
+that I needed to insert into my Java program. I wanted a query that would
+search for records that had the last name that was typed on the command line
+when starting the Java program. So as a starting point, I searched for a
+specific last name, &#8216;Eckel&#8217;. I also wanted to display only those
+names that had email addresses associated with them. The steps I took to create
+this query were:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Start
+a new query and use the Query Wizard. Select the &#8220;people&#8221; database.
+(This is the equivalent of opening the database connection using the
+appropriate database URL.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Select
+the &#8220;people&#8221; table within the database. From within the table,
+choose the columns FIRST, LAST, and EMAIL.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Under
+&#8220;Filter Data,&#8221; choose LAST and select &#8220;equals&#8221; with an
+argument of Eckel. Click the &#8220;And&#8221; radio button.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Choose
+EMAIL and select &#8220;Is not Null.&#8221;
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Under
+&#8220;Sort By,&#8221; choose FIRST.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+result of this query will show you whether you&#8217;re getting what you want.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can press the SQL button and without any research on your part, up will pop
+the correct SQL code, ready for you to cut and paste. For this query, it looked
+like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>SELECT people.FIRST, people.LAST, people.EMAIL
+FROM people.csv people
+WHERE (people.LAST='Eckel') AND 
+(people.EMAIL Is Not Null)
+ORDER BY people.FIRST </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+more complicated queries it&#8217;s easy to get things wrong, but with a query
+tool you can interactively test your queries and automatically generate the
+correct code. It&#8217;s hard to argue the case for doing this by hand.
+</FONT><P></DIV>
+<A NAME="Heading539"></A><H4 ALIGN=LEFT>
+Step
+5: Modify and paste in your query
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that the code above looks different from what&#8217;s used in the
+program. That&#8217;s because the query tool uses full qualification for all of
+the names, even when there&#8217;s only one table involved. (When more than one
+table is involved, the qualification prevents collisions between columns from
+different tables that have the same names.) Since this query involves only one
+table, you can optionally remove the &#8220;people&#8221; qualifier from most
+of the names, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>SELECT FIRST, LAST, EMAIL
+FROM people.csv people
+WHERE (LAST='Eckel') AND 
+(EMAIL Is Not Null)
+ORDER BY FIRST </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, you don&#8217;t want this program to be hard coded to look for only
+one name. Instead, it should hunt for the name given as the command-line
+argument. Making these changes and turning the SQL statement into a
+dynamically-created 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produces:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>"SELECT FIRST, LAST, EMAIL " +
+"FROM people.csv people " +
+"WHERE " +
+"(LAST='" + args[0] + "') " +
+" AND (EMAIL Is Not Null) " +
+"ORDER BY FIRST"); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">SQL
+has another way to insert names into a query called <A NAME="Index2859"></A><A NAME="Index2860"></A><A NAME="Index2861"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>stored
+procedures
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used for speed. But for much of your database experimentation and for
+your first cut, building your own query strings in Java is fine.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see from this example that by using the tools currently available &#8211;
+in particular the query-building tool &#8211; database programming with SQL and
+JDBC can be quite straightforward.
+</FONT><a name="_Toc408018783"></a><P></DIV>
+<A NAME="Heading540"></A><H3 ALIGN=LEFT>
+A
+GUI version of the lookup program
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+more useful to leave the lookup program running all the time and simply switch
+to it and type in a name whenever you want to look someone up. The following
+program creates the lookup program as an application/applet, and it also adds
+name completion so the data will show up without forcing you to type the entire
+last name:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: VLookup.java</font>
+<font color="#009900">// GUI version of Lookup.java</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.sql.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> VLookup <font color="#0000ff">extends</font> Applet {
+  String dbUrl = "jdbc:odbc:people";
+  String user = "";
+  String password = "";
+  Statement s;
+  TextField searchFor = <font color="#0000ff">new</font> TextField(20);
+  Label completion = 
+    <font color="#0000ff">new</font> Label("                        ");
+  TextArea results = <font color="#0000ff">new</font> TextArea(40, 20);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    searchFor.addTextListener(<font color="#0000ff">new</font> SearchForL());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.add(<font color="#0000ff">new</font> Label("Last name to search <font color="#0000ff">for</font>:"));
+    p.add(searchFor);
+    p.add(completion);
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(p, BorderLayout.NORTH);
+    add(results, BorderLayout.CENTER);
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Load the driver (registers itself)</font>
+      Class.forName(
+        "sun.jdbc.odbc.JdbcOdbcDriver");
+      Connection c = DriverManager.getConnection(
+        dbUrl, user, password);
+      s = c.createStatement();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      results.setText(e.getMessage());
+    }
+  }
+  <font color="#0000ff">class</font> SearchForL <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent te) {
+      ResultSet r;
+      <font color="#0000ff">if</font>(searchFor.getText().length() == 0) {
+        completion.setText("");
+        results.setText("");
+        <font color="#0000ff">return</font>;
+      }
+      <font color="#0000ff">try</font> {
+        <font color="#009900">// Name completion:</font>
+        r = s.executeQuery(
+          "SELECT LAST FROM people.csv people " +
+          "WHERE (LAST Like '" +
+          searchFor.getText()  + 
+          "%') ORDER BY LAST");
+        <font color="#0000ff">if</font>(r.next()) 
+          completion.setText(
+            r.getString("last"));
+        r = s.executeQuery(
+          "SELECT FIRST, LAST, EMAIL " +
+          "FROM people.csv people " +
+          "WHERE (LAST='" + 
+          completion.getText() +
+          "') AND (EMAIL Is Not Null) " +
+          "ORDER BY FIRST");
+      } <font color="#0000ff">catch</font>(Exception e) {
+        results.setText(
+          searchFor.getText() + "\n");
+        results.append(e.getMessage());
+        <font color="#0000ff">return</font>; 
+      }
+      results.setText("");
+      <font color="#0000ff">try</font> {
+        <font color="#0000ff">while</font>(r.next()) {
+          results.append(
+            r.getString("Last") + ", " 
+            + r.getString("fIRST") + 
+            ": " + r.getString("EMAIL") + "\n");
+        }
+      } <font color="#0000ff">catch</font>(Exception e) {
+        results.setText(e.getMessage());
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    VLookup applet = <font color="#0000ff">new</font> VLookup();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Email lookup");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(500,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Much
+of the database logic is the same, but you can see that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to listen to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so that whenever you type a new character it first tries to do a name
+completion by looking up the last name in the database and using the first one
+that shows up. (It places it in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>completion</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and uses that as the lookup text.) This way, as soon as you&#8217;ve typed
+enough characters for the program to uniquely find the name you&#8217;re
+looking for, you can stop.
+</FONT><a name="_Toc408018784"></a><P></DIV>
+<A NAME="Heading541"></A><H3 ALIGN=LEFT>
+Why
+the JDBC API 
+<P>seems
+so complex
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you browse the online documentation for JDBC it can seem daunting. In
+particular, in the <A NAME="Index2862"></A><A NAME="Index2863"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatabaseMetaData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface &#8211; which is just huge, contrary to most of the interfaces you
+see in Java &#8211; there are methods such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dataDefinitionCausesTransactionCommit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMaxColumnNameLength(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMaxStatementLength(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>storesMixedCaseQuotedIdentifiers(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>supportsANSI92IntermediateSQL(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>supportsLimitedOuterJoins(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and so on. What&#8217;s this all about?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+mentioned earlier, databases have seemed from their inception to be in a
+constant state of turmoil, primarily because the demand for database
+applications, and thus database tools, is so great. Only recently has there
+been any convergence on the common language of SQL (and there are plenty of
+other database languages in common use). But even with an SQL
+&#8220;standard&#8221; there are so many variations on that theme that JDBC
+must provide the large 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatabaseMetaData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface so that your code can discover the capabilities of the particular
+&#8220;standard&#8221; SQL database that it&#8217;s currently connected to. In
+short, you can write simple, transportable SQL, but if you want to optimize
+speed your coding will multiply tremendously as you investigate the
+capabilities of a particular vendor&#8217;s database.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This,
+of course, is not Java&#8217;s fault. The discrepancies between database
+products are just something that JDBC tries to help compensate for. But bear in
+mind that your life will be easier if you can either write generic queries and
+not worry too much about performance, or, if you must tune for performance,
+know the platform you&#8217;re writing for so you don&#8217;t need to write all
+that investigation code.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is more JDBC information available in the electronic documents that come as
+part of the Java 1.1<A NAME="Index2864"></A>
+distribution from Sun. In addition, you can find more in the book 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>JDBC
+Database Access with Java 
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Hamilton,
+Cattel, and Fisher, Addison-Wesley 1997). Other JDBC books are appearing
+regularly.
+</FONT><a name="_Toc408018785"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0168.html">Prev</a> | <a href="tij0170.html">Next</a>
+</div>
+</body></html>
+

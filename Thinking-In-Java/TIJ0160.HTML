@@ -1,0 +1,117 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0159.html">Prev</a> | <a href="tij0161.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+is vital to learn when to use <A NAME="Index2609"></A><A NAME="Index2610"></A>multithreading
+and when to avoid it. The main reason to use it is to manage a number of tasks
+whose intermingling will make more efficient use of the computer or be more
+convenient for the user. The classic example of resource balancing is using the
+CPU during I/O waits. The classic example of user convenience is monitoring a
+&#8220;stop&#8221; button during long downloads.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+main drawbacks to multithreading are: <A NAME="Index2611"></A><A NAME="Index2612"></A></FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Slowdown
+while waiting for shared resources
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Additional
+CPU overhead required to manage threads
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Unrewarded
+complexity, such as the silly idea of having a separate thread to update each
+element of an array
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Pathologies
+including starving, racing, and deadlock
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+additional advantage to threads is that they substitute &#8220;light&#8221;
+execution context switches (of the order of 100 instructions) for
+&#8220;heavy&#8221; process context switches (of the order of 1000s of
+instructions). Since all threads in a given process share the same memory
+space, a light context switch changes only program execution and local
+variables. On the other hand, a process change, the heavy context switch, must
+exchange the full memory space.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Threading
+is like stepping into an entirely new world and learning a whole new
+programming language, or at least a new set of language concepts. With the
+appearance of thread support in most microcomputer operating systems,
+extensions for threads have also been appearing in programming languages or
+libraries. In all cases, thread programming (1) seems mysterious and requires a
+shift in the way you think about programming and (2) looks similar to thread
+support in other languages, so when you understand threads, you understand a
+common tongue. And although support for threads can make Java seem like a more
+complicated language, don&#8217;t blame Java. Threads are tricky.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the biggest difficulties with threads occurs because more than one thread
+might be sharing a resource, such as the memory in an object, and you must make
+sure that multiple threads don&#8217;t try to read and change that resource at
+the same time. This requires judicious use of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword, which is a helpful tool but must be understood thoroughly because it
+can quietly introduce deadlock situations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, there&#8217;s a certain art to the application of threads. Java is
+designed to allow you to create as many objects as you need to solve your
+problem &#8211; at least in theory. (Creating millions of objects for an
+engineering finite-element analysis, for example, might not be practical in
+Java.) However, it seems that there is an upper bound to the number of threads
+you&#8217;ll want to create because at some point a large number of threads
+seems to become unwieldy. This critical point is not in the many thousands as
+it might be with objects, but rather in the neighborhood of less than 100. As
+you often create only a handful of threads to solve a problem, this is
+typically not much of a limit, yet in a more general design it becomes a
+constraint.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+significant non-intuitive issue in threading is that, because of thread
+scheduling, you can typically make your applications run 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>faster</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by inserting calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+main loop. This definitely makes it feel like an art, in particular when the
+longer delays seem to speed up performance. Of course, the reason this happens
+is that shorter delays can cause the end-of-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+scheduler interrupt to happen before the running thread is ready to go to
+sleep, forcing the scheduler to stop it and restart it later so it can finish
+what it was doing and then go to sleep. It takes extra thought to realize how
+messy things can get.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+thing you might notice missing in this chapter is an animation example, which
+is one of the most popular things to do with applets. However, a complete
+solution (with sound) to this problem comes with the Java JDK (available at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>java.sun.com</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+in the demo section. In addition, we can expect better animation support to
+become part of future versions of Java, while completely different non-Java,
+non-programming solutions to animation for the Web are appearing that will
+probably be superior to traditional approaches. For explanations about how Java
+animation works, see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Core
+Java
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by Cornell &amp; Horstmann, Prentice-Hall 1997. For more advanced discussions
+of threading, see 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Concurrent
+Programming in Java
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by Doug Lea, Addison-Wesley 1997, or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Java
+Threads
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by Oaks &amp; Wong, O&#8217;Reilly 1997.
+</FONT><a name="_Toc375545490"></a><a name="_Toc408018763"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0159.html">Prev</a> | <a href="tij0161.html">Next</a>
+</div>
+</body></html>
+

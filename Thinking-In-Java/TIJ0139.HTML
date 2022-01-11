@@ -1,0 +1,133 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0138.html">Prev</a> | <a href="tij0140.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Labels</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1617"></A><A NAME="Index1618"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does exactly what it sounds like it should: places a label on the form. This is
+particularly important for text fields and text areas that don&#8217;t have
+labels of their own, and can also be useful if you simply want to place textual
+information on a form. You can, as shown in the first example in this chapter,
+use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to place text in an exact location. When you use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it allows you to (approximately) associate the text with some other component
+via the layout manager (which will be discussed later in this chapter).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+the constructor you can create a blank label, a label with initial text in it
+(which is what you&#8217;ll typically do), and a label with an alignment of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CENTER</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>LEFT</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RIGHT</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+final int
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+defined in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+You can also change the label and its alignment with <A NAME="Index1619"></A><A NAME="Index1620"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setText(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1621"></A><A NAME="Index1622"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setAlignment(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if you&#8217;ve forgotten what you&#8217;ve set these to you can read the
+values with <A NAME="Index1623"></A><A NAME="Index1624"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getText(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1625"></A><A NAME="Index1626"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAlignment(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This example shows what you can do with labels:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Label1.java</font>
+<font color="#009900">// Using labels</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Label1 <font color="#0000ff">extends</font> Applet {
+  TextField t1 = <font color="#0000ff">new</font> TextField("t1", 10);
+  Label labl1 = <font color="#0000ff">new</font> Label("TextField t1");
+  Label labl2 = <font color="#0000ff">new</font> Label("                   ");
+  Label labl3 = <font color="#0000ff">new</font> Label("                    ",
+    Label.RIGHT);
+  Button b1 = <font color="#0000ff">new</font> Button("Test 1");
+  Button b2 = <font color="#0000ff">new</font> Button("Test 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(labl1); add(t1);
+    add(b1); add(labl2);
+    add(b2); add(labl3);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b1))
+      labl2.setText("Text set into Label");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b2)) {
+      <font color="#0000ff">if</font>(labl3.getText().trim().length() == 0)
+        labl3.setText("labl3");
+      <font color="#0000ff">if</font>(labl3.getAlignment() == Label.LEFT)
+        labl3.setAlignment(Label.CENTER);
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(labl3.getAlignment()==Label.CENTER)
+        labl3.setAlignment(Label.RIGHT);
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(labl3.getAlignment() == Label.RIGHT)
+        labl3.setAlignment(Label.LEFT);
+    }
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first use of the label is the most typical: labeling a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the second part of the example, a bunch of empty spaces are reserved and
+when you press the &#8220;Test 1&#8221; button 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setText(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to insert text into the field. Because a number of blank spaces do not
+equal the same number of characters (in a <A NAME="Index1627"></A><A NAME="Index1628"></A><A NAME="Index1629"></A>proportionally-spaced
+font) you&#8217;ll see that the text gets truncated when inserted into the label.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+third part of the example reserves empty space, then the first time you press
+the &#8220;Test 2&#8221; button it sees that there are no characters in the
+label (since <A NAME="Index1630"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trim(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+removes all of the blank spaces at each end of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and inserts a short label, which is initially left-aligned. The rest of the
+times you press the button it changes the alignment so you can see the effect.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might think that you could create an empty label and then later put text in it
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setText(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, you cannot put text into an empty label &#8211; presumably because it
+has zero width &#8211; so creating a label with no text seems to be a useless
+thing to do. In the example above, the &#8220;blank&#8221; label is filled with
+empty spaces so it has enough width to hold text that&#8217;s placed inside
+later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Similarly,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setAlignment(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+no effect on a label that you&#8217;d typically create with text in the
+constructor. The label width is the width of the text, so changing the
+alignment doesn&#8217;t do anything. However, if you start with a long label
+and then change it to a shorter one you can see the effect of the alignment.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">These
+behaviors occur because of the default <A NAME="Index1631"></A><A NAME="Index1632"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>layout
+manager
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s used for applets, which causes things to be squished together to
+their smallest size. Layout managers will be covered later in this chapter,
+when you&#8217;ll see that other layouts don&#8217;t have the same effect.
+</FONT><a name="_Toc375545452"></a><a name="_Toc408018688"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0138.html">Prev</a> | <a href="tij0140.html">Next</a>
+</div>
+</body></html>
+

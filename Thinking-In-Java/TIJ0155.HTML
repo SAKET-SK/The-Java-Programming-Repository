@@ -1,0 +1,1059 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0154.html">Prev</a> | <a href="tij0156.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Responsive
+user interfaces
+<P><A NAME="Index2453"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a starting point, consider a program that performs some CPU-intensive operation
+and thus ends up ignoring user input and being unresponsive. This one, a
+combined applet/application, will simply display the result of a running counter:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter1.java</font>
+<font color="#009900">// A non-responsive user interface</font>
+<font color="#0000ff">package</font> c14;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter1 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">private</font> Button 
+    onOff = <font color="#0000ff">new</font> Button("Toggle"),
+    start = <font color="#0000ff">new</font> Button("Start");
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+    onOff.addActionListener(<font color="#0000ff">new</font> OnOffL());
+    add(onOff);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> go() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      <font color="#0000ff">try</font> {
+        Thread.currentThread().sleep(100);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+      <font color="#0000ff">if</font>(runFlag) 
+        t.setText(Integer.toString(count++));
+    }
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      go();
+    }
+  }
+  <font color="#0000ff">class</font> OnOffL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      runFlag = !runFlag;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter1 applet = <font color="#0000ff">new</font> Counter1();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter1");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, the AWT and applet code should be reasonably familiar from Chapter
+13. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is where the program stays busy: it puts the current value of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField
+t
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then increments 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Part
+of the infinite loop inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+<A NAME="Index2454"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be associated with a <A NAME="Index2455"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, and it turns out that every application has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>some</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread associated with it. (Indeed, Java is based on threads and there are
+always some running along with your application.) So regardless of whether
+you&#8217;re explicitly using threads, you can produce the current thread used
+by your program with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread.
+currentThread()<A NAME="Index2456"></A></B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a static method of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class)
+and then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that thread.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can throw <A NAME="Index2457"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InterruptedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+although throwing such an exception is considered a hostile way to break from a
+thread and should be discouraged. (Once again, exceptions are for exceptional
+conditions, not normal flow of control.) Interrupting a sleeping thread is
+included to support a future language feature.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button is pressed, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is invoked. And upon examining 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you might naively think (as I did) that it should allow multithreading because
+it goes to sleep. That is, while the method is asleep, it seems like the CPU
+could be busy monitoring other button presses. But it turns out that the real
+problem is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never returns, since it&#8217;s in an infinite loop, and this means that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never returns. Since you&#8217;re stuck inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the first keypress, the program can&#8217;t handle any other events. (To
+get out, you must somehow kill the process; the easiest way to do this is to
+press Control-C in the console window.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+basic problem here is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+needs to continue performing its operations, and at the same time it needs to
+return so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can complete and the user interface can continue responding to the user. But in
+a conventional method like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it cannot continue 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at the same time return control to the rest of the program. This sounds like an
+impossible thing to accomplish, as if the CPU must be in two places at once,
+but this is precisely the illusion that threading provides. The thread model
+(and programming support in Java) is a programming convenience to simplify
+juggling several operations at the same time within a single program. With
+threads, the CPU will pop around and give each thread some of its time. Each
+thread has the consciousness of constantly having the CPU to itself, but the
+CPU&#8217;s time is actually sliced between all the threads.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2458"></A><A NAME="Index2459"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Threading
+reduces computing efficiency somewhat, but the net improvement in program
+design, resource balancing, and user convenience is often quite valuable. Of
+course, if you have more than one CPU, then the operating system can dedicate
+each CPU to a set of threads or even a single thread and the whole program can
+run much faster. Multitasking and multithreading tend to be the most reasonable
+ways to utilize multiprocessor systems.
+</FONT><a name="_Toc375545473"></a><a name="_Toc408018746"></a><P></DIV>
+<A NAME="Heading483"></A><H3 ALIGN=LEFT>
+Inheriting
+from Thread
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+simplest way to create a thread is to inherit from class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which has all the wiring necessary to create and run threads. The most
+important method for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which you must override to make the thread do your bidding. Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the code that will be executed &#8220;simultaneously&#8221; with the other
+threads in a program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example creates any number of threads that it keeps track of by
+assigning each thread a unique number, generated with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+variable. The <A NAME="Index2460"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is overridden to count down each time it passes through its loop and to
+finish when the count is zero (at the point when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns, the thread is terminated).
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: SimpleThread.java</font>
+<font color="#009900">// Very simple Threading example</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> SimpleThread <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> countDown = 5;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> threadNumber;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> threadCount = 0;
+  <font color="#0000ff">public</font> SimpleThread() {
+    threadNumber = ++threadCount;
+    System.out.println("Making " + threadNumber);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      System.out.println("Thread " + 
+        threadNumber + "(" + countDown + ")");
+      <font color="#0000ff">if</font>(--countDown == 0) <font color="#0000ff">return</font>;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 5; i++)
+      <font color="#0000ff">new</font> SimpleThread().start();
+    System.out.println("All Threads Started");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method virtually always has some kind of loop that continues until the thread
+is no longer necessary, so you must establish the condition on which to break
+out of this loop (or, in the case above, simply 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Often, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is cast in the form of an infinite loop, which means that, barring some
+external call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that thread, it will run forever (until the program completes).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">you
+can see a number of threads being created and run. The special method that
+comes with the <A NAME="Index2461"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which performs special initialization for the thread and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So the steps are: the constructor is called to build the object, then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+configures the thread and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you don&#8217;t call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which you can do in the constructor, if that&#8217;s appropriate) the thread
+will never be started.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output for one run of this program (it will be different every time) is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Making 1
+Making 2
+Making 3
+Making 4
+Making 5
+Thread 1(5)
+Thread 1(4)
+Thread 1(3)
+Thread 1(2)
+Thread 2(5)
+Thread 2(4)
+Thread 2(3)
+Thread 2(2)
+Thread 2(1)
+Thread 1(1)
+All Threads Started
+Thread 3(5)
+Thread 4(5)
+Thread 4(4)
+Thread 4(3)
+Thread 4(2)
+Thread 4(1)
+Thread 5(5)
+Thread 5(4)
+Thread 5(3)
+Thread 5(2)
+Thread 5(1)
+Thread 3(4)
+Thread 3(3)
+Thread 3(2)
+Thread 3(1) </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that nowhere in this example is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called, and yet the output indicates that each thread gets a portion of the
+CPU&#8217;s time in which to execute. This shows that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+while it relies on the existence of a thread in order to execute, is not
+involved with either enabling or disabling threading. It&#8217;s simply another
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also see that the <A NAME="Index2462"></A>threads
+are not run in the order that they&#8217;re created. In fact, the order that
+the CPU attends to an existing set of threads is indeterminate, unless you go
+in and adjust the priorities using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setPriority(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects it isn&#8217;t capturing the handles for any of them. An ordinary
+object would be fair game for garbage collection, but not a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;registers&#8221; itself so there is actually a reference to it someplace
+and the garbage collector can&#8217;t clean it up.
+</FONT><a name="_Toc375545474"></a><a name="_Toc408018747"></a><P></DIV>
+<A NAME="Heading484"></A><H3 ALIGN=LEFT>
+Threading
+for a responsive interface
+<P><A NAME="Index2463"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+it&#8217;s possible to solve the problem in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter1.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">with
+a thread. The trick is to place the subtask &#8211; that is, the loop
+that&#8217;s inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of a thread. When the user presses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button, the thread is started, but then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>creation</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the thread completes, so even though the thread is running, the main job of
+the program (watching for and responding to user-interface events) can
+continue. Here&#8217;s the solution:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter2.java</font>
+<font color="#009900">// A responsive user interface with threads</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> SeparateSubTask <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">private</font> Counter2 c2;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+  <font color="#0000ff">public</font> SeparateSubTask(Counter2 c2) {
+    <font color="#0000ff">this</font>.c2 = c2;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> invertFlag() { runFlag = !runFlag;}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+     <font color="#0000ff">try</font> {
+      sleep(100);
+     } <font color="#0000ff">catch</font> (InterruptedException e){}
+     <font color="#0000ff">if</font>(runFlag) 
+       c2.t.setText(Integer.toString(count++));
+    }
+  }
+} 
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter2 <font color="#0000ff">extends</font> Applet {
+  TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">private</font> SeparateSubTask sp = <font color="#0000ff">null</font>;
+  <font color="#0000ff">private</font> Button 
+    onOff = <font color="#0000ff">new</font> Button("Toggle"),
+    start = <font color="#0000ff">new</font> Button("Start");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+    onOff.addActionListener(<font color="#0000ff">new</font> OnOffL());
+    add(onOff);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(sp == <font color="#0000ff">null</font>)
+        sp = <font color="#0000ff">new</font> SeparateSubTask(Counter2.<font color="#0000ff">this</font>);
+    }
+  }
+  <font color="#0000ff">class</font> OnOffL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(sp != <font color="#0000ff">null</font>)
+        sp.invertFlag();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter2 applet = <font color="#0000ff">new</font> Counter2();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter2");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is now a straightforward program, whose job is only to set up and maintain the
+user interface. But now, when the user presses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button, a method is not called. Instead a thread of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created (the constructor starts it, in this case), and then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+event loop continues. Note that the handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is stored so that when you press the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>onOff</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button it can toggle the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFlag</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. That thread (when it looks at the flag) can then start and stop itself.
+(This could also have been accomplished by making 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an inner class.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a simple extension of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a constructor (that stores the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle and then runs the thread by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that essentially contains the code from inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter1.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+knows that it holds a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it can reach in and access 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when it needs to.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>onOff</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button, you&#8217;ll see a virtually instant response. Of course, the response
+isn&#8217;t really instant, not like that of a system that&#8217;s driven by
+interrupts. The counter stops only when the thread has the CPU and notices that
+the flag has changed.
+</FONT><a name="_Ref403700451"></a><P></DIV>
+<A NAME="Heading485"></A><H4 ALIGN=LEFT>
+Improving
+the code with an inner class
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an aside, look at the coupling that occurs between the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is intimately tied to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; it must keep a handle to its &#8220;parent&#8221; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object so it can call back and manipulate it. And yet the two classes
+shouldn&#8217;t really merge together into a single class (although in the next
+section you&#8217;ll see that Java provides a way to combine them) because
+they&#8217;re doing separate things and are created at different times. They
+are tightly connected (what I call a &#8220;<A NAME="Index2464"></A>couplet&#8221;)
+and this makes the coding awkward. This is a situation in which an <A NAME="Index2465"></A><A NAME="Index2466"></A><A NAME="Index2467"></A>inner
+class can improve the code significantly:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter2i.java</font>
+<font color="#009900">// Counter2 using an inner class for the thread</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter2i <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> <font color="#0000ff">class</font> SeparateSubTask <font color="#0000ff">extends</font> Thread {
+    <font color="#0000ff">int</font> count = 0;
+    <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+    SeparateSubTask() { start(); }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+      <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+       <font color="#0000ff">try</font> {
+        sleep(100);
+       } <font color="#0000ff">catch</font> (InterruptedException e){}
+       <font color="#0000ff">if</font>(runFlag) 
+         t.setText(Integer.toString(count++));
+      }
+    }
+  } 
+  <font color="#0000ff">private</font> SeparateSubTask sp = <font color="#0000ff">null</font>;
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">private</font> Button 
+    onOff = <font color="#0000ff">new</font> Button("Toggle"),
+    start = <font color="#0000ff">new</font> Button("Start");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+    onOff.addActionListener(<font color="#0000ff">new</font> OnOffL());
+    add(onOff);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(sp == <font color="#0000ff">null</font>)
+        sp = <font color="#0000ff">new</font> SeparateSubTask();
+    }
+  }
+  <font color="#0000ff">class</font> OnOffL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(sp != <font color="#0000ff">null</font>)
+        sp.runFlag = !sp.runFlag; <font color="#009900">// invertFlag();</font>
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter2i applet = <font color="#0000ff">new</font> Counter2i();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter2i");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+name will not collide with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the previous example even though they&#8217;re in the same directory, since
+it&#8217;s hidden as an inner class. You can also see that the <A NAME="Index2468"></A><A NAME="Index2469"></A>inner
+class is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that its fields and methods can be given default access (except for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since it is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the base class). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inner
+class is not accessible to anyone but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and since the two classes are tightly coupled it&#8217;s convenient to loosen
+the access restrictions between them. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>invertFlag(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method has been removed since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can now directly access 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFlag</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Also,
+notice that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+constructor has been simplified &#8211; now it only starts the thread. The
+handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2i</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is still being captured as in the previous version, but instead of doing
+it by hand and referencing the outer object by hand, the inner class mechanism
+takes care of it automatically. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simply accessed, as if it were a field of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field in the parent class can now be made 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SeparateSubTask</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can access it without getting any special permission &#8211; and it&#8217;s
+always good to make fields &#8220;as private as possible&#8221; so they cannot
+be accidentally changed by forces outside your class.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Anytime
+you notice classes that appear to have high coupling with each other, consider
+the coding and maintenance improvements you might get by using inner classes.
+</FONT><a name="_Toc375545475"></a><a name="_Toc408018748"></a><P></DIV>
+<A NAME="Heading486"></A><H3 ALIGN=LEFT>
+Combining
+the thread 
+<P>with
+the main class
+<P><A NAME="Index2470"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the example above you can see that the thread class is separate from the
+program&#8217;s main class. This makes a lot of sense and is relatively easy to
+understand. There is, however, an alternate form that you will often see used
+that is not so clear but is usually more concise (which probably accounts for
+its popularity). This form combines the main program class with the thread
+class by making the main program class a thread. Since for a GUI program the
+main program class must be inherited from either 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+an interface must be used to paste on the additional functionality. This
+interface is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it contains the same basic method that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does. In fact, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which specifies only that there be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of the combined program/thread is not quite so obvious. When you start the
+program, you create an object that&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you don&#8217;t start the thread. This must be done explicitly. You can see
+this in the following program, which reproduces the functionality of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter3.java</font>
+<font color="#009900">// Using the Runnable interface to turn the </font>
+<font color="#009900">// main class into a thread.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter3 
+    <font color="#0000ff">extends</font> Applet <font color="#0000ff">implements</font> Runnable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+  <font color="#0000ff">private</font> Thread selfThread = <font color="#0000ff">null</font>;
+  <font color="#0000ff">private</font> Button 
+    onOff = <font color="#0000ff">new</font> Button("Toggle"),
+    start = <font color="#0000ff">new</font> Button("Start");
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+    onOff.addActionListener(<font color="#0000ff">new</font> OnOffL());
+    add(onOff);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      <font color="#0000ff">try</font> {
+        selfThread.sleep(100);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+      <font color="#0000ff">if</font>(runFlag) 
+        t.setText(Integer.toString(count++));
+    }
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(selfThread == <font color="#0000ff">null</font>) {
+        selfThread = <font color="#0000ff">new</font> Thread(Counter3.<font color="#0000ff">this</font>);
+        selfThread.start();
+      }
+    }
+  }
+  <font color="#0000ff">class</font> OnOffL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      runFlag = !runFlag;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter3 applet = <font color="#0000ff">new</font> Counter3();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter3");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inside the class, but it&#8217;s still dormant after 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+completes. When you press the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button, the thread is created (if it doesn&#8217;t already exist) in the
+somewhat obscure expression:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">new
+Thread(Counter3.this);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+something has a <A NAME="Index2471"></A><A NAME="Index2472"></A><A NAME="Index2473"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface, it simply means that it has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, but there&#8217;s nothing special about that &#8211; it doesn&#8217;t
+produce any innate threading abilities, like those of a class inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So to produce a thread from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, you must create a thread separately and hand it the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object; there&#8217;s a special constructor for this that takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as its argument. You can then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that thread:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">selfThread.start();</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+performs the usual initialization and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+convenient aspect about the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable
+interface
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that everything belongs to the same class. If you need to access something,
+you simply do it without going through a separate object. The penalty for this
+convenience is strict, though &#8211; you can have only a single thread running
+for that particular object (although you can create more objects of that type,
+or create other threads in different classes).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface is not what imposes this restriction. It&#8217;s the combination of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and your main class that does it, since you can have only one object of your
+main class per application.
+</FONT><a name="_Toc375545476"></a><a name="_Toc408018749"></a><P></DIV>
+<A NAME="Heading487"></A><H3 ALIGN=LEFT>
+Making
+many threads
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+the creation of many different threads. You can&#8217;t do this with the
+previous example, so you must go back to having separate classes inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to encapsulate the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But this is a more general solution and easier to understand, so while the
+previous example shows a coding style you&#8217;ll often see, I can&#8217;t
+recommend it for most cases because it&#8217;s just a little bit more confusing
+and less flexible.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example repeats the form of the examples above with counters and
+toggle buttons. But now all the information for a particular counter, including
+the button and text field, is inside its own object that is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+All the fields in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implementation can be changed at will, including the quantity and type of data
+components to acquire and display information. When a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created, the constructor requires a handle to an AWT 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">fills
+with its visual components. This way, if you change the visual components, the
+code that uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t need to be modified.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter4.java</font>
+<font color="#009900">// If you separate your thread from the main</font>
+<font color="#009900">// class, you can have as many threads as you</font>
+<font color="#009900">// want.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> Ticker <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Button b = <font color="#0000ff">new</font> Button("Toggle");
+  <font color="#0000ff">private</font> TextField t = <font color="#0000ff">new</font> TextField(10);
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+  <font color="#0000ff">public</font> Ticker(Container c) {
+    b.addActionListener(<font color="#0000ff">new</font> ToggleL());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.add(t);
+    p.add(b);
+    c.add(p);
+  }
+  <font color="#0000ff">class</font> ToggleL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      runFlag = !runFlag;
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      <font color="#0000ff">if</font>(runFlag)
+        t.setText(Integer.toString(count++));
+       <font color="#0000ff">try</font> {
+        sleep(100);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter4 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> Button start = <font color="#0000ff">new</font> Button("Start");
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> started = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> Ticker[] s;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> isApplet = <font color="#0000ff">true</font>;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> size;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#009900">// Get parameter "size" from Web page:</font>
+    <font color="#0000ff">if</font>(isApplet)
+      size = 
+        Integer.parseInt(getParameter("size"));
+    s = <font color="#0000ff">new</font> Ticker[size];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i] = <font color="#0000ff">new</font> Ticker(<font color="#0000ff">this</font>);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    add(start);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(!started) {
+        started = <font color="#0000ff">true</font>;
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+          s[i].start();
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter4 applet = <font color="#0000ff">new</font> Counter4();
+    <font color="#009900">// This isn't an applet, so set the flag and</font>
+    <font color="#009900">// produce the parameter values from args:</font>
+    applet.isApplet = <font color="#0000ff">false</font>;
+    applet.size = 
+      (args.length == 0 ? 5 :
+        Integer.parseInt(args[0]));
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter4");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(200, applet.size * 50);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains not only its threading equipment but also the way to control and
+display the thread. You can create as many threads as you want without
+explicitly creating the windowing components.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+there&#8217;s an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For maximum flexibility, the size of this array is initialized by reaching out
+into the Web page using applet parameters. Here&#8217;s what the size parameter
+looks like on the page, embedded inside the applet description:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;applet code=Counter4 width=600 height=600&gt;
+&lt;param name=size value="20"&gt;
+&lt;/applet&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2474"></A><A NAME="Index2475"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>param</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2476"></A><A NAME="Index2477"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and <A NAME="Index2478"></A><A NAME="Index2479"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>value</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are all Web-page keywords. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is what you&#8217;ll be referring to in your program, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>value</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be any string, not just something that resolves to a number.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that the determination of the size of the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is done inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and not as part of an inline definition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That is, you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>cannot</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+say as part of the class definition (outside of any methods):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">int</font> size = Integer.parseInt(getParameter("size"));
+Ticker[] s = <font color="#0000ff">new</font> Ticker[size]; </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can compile this, but you&#8217;ll get a strange null-pointer exception at run
+time. It works fine if you move the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getParameter(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">initialization
+inside of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The <A NAME="Index2480"></A>applet
+framework performs the necessary startup to grab the parameters before entering 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, this code is set up to be either an <A NAME="Index2481"></A>applet
+or an <A NAME="Index2482"></A>application.
+When it&#8217;s an application the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+argument is extracted from the command line (or a default value is provided).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the size of the array is established, new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created; as part of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor the button and text field for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+added to the applet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Pressing
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button means looping through the entire array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each one. Remember, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+performs necessary thread initialization and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that thread.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToggleL
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">listener
+simply inverts the flag in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and when the associated thread next takes note it can react accordingly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+value of this example is that it allows you to easily create large sets of
+independent subtasks and to monitor their behavior. In this case, you&#8217;ll
+see that as the number of subtasks gets larger, your machine will probably show
+more divergence in the displayed numbers because of the way that the threads
+are served.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also experiment to discover how important the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(100)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker.run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you remove the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+things will work fine until you press a toggle button. Then that particular
+thread has a false 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>runFlag</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is just tied up in a tight infinite loop, which appears difficult to break
+during multithreading, so the responsiveness and speed of the program really
+bogs down.
+</FONT><a name="_Toc375545477"></a><a name="_Toc408018750"></a><P></DIV>
+<A NAME="Heading488"></A><H3 ALIGN=LEFT>
+Daemon
+threads
+<P><A NAME="Index2483"></A><A NAME="Index2484"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+&#8220;daemon&#8221; thread is one that is supposed to provide a general
+service in the background as long as the program is running, but is not part of
+the essence of the program. Thus, when all of the non-daemon threads complete
+the program is terminated. Conversely, if there are any non-daemon threads
+still running the program doesn&#8217;t terminate. (There is, for instance, a
+thread that runs 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can find out if a thread is a daemon by calling <A NAME="Index2485"></A><A NAME="Index2486"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isDaemon(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you can turn the daemonhood of a thread on and off with <A NAME="Index2487"></A><A NAME="Index2488"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setDaemon(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If a thread is a daemon, then any threads it creates will automatically be
+daemons.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example demonstrates daemon threads:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Daemons.java</font>
+<font color="#009900">// Daemonic behavior</font>
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">class</font> Daemon <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> SIZE = 10;
+  <font color="#0000ff">private</font> Thread[] t = <font color="#0000ff">new</font> Thread[SIZE];
+  <font color="#0000ff">public</font> Daemon() { 
+    setDaemon(<font color="#0000ff">true</font>);
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; SIZE; i++)
+      t[i] = <font color="#0000ff">new</font> DaemonSpawn(i);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; SIZE; i++)
+      System.out.println(
+        "t[" + i + "].isDaemon() = " 
+        + t[i].isDaemon());
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) 
+      yield();
+  }
+}
+
+<font color="#0000ff">class</font> DaemonSpawn <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">public</font> DaemonSpawn(<font color="#0000ff">int</font> i) {
+    System.out.println(
+      "DaemonSpawn " + i + " started");
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) 
+      yield();
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Daemons {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Thread d = <font color="#0000ff">new</font> Daemon();
+    System.out.println(
+      "d.isDaemon() = " + d.isDaemon());
+    <font color="#009900">// Allow the daemon threads to finish</font>
+    <font color="#009900">// their startup processes:</font>
+    BufferedReader stdin =
+      <font color="#0000ff">new</font> BufferedReader(
+        <font color="#0000ff">new</font> InputStreamReader(System.in));
+    System.out.println("Waiting <font color="#0000ff">for</font> CR");
+    <font color="#0000ff">try</font> {
+      stdin.readLine();
+    } <font color="#0000ff">catch</font>(IOException e) {}
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Daemon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread sets its daemon flag to &#8220;true&#8221; and then spawns a bunch of
+other threads to show that they are also daemons. Then it goes into an infinite
+loop that calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to give up control to the other processes. In an earlier version of this
+program, the infinite loops would increment 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">counters,
+but this seemed to bring the whole program to a stop. Using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+makes the program quite peppy.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+nothing to keep the program from terminating once 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+finishes its job since there are nothing but daemon threads running. So that
+you can see the results of starting all the daemon threads, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.in</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is set up to read so the program waits for a carriage return before
+terminating. Without this you see only some of the results from the creation of
+the daemon threads. (Try replacing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+code with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls of various lengths to see this behavior.)
+</FONT><a name="_Toc375545478"></a><a name="_Toc408018751"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0154.html">Prev</a> | <a href="tij0156.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,99 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0130.html">Prev</a> | <a href="tij0132.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exercises</H2>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myString</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that you initialize in the constructor using the constructor&#8217;s
+argument. Add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(
+)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method and a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>concatenate(
+)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that appends a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to your internal string. Implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(
+)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myString</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Create two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods that each take a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myString
+x
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle as an argument and call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x.concatenate(&#8220;test&#8221;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but in the second method call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(
+)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+first. Test the two methods and show the different effects.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Battery</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is a battery number (as a unique identifier). Make it cloneable and give
+it a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Now create a class called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Battery</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that prints out all the batteries. Write a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that automatically clones all of its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Battery</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. Test this by cloning 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toy</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and printing the result.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Change
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckCloneable.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that all of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods catch the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CloneNotSupportedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rather than passing it to the caller.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Compete.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to add more member objects to classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thing2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thing4</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and see if you can determine how the timings vary with complexity &#8211;
+whether it&#8217;s a simple linear relationship or if it seems more complicated.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Starting
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Snake.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+create a deep-copy version of the snake.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">4</FONT><a name="Chapter_15"></a><a name="_Toc375545444"></a><a name="_Toc407441457"></a><a name="_Toc408018677"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0130.html">Prev</a> | <a href="tij0132.html">Next</a>
+</div>
+</body></html>
+

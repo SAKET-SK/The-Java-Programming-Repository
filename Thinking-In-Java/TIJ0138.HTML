@@ -1,0 +1,99 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0137.html">Prev</a> | <a href="tij0139.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Text
+areas
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1612"></A><A NAME="Index1613"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+except that it can have multiple lines and has significantly more
+functionality. In addition to what you can do with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can append text and insert or replace text at a given location. It seems
+like this functionality could be useful for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well, so it&#8217;s a little confusing to try to detect how the distinction
+is made. You might think that if you want 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+functionality everywhere you can simply use a one line 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in places where you would otherwise use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In Java 1.0<A NAME="Index1614"></A>,
+you also got scroll bars with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">even
+when they weren&#8217;t appropriate; that is, you got both vertical and
+horizontal scroll bars for a one line 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In Java 1.1<A NAME="Index1615"></A>
+this was remedied with an extra constructor that allows you to select which
+scroll bars (if any) are present. The following example shows only the Java 1.0<A NAME="Index1616"></A>
+behavior, in which the scrollbars are always on. Later in the chapter
+you&#8217;ll see an example that demonstrates Java 1.1 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TextArea1.java</font>
+<font color="#009900">// Using the text area control</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TextArea1 <font color="#0000ff">extends</font> Applet {
+  Button b1 = <font color="#0000ff">new</font> Button("Text Area 1");
+  Button b2 = <font color="#0000ff">new</font> Button("Text Area 2");
+  Button b3 = <font color="#0000ff">new</font> Button("Replace Text");
+  Button b4 = <font color="#0000ff">new</font> Button("Insert Text");
+  TextArea t1 = <font color="#0000ff">new</font> TextArea("t1", 1, 30);
+  TextArea t2 = <font color="#0000ff">new</font> TextArea("t2", 4, 30);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(b1);
+    add(t1);
+    add(b2);
+    add(t2);
+    add(b3);
+    add(b4);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b1))
+      getAppletContext().showStatus(t1.getText());
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b2)) {
+      t2.setText("Inserted by Button 2");
+      t2.appendText(": " + t1.getText());
+      getAppletContext().showStatus(t2.getText());
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b3)) {
+      String s = " Replacement ";
+      t2.replaceText(s, 3, 3 + s.length());
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b4))
+      t2.insertText(" Inserted ", 10);
+    <font color="#009900">// Let the base class handle it:</font>
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>; <font color="#009900">// We've handled it here</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are several different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructors, but the one shown here gives a starting string and the number of
+rows and columns. The different buttons show getting, appending, replacing, and
+inserting text.
+</FONT><a name="_Toc375545451"></a><a name="_Toc408018687"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0137.html">Prev</a> | <a href="tij0139.html">Next</a>
+</div>
+</body></html>
+

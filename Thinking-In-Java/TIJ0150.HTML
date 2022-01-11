@@ -1,0 +1,918 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0149.html">Prev</a> | <a href="tij0151.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Visual
+programming 
+<P>and
+Beans
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far in this book you&#8217;ve seen how valuable <A NAME="Index2180"></A>Java
+is for creating <A NAME="Index2181"></A>reusable
+pieces of code. The &#8220;most reusable&#8221; unit of code has been the
+class, since it comprises a cohesive unit of characteristics (fields) and
+behaviors (methods) that can be reused either directly via composition or
+through inheritance.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inheritance
+and polymorphism are essential parts of object-oriented programming, but in the
+majority of cases when you&#8217;re putting together an application, what you
+really want is components that do exactly what you need. You&#8217;d like to
+drop these parts into your design like the electronic engineer puts together
+chips on a circuit board (or even, in the case of Java, onto a Web page). It
+seems, too, that there should be some way to accelerate this &#8220;modular
+assembly&#8221; style of programming.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8220;<A NAME="Index2182"></A><A NAME="Index2183"></A>Visual
+programming&#8221; first became successful &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>very</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+successful &#8211; with <A NAME="Index2184"></A><A NAME="Index2185"></A><A NAME="Index2186"></A><A NAME="Index2187"></A>Microsoft&#8217;s
+Visual Basic (VB), followed by a second-generation design in <A NAME="Index2188"></A><A NAME="Index2189"></A><A NAME="Index2190"></A>Borland&#8217;s
+Delphi (the primary inspiration for the Java Beans design). With these
+programming tools the components are represented visually, which makes sense
+since they usually display some kind of visual component such as a button or a
+text field. The visual representation, in fact, is often exactly the way the
+component will look in the running program. So part of the process of visual
+programming involves dragging a component from a pallet and dropping it onto
+your form. The <A NAME="Index2191"></A><A NAME="Index2192"></A>application
+builder tool writes code as you do this, and that code will cause the component
+to be created in the running program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Simply
+dropping the component onto a form is usually not enough to complete the
+program. Often, you must change the characteristics of a component, such as
+what color it is, what text is on it, what database it&#8217;s connected to,
+etc. Characteristics that can be modified at design time are referred to as <A NAME="Index2193"></A><A NAME="Index2194"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>properties</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can manipulate the properties of your component inside the application
+builder tool, and when you create the program this configuration data is saved
+so that it can be rejuvenated when the program is started.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+now you&#8217;re probably used to the idea that an object is more than
+characteristics; it&#8217;s also a set of behaviors. At design-time, the
+behaviors of a visual component are partially represented by <A NAME="Index2195"></A><A NAME="Index2196"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>events</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+meaning &#8220;Here&#8217;s something that can happen to the component.&#8221;
+Ordinarily, you decide what you want to happen when an event occurs by tying
+code to that event.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the critical part: the application builder tool is able to dynamically
+interrogate (using <A NAME="Index2197"></A><A NAME="Index2198"></A>reflection)
+the component to find out which properties and events the component supports.
+Once it knows what they are, it can display the properties and allow you to
+change those (saving the state when you build the program), and also display
+the events. In general, you do something like double clicking on an event and
+the application builder tool creates a code body and ties it to that particular
+event. All you have to do at that point is write the code that executes when
+the event occurs.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+this adds up to a lot of work that&#8217;s done for you by the application
+builder tool. As a result you can focus on what the program looks like and what
+it is supposed to do, and rely on the application builder tool to manage the
+connection details for you. The reason that visual programming tools have been
+so successful is that they dramatically speed up the process of building an
+application &#8211; certainly the user interface, but often other portions of
+the application as well.
+</FONT><a name="_Toc408018718"></a><P></DIV>
+<A NAME="Heading455"></A><H3 ALIGN=LEFT>
+What
+is a Bean?
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+the dust settles, then, a <A NAME="Index2199"></A><A NAME="Index2200"></A>component
+is really just a block of code, typically embodied in a class. The key issue is
+the ability for the application builder tool to discover the properties and
+events for that component. To create a VB component, the programmer had to
+write a fairly complicated piece of code following certain conventions to
+expose the properties and events. Delphi was a second-generation visual
+programming tool and the language was actively designed around visual
+programming so it is much easier to create a visual component. However, Java
+has brought the creation of visual components to its most advanced state with
+Java Beans, because a Bean is just a class. You don&#8217;t have to write any
+extra code or use special language extensions in order to make something a
+Bean. The only thing you need to do, in fact, is slightly modify the way that
+you name your methods. It is the method name that tells the application builder
+tool whether this is a property, an event, or just an ordinary method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the Java documentation, this naming convention is mistakenly termed a
+&#8220;design pattern.&#8221; This is unfortunate since design patterns (see
+Chapter 16) are challenging enough without this sort of confusion. It&#8217;s
+not a design pattern, it&#8217;s just a <A NAME="Index2201"></A>naming
+convention and it&#8217;s fairly simple:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	For
+a property named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>xxx</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you typically create two methods: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getXxx(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setXxx(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that the first letter after get or set is automatically lowercased to
+produce the property name. The type produced by the &#8220;get&#8221; method is
+the same as the type of the argument to the &#8220;set&#8221; method. The name
+of the property and the type for the &#8220;get&#8221; and &#8220;set&#8221;
+are not related.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	For
+a boolean property, you can use the &#8220;get&#8221; and &#8220;set&#8221;
+approach above, but you can also use &#8220;is&#8221; instead of
+&#8220;get.&#8221;
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Ordinary
+methods of the Bean don&#8217;t conform to the above naming convention, but
+they&#8217;re 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	For
+events, you use the &#8220;listener&#8221; approach. It&#8217;s exactly the
+same as you&#8217;ve been seeing: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addFooBarListener(FooBarListener)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeFooBarListener(FooBarListener)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to handle a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FooBarEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Most of the time the built-in events and listeners will satisfy your needs, but
+you can also create your own events and listener interfaces.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Point
+1 above answers a question about something you might have noticed in the change
+from Java 1.0<A NAME="Index2202"></A>
+to Java 1.1<A NAME="Index2203"></A>:
+a number of method names have had small, apparently meaningless name changes.
+Now you can see that most of those changes had to do with adapting to the
+&#8220;get&#8221; and &#8220;set&#8221; naming conventions in order to make
+that particular component into a Bean.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">We
+can use these guidelines to create a simple Bean:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Frog.java</font>
+<font color="#009900">// A trivial Java Bean</font>
+<font color="#0000ff">package</font> frogbean;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">class</font> Spots {}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Frog {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> jumps;
+  <font color="#0000ff">private</font> Color color;
+  <font color="#0000ff">private</font> Spots spots;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> jmpr;
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getJumps() { <font color="#0000ff">return</font> jumps; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumps(<font color="#0000ff">int</font> newJumps) { 
+    jumps = newJumps;
+  }
+  <font color="#0000ff">public</font> Color getColor() { <font color="#0000ff">return</font> color; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(Color newColor) { 
+    color = newColor; 
+  }
+  <font color="#0000ff">public</font> Spots getSpots() { <font color="#0000ff">return</font> spots; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setSpots(Spots newSpots) {
+    spots = newSpots; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> isJumper() { <font color="#0000ff">return</font> jmpr; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumper(<font color="#0000ff">boolean</font> j) { jmpr = j; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addActionListener(
+      ActionListener l) {
+    <font color="#009900">//...</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeActionListener(
+      ActionListener l) {
+    <font color="#009900">// ...</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addKeyListener(KeyListener l) {
+    <font color="#009900">// ...</font>
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeKeyListener(KeyListener l) {
+    <font color="#009900">// ...</font>
+  }
+  <font color="#009900">// An "ordinary" public method:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> croak() {
+    System.out.println("Ribbet!");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+you can see that it&#8217;s just a class. Usually, all your fields will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and accessible only through methods. Following the naming convention, the
+properties are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jumps</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>color</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>spots</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jumper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(notice the change in case of the first letter in the property name). Although
+the name of the internal identifier is the same as the name of the property in
+the first three cases, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jumper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see that the property name does not force you to use any particular
+name for internal variables (or, indeed, to even 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>have</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+any internal variable for that property).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+events this Bean handles are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>KeyEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+based on the naming of the &#8220;add&#8221; and &#8220;remove&#8221; methods
+for the associated listener. Finally, you can see that the ordinary method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>croak(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is still part of the Bean simply because it&#8217;s a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, not because it conforms to any naming scheme.
+</FONT><a name="_Toc408018719"></a><P></DIV>
+<A NAME="Heading456"></A><H3 ALIGN=LEFT>
+Extracting
+BeanInfo 
+<P>with
+the Introspector
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the most critical parts of the Bean scheme occurs when you drag a Bean off a
+palette and plop it down on a form. The application builder tool must be able
+to create the Bean (which it can do if there&#8217;s a default constructor) and
+then, without access to the Bean&#8217;s source code, extract all the necessary
+information to create the property sheet and event handlers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Part
+of the solution is already evident from the end of Chapter 11: Java 1.1<A NAME="Index2204"></A>
+<A NAME="Index2205"></A><A NAME="Index2206"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>reflection</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows all the methods of an anonymous class to be discovered. This is perfect
+for solving the Bean problem without requiring you to use any extra language
+keywords like those required in other visual programming languages. In fact,
+one of the prime reasons that reflection was added to Java 1.1 was to support
+Beans (although reflection also supports object serialization and remote method
+invocation). So you might expect that the creator of the application builder
+tool would have to reflect each Bean and hunt through its methods to find the
+properties and events for that Bean.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is certainly possible, but the Java designers wanted to provide a standard
+interface for everyone to use, not only to make Beans simpler to use but also
+to provide a standard gateway to the creation of more complex Beans. This
+interface is the <A NAME="Index2207"></A><A NAME="Index2208"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class, and the most important method in this class is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+<A NAME="Index2209"></A><A NAME="Index2210"></A>getBeanInfo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You pass a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle to this method and it fully interrogates that class and returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that you can then dissect to find properties, methods, and events.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Usually
+you won&#8217;t care about any of this &#8211; you&#8217;ll probably get most
+of your Beans off the shelf from vendors, and you don&#8217;t need to know all
+the magic that&#8217;s going on underneath. You&#8217;ll simply drag your Beans
+onto your form, then configure their properties and write handlers for the
+events you&#8217;re interested in. However, it&#8217;s an interesting and
+educational exercise to use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to display information about a Bean, so here&#8217;s a tool that does it
+(you&#8217;ll find it in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>frogbean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subdirectory):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BeanDumper.java</font>
+<font color="#009900">// A method to introspect a Bean</font>
+<font color="#0000ff">import</font> java.beans.*;
+<font color="#0000ff">import</font> java.lang.reflect.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BeanDumper {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> dump(Class bean){
+    BeanInfo bi = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      bi = Introspector.getBeanInfo(
+        bean, java.lang.Object.<font color="#0000ff">class</font>);
+    } <font color="#0000ff">catch</font>(IntrospectionException ex) {
+      System.out.println("Couldn't introspect " +
+        bean.getName());
+      System.exit(1);
+    }
+    PropertyDescriptor[] properties = 
+      bi.getPropertyDescriptors();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; properties.length; i++) {
+      Class p = properties[i].getPropertyType();
+      System.out.println(
+        "Property type:\n  " + p.getName());
+      System.out.println(
+        "Property name:\n  " + 
+        properties[i].getName());
+      Method readMethod = 
+        properties[i].getReadMethod();
+      <font color="#0000ff">if</font>(readMethod != <font color="#0000ff">null</font>)
+        System.out.println(
+          "Read method:\n  " + 
+          readMethod.toString());
+      Method writeMethod = 
+        properties[i].getWriteMethod();
+      <font color="#0000ff">if</font>(writeMethod != <font color="#0000ff">null</font>)
+        System.out.println(
+          "Write method:\n  " +
+          writeMethod.toString());
+      System.out.println("====================");
+    }
+    System.out.println("Public methods:");
+    MethodDescriptor[] methods =
+      bi.getMethodDescriptors();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; methods.length; i++)
+      System.out.println(
+        methods[i].getMethod().toString());
+    System.out.println("======================");
+    System.out.println("Event support:");
+    EventSetDescriptor[] events = 
+      bi.getEventSetDescriptors();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; events.length; i++) {
+      System.out.println("Listener type:\n  " +
+        events[i].getListenerType().getName());
+      Method[] lm = 
+        events[i].getListenerMethods();
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; lm.length; j++)
+        System.out.println(
+          "Listener method:\n  " +
+          lm[j].getName());
+      MethodDescriptor[] lmd = 
+        events[i].getListenerMethodDescriptors();
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; lmd.length; j++)
+        System.out.println(
+          "Method descriptor:\n  " +
+          lmd[j].getMethod().toString());
+      Method addListener = 
+        events[i].getAddListenerMethod();
+      System.out.println(
+          "Add Listener Method:\n  " +
+        addListener.toString());
+      Method removeListener =
+        events[i].getRemoveListenerMethod();
+      System.out.println(
+        "Remove Listener Method:\n  " +
+        removeListener.toString());
+      System.out.println("====================");
+    }
+  }
+  <font color="#009900">// Dump the class of your choice:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">if</font>(args.length &lt; 1) {
+      System.err.println("usage: \n" +
+        "BeanDumper fully.qualified.<font color="#0000ff">class</font>");
+      System.exit(0);
+    }
+    Class c = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      c = Class.forName(args[0]);
+    } <font color="#0000ff">catch</font>(ClassNotFoundException ex) {
+      System.err.println(
+        "Couldn't find " + args[0]);
+      System.exit(0);
+    }
+    dump(c);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanDumper.dump(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the method that does all the work. First it tries to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, and if successful calls the methods of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that produce information about properties, methods, and events. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector.getBeanInfo(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll see there is a second argument. This tells the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where to stop in the inheritance hierarchy. Here, it stops before it parses all
+the methods from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since we&#8217;re not interested in seeing those.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+properties, <A NAME="Index2211"></A><A NAME="Index2212"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPropertyDescriptors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns an array of <A NAME="Index2213"></A><A NAME="Index2214"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PropertyDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+For each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PropertyDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can call <A NAME="Index2215"></A><A NAME="Index2216"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPropertyType(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to find the class of object that is passed in and out via the property methods.
+Then, for each property you can get its pseudonym (extracted from the method
+names) with <A NAME="Index2217"></A><A NAME="Index2218"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the method for reading with <A NAME="Index2219"></A><A NAME="Index2220"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getReadMethod(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the method for writing with <A NAME="Index2221"></A><A NAME="Index2222"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getWriteMethod(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These last two methods return a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that can actually be used to invoke the corresponding method on the
+object (this is part of reflection).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+the public methods (including the property methods), <A NAME="Index2223"></A><A NAME="Index2224"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMethodDescriptors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns an array of <A NAME="Index2225"></A><A NAME="Index2226"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MethodDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+For each one you can get the associated <A NAME="Index2227"></A><A NAME="Index2228"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and print out its name.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+the events, <A NAME="Index2229"></A><A NAME="Index2230"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getEventSetDescriptors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns an array of (what else?) <A NAME="Index2231"></A><A NAME="Index2232"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EventSetDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Each of these can be queried to find out the class of the listener, the methods
+of that listener class, and the add- and remove-listener methods. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanDumper
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">program
+prints out all of this information.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanDumper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class like this:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+BeanDumper frogbean.Frog
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">the
+output, after removing extra details that are unnecessary here, is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> name: Frog
+Property type:
+  Color
+Property name:
+  color
+Read method:
+  <font color="#0000ff">public</font> Color getColor()
+Write method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(Color)
+====================
+Property type:
+  Spots
+Property name:
+  spots
+Read method:
+  <font color="#0000ff">public</font> Spots getSpots()
+Write method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setSpots(Spots)
+====================
+Property type:
+  <font color="#0000ff">boolean</font>
+Property name:
+  jumper
+Read method:
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> isJumper()
+Write method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumper(<font color="#0000ff">boolean</font>)
+====================
+Property type:
+  <font color="#0000ff">int</font>
+Property name:
+  jumps
+Read method:
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getJumps()
+Write method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumps(<font color="#0000ff">int</font>)
+====================
+Public methods:
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumps(<font color="#0000ff">int</font>)
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> croak()
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> removeActionListener(ActionListener)
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> addActionListener(ActionListener)
+<font color="#0000ff">public</font> <font color="#0000ff">int</font> getJumps()
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> setColor(Color)
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> setSpots(Spots)
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> setJumper(<font color="#0000ff">boolean</font>)
+<font color="#0000ff">public</font> <font color="#0000ff">boolean</font> isJumper()
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> addKeyListener(KeyListener)
+<font color="#0000ff">public</font> Color getColor()
+<font color="#0000ff">public</font> <font color="#0000ff">void</font> removeKeyListener(KeyListener)
+<font color="#0000ff">public</font> Spots getSpots()
+======================
+Event support:
+Listener type:
+  KeyListener
+Listener method:
+  keyTyped
+Listener method:
+  keyPressed
+Listener method:
+  keyReleased
+Method descriptor:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyTyped(KeyEvent)
+Method descriptor:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyPressed(KeyEvent)
+Method descriptor:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyReleased(KeyEvent)
+Add Listener Method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addKeyListener(KeyListener)
+Remove Listener Method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeKeyListener(KeyListener)
+====================
+Listener type:
+  ActionListener
+Listener method:
+  actionPerformed
+Method descriptor:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent)
+Add Listener Method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addActionListener(ActionListener)
+Remove Listener Method:
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeActionListener(ActionListener)
+====================</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+reveals most of what the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+sees as it produces a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object from your Bean. You can see that the type of the property and its name
+are independent. Notice the lowercasing of the property name. (The only time
+this doesn&#8217;t occur is when the property name begins with more than one
+capital letter in a row.) And remember that the method names you&#8217;re
+seeing here (such as the read and write methods) are actually produced from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Method</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that can be used to invoke the associated method on the object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+public method list includes the methods that are not associated with a property
+or event, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>croak(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as well as those that are. These are all the methods that you can call
+programmatically for a Bean, and the application builder tool can choose to
+list all of these while you&#8217;re making method calls, to ease your task.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+you can see that the events are fully parsed out into the listener, its
+methods, and the add- and remove-listener methods. Basically, once you have the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can find out everything of importance for the Bean. You can also call the
+methods for that Bean, even though you don&#8217;t have any other information
+except the object (again, a feature of reflection).
+</FONT><a name="_Toc408018720"></a><P></DIV>
+<A NAME="Heading457"></A><H3 ALIGN=LEFT>
+A
+more sophisticated Bean
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+next example is slightly more sophisticated, albeit frivolous. It&#8217;s a
+canvas that draws a little circle around the mouse whenever the mouse is moved.
+When you press the mouse, the word &#8220;Bang!&#8221; appears in the middle of
+the screen, and an action listener is fired.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+properties you can change are the size of the circle as well as the color,
+size, and text of the word that is displayed when you press the mouse. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also has its own <A NAME="Index2233"></A><A NAME="Index2234"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2235"></A><A NAME="Index2236"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can attach your own listener that will be fired when the user clicks on
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You should be able to recognize the property and event support:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BangBean.java</font>
+<font color="#009900">// A graphical Bean</font>
+<font color="#0000ff">package</font> bangbean;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BangBean <font color="#0000ff">extends</font> Canvas
+     <font color="#0000ff">implements</font> Serializable {
+  <font color="#0000ff">protected</font> <font color="#0000ff">int</font> xm, ym;
+  <font color="#0000ff">protected</font> <font color="#0000ff">int</font> cSize = 20; <font color="#009900">// Circle size</font>
+  <font color="#0000ff">protected</font> String text = "Bang!";
+  <font color="#0000ff">protected</font> <font color="#0000ff">int</font> fontSize = 48;
+  <font color="#0000ff">protected</font> Color tColor = Color.red;
+  <font color="#0000ff">protected</font> ActionListener actionListener;
+  <font color="#0000ff">public</font> BangBean() {
+    addMouseListener(<font color="#0000ff">new</font> ML());
+    addMouseMotionListener(<font color="#0000ff">new</font> MML());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getCircleSize() { <font color="#0000ff">return</font> cSize; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setCircleSize(<font color="#0000ff">int</font> newSize) {
+    cSize = newSize;
+  }
+  <font color="#0000ff">public</font> String getBangText() { <font color="#0000ff">return</font> text; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setBangText(String newText) {
+    text = newText;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getFontSize() { <font color="#0000ff">return</font> fontSize; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setFontSize(<font color="#0000ff">int</font> newSize) {
+    fontSize = newSize;
+  }
+  <font color="#0000ff">public</font> Color getTextColor() { <font color="#0000ff">return</font> tColor; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setTextColor(Color newColor) {
+    tColor = newColor;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.setColor(Color.black);
+    g.drawOval(xm - cSize/2, ym - cSize/2, 
+      cSize, cSize);
+  }
+  <font color="#009900">// This is a unicast listener, which is</font>
+  <font color="#009900">// the simplest form of listener management:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> addActionListener (
+      ActionListener l) 
+        <font color="#0000ff">throws</font> TooManyListenersException {
+    <font color="#0000ff">if</font>(actionListener != <font color="#0000ff">null</font>)
+      <font color="#0000ff">throw</font> <font color="#0000ff">new</font> TooManyListenersException();
+    actionListener = l;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> removeActionListener(
+      ActionListener l) {
+    actionListener = <font color="#0000ff">null</font>;
+  }
+  <font color="#0000ff">class</font> ML <font color="#0000ff">extends</font> MouseAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mousePressed(MouseEvent e) {
+      Graphics g = getGraphics();
+      g.setColor(tColor);
+      g.setFont(
+        <font color="#0000ff">new</font> Font(
+          "TimesRoman", Font.BOLD, fontSize));
+      <font color="#0000ff">int</font> width = 
+        g.getFontMetrics().stringWidth(text);
+      g.drawString(text, 
+        (getSize().width - width) /2,
+        getSize().height/2);
+      g.dispose();
+      <font color="#009900">// Call the listener's method:</font>
+      <font color="#0000ff">if</font>(actionListener != <font color="#0000ff">null</font>)
+        actionListener.actionPerformed(
+          <font color="#0000ff">new</font> ActionEvent(BangBean.<font color="#0000ff">this</font>,
+            ActionEvent.ACTION_PERFORMED, <font color="#0000ff">null</font>));
+    }
+  }
+  <font color="#0000ff">class</font> MML <font color="#0000ff">extends</font> MouseMotionAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseMoved(MouseEvent e) {
+      xm = e.getX();
+      ym = e.getY();
+      repaint();
+    }
+  }
+  <font color="#0000ff">public</font> Dimension getPreferredSize() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Dimension(200, 200);
+  }
+  <font color="#009900">// Testing the BangBean:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    BangBean bb = <font color="#0000ff">new</font> BangBean();
+    <font color="#0000ff">try</font> {
+      bb.addActionListener(<font color="#0000ff">new</font> BBL());
+    } <font color="#0000ff">catch</font>(TooManyListenersException e) {}
+    Frame aFrame = <font color="#0000ff">new</font> Frame("BangBean Test");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(bb, BorderLayout.CENTER);
+    aFrame.setSize(300,300);
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+  <font color="#009900">// During testing, send action information</font>
+  <font color="#009900">// to the console:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">class</font> BBL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("BangBean action");
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first thing you&#8217;ll notice is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implements the <A NAME="Index2237"></A><A NAME="Index2238"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. This means that the application builder tool can
+&#8220;pickle&#8221; all the information for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using serialization after the program designer has adjusted the values of the
+properties. When the Bean is created as part of the running application, these
+&#8220;pickled&#8221; properties are restored so that you get exactly what you
+designed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that all the fields are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is what you&#8217;ll usually do with a Bean &#8211; allow access only
+through methods, usually using the &#8220;property&#8221; scheme.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you look at the signature for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll see that it can throw a <A NAME="Index2239"></A><A NAME="Index2240"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TooManyListenersException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This indicates that it is <A NAME="Index2241"></A><A NAME="Index2242"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>unicast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means it notifies only one listener when the event occurs. Ordinarily,
+you&#8217;ll use <A NAME="Index2243"></A><A NAME="Index2244"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multicast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+events so that many listeners can be notified of an event. However, that runs
+into issues that you won&#8217;t be ready for until the next chapter, so it
+will be revisited there (under the heading &#8220;Java Beans revisited&#8221;).
+A unicast event sidesteps the problem.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press the mouse, the text is put in the middle of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and if the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field is not 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called, creating a new <A NAME="Index2245"></A><A NAME="Index2246"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+in the process. Whenever the mouse is moved, its new coordinates are captured
+and the canvas is repainted (erasing any text that&#8217;s on the canvas, as
+you&#8217;ll see).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to allow you to test the program from the command line. When a Bean is
+in a development environment, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will not be used, but it&#8217;s helpful to have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in each of your Beans because it provides for rapid testing. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">creates
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and places a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+within it, attaching a simple 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to print to the console whenever an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occurs. Usually, of course, the application builder tool would create most of
+the code that uses the Bean.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanDumper</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or put the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside a Bean-enabled development environment, you&#8217;ll notice that there
+are many more properties and actions than are evident from the above code.
+That&#8217;s because 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a Bean, so you&#8217;re seeing its properties and events as well.
+</FONT><a name="_Toc408018721"></a><P></DIV>
+<A NAME="Heading458"></A><H3 ALIGN=LEFT>
+Packaging
+a Bean
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Before
+you can bring a Bean into a Bean-enabled visual builder tool, it must be put
+into the standard Bean container, which is a <A NAME="Index2247"></A><A NAME="Index2248"></A>JAR
+(Java ARchive) file that includes all the Bean classes as well as a
+&#8220;manifest&#8221; file that says &#8220;This is a Bean.&#8221; A manifest
+file is simply a text file that follows a particular form. For the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the manifest file looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Manifest-Version: 1.0
+
+Name: bangbean/BangBean.<font color="#0000ff">class</font>
+Java-Bean: True </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first line indicates the version of the manifest scheme, which until further
+notice from Sun is 1.0. The second line (empty lines are ignored) names the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file, and the third says, &#8220;It&#8217;s a Bean.&#8221; Without the third
+line, the program builder tool will not recognize the class as a Bean.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+only tricky part is that you must make sure that you get the proper path in the
+&#8220;Name:&#8221; field. If you look back at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll see it&#8217;s in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package
+bangbean 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(and
+thus in a subdirectory called &#8220;bangbean&#8221; that&#8217;s off of the
+classpath), and the name in the manifest file must include this package
+information. In addition, you must place the manifest file in the directory 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>above</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the root of your package path, which in this case means placing the file in the
+directory above the &#8220;bangbean&#8221; subdirectory. Then you must invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the same directory as the <A NAME="Index2249"></A><A NAME="Index2250"></A>manifest
+file, as follows:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+cfm BangBean.jar BangBean.mf bangbean
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+assumes that you want the resulting JAR file to be named 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and that you&#8217;ve put the manifest in a file called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.mf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might wonder &#8220;What about all the other classes that were generated when I
+compiled 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?&#8221;
+Well, they all ended up inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bangbean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subdirectory, and you&#8217;ll see that the last argument for the above 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+command line is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bangbean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subdirectory. When you give 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the name of a subdirectory, it packages that entire subdirectory into the jar
+file (including, in this case, the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+source-code file &#8211; you might not choose to include the source with your
+own Beans). In addition, if you turn around and unpack the JAR file
+you&#8217;ve just created, you&#8217;ll discover that your manifest file
+isn&#8217;t inside, but that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has created its own manifest file (based partly on yours) called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MANIFEST.MF
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+placed it inside the subdirectory 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>META-INF</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(for &#8220;meta-information&#8221;). If you open this manifest file
+you&#8217;ll also notice that digital signature information has been added by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+each file, of the form:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>Digest-Algorithms: SHA MD5 
+SHA-Digest: pDpEAG9NaeCx8aFtqPI4udSX/O0=
+MD5-Digest: O4NcS1hE3Smnzlp2hj6qeg== </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general, you don&#8217;t need to worry about any of this, and if you make
+changes you can just modify your original manifest file and re-invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create a new JAR file for your Bean. You can also add other Beans to the JAR
+file simply by adding their information to your manifest.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+thing to notice is that you&#8217;ll probably want to put each Bean in its own
+subdirectory, since when you create a JAR file you hand the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+utility the name of a subdirectory and it puts everything in that subdirectory
+into the JAR file. You can see that both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are in their own subdirectories.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you have your Bean properly inside a JAR file you can bring it into a
+Beans-enabled program-builder environment. The way you do this varies from one
+tool to the next, but Sun provides a freely-available test bed for Java Beans
+in their &#8220;Beans Development Kit&#8221; (BDK) called the &#8220;<A NAME="Index2251"></A><A NAME="Index2252"></A>beanbox.&#8221;
+(Download the BDK from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>www.javasoft.com</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+To place your Bean in the beanbox, copy the JAR file into the BDK&#8217;s
+&#8220;jars&#8221; subdirectory before you start up the beanbox.
+</FONT><a name="_Toc408018722"></a><P></DIV>
+<A NAME="Heading459"></A><H3 ALIGN=LEFT>
+More
+complex Bean support
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see how remarkably simple it is to make a Bean. But you aren&#8217;t
+limited to what you&#8217;ve seen here. The Java Bean design provides a simple
+point of entry but can also scale to more complex situations. These situations
+are beyond the scope of this book but they will be briefly introduced here. You
+can find more details at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://java.sun.com/beans</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+place where you can add sophistication is with properties. The examples above
+have shown only single properties, but it&#8217;s also possible to represent
+multiple properties in an array. This is called an <A NAME="Index2253"></A><A NAME="Index2254"></A><A NAME="Index2255"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>indexed
+property
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You simply provide the appropriate methods (again following a naming convention
+for the method names) and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+recognizes an indexed property so your application builder tool can respond
+appropriately.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Properties
+can be <A NAME="Index2256"></A><A NAME="Index2257"></A><A NAME="Index2258"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>bound</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that they will notify other objects via a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PropertyChangeEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The other objects can then choose to change themselves based on the change to
+the Bean.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Properties
+can be <A NAME="Index2259"></A><A NAME="Index2260"></A><A NAME="Index2261"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>constrained</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that other objects can veto a change to that property if it is
+unacceptable. The other objects are notified using a <A NAME="Index2262"></A><A NAME="Index2263"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PropertyChangeEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and they can throw a <A NAME="Index2264"></A><A NAME="Index2265"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ProptertyVetoException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to prevent the change from happening and to restore the old values.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also change the way your Bean is represented at design time:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+can provide a <A NAME="Index2266"></A><A NAME="Index2267"></A>custom
+property sheet for your particular Bean. The ordinary property sheet will be
+used for all other Beans, but yours is automatically invoked when your Bean is
+selected.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+can create a <A NAME="Index2268"></A><A NAME="Index2269"></A>custom
+editor for a particular property, so the ordinary property sheet is used, but
+when your special property is being edited, your editor will automatically be
+invoked.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+can provide a <A NAME="Index2270"></A><A NAME="Index2271"></A>custom
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BeanInfo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class for your Bean that produces information that&#8217;s different from the
+default created by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Introspector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It&#8217;s
+also possible to turn &#8220;expert&#8221; mode on and off in all <A NAME="Index2272"></A><A NAME="Index2273"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FeatureDescriptor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to distinguish between basic features and more complicated ones.
+</FONT><a name="_Toc408018723"></a></OL><A NAME="Heading460"></A><H3 ALIGN=LEFT>
+More
+to Beans
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+another issue that couldn&#8217;t be addressed here. Whenever you create a
+Bean, you should expect that it will be run in a multithreaded environment.
+This means that you must understand the issues of threading, which will be
+introduced in the next chapter. You&#8217;ll find a section there called
+&#8220;Java Beans revisited&#8221; that will look at the problem and its
+solution.
+</FONT><a name="_Toc408018724"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0149.html">Prev</a> | <a href="tij0151.html">Next</a>
+</div>
+</body></html>
+

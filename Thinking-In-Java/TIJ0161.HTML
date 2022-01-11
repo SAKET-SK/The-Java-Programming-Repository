@@ -1,0 +1,119 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0160.html">Prev</a> | <a href="tij0162.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exercises</H2>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inherit
+a class from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and override the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+print a message, then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Repeat this three times, then return from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Put a start-up message in the constructor and override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>finalize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to print a shut-down message. Make a separate thread class that calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.gc(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.runFinalization(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inside
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+printing a message as it does so. Make several thread objects of both types and
+run them to see what happens.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that the thread is an inner class and doesn&#8217;t need to explicitly store
+a handle to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of synchronizing the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+subclasses, one with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that starts up, captures the handle of the second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The other class&#8217; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyAll(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the first thread after some number of seconds have passed, so the first
+thread can print out a message.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter5.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+remove the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and explain the results. Replace the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and explain the results.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadGroup1.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+replace the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sys.suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the thread group, causing it to wait for two seconds. For this to work
+correctly you must acquire the lock for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sys
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">inside
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Change
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Daemons.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Experiment with different sleep times to see what happens.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Intermediate)
+In Chapter 7, locate the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GreenhouseControls.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example, which consists of three files. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is based on watching the time. Change 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and change the rest of the design so that it works with this new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-based
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><a name="BM___"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">w</FONT><a name="Chapter_17"></a><a name="_Toc375545491"></a><a name="_Toc407441459"></a><a name="_Toc408018764"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0160.html">Prev</a> | <a href="tij0162.html">Next</a>
+</div>
+</body></html>
+

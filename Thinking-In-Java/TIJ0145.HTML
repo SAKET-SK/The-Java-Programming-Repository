@@ -1,0 +1,457 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0144.html">Prev</a> | <a href="tij0146.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Alternatives
+to action
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+noted previously, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+isn&#8217;t the only method that&#8217;s automatically called by <A NAME="Index1715"></A><A NAME="Index1716"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+once it sorts everything out for you. There are three other sets of methods
+that are called, and if you want to capture certain types of events (keyboard,
+mouse, and focus events) all you have to do is override the provided method.
+These methods are defined in the base class <A NAME="Index1717"></A><A NAME="Index1718"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so they&#8217;re available in virtually all the controls that you might place
+on a form. However, you should be aware that this approach is deprecated in
+Java 1.1<A NAME="Index1719"></A>,
+so although you might see legacy code using this technique you should use the
+Java 1.1 approaches (described later in this chapter) instead.
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="184">
+      <COL width="157">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Component
+method
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+it&#8217;s called
+</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1720"></A><A NAME="Index1721"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action
+(Event evt, Object what)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the &#8220;typical&#8221; event occurs for this component (for example, when a
+button is pushed or a drop-down list item is selected)
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1722"></A><A NAME="Index1723"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyDown
+(Event evt, int key)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+key is pressed when this component has the focus. The second argument is the
+key that was pressed and is redundantly copied from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>evt.key</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1724"></A><A NAME="Index1725"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyUp(Event
+evt, int key)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+key is released when this component has the focus.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1726"></A><A NAME="Index1727"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lostFocus(Event
+evt, Object what)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+focus has moved away from the target. Normally, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>what</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is redundantly copied from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>evt.arg</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1728"></A><A NAME="Index1729"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gotFocus(Event
+evt, Object what)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+focus has moved into the target.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1730"></A><A NAME="Index1731"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDown(Event
+evt, 
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+mouse down has occurred over the component, at the coordinates 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1732"></A><A NAME="Index1733"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseUp(Event
+evt, int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+mouse up has occurred over the component.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1734"></A><A NAME="Index1735"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseMove(Event
+evt, int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+mouse has moved while it&#8217;s over the component.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1736"></A><A NAME="Index1737"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDrag(Event
+evt, int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+mouse is being dragged after a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDown</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occurred over the component. All drag events are reported to the component in
+which the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDown</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occurred until there is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseUp</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1738"></A><A NAME="Index1739"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseEnter(Event
+evt, int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+mouse wasn&#8217;t over the component before, but now it is.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1740"></A><A NAME="Index1741"></A><TR VALIGN="TOP">
+<TD WIDTH=184 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseExit(Event
+evt, int x, int y)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=157 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+mouse used to be over the component, but now it isn&#8217;t.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that each method receives an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object along with some information that you&#8217;ll typically need when
+you&#8217;re handling that particular situation &#8211; with a mouse event, for
+example, it&#8217;s likely that you&#8217;ll want to know the coordinates where
+the mouse event occurred. It&#8217;s interesting to note that when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls any of these methods (the typical case), the extra arguments are always
+redundant as they are contained within the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. In fact, if you look at the source code for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component.handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see that it explicitly plucks the additional arguments out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. (This might be considered inefficient coding in some languages, but
+remember that Java&#8217;s focus is on safety, not necessarily speed.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+prove to yourself that these events are in fact being called and as an
+interesting experiment, it&#8217;s worth creating an applet that overrides each
+of the methods above (except for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;),
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+is overridden in many other places in this chapter) and displays data about
+each of the events as they happen.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also shows you how to make your own button object because that&#8217;s
+what is used as the target of all the events of interest. You might first
+(naturally) assume that to make a new button, you&#8217;d inherit from <A NAME="Index1742"></A><A NAME="Index1743"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+But this doesn&#8217;t work. Instead, you inherit from <A NAME="Index1744"></A><A NAME="Index1745"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a much more generic component) and paint your button on that canvas by
+overriding the <A NAME="Index1746"></A><A NAME="Index1747"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. As you&#8217;ll see, it&#8217;s really too bad that overriding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t work, since there&#8217;s a bit of code involved to paint the
+button. (If you don&#8217;t believe me, try exchanging 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in this example, and remember to call the base-class constructor 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super(label)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll see that the button doesn&#8217;t get painted and the events
+don&#8217;t get handled.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is specific: it works only with an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AutoEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;parent window&#8221; (not a base class, but the window in which this
+button is created and lives). With this knowledge, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can reach into the parent window and manipulate its text fields, which is
+what&#8217;s necessary to be able to write the status information into the
+fields of the parent. Of course this is a much more limited solution, since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used only in conjunction with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AutoEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This kind of code is sometimes called &#8220;highly coupled.&#8221; However, to
+make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>myButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+more generic requires a lot more effort that isn&#8217;t warranted for this
+example (and possibly for many of the applets that you will write). Again, keep
+in mind that the following code uses APIs that are deprecated in Java 1.1<A NAME="Index1748"></A>.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: AutoEvent.java</font>
+<font color="#009900">// Alternatives to action()</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> MyButton <font color="#0000ff">extends</font> Canvas {
+  AutoEvent parent;
+  Color color;
+  String label;
+  MyButton(AutoEvent parent, 
+           Color color, String label) {
+    <font color="#0000ff">this</font>.label = label;
+    <font color="#0000ff">this</font>.parent = parent;
+    <font color="#0000ff">this</font>.color = color;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(color);
+    <font color="#0000ff">int</font> rnd = 30;
+    g.fillRoundRect(0, 0, size().width, 
+                    size().height, rnd, rnd);
+    g.setColor(Color.black);
+    g.drawRoundRect(0, 0, size().width, 
+                    size().height, rnd, rnd);
+    FontMetrics fm = g.getFontMetrics();
+    <font color="#0000ff">int</font> width = fm.stringWidth(label);
+    <font color="#0000ff">int</font> height = fm.getHeight();
+    <font color="#0000ff">int</font> ascent = fm.getAscent();
+    <font color="#0000ff">int</font> leading = fm.getLeading();
+    <font color="#0000ff">int</font> horizMargin = (size().width - width)/2;
+    <font color="#0000ff">int</font> verMargin = (size().height - height)/2;
+    g.setColor(Color.white);
+    g.drawString(label, horizMargin, 
+                 verMargin + ascent + leading);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> keyDown(Event evt, <font color="#0000ff">int</font> key) {
+    TextField t = 
+      (TextField)parent.h.get("keyDown");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> keyUp(Event evt, <font color="#0000ff">int</font> key) {
+    TextField t = 
+      (TextField)parent.h.get("keyUp");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> lostFocus(Event evt, Object w) {
+    TextField t = 
+      (TextField)parent.h.get("lostFocus");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> gotFocus(Event evt, Object w) {
+    TextField t = 
+      (TextField)parent.h.get("gotFocus");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseDown(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseDown");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseDrag(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseDrag");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseEnter(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseEnter");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseExit(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseExit");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseMove(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseMove");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> mouseUp(Event evt,<font color="#0000ff">int</font> x,<font color="#0000ff">int</font> y) {
+    TextField t = 
+      (TextField)parent.h.get("mouseUp");
+    t.setText(evt.toString());
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> AutoEvent <font color="#0000ff">extends</font> Applet {
+  Hashtable h = <font color="#0000ff">new</font> Hashtable();
+  String[] event = {
+    "keyDown", "keyUp", "lostFocus", 
+    "gotFocus", "mouseDown", "mouseUp", 
+    "mouseMove", "mouseDrag", "mouseEnter", 
+    "mouseExit"
+  };
+  MyButton 
+    b1 = <font color="#0000ff">new</font> MyButton(<font color="#0000ff">this</font>, Color.blue, "test1"),
+    b2 = <font color="#0000ff">new</font> MyButton(<font color="#0000ff">this</font>, Color.red, "test2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(event.length+1,2));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; event.length; i++) {
+      TextField t = <font color="#0000ff">new</font> TextField();
+      t.setEditable(<font color="#0000ff">false</font>);
+      add(<font color="#0000ff">new</font> Label(event[i], Label.CENTER)); 
+      add(t);
+      h.put(event[i], t);
+    }
+    add(b1);
+    add(b2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see the constructor uses the technique of using the same name for the
+argument as what it&#8217;s assigned to, and differentiating between the two
+using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">this.label
+= label;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method starts out simple: it fills a &#8220;round rectangle&#8221; with the
+button&#8217;s color, and then draws a black line around it. Notice the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to determine the width and height of the component (in pixels, of course).
+After this, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">seems
+quite complicated because there&#8217;s a lot of calculation going on to figure
+out how to center the button&#8217;s label inside the button using the
+&#8220;font metrics.&#8221; You can get a pretty good idea of what&#8217;s
+going on by looking at the method call, and it turns out that this is pretty
+stock code, so you can just cut and paste it when you want to center a label
+inside any component.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can&#8217;t understand exactly how the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyDown(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyUp(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+etc. methods work until you look down at the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AutoEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. This contains a <A NAME="Index1749"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to hold the strings representing the type of event and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+where information about that event is held. Of course, these could have been
+created statically rather than putting them in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but I think you&#8217;ll agree that it&#8217;s a lot easier to use and change.
+In particular, if you need to add or remove a new type of event in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AutoEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you simply add or remove a string in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array &#8211; everything else happens automatically.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+place where you look up the strings is in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyDown(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyUp(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+etc. methods back in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MyButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Each of these methods uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>parent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle to reach back to the parent window. Since that parent is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AutoEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it contains the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Hashtable
+h
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>get(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, when provided with the appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+will produce a handle to an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that we happen to know is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; so it is cast to that. Then the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is converted to its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representation, which is displayed in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+turns out this example is rather fun to play with since you can really see
+what&#8217;s going on with the events in your program.
+</FONT><a name="_Toc375545464"></a><a name="_Toc408018700"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0144.html">Prev</a> | <a href="tij0146.html">Next</a>
+</div>
+</body></html>
+

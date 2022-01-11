@@ -1,0 +1,725 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0157.html">Prev</a> | <a href="tij0159.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Priorities</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2593"></A><A NAME="Index2594"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>priority</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of a thread tells the scheduler how important this thread is. If there are a
+number of threads blocked and waiting to be run, the scheduler will run the one
+with the highest priority first. However, this doesn&#8217;t mean that threads
+with lower priority don&#8217;t get run (that is, you can&#8217;t get
+deadlocked because of priorities). Lower priority threads just tend to run less
+often.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can read the priority of a thread with <A NAME="Index2595"></A><A NAME="Index2596"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPriority(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+change it with <A NAME="Index2597"></A><A NAME="Index2598"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setPriority(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The form of the prior &#8220;counter&#8221; examples can be used to show the
+effect of changing the priorities. In this applet you&#8217;ll see that the
+counters slow down as the associated threads have their priorities lowered:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Counter5.java</font>
+<font color="#009900">// Adjusting the priorities of threads</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> Ticker2 <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Button 
+    b = <font color="#0000ff">new</font> Button("Toggle"),
+    incPriority = <font color="#0000ff">new</font> Button("up"),
+    decPriority = <font color="#0000ff">new</font> Button("down");
+  <font color="#0000ff">private</font> TextField 
+    t = <font color="#0000ff">new</font> TextField(10),
+    pr = <font color="#0000ff">new</font> TextField(3); <font color="#009900">// Display priority</font>
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> runFlag = <font color="#0000ff">true</font>;
+  <font color="#0000ff">public</font> Ticker2(Container c) {
+    b.addActionListener(<font color="#0000ff">new</font> ToggleL());
+    incPriority.addActionListener(<font color="#0000ff">new</font> UpL());
+    decPriority.addActionListener(<font color="#0000ff">new</font> DownL());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.add(t);
+    p.add(pr);
+    p.add(b);
+    p.add(incPriority);
+    p.add(decPriority);
+    c.add(p);
+  }
+  <font color="#0000ff">class</font> ToggleL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      runFlag = !runFlag;
+    }
+  }
+  <font color="#0000ff">class</font> UpL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">int</font> newPriority = getPriority() + 1;
+      <font color="#0000ff">if</font>(newPriority &gt; Thread.MAX_PRIORITY)
+        newPriority = Thread.MAX_PRIORITY;
+      setPriority(newPriority);
+    }
+  }
+  <font color="#0000ff">class</font> DownL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">int</font> newPriority = getPriority() - 1;
+      <font color="#0000ff">if</font>(newPriority &lt; Thread.MIN_PRIORITY)
+        newPriority = Thread.MIN_PRIORITY;
+      setPriority(newPriority);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      <font color="#0000ff">if</font>(runFlag) {
+        t.setText(Integer.toString(count++));
+        pr.setText(
+          Integer.toString(getPriority()));
+      }
+      yield();
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Counter5 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">private</font> Button 
+    start = <font color="#0000ff">new</font> Button("Start"),
+    upMax = <font color="#0000ff">new</font> Button("Inc Max Priority"),
+    downMax = <font color="#0000ff">new</font> Button("Dec Max Priority");
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> started = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> SIZE = 10;
+  <font color="#0000ff">private</font> Ticker2[] s = <font color="#0000ff">new</font> Ticker2[SIZE];
+  <font color="#0000ff">private</font> TextField mp = <font color="#0000ff">new</font> TextField(3);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i] = <font color="#0000ff">new</font> Ticker2(<font color="#0000ff">this</font>);
+    add(<font color="#0000ff">new</font> Label("MAX_PRIORITY = "
+      + Thread.MAX_PRIORITY));
+    add(<font color="#0000ff">new</font> Label("MIN_PRIORITY = "
+      + Thread.MIN_PRIORITY));
+    add(<font color="#0000ff">new</font> Label("Group Max Priority = "));
+    add(mp); 
+    add(start);
+    add(upMax); add(downMax);
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    upMax.addActionListener(<font color="#0000ff">new</font> UpMaxL());
+    downMax.addActionListener(<font color="#0000ff">new</font> DownMaxL());
+    showMaxPriority();
+    <font color="#009900">// Recursively display parent thread groups:</font>
+    ThreadGroup parent = 
+      s[0].getThreadGroup().getParent();
+    <font color="#0000ff">while</font>(parent != <font color="#0000ff">null</font>) {
+      add(<font color="#0000ff">new</font> Label(
+        "Parent threadgroup max priority = "
+        + parent.getMaxPriority()));
+      parent = parent.getParent();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> showMaxPriority() {
+    mp.setText(Integer.toString(
+      s[0].getThreadGroup().getMaxPriority()));
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(!started) {
+        started = <font color="#0000ff">true</font>;
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+          s[i].start();
+      }
+    }
+  }
+  <font color="#0000ff">class</font> UpMaxL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">int</font> maxp = 
+        s[0].getThreadGroup().getMaxPriority();
+      <font color="#0000ff">if</font>(++maxp &gt; Thread.MAX_PRIORITY)
+        maxp = Thread.MAX_PRIORITY;
+      s[0].getThreadGroup().setMaxPriority(maxp);
+      showMaxPriority();
+    }
+  }
+  <font color="#0000ff">class</font> DownMaxL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">int</font> maxp = 
+        s[0].getThreadGroup().getMaxPriority();
+      <font color="#0000ff">if</font>(--maxp &lt; Thread.MIN_PRIORITY)
+        maxp = Thread.MIN_PRIORITY;
+      s[0].getThreadGroup().setMaxPriority(maxp);
+      showMaxPriority();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Counter5 applet = <font color="#0000ff">new</font> Counter5();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Counter5");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300, 600);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+follows the form established earlier in this chapter, but there&#8217;s an extra 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for displaying the priority of the thread and two more buttons for incrementing
+and decrementing the priority.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Also
+notice the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which voluntarily hands control back to the scheduler. Without this the
+multithreading mechanism still works, but you&#8217;ll notice it runs slowly
+(try removing the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">!).
+You could also call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but then the rate of counting would be controlled by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+duration instead of the priority.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter5</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+creates an array of 10 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s;
+their buttons and fields are placed on the form by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Counter5
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">adds
+buttons to start everything up as well as increment and decrement the maximum
+priority of the threadgroup. In addition, there are labels that display the
+maximum and minimum priorities possible for a thread and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to show the thread group&#8217;s maximum priority. (The next section will fully
+describe thread groups.) Finally, the priorities of the parent thread groups
+are also displayed as labels.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press an &#8220;up&#8221; or &#8220;down&#8221; button, that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Ticker2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+priority is fetched and incremented or decremented accordingly. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run this program, you&#8217;ll notice several things. First of all, the
+thread group&#8217;s <A NAME="Index2599"></A><A NAME="Index2600"></A>default
+priority is 5. Even if you decrement the maximum priority below 5 before
+starting the threads (or before creating the threads, which requires a code
+change), each thread will have a default priority of 5.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+simple test is to take one counter and decrement its priority to one, and
+observe that it counts much slower. But now try to increment it again. You can
+get it back up to the thread group&#8217;s priority, but no higher. Now
+decrement the thread group&#8217;s priority a couple of times. The thread
+priorities are unchanged, but if you try to modify them either up or down
+you&#8217;ll see that they&#8217;ll automatically pop to the priority of the
+thread group. Also, new threads will still be given a default priority, even if
+that&#8217;s higher than the group priority. (Thus the group priority is not a
+way to prevent new threads from having higher priorities than existing ones.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Finally,
+try to increment the group maximum priority. It can&#8217;t be done. You can
+only reduce thread group maximum priorities, not increase them.
+</FONT><a name="_Toc375545485"></a><a name="_Toc408018759"></a><P></DIV>
+<A NAME="Heading505"></A><H3 ALIGN=LEFT>
+Thread
+groups
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+threads belong to a <A NAME="Index2601"></A>thread
+group. This can be either the default thread group or a group you explicitly
+specify when you create the thread. At creation, the thread is bound to a group
+and cannot change to a different group. Each application has at least one
+thread that belongs to the system thread group. If you create more threads
+without specifying a group, they will also belong to the system thread group. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thread
+groups must also belong to other thread groups. The thread group that a new one
+belongs to must be specified in the constructor. If you create a thread group
+without specifying a thread group for it to belong to, it will be placed under
+the system thread group. Thus, all thread groups in your application will
+ultimately have the system thread group as the parent.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+reason for the existence of thread groups is hard to determine from the
+literature, which tends to be confusing on this subject. It&#8217;s often cited
+as &#8220;security reasons.&#8221; According to Arnold &amp; Gosling,
+</FONT><A NAME="fnB62" HREF="#fn62">[62]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;Threads within a thread group can modify the other threads in the group,
+including any farther down the hierarchy. A thread cannot modify threads
+outside of its own group or contained groups.&#8221; It&#8217;s hard to know
+what &#8220;modify&#8221; is supposed to mean here. The following example shows
+a thread in a &#8220;leaf&#8221; subgroup modifying the priorities of all the
+threads in its tree of thread groups as well as calling a method for all the
+threads in its tree.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TestAccess.java</font>
+<font color="#009900">// How threads can access other threads</font>
+<font color="#009900">// in a parent thread group</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TestAccess {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    ThreadGroup 
+      x = <font color="#0000ff">new</font> ThreadGroup("x"),
+      y = <font color="#0000ff">new</font> ThreadGroup(x, "y"),
+      z = <font color="#0000ff">new</font> ThreadGroup(y, "z");
+    Thread
+      one = <font color="#0000ff">new</font> TestThread1(x, "one"),
+      two = <font color="#0000ff">new</font> TestThread2(z, "two");
+  }
+}
+
+<font color="#0000ff">class</font> TestThread1 <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> i;
+  TestThread1(ThreadGroup g, String name) {
+    <font color="#0000ff">super</font>(g, name);
+  }
+  <font color="#0000ff">void</font> f() {
+    i++; <font color="#009900">// modify this thread</font>
+    System.out.println(getName() + " f()");
+  }
+}
+
+<font color="#0000ff">class</font> TestThread2 <font color="#0000ff">extends</font> TestThread1 {
+  TestThread2(ThreadGroup g, String name) {
+    <font color="#0000ff">super</font>(g, name);
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    ThreadGroup g =
+      getThreadGroup().getParent().getParent();
+    g.list();
+    Thread[] gAll = <font color="#0000ff">new</font> Thread[g.activeCount()];
+    g.enumerate(gAll);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; gAll.length; i++) {
+      gAll[i].setPriority(Thread.MIN_PRIORITY);
+      ((TestThread1)gAll[i]).f();
+    }
+    g.list();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+several 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are created, leafing off from each other: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has no argument but its name (a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+so it is automatically placed in the &#8220;system&#8221; thread group, while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is under 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>z</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is under 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>y</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that initialization happens in textual order so this code is legal.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Two
+threads are created and placed in different thread groups. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestThread1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method but it does have an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that modifies the thread and prints something so you can see it was called. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestThread2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a subclass of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestThread1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is fairly elaborate. It first gets the thread group of the current thread, then
+moves up the heritage tree by two levels using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getParent(&#160;).</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(This is contrived since I purposely place the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestThread2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object two levels down in the hierarchy.) At this point, an array of handles to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is created using the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>activeCount(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to ask how many threads are in this thread group and all the child thread
+groups. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enumerate(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method places handles to all of these threads in the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gAll</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then I simply move through the entire array calling the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for each thread, as well as modifying the priority. Thus, a thread in a
+&#8220;leaf&#8221; thread group modifies threads in parent thread groups.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+debugging method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prints all the information about a thread group to standard output and is
+helpful when investigating thread group behavior. Here&#8217;s the output of
+the program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>java.lang.ThreadGroup[name=x,maxpri=10]
+    Thread[one,5,x]
+    java.lang.ThreadGroup[name=y,maxpri=10]
+        java.lang.ThreadGroup[name=z,maxpri=10]
+            Thread[two,5,z]
+one f()
+two f()
+java.lang.ThreadGroup[name=x,maxpri=10]
+    Thread[one,1,x]
+    java.lang.ThreadGroup[name=y,maxpri=10]
+        java.lang.ThreadGroup[name=z,maxpri=10]
+            Thread[two,1,z] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Not
+only does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+print the class name of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it also prints the thread group name and its maximum priority. For threads,
+the thread name is printed, followed by the thread priority and the group that
+it belongs to. Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+indents the threads and thread groups to indicate that they are children of the
+un-indented thread group.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestThread2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, so it&#8217;s obvious that all threads in a group are vulnerable.
+However, you can access only the threads that branch off from your own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread group tree, and perhaps this is what is meant by &#8220;safety.&#8221;
+You cannot access anyone else&#8217;s system thread group tree.
+</FONT><P></DIV>
+<A NAME="Heading506"></A><H4 ALIGN=LEFT>
+Controlling
+thread groups
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Putting
+aside the safety issue, one thing thread groups do seem to be useful for is
+control: you can perform certain operations on an entire thread group with a
+single command. The following example demonstrates this and the restrictions on
+priorities within thread groups. The commented numbers in parentheses provide a
+reference to compare to the output.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ThreadGroup1.java</font>
+<font color="#009900">// How thread groups control priorities</font>
+<font color="#009900">// of the threads inside them.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ThreadGroup1 {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Get the system thread &amp; print its Info:</font>
+    ThreadGroup sys = 
+      Thread.currentThread().getThreadGroup();
+    sys.list(); <font color="#009900">// (1)</font>
+    <font color="#009900">// Reduce the system thread group priority:</font>
+    sys.setMaxPriority(Thread.MAX_PRIORITY - 1);
+    <font color="#009900">// Increase the main thread priority:</font>
+    Thread curr = Thread.currentThread();
+    curr.setPriority(curr.getPriority() + 1);
+    sys.list(); <font color="#009900">// (2)</font>
+    <font color="#009900">// Attempt to set a new group to the max:</font>
+    ThreadGroup g1 = <font color="#0000ff">new</font> ThreadGroup("g1");
+    g1.setMaxPriority(Thread.MAX_PRIORITY);
+    <font color="#009900">// Attempt to set a new thread to the max:</font>
+    Thread t = <font color="#0000ff">new</font> Thread(g1, "A");
+    t.setPriority(Thread.MAX_PRIORITY);
+    g1.list(); <font color="#009900">// (3)</font>
+    <font color="#009900">// Reduce g1's max priority, then attempt</font>
+    <font color="#009900">// to increase it:</font>
+    g1.setMaxPriority(Thread.MAX_PRIORITY - 2);
+    g1.setMaxPriority(Thread.MAX_PRIORITY);
+    g1.list(); <font color="#009900">// (4)</font>
+    <font color="#009900">// Attempt to set a new thread to the max:</font>
+    t = <font color="#0000ff">new</font> Thread(g1, "B");
+    t.setPriority(Thread.MAX_PRIORITY);
+    g1.list(); <font color="#009900">// (5)</font>
+    <font color="#009900">// Lower the max priority below the default</font>
+    <font color="#009900">// thread priority:</font>
+    g1.setMaxPriority(Thread.MIN_PRIORITY + 2);
+    <font color="#009900">// Look at a new thread's priority before</font>
+    <font color="#009900">// and after changing it:</font>
+    t = <font color="#0000ff">new</font> Thread(g1, "C");
+    g1.list(); <font color="#009900">// (6)</font>
+    t.setPriority(t.getPriority() -1);
+    g1.list(); <font color="#009900">// (7)</font>
+    <font color="#009900">// Make g2 a child Threadgroup of g1 and</font>
+    <font color="#009900">// try to increase its priority:</font>
+    ThreadGroup g2 = <font color="#0000ff">new</font> ThreadGroup(g1, "g2");
+    g2.list(); <font color="#009900">// (8)</font>
+    g2.setMaxPriority(Thread.MAX_PRIORITY);
+    g2.list(); <font color="#009900">// (9)</font>
+    <font color="#009900">// Add a bunch of new threads to g2:</font>
+    <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; 5; i++)
+      <font color="#0000ff">new</font> Thread(g2, Integer.toString(i));
+    <font color="#009900">// Show information about all threadgroups</font>
+    <font color="#009900">// and threads:</font>
+    sys.list(); <font color="#009900">// (10)</font>
+    System.out.println("Starting all threads:");
+    Thread[] all = <font color="#0000ff">new</font> Thread[sys.activeCount()];
+    sys.enumerate(all);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; all.length; i++)
+      <font color="#0000ff">if</font>(!all[i].isAlive())
+        all[i].start();
+    <font color="#009900">// Suspends &amp; Stops all threads in </font>
+    <font color="#009900">// this group and its subgroups:</font>
+    System.out.println("All threads started");
+    sys.suspend(); <font color="#009900">// Deprecated in Java 1.2</font>
+    <font color="#009900">// Never gets here...</font>
+    System.out.println("All threads suspended");
+    sys.stop(); <font color="#009900">// Deprecated in Java 1.2</font>
+    System.out.println("All threads stopped");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+output that follows has been edited to allow it to fit on the page (the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.lang.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been removed) and to add numbers to correspond to the commented numbers in
+the listing above.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(1) ThreadGroup[name=system,maxpri=10]
+      Thread[main,5,system]
+(2) ThreadGroup[name=system,maxpri=9]
+      Thread[main,6,system]
+(3) ThreadGroup[name=g1,maxpri=9]
+      Thread[A,9,g1]
+(4) ThreadGroup[name=g1,maxpri=8]
+      Thread[A,9,g1]
+(5) ThreadGroup[name=g1,maxpri=8]
+      Thread[A,9,g1]
+      Thread[B,8,g1]
+(6) ThreadGroup[name=g1,maxpri=3]
+      Thread[A,9,g1]
+      Thread[B,8,g1]
+      Thread[C,6,g1]
+(7) ThreadGroup[name=g1,maxpri=3]
+      Thread[A,9,g1]
+      Thread[B,8,g1]
+      Thread[C,3,g1]
+(8) ThreadGroup[name=g2,maxpri=3]
+(9) ThreadGroup[name=g2,maxpri=3]
+(10)ThreadGroup[name=system,maxpri=9]
+      Thread[main,6,system]
+      ThreadGroup[name=g1,maxpri=3]
+        Thread[A,9,g1]
+        Thread[B,8,g1]
+        Thread[C,3,g1]
+        ThreadGroup[name=g2,maxpri=3]
+          Thread[0,6,g2]
+          Thread[1,6,g2]
+          Thread[2,6,g2]
+          Thread[3,6,g2]
+          Thread[4,6,g2]
+Starting all threads:
+All threads started </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+programs have at least one thread running, and the first action in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is to call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>currentThread(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+From this thread, the thread group is produced and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>list(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called for the result. The output is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(1) ThreadGroup[name=system,maxpri=10]
+      Thread[main,5,system] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the name of the main thread group is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the name of the main thread is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it belongs to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread group.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second exercise shows that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+group&#8217;s maximum priority can be reduced and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread can have its priority increased:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(2) ThreadGroup[name=system,maxpri=9]
+      Thread[main,6,system] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+third exercise creates a new thread group, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which automatically belongs to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread group since it isn&#8217;t otherwise specified. A new thread 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+placed in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+After attempting to set this group&#8217;s maximum priority to the highest
+level and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+priority to the highest level, the result is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(3) ThreadGroup[name=g1,maxpri=9]
+      Thread[A,9,g1] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thus,
+it&#8217;s not possible to change the thread group&#8217;s maximum priority to
+be higher than its parent thread group.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fourth exercise reduces 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+maximum priority by two and then tries to increase it up to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread.MAX_PRIORITY</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The result is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(4) ThreadGroup[name=g1,maxpri=8]
+      Thread[A,9,g1] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the increase in maximum priority didn&#8217;t work. You can only
+decrease a thread group&#8217;s maximum priority, not increase it. Also, notice
+that thread 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>A</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+priority didn&#8217;t change, and now it is higher than the thread
+group&#8217;s maximum priority. Changing a thread group&#8217;s maximum
+priority doesn&#8217;t affect existing threads.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+fifth exercise attempts to set a new thread to maximum priority:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(5) ThreadGroup[name=g1,maxpri=8]
+      Thread[A,9,g1]
+      Thread[B,8,g1] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new thread cannot be changed to anything higher than the maximum thread group
+priority.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+default thread priority for this program is 6; that&#8217;s the priority a new
+thread will be created at and where it will stay if you don&#8217;t manipulate
+the priority. Exercise six lowers the maximum thread group priority below the
+default thread priority to see what happens when you create a new thread under
+this condition:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(6) ThreadGroup[name=g1,maxpri=3]
+      Thread[A,9,g1]
+      Thread[B,8,g1]
+      Thread[C,6,g1] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+though the maximum priority of the thread group is 3, the new thread is still
+created using the default priority of 6. Thus, maximum thread group priority
+does not affect default priority. (In fact, there appears to be no way to set
+the default priority for new threads.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+changing the priority, attempting to decrement it by one, the result is:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(7) ThreadGroup[name=g1,maxpri=3]
+      Thread[A,9,g1]
+      Thread[B,8,g1]
+      Thread[C,3,g1] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Only
+when you attempt to change the priority is the thread group&#8217;s maximum
+priority enforced.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+similar experiment is performed in (8) and (9), in which a new thread group 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+created as a child of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its maximum priority is changed. You can see that it&#8217;s impossible for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+maximum to go higher than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s:</FONT><P></DIV>
+
+<font color="#990000"><PRE>(8) ThreadGroup[name=g2,maxpri=3]
+(9) ThreadGroup[name=g2,maxpri=3] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Also
+notice that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is automatically set to the thread group maximum priority of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+all of these experiments, the entire system of thread groups and threads is
+printed out:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>(10)ThreadGroup[name=system,maxpri=9]
+      Thread[main,6,system]
+      ThreadGroup[name=g1,maxpri=3]
+        Thread[A,9,g1]
+        Thread[B,8,g1]
+        Thread[C,3,g1]
+        ThreadGroup[name=g2,maxpri=3]
+          Thread[0,6,g2]
+          Thread[1,6,g2]
+          Thread[2,6,g2]
+          Thread[3,6,g2]
+          Thread[4,6,g2] </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+because of the rules of thread groups, a child group must always have a maximum
+priority that&#8217;s less than or equal to its parent&#8217;s maximum priority.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+last part of this program demonstrates methods for an entire group of threads.
+First the program moves through the entire tree of threads and starts each one
+that hasn&#8217;t been started. For drama, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+group is then suspended and finally stopped. (Although it&#8217;s interesting
+to see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+work on entire thread groups, you should keep in mind that these methods are
+deprecated in Java 1.2.<A NAME="Index2602"></A>)
+But when you suspend the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>system</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+group you also suspend the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread and the whole program shuts down, so it never gets to the point where
+the threads are stopped. Actually, if you do stop the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread it throws a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadDeath</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exception, so this is not a typical thing to do. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inherited from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which contains the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, you can also choose to suspend the program for any number of seconds by
+calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(seconds
+* 1000)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This must acquire the lock inside a synchronized block, of course.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ThreadGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class also has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods so you can stop and start an entire thread group and all of its threads
+and subgroups with a single command. (Again, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>suspend(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are deprecated in Java 1.2.<A NAME="Index2603"></A>)</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thread
+groups can seem a bit mysterious at first, but keep in mind that you probably
+won&#8217;t be using them directly very often.
+</FONT><a name="_Toc375545486"></a><a name="_Toc408018760"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn62" HREF="#fnB62">[62]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>The
+Java Programming Language
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+by Ken Arnold and James Gosling, Addison-Wesley 1996 pp 179.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0157.html">Prev</a> | <a href="tij0159.html">Next</a>
+</div>
+</body></html>
+

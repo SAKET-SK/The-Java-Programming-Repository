@@ -1,0 +1,402 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0133.html">Prev</a> | <a href="tij0135.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+basic applet
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Libraries
+are often grouped according to their functionality. Some libraries, for
+example, are used as is, off the shelf. The standard Java library 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes are examples of these. Other libraries are designed specifically as
+building blocks to build other classes. A certain class of library is the <A NAME="Index1526"></A><A NAME="Index1527"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>application
+framework
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whose goal is to help you build applications by providing a class or set of
+classes that produces the basic behavior that you need in every application of
+a particular type. Then, to customize the behavior to your own needs you
+inherit from the application class and override the methods of interest. The
+application framework&#8217;s default control mechanism will call your
+overridden methods at the appropriate time. An application framework is a good
+example of &#8220;separating the things that change from the things that stay
+the same,&#8221; since it attempts to localize all the unique parts of a
+program in the overridden methods.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index1528"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Applets
+are built using an application framework. You inherit from class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and override the appropriate methods. Most of the time you&#8217;ll be
+concerned with only a few important methods that have to do with how the applet
+is built and used on a Web page. These methods are:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="58">
+      <COL width="279">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method</FONT><P></DIV>
+</TH>
+<TH WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Operation</FONT><P></DIV>
+</TH>
+</TR>
+<A NAME="Index1529"></A><A NAME="Index1530"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Called
+when the applet is first created to perform first-time initialization of the
+applet
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1531"></A><A NAME="Index1532"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Called
+every time the applet moves into sight on the Web browser to allow the applet
+to start up its normal operations (especially those that are shut off by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Also called after 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1533"></A><A NAME="Index1534"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Part
+of the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(three levels of inheritance up).
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Called
+as part of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform special painting on the canvas of an applet.
+</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1535"></A><A NAME="Index1536"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Called
+every time the applet moves out of sight on the Web browser to allow the applet
+to shut off expensive operations. Also called right before 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<A NAME="Index1537"></A><A NAME="Index1538"></A><TR VALIGN="TOP">
+<TD WIDTH=58 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=279 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Called
+when the applet is being unloaded from the page to perform final release of
+resources when the applet is no longer used
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. This method is called automatically when the <A NAME="Index1539"></A><A NAME="Index1540"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(in this case, the applet) decides that it needs to update itself &#8211;
+perhaps because it&#8217;s being moved back onto the screen or placed on the
+screen for the first time, or perhaps some other window had been temporarily
+placed over your Web browser. The applet calls its <A NAME="Index1541"></A><A NAME="Index1542"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method (defined in the base class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+goes about restoring everything, and as a part of that restoration calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You don&#8217;t have to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but it turns out to be an easy way to make a simple applet, so we&#8217;ll
+start out with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it hands it a handle to a <A NAME="Index1543"></A><A NAME="Index1544"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that represents the surface on which you can paint. This is important
+because you&#8217;re limited to the surface of that particular component and
+thus cannot paint outside that area, which is a good thing or else you&#8217;d
+be painting outside the lines. In the case of an applet, the surface is the
+area inside the applet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object also has a set of operations you can perform on it. These operations
+revolve around painting on the canvas, so most of them have to do with drawing
+images, shapes, arcs, etc. (Note that you can look all this up in your online
+Java documentation if you&#8217;re curious.) There are some methods that allow
+you to draw characters, however, and the most commonly used one is <A NAME="Index1545"></A><A NAME="Index1546"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For this, you must specify the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you want to draw and its starting location on the applet&#8217;s drawing
+surface. This location is given in pixels, so it will look different on
+different machines, but at least it&#8217;s portable.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+this information you can create a simple applet:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Applet1.java</font>
+<font color="#009900">// Very simple applet</font>
+<font color="#0000ff">package</font> c13;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Applet1 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.drawString("First applet", 10, 10);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that applets are not required to have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That&#8217;s all wired in to the application framework; you put any startup
+code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+run this program you must place it inside a Web page and view that page inside
+your Java-enabled Web browser. To place an <A NAME="Index1547"></A><A NAME="Index1548"></A>applet
+inside a Web page you put a special tag inside the HTML source for that Web page
+</FONT><A NAME="fnB54" HREF="#fn54">[54]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to tell the page how to load and run the applet. This is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index1549"></A><A NAME="Index1550"></A>tag,
+and it looks like this for Applet1:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;applet
+code=Applet1
+width=200
+height=200&gt;
+&lt;/applet&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>code
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">value
+gives the name of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">file
+where the applet resides. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>width</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>height</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+specify the initial size of the applet (in pixels, as before). There are other
+items you can place within the applet tag: a place to find other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">files
+on the Internet (<A NAME="Index1551"></A><A NAME="Index1552"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>codebase</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+alignment information (<A NAME="Index1553"></A><A NAME="Index1554"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>align</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+a special identifier that makes it possible for applets to communicate with
+each other (<A NAME="Index1555"></A><A NAME="Index1556"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),</FONT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">
+</FONT></TT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+applet <A NAME="Index1557"></A><A NAME="Index1558"></A>parameters
+to provide information that the applet can retrieve. Parameters are in the form
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">&lt;param
+name=identifier value = "information"&gt;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+there can be as many as you want.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+simple applets all you need to do is place an applet tag in the above form
+inside your Web page and that will load and run the applet.
+</FONT><a name="_Toc408018680"></a><P></DIV>
+<A NAME="Heading396"></A><H3 ALIGN=LEFT>
+Testing
+applets
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can perform a simple test without any network connection by starting up your
+Web browser and opening the HTML file containing the applet tag. (Sun&#8217;s
+JDK also contains a tool called the <A NAME="Index1559"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>appletviewer</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that picks the &lt;APPLET&gt; tags out of the HTML file and runs the applets
+without displaying the surrounding HTML text.
+</FONT><A NAME="fnB55" HREF="#fn55">[55]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+As the HTML file is loaded, the browser will discover the applet tag and go
+hunt for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file specified by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>code</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value. Of course, it looks at the CLASSPATH to find out where to hunt, and if
+your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file isn&#8217;t in the CLASSPATH then it will give an error message on the
+status line of the browser to the effect that it couldn&#8217;t find that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you want to try this out on your Web site things are a little more complicated.
+First of all, you must 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>have</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a Web site, which for most people means a third-party <A NAME="Index1560"></A><A NAME="Index1561"></A>Internet
+Service Provider (ISP) at a remote location. Then you must have a way to move
+the HTML files and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files from your site to the correct directory (your WWW directory) on the ISP
+machine. This is typically done with a <A NAME="Index1562"></A><A NAME="Index1563"></A>File
+Transfer Protocol (FTP) program, of which there are many different types freely
+available. So it would seem that all you need to do is move the files to the
+ISP machine with FTP, then connect to the site and HTML file using your
+browser; if the applet comes up and works, then everything checks out, right?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+where you can get fooled. If the browser cannot locate the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file on the server, it will hunt through the <A NAME="Index1564"></A><A NAME="Index1565"></A>CLASSPATH
+on your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>local</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+machine. Thus, the applet might not be loading properly from the server, but to
+you it looks fine because the browser finds it on your machine. When someone
+else logs in, however, his or her browser can&#8217;t find it. So when
+you&#8217;re testing, make sure you erase the relevant 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files on your machine to be safe.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the most insidious places where this happened to me is when I innocently
+placed an applet inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+After uploading the HTML file and applet, it turned out that the server path to
+the applet was confused because of the package name. However, my browser found
+it in the local CLASSPATH. So I was the only one who could properly load the
+applet. It took some time to discover that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement was the culprit. In general, you&#8217;ll want to leave the <A NAME="Index1566"></A><A NAME="Index1567"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement out of an applet.
+</FONT><a name="_Toc408018681"></a><P></DIV>
+<A NAME="Heading397"></A><H3 ALIGN=LEFT>
+A
+more graphical example
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+example above isn&#8217;t too thrilling, so let&#8217;s try adding a slightly
+more interesting graphic component:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Applet2.java</font>
+<font color="#009900">// Easy graphics</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Applet2 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.drawString("Second applet", 10, 15);
+    g.draw3DRect(0, 0, 100, 20, <font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+puts a box around the string. Of course, all the numbers are hard-coded and are
+based on pixels, so on some machines the box will fit nicely around the string
+and on others it will probably be off, because fonts will be different on
+different machines.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are other interesting things you can find in the documentation for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphic
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class.
+Any sort of graphics activity is usually entertaining, so further experiments
+of this sort are left to the reader.
+</FONT><a name="_Toc408018682"></a><P></DIV>
+<A NAME="Heading398"></A><H3 ALIGN=LEFT>
+Demonstrating
+<P>the
+framework methods
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+interesting to see some of the framework methods in action. (This example will
+look only at <A NAME="Index1568"></A><A NAME="Index1569"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index1570"></A><A NAME="Index1571"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index1572"></A><A NAME="Index1573"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">because
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">are
+self-evident and not so easily traceable.) The following applet keeps track of
+the number of times these methods are called and displays them using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Applet3.java</font>
+<font color="#009900">// Shows init(), start() and stop() activities</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Applet3 <font color="#0000ff">extends</font> Applet {
+  String s;
+  <font color="#0000ff">int</font> inits = 0;
+  <font color="#0000ff">int</font> starts = 0;
+  <font color="#0000ff">int</font> stops = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() { inits++; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> start() { starts++; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> stop() { stops++; }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    s = "inits: " + inits + 
+      ", starts: " + starts +
+      ", stops: " + stops;
+    g.drawString(s, 10, 10);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Normally
+when you override a method you&#8217;ll want to look to see whether you need to
+call the base-class version of that method, in case it does something
+important. For example, with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you might need to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+documentation specifically states that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+do nothing, so it&#8217;s not necessary to call them here.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you experiment with this applet you&#8217;ll discover that if you minimize the
+Web browser or cover it up with another window you might not get calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(This
+behavior seems to vary among implementations; you might wish to contrast the
+behavior of Web browsers with that of applet viewers.) The only time the calls
+will occur is when you move to a different Web page and then come back to the
+one containing the applet.
+</FONT><a name="_Toc375545447"></a><a name="_Toc408018683"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn54" HREF="#fnB54">[54]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+It is assumed that the reader is familiar with the basics of HTML. It&#8217;s
+not too hard to figure out, and there are lots of books and resources.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn55" HREF="#fnB55">[55]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Because the appletviewer ignores everything but APPLET tags, you can put those
+tags in the Java source file as comments:
+</FONT><P><TT><FONT FACE="Courier" SIZE=2 COLOR="Black">//
+&lt;applet code=MyApplet.class width=200 height=100&gt;&lt;/applet&gt;
+</FONT></TT><P><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">This
+way, you can run "
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>appletviewer
+MyApplet.java
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">"
+and you don&#8217;t need to create tiny HTML files to run tests.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0133.html">Prev</a> | <a href="tij0135.html">Next</a>
+</div>
+</body></html>
+

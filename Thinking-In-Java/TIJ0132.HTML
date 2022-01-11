@@ -1,0 +1,102 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0131.html">Prev</a> | <a href="tij0133.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+13:
+Creating windows 
+<P>and
+applets
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">The
+original design goal of the graphical user interface (GUI) library in Java 1.0<A NAME="Index1505"></A>
+was to allow the programmer to build a GUI that looks good on all platforms.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index1506"></A><A NAME="Index1507"></A><A NAME="Index1508"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+goal was not achieved. Instead, the Java 1.0<A NAME="Index1509"></A>
+<A NAME="Index1510"></A><A NAME="Index1511"></A><A NAME="Index1512"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Abstract
+Window Toolkit
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(AWT) produces a GUI that looks equally mediocre on all systems. In addition
+it&#8217;s restrictive: you can use only four fonts and you cannot access any
+of the more sophisticated GUI elements that exist in your operating system
+(OS). The Java 1.0 AWT programming model is also awkward and non-object-oriented.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Much
+of this situation has been improved with the Java 1.1<A NAME="Index1513"></A>
+AWT event model, which takes a much clearer, object-oriented approach, along
+with the introduction of Java Beans, a component programming model that is
+particularly oriented toward the easy creation of visual programming
+environments. Java 1.2<A NAME="Index1514"></A>
+finishes the transformation away from the old Java 1.0 AWT by adding the <A NAME="Index1515"></A><A NAME="Index1516"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Java
+Foundation Classes
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(JFC), the GUI portion of which is called &#8220;<A NAME="Index1517"></A>Swing.&#8221;
+These are a rich set of easy-to-use, easy-to-understand Java Beans that can be
+dragged and dropped (as well as hand programmed) to create a GUI that you can
+(finally) be satisfied with. The &#8220;revision 3&#8221; rule of the software
+industry (a product isn&#8217;t good until revision 3) seems to hold true with
+programming languages as well.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of Java&#8217;s primary design goals is to create 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>applets</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are little programs that run inside a Web browser. Because they must be
+safe, applets are limited in what they can accomplish. However, they are a
+powerful tool in supporting client-side programming, a major issue for the Web.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Programming
+within an applet is so restrictive that it&#8217;s often referred to as being
+&#8220;inside the sandbox,&#8221; since you always have someone &#8211; the
+Java run-time security system &#8211; watching over you. Java 1.1<A NAME="Index1518"></A>
+offers digital signing for applets so you can choose to allow trusted applets
+to have access to your machine. However, you can also step outside the sandbox
+and write regular applications, in which case you can access the other features
+of your OS. We&#8217;ve been writing regular applications all along in this
+book, but they&#8217;ve been 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>console
+applications
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+without any graphical components. The AWT can also be used to build GUI
+interfaces for regular applications.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this chapter you&#8217;ll first learn the use of the original &#8220;old&#8221;
+AWT, which is still supported and used by many of the code examples that you
+will come across. Although it&#8217;s a bit painful to learn the old AWT,
+it&#8217;s necessary because you must read and maintain legacy code that uses
+the old AWT. Sometimes you&#8217;ll even need to write old AWT code to support
+environments that haven&#8217;t upgraded past Java 1.0<A NAME="Index1519"></A>.
+In the second part of the chapter you&#8217;ll learn about the structure of the
+&#8220;new&#8221; AWT in Java 1.1<A NAME="Index1520"></A>
+and see how much better the event model is. (If you can, you should use the
+newest tools when you&#8217;re creating new programs.) Finally, you&#8217;ll
+learn about the new JFC/Swing components, which can be added to Java 1.1 as a
+library &#8211; this means you can use the library without requiring a full
+upgrade to Java 1.2<A NAME="Index1521"></A>.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the examples will show the creation of applets, not only because it&#8217;s
+easier but also because that&#8217;s where the AWT&#8217;s primary usefulness
+might reside. In addition you&#8217;ll see how things are different when you
+want to create a regular application using the AWT, and how to create programs
+that are both applets and applications so they can be run either inside a
+browser or from the command line.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Please
+be aware that this is not a comprehensive glossary of all the methods for the
+described classes. This chapter will just get you started with the essentials.
+When you&#8217;re looking for more sophistication, make sure you go to your
+information browser to look for the classes and methods that will solve your
+problem. (If you&#8217;re using a development environment your information
+browser might be built in; if you&#8217;re using the Sun JDK then you use your
+Web browser and start in the java root directory.) Appendix F lists other
+resources for learning library details.
+</FONT><a name="_Toc375545445"></a><a name="_Toc408018678"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0131.html">Prev</a> | <a href="tij0133.html">Next</a>
+</div>
+</body></html>
+

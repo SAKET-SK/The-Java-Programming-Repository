@@ -1,0 +1,144 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0145.html">Prev</a> | <a href="tij0147.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Applet
+restrictions
+<P><A NAME="Index1750"></A><A NAME="Index1751"></A><A NAME="Index1752"></A><A NAME="Index1753"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+safety&#8217;s sake, applets are quite restricted and there are many things you
+can&#8217;t do. You can generally answer the question of what an applet is able
+to do by looking at what it is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>supposed</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to do: extend the functionality of a Web page in a browser. Since, as a net
+surfer, you never really know if a Web page is from a friendly place or not,
+you want any code that it runs to be safe. So the biggest restrictions
+you&#8217;ll notice are probably:
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>An
+applet can&#8217;t touch the local disk
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means writing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>or</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reading, since you wouldn&#8217;t want an applet to read and transmit important
+information about you across the Web. Writing is prevented, of course, since
+that would be an open invitation to a virus. These restrictions can be relaxed
+when digital signing is fully implemented.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">2)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>An
+applet can&#8217;t have menus.
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(Note: this is fixed in Swing) This is probably less oriented toward safety and
+more toward reducing confusion. You might have noticed that an applet looks
+like it blends right in as part of a Web page; you often don&#8217;t see the
+boundaries of the applet. There&#8217;s no frame or title bar to hang the menu
+from, other than the one belonging to the Web browser. Perhaps the design could
+be changed to allow you to merge your applet menu with the browser menu &#8211;
+that would be complicated and would also get a bit too close to the edge of
+safety by allowing the applet to affect its environment.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">3)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Dialog
+boxes are &#8220;untrusted.&#8221;
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+In Java, dialog boxes present a bit of a quandary. First of all, they&#8217;re
+not exactly disallowed in applets but they&#8217;re heavily discouraged. If you
+pop up a dialog box from within an applet you&#8217;ll get an &#8220;untrusted
+applet&#8221; message attached to that dialog. This is because, in theory, it
+would be possible to fool the user into thinking that they&#8217;re dealing
+with a regular native application and to get them to type in their credit card
+number, which then goes across the Web. After seeing the kinds of GUIs that the
+AWT produces you might have a hard time believing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>anybody</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could be fooled that way. But an applet is always attached to a Web page and
+visible within your Web browser, while a dialog box is detached so in theory it
+could be possible. As a result it will be rare to see an applet that uses a
+dialog box.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Many
+applet restrictions are relaxed for trusted applets (those signed by a trusted
+source) in newer browsers.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are other issues when thinking about applet development:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Applets
+take longer to download since you must download the whole thing every time,
+including a separate server hit for each different class. Your browser can
+cache the applet, but there are no guarantees. One improvement in Java 1.
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">1<A NAME="Index1754"></A>
+is the JAR (Java ARchive) file that allows packaging of all the applet
+components (including other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files as well as images and sounds) together into a single compressed file that
+can be downloaded in a single server transaction. &#8220;Digital signing&#8221;
+(the ability to verify the creator of a class) is available for each individual
+entry in the <A NAME="Index1755"></A>JAR
+file.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+of security issues you must work harder to do certain things such as accessing
+databases and sending email. In addition, the security restrictions make
+accessing multiple hosts difficult, since everything has to be routed through
+the Web server, which then becomes a performance bottleneck and a single
+failure point that can stop the entire process.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+applet within the browser doesn&#8217;t have the same kind of control that a
+native application does. For example, you can&#8217;t have a modal dialog box
+within an applet, since the user can always switch the page. When the user 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+change from a Web page or even exit the browser, the results can be
+catastrophic for your applet &#8211; there&#8217;s no way to save the state so
+if you&#8217;re in the middle of a transaction or other operation the
+information can be lost. In addition, different browsers do different things to
+your applet when you leave a Web page so the results are essentially undefined.
+</FONT><a name="_Toc375545465"></a><a name="_Toc408018701"></a></UL><A NAME="Heading418"></A><H3 ALIGN=LEFT>
+Applet
+advantages
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you can live within the restrictions, applets have definite advantages,
+especially when building <A NAME="Index1756"></A><A NAME="Index1757"></A>client/server
+or other networked applications:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is no installation issue. An applet has true platform independence (including
+the ability to easily play audio files, etc.) so you don&#8217;t need to make
+any changes in your code for different platforms nor does anyone have to
+perform any &#8220;tweaking&#8221; upon installation. In fact, installation is
+automatic every time the user loads the Web page along with the applets, so
+updates happen silently and automatically. In traditional client/server
+systems, building and installing a new version of the client software is often
+a nightmare.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+of the security built into the core Java language and the applet structure, you
+don&#8217;t have to worry about bad code causing damage to someone&#8217;s
+system. This, along with the previous point, makes Java (as well as alternative
+client-side Web programming tools like JavaScript and VBScript) popular for
+so-called
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index1758"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Intranet</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+client/server applications that live only within the company and don&#8217;t
+move out onto the Internet.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+applets are automatically integrated with HTML, you have a built-in
+platform-independent documentation system to support the applet. It&#8217;s an
+interesting twist, since we&#8217;re used to having the documentation part of
+the program rather than vice versa.
+</FONT><a name="_Toc375545466"></a><a name="_Toc408018702"></a></UL>
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0145.html">Prev</a> | <a href="tij0147.html">Next</a>
+</div>
+</body></html>
+

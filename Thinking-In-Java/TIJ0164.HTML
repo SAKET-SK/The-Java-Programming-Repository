@@ -1,0 +1,500 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0163.html">Prev</a> | <a href="tij0165.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Sockets</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>socket</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the software abstraction used to represent the &#8220;terminals&#8221; of a
+connection between two machines. For a given connection, there&#8217;s a socket
+on each machine, and you can imagine a hypothetical &#8220;cable&#8221; running
+between the two machines with each end of the &#8220;cable&#8221; plugged into
+a socket. Of course, the physical hardware and cabling between machines is
+completely unknown. The whole point of the abstraction is that we don&#8217;t
+have to know more than is necessary.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Java, you create a socket to make the connection to the other machine, then you
+get an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or, with the appropriate converters, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">from
+the socket in order to be able to treat the connection as an IO stream object.
+There are two stream-based socket classes: a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that a server uses to &#8220;listen&#8221; for incoming connections and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that a client uses in order to initiate a connection. Once a client makes a
+socket connection, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns (via the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2633"></A><A NAME="Index2634"></A>method)
+a corresponding server side 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+through which direct communications will take place. From then on, you have a
+true 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+connection and you treat both ends the same way because they 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>are</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the same. At this point, you use the methods <A NAME="Index2635"></A><A NAME="Index2636"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getInputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2637"></A><A NAME="Index2638"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getOutputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce the corresponding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects from each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+These must be wrapped inside buffers and formatting classes just like any other
+stream object described in Chapter 10.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of the term 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would seem to be another example of a confusing name scheme in the Java
+libraries. You might think 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+would be better named &#8220;ServerConnector&#8221; or something without the
+word &#8220;Socket&#8221; in it. You might also think that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should both be inherited from some common base class. Indeed, the two classes
+do have several methods in common but not enough to give them a common base
+class. Instead, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+job is to wait until some other machine connects to it, then to return an actual 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is why 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+seems to be a bit misnamed, since its job isn&#8217;t really to be a socket but
+instead to make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object when someone else connects to it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does create a physical &#8220;server&#8221; or listening socket on the host
+machine. This socket listens for incoming connections and then returns an
+&#8220;established&#8221; socket (with the local and remote endpoints defined)
+via the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. The confusing part is that both of these sockets (listening and
+established) are associated with the same server socket. The listening socket
+can accept only new connection requests and not data packets. So while 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t make much sense programmatically, it does &#8220;physically.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you give it only a port number. You don&#8217;t have to give it an IP address
+because it&#8217;s already on the machine it represents. When you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+however, you must give both the IP address and the port number where
+you&#8217;re trying to connect. (On the other hand, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that comes back from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket.accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+already contains all this information.)
+</FONT><a name="_Toc375545496"></a><a name="_Toc408018769"></a><P></DIV>
+<A NAME="Heading517"></A><H3 ALIGN=LEFT>
+A
+simple server and client
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example makes the simplest use of servers and clients using sockets. All the
+server does is wait for a connection, then uses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produced by that connection to create an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+After that, everything it reads from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it echoes to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+until it receives the line END, at which time it closes the connection.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+client makes the connection to the server, then creates an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Lines of text are sent through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The client also creates an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to hear what the server is saying (which, in this case, is just the words
+echoed back).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+the server and client use the same port number and the client uses the local
+loopback address to connect to the server on the same machine so you
+don&#8217;t have to test it over a network. (For some configurations, you might
+need to be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>connected</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a network for the programs to work, even if you aren&#8217;t communicating
+over that network.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the server:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: JabberServer.java</font>
+<font color="#009900">// Very simple server that just</font>
+<font color="#009900">// echoes whatever the client sends.</font>
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> JabberServer {  
+  <font color="#009900">// Choose a port outside of the range 1-1024:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> PORT = 8080;
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> IOException {
+    ServerSocket s = <font color="#0000ff">new</font> ServerSocket(PORT);
+    System.out.println("Started: " + s);
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Blocks until a connection occurs:</font>
+      Socket socket = s.accept();
+      <font color="#0000ff">try</font> {
+        System.out.println(
+          "Connection accepted: "+ socket);
+        BufferedReader in = 
+          <font color="#0000ff">new</font> BufferedReader(
+            <font color="#0000ff">new</font> InputStreamReader(
+              socket.getInputStream()));
+        <font color="#009900">// Output is automatically flushed</font>
+        <font color="#009900">// by PrintWriter:</font>
+        PrintWriter out = 
+          <font color="#0000ff">new</font> PrintWriter(
+            <font color="#0000ff">new</font> BufferedWriter(
+              <font color="#0000ff">new</font> OutputStreamWriter(
+                socket.getOutputStream())),<font color="#0000ff">true</font>);
+        <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {  
+          String str = in.readLine();
+          <font color="#0000ff">if</font> (str.equals("END")) <font color="#0000ff">break</font>;
+          System.out.println("Echoing: " + str);
+          out.println(str);
+        }
+      <font color="#009900">// Always close the two sockets...</font>
+      } <font color="#0000ff">finally</font> {
+        System.out.println("closing...");
+        socket.close();
+      }
+    } <font color="#0000ff">finally</font> {
+      s.close();
+    }
+  } 
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+just needs a port number, not an IP address (since it&#8217;s running on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>this</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+machine!). When you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>blocks</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+until some client tries to connect to it. That is, it&#8217;s there waiting for
+a connection but other processes can run (see Chapter 14). When a connection is
+made, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object representing that connection. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+responsibility for cleaning up the sockets is crafted carefully here. If the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor fails, the program just quits (notice we must assume that the
+constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t leave any open network sockets lying around if it fails). For
+this case, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throws</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IOException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block is not necessary. If the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor is successful then all other method calls must be guarded in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try-finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block to ensure that, no matter how the block is left, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is properly closed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+same logic is used for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returned by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+fails, then we must assume that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t exist or hold any resources, so it doesn&#8217;t need to be
+cleaned up. If it&#8217;s successful, however, the following statements must be
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try-finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block so that if they fail the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will still be cleaned up. Care is required here because sockets use important
+non-memory resources, so you must be diligent in order to clean them up (since
+there is no destructor in Java to do it for you).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Both
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accept(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are printed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means that their 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods are automatically called. These produce:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>ServerSocket[addr=0.0.0.0,PORT=0,localport=8080]
+Socket[addr=127.0.0.1,PORT=1077,localport=8080]</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Shortly,
+you&#8217;ll see how these fit together with what the client is doing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next part of the program looks just like opening files for reading and writing
+except that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are created from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Both the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+are converted to Java 1.1<A NAME="Index2639"></A>
+<A NAME="Index2640"></A><A NAME="Index2641"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Reader
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+<A NAME="Index2642"></A><A NAME="Index2643"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects using the &#8220;converter&#8221; classes <A NAME="Index2644"></A><A NAME="Index2645"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStreamReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2646"></A><A NAME="Index2647"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStreamWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+respectively. You could also have used the Java 1.0<A NAME="Index2648"></A>
+<A NAME="Index2649"></A><A NAME="Index2650"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2651"></A><A NAME="Index2652"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+classes directly, but with output there&#8217;s a distinct advantage to using
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Writer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+approach. This appears with <A NAME="Index2653"></A><A NAME="Index2654"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which has an overloaded constructor that takes a second argument, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">flag
+that indicates whether to automatically flush the output at the end of each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>println(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+statement. Every time you write to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+its buffer must be flushed so the information goes out over the network.
+Flushing is important for this particular example because the client and server
+each wait for a line from the other party before proceeding. If flushing
+doesn&#8217;t occur, the information will not be put onto the network until the
+buffer is full, which causes lots of problems in this example.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+writing network programs you need to be careful about using automatic flushing.
+Every time you flush the buffer a packet must be created and sent. In this
+case, that&#8217;s exactly what we want, since if the packet containing the
+line isn&#8217;t sent then the handshaking back and forth between server and
+client will stop. Put another way, the end of a line is the end of a message.
+But in many cases messages aren&#8217;t delimited by lines so it&#8217;s much
+more efficient to not use auto flushing and instead let the built-in buffering
+decide when to build and send a packet. This way, larger packets can be sent
+and the process will be faster.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that, like virtually all streams you open, these are buffered. There&#8217;s an
+exercise at the end of the chapter to show you what happens if you don&#8217;t
+buffer the streams (things get slow).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+infinite 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop reads lines from the
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+BufferedReader in 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+writes information to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that these could be any streams, they just happen to be connected to the
+network. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the client sends the line consisting of &#8220;END&#8221; the program breaks
+out of the loop and closes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the client:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: JabberClient.java</font>
+<font color="#009900">// Very simple client that just sends</font>
+<font color="#009900">// lines to the server and reads lines</font>
+<font color="#009900">// that the server sends.</font>
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> JabberClient {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> IOException {
+    <font color="#009900">// Passing null to getByName() produces the</font>
+    <font color="#009900">// special "Local Loopback" IP address, for</font>
+    <font color="#009900">// testing on one machine w/o a network:</font>
+    InetAddress addr = 
+      InetAddress.getByName(<font color="#0000ff">null</font>);
+    <font color="#009900">// Alternatively, you can use </font>
+    <font color="#009900">// the address or name:</font>
+    <font color="#009900">// InetAddress addr = </font>
+    <font color="#009900">//    InetAddress.getByName("127.0.0.1");</font>
+    <font color="#009900">// InetAddress addr = </font>
+    <font color="#009900">//    InetAddress.getByName("localhost");</font>
+    System.out.println("addr = " + addr);
+    Socket socket = 
+      <font color="#0000ff">new</font> Socket(addr, JabberServer.PORT);
+    <font color="#009900">// Guard everything in a try-finally to make</font>
+    <font color="#009900">// sure that the socket is closed:</font>
+    <font color="#0000ff">try</font> {
+      System.out.println("socket = " + socket);
+      BufferedReader in =
+        <font color="#0000ff">new</font> BufferedReader(
+          <font color="#0000ff">new</font> InputStreamReader(
+            socket.getInputStream()));
+      <font color="#009900">// Output is automatically flushed</font>
+      <font color="#009900">// by PrintWriter:</font>
+      PrintWriter out =
+        <font color="#0000ff">new</font> PrintWriter(
+          <font color="#0000ff">new</font> BufferedWriter(
+            <font color="#0000ff">new</font> OutputStreamWriter(
+              socket.getOutputStream())),<font color="#0000ff">true</font>);
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i ++) {
+        out.println("howdy " + i);
+        String str = in.readLine();
+        System.out.println(str);
+      }
+      out.println("END");
+    } <font color="#0000ff">finally</font> {
+      System.out.println("closing...");
+      socket.close();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see all three ways to produce the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the local loopback IP address: using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or the explicit reserved address 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>127.0.0.1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, if you want to connect to a machine across a network you substitute
+that machine&#8217;s IP address. When the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress
+addr
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is printed (via the automatic call to its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method) the result is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">localhost/127.0.0.1</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+handing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it defaulted to finding the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and that produced the special address 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>127.0.0.1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the <A NAME="Index2655"></A><A NAME="Index2656"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created with both the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the port number. To understand what it means when you print out one of these 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects,
+remember that an Internet connection is determined uniquely by these four
+pieces of data: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clientHost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clientPortNumber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>serverHost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>serverPortNumber</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When the server comes up, it takes up its assigned port (8080) on the localhost
+(127.0.0.1). When the client comes up, it is allocated to the next available
+port on its machine, 1077 in this case, which also happens to be on the same
+machine (127.0.0.1) as the server. Now, in order for data to move between the
+client and server, each side has to know where to send it. Therefore, during
+the process of connecting to the &#8220;known&#8221; server, the client sends a
+&#8220;return address&#8221; so the server knows where to send its data. This
+is what you see in the example output for the server side:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Socket[addr=127.0.0.1,port=1077,localport=8080]</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+means that the server just accepted a connection from 127.0.0.1 on port 1077
+while listening on its local port (8080). On the client side:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Socket[addr=localhost/127.0.0.1,PORT=8080,localport=1077]</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+means that the client made a connection to 127.0.0.1 on port 8080 using the
+local port 1077.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that every time you start up the client anew, the local port number is
+incremented. It starts at 1025 (one past the reserved block of ports) and keeps
+going up until you reboot the machine, at which point it starts at 1025 again.
+(On UNIX machines, once the upper limit of the socket range is reached, the
+numbers will wrap around to the lowest available number again.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object has been created, the process of turning it into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BufferedReader</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the same as in the server (again, in both cases you start with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Here, the client initiates the conversation by sending the string
+&#8220;howdy&#8221; followed by a number. Note that the buffer must again be
+flushed (which happens automatically via the second argument to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintWriter
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">constructor).
+If the buffer isn&#8217;t flushed, the whole conversation will hang because the
+initial &#8220;howdy&#8221; will never get sent (the buffer isn&#8217;t full
+enough to cause the send to happen automatically). Each line that is sent back
+from the server is written to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.out</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to verify that everything is working correctly. To terminate the conversation,
+the agreed-upon &#8220;END&#8221; is sent. If the client simply hangs up, then
+the server throws an exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the same care is taken here to ensure that the network resources
+represented by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are properly cleaned up, using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>try-finally</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sockets
+produce a <A NAME="Index2657"></A>&#8220;dedicated&#8221;
+connection that persists until it is explicitly disconnected. (The dedicated
+connection can still be disconnected un-explicitly if one side, or an
+intermediary link, of the connection crashes.) This means the two parties are
+locked in communication and the connection is constantly open. This seems like
+a logical approach to networking, but it puts an extra load on the network.
+Later in the chapter you&#8217;ll see a different approach to networking, in
+which the connections are only temporary.
+</FONT><a name="_Toc375545497"></a><a name="_Toc408018770"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0163.html">Prev</a> | <a href="tij0165.html">Next</a>
+</div>
+</body></html>
+

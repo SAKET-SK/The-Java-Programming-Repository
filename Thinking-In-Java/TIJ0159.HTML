@@ -1,0 +1,385 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0158.html">Prev</a> | <a href="tij0160.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Runnable
+revisited
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Earlier
+in this chapter, I suggested that you think carefully before making an applet
+or main 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an implementation of <A NAME="Index2604"></A><A NAME="Index2605"></A><A NAME="Index2606"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you take that approach, you can make only one of those threads in your
+program. This limits your flexibility if you decide that you want to have more
+than one thread of that type.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, if you must inherit from a class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you want to add threading behavior to the class, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the correct solution. The final example in this chapter exploits this by
+making a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that paints different colors on itself. This application is set up to
+take values from the command line to determine how big the grid of colors is
+and how long to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+between color changes. By playing with these values you&#8217;ll discover some
+interesting and possibly inexplicable features of threads:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ColorBoxes.java</font>
+<font color="#009900">// Using the Runnable interface</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">class</font> CBox <font color="#0000ff">extends</font> Canvas <font color="#0000ff">implements</font> Runnable {
+  <font color="#0000ff">private</font> Thread t;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> pause;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color[] colors = { 
+    Color.black, Color.blue, Color.cyan, 
+    Color.darkGray, Color.gray, Color.green,
+    Color.lightGray, Color.magenta, 
+    Color.orange, Color.pink, Color.red, 
+    Color.white, Color.yellow 
+  };
+  <font color="#0000ff">private</font> Color cColor = newColor();
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color newColor() {
+    <font color="#0000ff">return</font> colors[
+      (<font color="#0000ff">int</font>)(Math.random() * colors.length)
+    ];
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(cColor);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+  }
+  <font color="#0000ff">public</font> CBox(<font color="#0000ff">int</font> pause) {
+    <font color="#0000ff">this</font>.pause = pause;
+    t = <font color="#0000ff">new</font> Thread(<font color="#0000ff">this</font>);
+    t.start(); 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      cColor = newColor();
+      repaint();
+      <font color="#0000ff">try</font> {
+        t.sleep(pause);
+      } <font color="#0000ff">catch</font>(InterruptedException e) {}
+    } 
+  }
+} 
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ColorBoxes <font color="#0000ff">extends</font> Frame {
+  <font color="#0000ff">public</font> ColorBoxes(<font color="#0000ff">int</font> pause, <font color="#0000ff">int</font> grid) {
+    setTitle("ColorBoxes");
+    setLayout(<font color="#0000ff">new</font> GridLayout(grid, grid));
+    <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; grid * grid; i++)
+      add(<font color="#0000ff">new</font> CBox(pause));
+    addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+        System.exit(0);
+      }
+    });
+  }   
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">int</font> pause = 50;
+    <font color="#0000ff">int</font> grid = 8;
+    <font color="#0000ff">if</font>(args.length &gt; 0) 
+      pause = Integer.parseInt(args[0]);
+    <font color="#0000ff">if</font>(args.length &gt; 1)
+      grid = Integer.parseInt(args[1]);
+    Frame f = <font color="#0000ff">new</font> ColorBoxes(pause, grid);
+    f.setSize(500, 400);
+    f.setVisible(<font color="#0000ff">true</font>);  
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ColorBoxes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a typical application with a constructor that sets up the GUI. This
+constructor takes an argument of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+grid
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to set up the <A NAME="Index2607"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grid</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cells in each dimension. Then it adds the appropriate number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to fill the grid, passing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pause</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value to each one. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can see how 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>pause</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grid</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have default values that can be changed if you pass in command-line arguments.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+where all the work takes place. This is inherited from <A NAME="Index2608"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface so each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can also be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Remember that when you implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you don&#8217;t make a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, just a class that has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Thus, you must explicitly create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and hand the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object to the constructor, then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this happens in the constructor). In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+this thread is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the array 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>colors</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is an enumeration of all the colors in class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Color</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is used in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newColor(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce a randomly-selected color. The current cell color is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cColor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite simple &#8211; it just sets the color to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cColor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and fills the entire canvas with that color.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you see the infinite loop that sets the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cColor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a new random color and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>repaint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to show it. Then the thread goes to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the amount of time specified on the command line.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Precisely
+because this design is flexible and threading is tied to each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+element, you can experiment by making as many threads as you want. (In reality,
+there is a restriction imposed by the number of threads your JVM can
+comfortably handle.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program also makes an interesting benchmark, since it can show dramatic speed
+differences between one JVM implementation and another.
+</FONT><a name="_Toc375545487"></a><a name="_Toc408018761"></a><P></DIV>
+<A NAME="Heading508"></A><H3 ALIGN=LEFT>
+Too
+many threads
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+some point, you&#8217;ll find that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ColorBoxes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+bogs down. On my machine, this occurred somewhere after a 10 x 10 grid. Why
+does this happen? You&#8217;re naturally suspicious that the AWT might have
+something to do with it, so here&#8217;s an example that tests that premise by
+making fewer threads. The code is reorganized so that a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implements
+Runnable
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+holds a number of color blocks and randomly chooses ones to update. Then a
+number of these 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created, depending roughly on the grid dimension you choose. As a
+result, you have far fewer threads than color blocks, so if there&#8217;s a
+speedup we&#8217;ll know it was because there were too many threads in the
+previous example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ColorBoxes2.java</font>
+<font color="#009900">// Balancing thread use</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> CBox2 <font color="#0000ff">extends</font> Canvas {
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color[] colors = { 
+    Color.black, Color.blue, Color.cyan, 
+    Color.darkGray, Color.gray, Color.green,
+    Color.lightGray, Color.magenta, 
+    Color.orange, Color.pink, Color.red, 
+    Color.white, Color.yellow 
+  };
+  <font color="#0000ff">private</font> Color cColor = newColor();
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> Color newColor() {
+    <font color="#0000ff">return</font> colors[
+      (<font color="#0000ff">int</font>)(Math.random() * colors.length)
+    ];
+  }
+  <font color="#0000ff">void</font> nextColor() {
+    cColor = newColor();
+    repaint();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(cColor);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+  }
+}
+
+<font color="#0000ff">class</font> CBoxVector 
+  <font color="#0000ff">extends</font> Vector <font color="#0000ff">implements</font> Runnable {
+  <font color="#0000ff">private</font> Thread t;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> pause;
+  <font color="#0000ff">public</font> CBoxVector(<font color="#0000ff">int</font> pause) {
+    <font color="#0000ff">this</font>.pause = pause;
+    t = <font color="#0000ff">new</font> Thread(<font color="#0000ff">this</font>);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> go() { t.start(); }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">int</font> i = (<font color="#0000ff">int</font>)(Math.random() * size());
+      ((CBox2)elementAt(i)).nextColor();
+      <font color="#0000ff">try</font> {
+        t.sleep(pause);
+      } <font color="#0000ff">catch</font>(InterruptedException e) {}
+    } 
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ColorBoxes2 <font color="#0000ff">extends</font> Frame {
+  <font color="#0000ff">private</font> CBoxVector[] v;
+  <font color="#0000ff">public</font> ColorBoxes2(<font color="#0000ff">int</font> pause, <font color="#0000ff">int</font> grid) {
+    setTitle("ColorBoxes2");
+    setLayout(<font color="#0000ff">new</font> GridLayout(grid, grid));
+    v = <font color="#0000ff">new</font> CBoxVector[grid];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; grid; i++)
+      v[i] = <font color="#0000ff">new</font> CBoxVector(pause);
+    <font color="#0000ff">for</font> (<font color="#0000ff">int</font> i = 0; i &lt; grid * grid; i++) {
+      v[i % grid].addElement(<font color="#0000ff">new</font> CBox2());
+      add((CBox2)v[i % grid].lastElement());
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; grid; i++)
+      v[i].go();
+    addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+        System.exit(0);
+      }
+    });
+  }   
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#009900">// Shorter default pause than ColorBoxes:</font>
+    <font color="#0000ff">int</font> pause = 5;
+    <font color="#0000ff">int</font> grid = 8;
+    <font color="#0000ff">if</font>(args.length &gt; 0) 
+      pause = Integer.parseInt(args[0]);
+    <font color="#0000ff">if</font>(args.length &gt; 1)
+      grid = Integer.parseInt(args[1]);
+    Frame f = <font color="#0000ff">new</font> ColorBoxes2(pause, grid);
+    f.setSize(500, 400);
+    f.setVisible(<font color="#0000ff">true</font>);  
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ColorBoxes2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and initialized to hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>grid</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+each of which knows how long to sleep. An equal number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cbox2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects is then added to each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and each vector is told to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which starts its thread.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is similar to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+it paints itself with a randomly-chosen color. But that&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>all</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBox2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does. All of the threading has been moved into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could also have inherited 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and had a member object of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That design has the advantage that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addElement(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods could then be given specific argument and return value types instead of
+generic 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+(Their names could also be changed to something shorter.) However, the design
+used here seemed at first glance to require less code. In addition, it
+automatically retains all the other behaviors of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+With all the casting and parentheses necessary for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>elementAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+this might not be the case as your body of code grows.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+before, when you implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Runnable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you don&#8217;t get all of the equipment that comes with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you have to create a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and hand yourself to its constructor in order to have something to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+as you can see in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CBoxVector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor and in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>go(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method simply chooses a random element number within the vector and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextColor(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for that element to cause it to choose a new randomly-selected color.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Upon
+running this program, you see that it does indeed run faster and respond more
+quickly (for instance, when you interrupt it, it stops more quickly), and it
+doesn&#8217;t seem to bog down as much at higher grid sizes. Thus, a new factor
+is added into the threading equation: you must watch to see that you
+don&#8217;t have &#8220;too many threads&#8221; (whatever that turns out to
+mean for your particular program and platform). If you do, you must try to use
+techniques like the one above to &#8220;balance&#8221; the number of threads in
+your program. If you see performance problems in a multithreaded program you
+now have a number of issues to examine:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Do
+you have enough calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>yield(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and/or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>wait(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Are
+calls to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+long enough?
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Are
+you running too many threads?
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Have
+you tried different platforms and JVMs?
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Issues
+like this are one reason that multithreaded programming is often considered an
+art.
+</FONT><a name="_Toc375545489"></a><a name="_Toc408018762"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0158.html">Prev</a> | <a href="tij0160.html">Next</a>
+</div>
+</body></html>
+

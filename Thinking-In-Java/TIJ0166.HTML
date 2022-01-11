@@ -1,0 +1,459 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0165.html">Prev</a> | <a href="tij0167.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Datagrams<P><A NAME="Index2661"></A><A NAME="Index2662"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+examples you&#8217;ve seen so far use the <A NAME="Index2663"></A><A NAME="Index2664"></A><A NAME="Index2665"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Transmission
+Control Protocol
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(TCP, also known as <A NAME="Index2666"></A><A NAME="Index2667"></A><A NAME="Index2668"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>stream-based
+sockets
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+which is designed for ultimate reliability and guarantees that the data will
+get there. It allows retransmission of lost data, it provides multiple paths
+through different routers in case one goes down, and bytes are delivered in the
+order they are sent. All this control and reliability comes at a cost: TCP has
+a high overhead.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a second protocol, called <A NAME="Index2669"></A><A NAME="Index2670"></A><A NAME="Index2671"></A><A NAME="Index2672"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>User
+Datagram Protocol
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(UDP), which doesn&#8217;t guarantee that the packets will be delivered and
+doesn&#8217;t guarantee that they will arrive in the order they were sent.
+It&#8217;s called an &#8220;<A NAME="Index2673"></A><A NAME="Index2674"></A>unreliable
+protocol&#8221; (TCP is a <A NAME="Index2675"></A><A NAME="Index2676"></A>&#8220;reliable
+protocol&#8221;), which sounds bad, but because it&#8217;s much faster it can
+be useful. There are some applications, such as an audio signal, in which it
+isn&#8217;t so critical if a few packets are dropped here or there but speed is
+vital. Or consider a time-of-day server, where it really doesn&#8217;t matter
+if one of the messages is lost. Also, some applications might be able to fire
+off a UDP message to a server and can then assume, if there is no response in a
+reasonable period of time, that the message was lost.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+support for datagrams in Java has the same feel as its support for TCP sockets,
+but there are significant differences. With datagrams, you put a <A NAME="Index2677"></A><A NAME="Index2678"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on both the client and server, but there is no analogy to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ServerSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that waits around for a connection. That&#8217;s because there is no
+&#8220;connection,&#8221; but instead a datagram just shows up. Another
+fundamental difference is that with TCP sockets, once you&#8217;ve made the
+connection you don&#8217;t need to worry about who&#8217;s talking to whom
+anymore; you just send the data back and forth through conventional streams.
+However, with datagrams, the datagram packet must know where it came from and
+where it&#8217;s supposed to go. That means you must know these things for each
+datagram packet that you load up and ship off.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+sends and receives the packets, and the <A NAME="Index2679"></A><A NAME="Index2680"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains the information. When you&#8217;re receiving a datagram, you need only
+provide a buffer in which the data will be placed; the information about the
+Internet address and port number where the information came from will be
+automatically initialized when the packet arrives through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So the constructor for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+receive datagrams is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">DatagramPacket(buf,
+buf.length)
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buf
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an array, you might wonder why the constructor couldn&#8217;t figure out the
+length of the array on its own. I wondered this, and can only guess that
+it&#8217;s a throwback to C-style programming, in which of course arrays
+can&#8217;t tell you how big they are.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can reuse a receiving datagram; you don&#8217;t have to make a new one each
+time. Every time you reuse it, the data in the buffer is overwritten.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+maximum size of the buffer is restricted only by the allowable datagram packet
+size, which limits it to slightly less than 64Kbytes. However, in many
+applications you&#8217;ll want it to be much smaller, certainly when
+you&#8217;re sending data. Your chosen packet size depends on what you need for
+your particular application.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you send a datagram, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must contain not only the data, but also the Internet address and port where it
+will be sent. So the constructor for an outgoing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">DatagramPacket(buf,
+length, inetAddress, port)
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+time, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">array)
+already contains the data that you want to send out. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+might be the length of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>buf</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it can also be shorter, indicating that you want to send only that many
+bytes. The other two arguments are the Internet address where the packet is
+going and the destination port within that machine.
+</FONT><A NAME="fnB64" HREF="#fn64">[64]</A><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might think that the two constructors create two different objects: one for
+receiving datagrams and one for sending them. Good OO design would suggest that
+these should be two different classes, rather than one class with different
+behavior depending on how you construct the object. This is probably true, but
+fortunately the use of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is simple enough that you&#8217;re not tripped up by the problem, as you can
+see in the following example. This example is similar to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiJabberServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MultiJabberClient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example for TCP sockets. Multiple clients will send datagrams to a server,
+which will echo them back to the same client that sent the message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+simplify the creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and vice-versa, the example begins with a utility class, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dgram</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to do the work for you:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Dgram.java</font>
+<font color="#009900">// A utility class to convert back and forth</font>
+<font color="#009900">// Between Strings and DataGramPackets.</font>
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Dgram {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> DatagramPacket toDatagram(
+    String s, InetAddress destIA, <font color="#0000ff">int</font> destPort) {
+    <font color="#009900">// Deprecated in Java 1.1, but it works:</font>
+    <font color="#0000ff">byte</font>[] buf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[s.length() + 1];
+    s.getBytes(0, s.length(), buf, 0);
+    <font color="#009900">// The correct Java 1.1 approach, but it's</font>
+    <font color="#009900">// Broken (it truncates the String):</font>
+    <font color="#009900">// byte[] buf = s.getBytes();</font>
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> DatagramPacket(buf, buf.length, 
+      destIA, destPort);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> String toString(DatagramPacket p){
+    <font color="#009900">// The Java 1.0 approach:</font>
+    <font color="#009900">// return new String(p.getData(), </font>
+    <font color="#009900">//  0, 0, p.getLength());</font>
+    <font color="#009900">// The Java 1.1 approach:</font>
+    <font color="#0000ff">return</font> 
+      <font color="#0000ff">new</font> String(p.getData(), 0, p.getLength());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dgram</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a port number and builds a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by copying the contents of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+buffer and passing the buffer into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. Notice the &#8220;+1&#8221; in the buffer allocation &#8211; this
+was necessary to prevent truncation. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a special operation that copies the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+buffer. This method is now deprecated; Java 1.1<A NAME="Index2681"></A>
+has a &#8220;better&#8221; way to do this but it&#8217;s commented out here
+because it truncates the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So you&#8217;ll get a deprecation message when you compile it under Java 1.1,
+but the behavior will be correct. (This bug might be fixed by the time you read
+this.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dgram.toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method shows both the Java 1.0<A NAME="Index2682"></A>
+approach and the Java 1.1 approach (which is different because there&#8217;s a
+new kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor). 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is the server for the datagram demonstration:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ChatterServer.java</font>
+<font color="#009900">// A server that echoes datagrams</font>
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ChatterServer {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> INPORT = 1711;
+  <font color="#0000ff">private</font> <font color="#0000ff">byte</font>[] buf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[1000];
+  <font color="#0000ff">private</font> DatagramPacket dp = 
+    <font color="#0000ff">new</font> DatagramPacket(buf, buf.length);
+  <font color="#009900">// Can listen &amp; send on the same socket:</font>
+  <font color="#0000ff">private</font> DatagramSocket socket;
+
+  <font color="#0000ff">public</font> ChatterServer() {
+    <font color="#0000ff">try</font> {
+      socket = <font color="#0000ff">new</font> DatagramSocket(INPORT);
+      System.out.println("Server started");
+      <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+        <font color="#009900">// Block until a datagram appears:</font>
+        socket.receive(dp);
+        String rcvd = Dgram.toString(dp) +
+          ", from address: " + dp.getAddress() +
+          ", port: " + dp.getPort();
+        System.out.println(rcvd);
+        String echoString = 
+          "Echoed: " + rcvd;
+        <font color="#009900">// Extract the address and port from the</font>
+        <font color="#009900">// received datagram to find out where to</font>
+        <font color="#009900">// send it back:</font>
+        DatagramPacket echo = 
+          Dgram.toDatagram(echoString,
+            dp.getAddress(), dp.getPort());
+        socket.send(echo);
+      }
+    } <font color="#0000ff">catch</font>(SocketException e) {
+      System.err.println("Can't open socket");
+      System.exit(1);
+    } <font color="#0000ff">catch</font>(IOException e) {
+      System.err.println("Communication error");
+      e.printStackTrace();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">new</font> ChatterServer();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChatterServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for receiving messages, instead of creating one each time you&#8217;re ready to
+receive a new message. The single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used repeatedly. This 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a port number because this is the server and the client must have an exact
+address where it wants to send the datagram. It is given a port number but not
+an Internet address because it resides on &#8220;this&#8221; machine so it
+knows what its Internet address is (in this case, the default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+In the infinite 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>while</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>socket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is told to <A NAME="Index2683"></A><A NAME="Index2684"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+whereupon it blocks until a datagram shows up, and then sticks it into our
+designated receiver, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket
+dp
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The packet is converted to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+along with information about the Internet address and socket where the packet
+came from. This information is displayed, and then an extra string is added to
+indicate that it is being echoed back from the server.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+there&#8217;s a bit of a quandary. As you will see, there are potentially many
+different Internet addresses and port numbers that the messages might come from
+&#8211; that is, the clients can reside on any machine. (In this demonstration
+they all reside on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but the port number for each client is different.) To send a message back to
+the client that originated it, you need to know that client&#8217;s Internet
+address and port number. Fortunately, this information is conveniently packaged
+inside the <A NAME="Index2685"></A><A NAME="Index2686"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that sent the message, so all you have to do is pull it out using <A NAME="Index2687"></A><A NAME="Index2688"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAddress(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2689"></A><A NAME="Index2690"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which are used to build the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>echo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is sent back through the same socket that&#8217;s doing the receiving. In
+addition, when the socket sends the datagram, it automatically adds the
+Internet address and port information of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>this</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+machine, so that when the client receives the message, it can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAddress(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to find out where the datagram came from. In fact, the only time that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAddress(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+don&#8217;t tell you where the datagram came from is if you create a datagram
+to send and you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAddress(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPort(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>before</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you send the datagram (in which case it tells the address and port of this
+machine, the one the datagram is being sent from). This is an essential part of
+datagrams: you don&#8217;t need to keep track of where a message came from
+because it&#8217;s always stored inside the datagram. In fact, the most
+reliable way to program is if you don&#8217;t try to keep track, but instead
+always extract the address and port from the datagram in question (as is done
+here).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+test this server, here&#8217;s a program that makes a number of clients, all of
+which fire datagram packets to the server and wait for the server to echo them
+back.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ChatterClient.java</font>
+<font color="#009900">// Tests the ChatterServer by starting multiple </font>
+<font color="#009900">// clients, each of which sends datagrams.</font>
+<font color="#0000ff">import</font> java.lang.Thread;
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ChatterClient <font color="#0000ff">extends</font> Thread {
+  <font color="#009900">// Can listen &amp; send on the same socket:</font>
+  <font color="#0000ff">private</font> DatagramSocket s;
+  <font color="#0000ff">private</font> InetAddress hostAddress;
+  <font color="#0000ff">private</font> <font color="#0000ff">byte</font>[] buf = <font color="#0000ff">new</font> <font color="#0000ff">byte</font>[1000];
+  <font color="#0000ff">private</font> DatagramPacket dp = 
+    <font color="#0000ff">new</font> DatagramPacket(buf, buf.length);
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> id;
+
+  <font color="#0000ff">public</font> ChatterClient(<font color="#0000ff">int</font> identifier) {
+    id = identifier;
+    <font color="#0000ff">try</font> {
+      <font color="#009900">// Auto-assign port number:</font>
+      s = <font color="#0000ff">new</font> DatagramSocket();
+      hostAddress = 
+        InetAddress.getByName("localhost");
+    } <font color="#0000ff">catch</font>(UnknownHostException e) {
+      System.err.println("Cannot find host");
+      System.exit(1);
+    } <font color="#0000ff">catch</font>(SocketException e) {
+      System.err.println("Can't open socket");
+      e.printStackTrace();
+      System.exit(1);
+    } 
+    System.out.println("ChatterClient starting");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 25; i++) {
+        String outMessage = "Client #" +
+          id + ", message #" + i;
+        <font color="#009900">// Make and send a datagram:</font>
+        s.send(Dgram.toDatagram(outMessage,
+          hostAddress, 
+          ChatterServer.INPORT));
+        <font color="#009900">// Block until it echoes back:</font>
+        s.receive(dp);
+        <font color="#009900">// Print out the echoed contents:</font>
+        String rcvd = "Client #" + id +
+          ", rcvd from " + 
+          dp.getAddress() + ", " + 
+          dp.getPort() + ": " +
+          Dgram.toString(dp);
+        System.out.println(rcvd);
+      }
+    } <font color="#0000ff">catch</font>(IOException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+      <font color="#0000ff">new</font> ChatterClient(i).start();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChatterClient</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that multiple clients can be made to bother the server. Here you can see
+that the receiving 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+looks just like the one used for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChatterServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In the constructor, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created with no arguments since it doesn&#8217;t need to advertise itself as
+being at a particular port number. The Internet address used for this socket
+will be &#8220;this machine&#8221; (for the example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and the port number will be automatically assigned, as you will see from the
+output. This 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramSocket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+like the one for the server, will be used both for sending and receiving.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>hostAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the Internet address of the host machine you want to talk to. The one part
+of the program in which you must know an exact Internet address and port number
+is the part in which you make the outgoing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DatagramPacket</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As is always the case, the host must be at a known address and port number so
+that clients can originate conversations with the host.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+thread is given a unique identification number (although the port number
+automatically assigned to the thread would also provide a unique identifier). In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a message 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created that contains the thread&#8217;s identification number and the
+message number this thread is currently sending. This 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to create a datagram that is sent to the host at its address; the port
+number is taken directly from a constant in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChatterServer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Once the message is sent, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>receive(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+blocks until the server replies with an echoing message. All of the information
+that&#8217;s shipped around with the message allows you to see that what comes
+back to this particular thread is derived from the message that originated from
+it. In this example, even though UDP is an &#8220;unreliable&#8221; protocol,
+you&#8217;ll see that all of the datagrams get where they&#8217;re supposed to.
+(This will be true for localhost and LAN situations, but you might begin to see
+some failures for non-local connections.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run this program, you&#8217;ll see that each of the threads finishes, which
+means that each of the datagram packets sent to the server is turned around and
+echoed to the correct recipient; otherwise one or more threads would hang,
+blocking until their input shows up.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might think that the only right way to, for example, transfer a file from one
+machine to another is through TCP sockets, since they&#8217;re
+&#8220;reliable.&#8221; However, because of the speed of datagrams they can
+actually be a better solution. You simply break the file up into packets and
+number each packet. The receiving machine takes the packets and reassembles
+them; a &#8220;header packet&#8221; tells the machine how many to expect and
+any other important information. If a packet is lost, the receiving machine
+sends a datagram back telling the sender to retransmit.
+</FONT><a name="_Toc408018772"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn64" HREF="#fnB64">[64]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+TCP and UDP ports are considered unique. That is, you can simultaneously run a
+TCP and UDP server on port 8080 without interference.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0165.html">Prev</a> | <a href="tij0167.html">Next</a>
+</div>
+</body></html>
+

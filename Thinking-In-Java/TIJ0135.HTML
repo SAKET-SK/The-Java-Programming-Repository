@@ -1,0 +1,65 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0134.html">Prev</a> | <a href="tij0136.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Making
+a button
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Making
+a button is quite simple: you just call the <A NAME="Index1574"></A><A NAME="Index1575"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor with the label you want on the button. (You can also use the
+default constructor if you want a button with no label, but this is not very
+useful.) Usually you&#8217;ll want to create a handle for the button so you can
+refer to it later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a component, like its own little window, that will automatically get
+repainted as part of an update. This means that you don&#8217;t explicitly
+paint a button or any other kind of control; you simply place them on the form
+and let them automatically take care of painting themselves. So to place a
+button on a form you override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">instead
+of overriding 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Button1.java</font>
+<font color="#009900">// Putting buttons on an applet</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Button1 <font color="#0000ff">extends</font> Applet {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(b1);
+    add(b2);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+not enough to create the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or any other control). You must also call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to cause the button to be placed on the applet&#8217;s form. This seems
+a lot simpler than it is, because the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+actually decides, implicitly, where to place the control on the form.
+Controlling the layout of a form is examined shortly.
+</FONT><a name="_Toc375545448"></a><a name="_Toc408018684"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0134.html">Prev</a> | <a href="tij0136.html">Next</a>
+</div>
+</body></html>
+

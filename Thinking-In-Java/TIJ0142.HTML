@@ -1,0 +1,105 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0141.html">Prev</a> | <a href="tij0143.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Drop-down
+lists
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+a group of radio buttons, a <A NAME="Index1646"></A><A NAME="Index1647"></A><A NAME="Index1648"></A>drop-down
+list is a way to force the user to select only one element from a group of
+possibilities. However, it&#8217;s a much more compact way to accomplish this,
+and it&#8217;s easier to change the elements of the list without surprising the
+user. (You can change radio buttons dynamically, but that tends to be visibly
+jarring).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java&#8217;s
+<A NAME="Index1649"></A><A NAME="Index1650"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box is not like the combo box in Windows, which lets you select from a list 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>or</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+type in your own selection. With a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box you choose one and only one element from the list. In the following
+example, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box starts with a certain number of entries and then new entries are added to
+the box when a button is pressed. This allows you to see some interesting
+behaviors in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+boxes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Choice1.java</font>
+<font color="#009900">// Using drop-down lists</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Choice1 <font color="#0000ff">extends</font> Applet {
+  String[] description = { "Ebullient", "Obtuse",
+    "Recalcitrant", "Brilliant", "Somnescent",
+    "Timorous", "Florid", "Putrescent" };
+  TextField t = <font color="#0000ff">new</font> TextField(30);
+  Choice c = <font color="#0000ff">new</font> Choice();
+  Button b = <font color="#0000ff">new</font> Button("Add items");
+  <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      c.addItem(description[count++]);
+    add(t);
+    add(c);
+    add(b);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(c))
+      t.setText("index: " +  c.getSelectedIndex()
+        + "   " + (String)arg);
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b)) {
+      <font color="#0000ff">if</font>(count &lt; description.length)
+        c.addItem(description[count++]);
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+displays the &#8220;selected index,&#8221; which is the sequence number of the
+currently selected element, as well as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+representation of the second argument of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is in this case the string that was selected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run this applet, pay attention to the determination of the size of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box: in Windows, the size is fixed from the first time you drop down the list.
+This means that if you drop down the list, then add more elements to the list,
+the elements will be there but the drop-down list won&#8217;t get any longer
+</FONT><A NAME="fnB57" HREF="#fn57">[57]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(you can scroll through the elements). However, if you add all the elements
+before the first time the list is dropped down, then it will be sized
+correctly. Of course, the user will expect to see the whole list when
+it&#8217;s dropped down, so this behavior puts some significant limitations on
+adding elements to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+boxes.
+</FONT><a name="_Toc375545455"></a><a name="_Toc408018691"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn57" HREF="#fnB57">[57]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This behavior is apparently a bug and will be fixed in a later version of Java.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0141.html">Prev</a> | <a href="tij0143.html">Next</a>
+</div>
+</body></html>
+

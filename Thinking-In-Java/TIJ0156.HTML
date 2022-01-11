@@ -1,0 +1,928 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0155.html">Prev</a> | <a href="tij0157.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Sharing
+limited resources
+<P><A NAME="Index2489"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can think of a single-threaded program as one lonely entity moving around
+through your problem space and doing one thing at a time. Because there&#8217;s
+only one entity, you never have to think about the problem of two entities
+trying to use the same resource at the same time, like two people trying to
+park in the same space, walk through a door at the same time, or even talk at
+the same time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">With
+multithreading, things aren&#8217;t lonely anymore, but you now have the
+possibility of two or more threads trying to use the same limited resource at
+once. Colliding over a resource must be prevented or else you&#8217;ll have two
+threads trying to access the same bank account at the same time, print to the
+same printer, or adjust the same valve, etc.
+</FONT><a name="_Toc375545479"></a><a name="_Toc408018752"></a><P></DIV>
+<A NAME="Heading490"></A><H3 ALIGN=LEFT>
+Improperly
+accessing resources
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+a variation on the counters that have been used so far in this chapter. In the
+following example, each thread contains two counters that are incremented and
+displayed inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In addition, there&#8217;s another thread of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is watching the counters to see if they&#8217;re always equivalent. This
+seems like a needless activity, since looking at the code it appears obvious
+that the counters will always be the same. But that&#8217;s where the surprise
+comes in. Here&#8217;s the first version of the program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Sharing1.java</font>
+<font color="#009900">// Problems with resource sharing while threading</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> TwoCounter <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> started = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> TextField 
+    t1 = <font color="#0000ff">new</font> TextField(5),
+    t2 = <font color="#0000ff">new</font> TextField(5);
+  <font color="#0000ff">private</font> Label l = 
+    <font color="#0000ff">new</font> Label("count1 == count2");
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count1 = 0, count2 = 0;
+  <font color="#009900">// Add the display components as a panel</font>
+  <font color="#009900">// to the given container:</font>
+  <font color="#0000ff">public</font> TwoCounter(Container c) {
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.add(t1);
+    p.add(t2);
+    p.add(l);
+    c.add(p);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> start() {
+    <font color="#0000ff">if</font>(!started) {
+      started = <font color="#0000ff">true</font>;
+      <font color="#0000ff">super</font>.start();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      t1.setText(Integer.toString(count1++));
+      t2.setText(Integer.toString(count2++));
+      <font color="#0000ff">try</font> {
+        sleep(500);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> synchTest() {
+    Sharing1.incrementAccess();
+    <font color="#0000ff">if</font>(count1 != count2)
+      l.setText("Unsynched");
+  }
+}
+
+<font color="#0000ff">class</font> Watcher <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Sharing1 p;
+  <font color="#0000ff">public</font> Watcher(Sharing1 p) { 
+    <font color="#0000ff">this</font>.p = p;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; p.s.length; i++)
+        p.s[i].synchTest();
+      <font color="#0000ff">try</font> {
+        sleep(500);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Sharing1 <font color="#0000ff">extends</font> Applet {
+  TwoCounter[] s;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> accessCount = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> TextField aCount = 
+    <font color="#0000ff">new</font> TextField("0", 10);
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> incrementAccess() {
+    accessCount++;
+    aCount.setText(Integer.toString(accessCount));
+  }
+  <font color="#0000ff">private</font> Button 
+    start = <font color="#0000ff">new</font> Button("Start"),
+    observer = <font color="#0000ff">new</font> Button("Observe");
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> isApplet = <font color="#0000ff">true</font>;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> numCounters = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> numObservers = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#0000ff">if</font>(isApplet) {
+      numCounters = 
+        Integer.parseInt(getParameter("size"));
+      numObservers = 
+        Integer.parseInt(
+          getParameter("observers"));
+    }
+    s = <font color="#0000ff">new</font> TwoCounter[numCounters];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i] = <font color="#0000ff">new</font> TwoCounter(<font color="#0000ff">this</font>);
+    Panel p = <font color="#0000ff">new</font> Panel();
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    p.add(start);
+    observer.addActionListener(<font color="#0000ff">new</font> ObserverL());
+    p.add(observer);
+    p.add(<font color="#0000ff">new</font> Label("Access Count"));
+    p.add(aCount);
+    add(p);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+        s[i].start();
+    }
+  }
+  <font color="#0000ff">class</font> ObserverL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; numObservers; i++)
+        <font color="#0000ff">new</font> Watcher(Sharing1.<font color="#0000ff">this</font>);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Sharing1 applet = <font color="#0000ff">new</font> Sharing1();
+    <font color="#009900">// This isn't an applet, so set the flag and</font>
+    <font color="#009900">// produce the parameter values from args:</font>
+    applet.isApplet = <font color="#0000ff">false</font>;
+    applet.numCounters = 
+      (args.length == 0 ? 5 :
+        Integer.parseInt(args[0]));
+    applet.numObservers =
+      (args.length &lt; 2 ? 5 :
+        Integer.parseInt(args[1]));
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Sharing1");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(350, applet.numCounters *100);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+before, each counter contains its own display components: two text fields and a
+label that initially indicates that the counts are equivalent. These components
+are added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. Because this thread is started via a button press by the user,
+it&#8217;s possible that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+could be called more than once. It&#8217;s illegal for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Thread.start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be called more than once for a thread (an exception is thrown). You can see
+that the machinery to prevent this in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>started
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">flag
+and the overridden 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are incremented and displayed in a manner that would seem to keep them
+identical. Then <A NAME="Index2490"></A><A NAME="Index2491"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sleep(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called; without this call the program balks because it becomes hard for the
+CPU to swap tasks.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method performs the apparently useless activity of checking to see if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is equivalent to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+if they are not equivalent it sets the label to &#8220;Unsynched&#8221; to
+indicate this. But first, it calls a static member of the class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that increments and displays an access counter to show how many times this
+check has occurred successfully. (The reason for this will become apparent in
+future variations of this example.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is a thread whose job is to call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects that are active. It does this by stepping through the array
+that&#8217;s kept in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. You can think of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as constantly peeking over the shoulders of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects that it initializes in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and starts as threads when you press the &#8220;start&#8221; button. Later,
+when you press the &#8220;Observe&#8221; button, one or more observers are
+created and freed upon the unsuspecting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">threads.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that to run this as an applet in a browser, your Web page will need to contain
+the lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;applet code=Sharing1 width=650 height=500&gt;
+&lt;param name=size value="20"&gt;
+&lt;param name=observers value="1"&gt;
+&lt;/applet&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can change the width, height, and parameters to suit your experimental tastes.
+By changing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>size</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>observers</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you&#8217;ll change the behavior of the program. You can also see that this
+program is set up to run as a stand-alone application by pulling the arguments
+from the command line (or providing defaults).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the surprising part. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter.run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the infinite loop is just repeatedly passing over the adjacent lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>t1.setText(Integer.toString(count1++));
+t2.setText(Integer.toString(count2++));</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(as
+well as sleeping, but that&#8217;s not important here). When you run the
+program, however, you&#8217;ll discover that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>count2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be observed (by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+to be unequal at times! This is because of the nature of threads &#8211; they
+can be <A NAME="Index2492"></A>suspended
+at any time. So at times, the suspension occurs 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>between</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the execution of the above two lines, and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+thread happens to come along and perform the comparison at just this moment,
+thus finding the two counters to be different.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example shows a fundamental problem with using threads. You never know when a
+thread might be run. Imagine sitting at a table with a fork, about to spear the
+last piece of food on your plate and as your fork reaches for it, the food
+suddenly vanishes (because your thread was suspended and another thread came in
+and stole the food). That&#8217;s the problem that you&#8217;re dealing with.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sometimes
+you don&#8217;t care if a resource is being accessed at the same time
+you&#8217;re trying to use it (the food is on some other plate). But for
+multithreading to work, you need some way to prevent two threads from accessing
+the same resource, at least during critical periods.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Preventing
+this kind of collision is simply a matter of putting a lock on a resource when
+one thread is using it. The first thread that accesses a resource locks it, and
+then the other threads cannot access that resource until it is unlocked, at
+which time another thread locks and uses it, etc. If the front seat of the car
+is the limited resource, the child who shouts &#8220;Dibs!&#8221; asserts the
+lock.
+</FONT><a name="_Toc375545480"></a><a name="_Toc408018753"></a><P></DIV>
+<A NAME="Heading491"></A><H3 ALIGN=LEFT>
+How
+Java shares resources
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+has built-in support to prevent collisions over one kind of resource: the
+memory in an object. Since you typically make the data elements of a class <A NAME="Index2493"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and access that memory only through methods, you can prevent collisions by
+making a particular method <A NAME="Index2494"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Only one thread at a time can call a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for a particular object (although that thread can call more than one of
+the object&#8217;s synchronized methods). Here are simple 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> f() { <font color="#009900">/* ... */</font> }
+<font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> g(){ <font color="#009900">/* ... */</font> } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+object contains a single <A NAME="Index2495"></A><A NAME="Index2496"></A>lock
+(also called a <A NAME="Index2497"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>monitor</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+that is automatically part of the object (you don&#8217;t have to write any
+special code). When you call any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, that object is locked and no other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of that object can be called until the first one finishes and releases
+the lock. In the example above, if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called for an object, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot be called for the same object until 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is completed and releases the lock. Thus, there&#8217;s a single lock
+that&#8217;s shared by all the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods of a particular object, and this lock prevents common memory from being
+written by more than one method at a time (i.e. more than one thread at a time).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+also a single lock per class (as part of the <A NAME="Index2498"></A><A NAME="Index2499"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object for the class), so that <A NAME="Index2500"></A><A NAME="Index2501"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods can lock each other out from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">data
+on a class-wide basis.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that if you want to guard some other resource from simultaneous access by
+multiple threads, you can do so by forcing access to that resource through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods.
+</FONT><P></DIV>
+<A NAME="Heading492"></A><H4 ALIGN=LEFT>
+Synchronizing
+the counters
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Armed
+with this new keyword it appears that the solution is at hand: we&#8217;ll
+simply use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword for the methods in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TwoCounter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The following example is the same as the previous one, with the addition of the
+new keyword:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Sharing2.java</font>
+<font color="#009900">// Using the synchronized keyword to prevent</font>
+<font color="#009900">// multiple access to a particular resource.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> TwoCounter2 <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> started = <font color="#0000ff">false</font>;
+  <font color="#0000ff">private</font> TextField 
+    t1 = <font color="#0000ff">new</font> TextField(5),
+    t2 = <font color="#0000ff">new</font> TextField(5);
+  <font color="#0000ff">private</font> Label l = 
+    <font color="#0000ff">new</font> Label("count1 == count2");
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> count1 = 0, count2 = 0;
+  <font color="#0000ff">public</font> TwoCounter2(Container c) {
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.add(t1);
+    p.add(t2);
+    p.add(l);
+    c.add(p);
+  }    
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> start() {
+    <font color="#0000ff">if</font>(!started) {
+      started = <font color="#0000ff">true</font>;
+      <font color="#0000ff">super</font>.start();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      t1.setText(Integer.toString(count1++));
+      t2.setText(Integer.toString(count2++));
+      <font color="#0000ff">try</font> {
+        sleep(500);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> synchTest() {
+    Sharing2.incrementAccess();
+    <font color="#0000ff">if</font>(count1 != count2)
+      l.setText("Unsynched");
+  }
+}
+
+<font color="#0000ff">class</font> Watcher2 <font color="#0000ff">extends</font> Thread {
+  <font color="#0000ff">private</font> Sharing2 p;
+  <font color="#0000ff">public</font> Watcher2(Sharing2 p) { 
+    <font color="#0000ff">this</font>.p = p;
+    start();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font>(<font color="#0000ff">true</font>) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; p.s.length; i++)
+        p.s[i].synchTest();
+      <font color="#0000ff">try</font> {
+        sleep(500);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Sharing2 <font color="#0000ff">extends</font> Applet {
+  TwoCounter2[] s;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> accessCount = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">static</font> TextField aCount = 
+    <font color="#0000ff">new</font> TextField("0", 10);
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> incrementAccess() {
+    accessCount++;
+    aCount.setText(Integer.toString(accessCount));
+  }
+  <font color="#0000ff">private</font> Button 
+    start = <font color="#0000ff">new</font> Button("Start"),
+    observer = <font color="#0000ff">new</font> Button("Observe");
+  <font color="#0000ff">private</font> <font color="#0000ff">boolean</font> isApplet = <font color="#0000ff">true</font>;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> numCounters = 0;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> numObservers = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    <font color="#0000ff">if</font>(isApplet) {
+      numCounters = 
+        Integer.parseInt(getParameter("size"));
+      numObservers = 
+        Integer.parseInt(
+          getParameter("observers"));
+    }
+    s = <font color="#0000ff">new</font> TwoCounter2[numCounters];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+      s[i] = <font color="#0000ff">new</font> TwoCounter2(<font color="#0000ff">this</font>);
+    Panel p = <font color="#0000ff">new</font> Panel();
+    start.addActionListener(<font color="#0000ff">new</font> StartL());
+    p.add(start);
+    observer.addActionListener(<font color="#0000ff">new</font> ObserverL());
+    p.add(observer);
+    p.add(<font color="#0000ff">new</font> Label("Access Count"));
+    p.add(aCount);
+    add(p);
+  }
+  <font color="#0000ff">class</font> StartL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; s.length; i++)
+        s[i].start();
+    }
+  }
+  <font color="#0000ff">class</font> ObserverL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; numObservers; i++)
+        <font color="#0000ff">new</font> Watcher2(Sharing2.<font color="#0000ff">this</font>);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Sharing2 applet = <font color="#0000ff">new</font> Sharing2();
+    <font color="#009900">// This isn't an applet, so set the flag and</font>
+    <font color="#009900">// produce the parameter values from args:</font>
+    applet.isApplet = <font color="#0000ff">false</font>;
+    applet.numCounters = 
+      (args.length == 0 ? 5 :
+        Integer.parseInt(args[0]));
+    applet.numObservers =
+      (args.length &lt; 2 ? 5 :
+        Integer.parseInt(args[1]));
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Sharing2");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(350, applet.numCounters *100);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>both</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you synchronize only one of the methods, then the other is free to ignore
+the object lock and can be called with impunity. This is an important point:
+Every method that accesses a critical shared resource must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or it won&#8217;t work right.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+a new issue arises. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can never get a peek at what&#8217;s going on because the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method has been 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is always running for each object the lock is always tied up and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can never be called. You can see this because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>accessCount</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never changes.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+we&#8217;d like for this example is a way to isolate only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>part</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the code inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The section of code you want to isolate this way is called a <A NAME="Index2502"></A><A NAME="Index2503"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>critical
+section
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and you use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword in a different way to set up a critical section. Java supports critical
+sections with the <A NAME="Index2504"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>synchronized
+block;
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+this time 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+used to specify the object whose lock is being used to synchronize the enclosed
+code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">synchronized</font>(syncObject) {
+  <font color="#009900">// This code can be accessed by only</font>
+  <font color="#009900">// one thread at a time, assuming all</font>
+  <font color="#009900">// threads respect syncObject's lock</font>
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Before
+the synchronized block can be entered, the lock must be acquired on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>syncObject</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If some other thread already has this lock, then the block cannot be entered
+until the lock is given up.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example can be modified by removing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword from the entire 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method and instead putting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+block around the two critical lines. But what object should be used as the
+lock? The one that is already respected by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchTest(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is the current object (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)!
+So the modified 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">public</font> <font color="#0000ff">void</font> run() {
+    <font color="#0000ff">while</font> (<font color="#0000ff">true</font>) {
+      <font color="#0000ff">synchronized</font>(<font color="#0000ff">this</font>) {
+        t1.setText(Integer.toString(count1++));
+        t2.setText(Integer.toString(count2++));
+      }
+      <font color="#0000ff">try</font> {
+        sleep(500);
+      } <font color="#0000ff">catch</font> (InterruptedException e){}
+    }
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is the only change that must be made to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Sharing2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you&#8217;ll see that while the two counters are never out of synch
+(according to when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is allowed to look at them), there is still adequate access provided to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Watcher</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+during the execution of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>run(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, all synchronization depends on programmer diligence: every piece of
+code that can access a shared resource must be wrapped in an appropriate
+synchronized block. 
+</FONT><P></DIV>
+<A NAME="Heading493"></A><H4 ALIGN=LEFT>
+Synchronized
+efficiency
+<P><A NAME="Index2505"></A><A NAME="Index2506"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+having two methods write to the same piece of data 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>never
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">sounds
+like a particularly good idea, it might seem to make sense for all methods to
+be automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and eliminate the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword altogether. (Of course, the example with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized
+run(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+shows that this wouldn&#8217;t work either.) But it turns out that acquiring a
+lock is not a cheap operation &#8211; it multiplies the cost of a method call
+(that is, entering and exiting from the method, not executing the body of the
+method) by a minimum of four times, and could be more depending on your
+implementation. So if you know that a particular method will not cause
+contention problems it is expedient to leave off the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword.
+</FONT><a name="_Toc408018754"></a><P></DIV>
+<A NAME="Heading494"></A><H3 ALIGN=LEFT>
+Java
+Beans revisited
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+that you understand synchronization you can take another look at <A NAME="Index2507"></A><A NAME="Index2508"></A><A NAME="Index2509"></A>Java
+Beans. Whenever you create a Bean, you must assume that it will run in a
+multithreaded environment. This means that:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Whenever
+possible, all the public methods of a Bean should be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Of course, this incurs the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+runtime overhead. If that&#8217;s a problem, methods that will not cause
+problems in critical sections can be left un-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but keep in mind that this is not always obvious. Methods that qualify tend to
+be small (such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getCircleSize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the following example) and/or &#8220;atomic,&#8221; that is, the method call
+executes in such a short amount of code that the object cannot be changed
+during execution. Making such methods un-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">might
+not have a significant effect on the execution speed of your program. You might
+as well make all 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods of a Bean 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and remove the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword only when you know for sure that it&#8217;s necessary and that it makes
+a difference.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	When
+firing a <A NAME="Index2510"></A><A NAME="Index2511"></A>multicast
+event to a bunch of listeners interested in that event, you must assume that
+listeners might be added or removed while moving through the list.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first point is fairly easy to deal with, but the second point requires a little
+more thought. Consider the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example presented in the last chapter. That ducked out of the multithreading
+question by ignoring the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword (which hadn&#8217;t been introduced yet) and making the event unicast.
+Here&#8217;s that example modified to work in a multithreaded environment and
+to use multicasting for events:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BangBean2.java</font>
+<font color="#009900">// You should write your Beans this way so they </font>
+<font color="#009900">// can run in a multithreaded environment.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BangBean2 <font color="#0000ff">extends</font> Canvas 
+    <font color="#0000ff">implements</font> Serializable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> xm, ym;
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> cSize = 20; <font color="#009900">// Circle size</font>
+  <font color="#0000ff">private</font> String text = "Bang!";
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> fontSize = 48;
+  <font color="#0000ff">private</font> Color tColor = Color.red;
+  <font color="#0000ff">private</font> Vector actionListeners = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">public</font> BangBean2() {
+    addMouseListener(<font color="#0000ff">new</font> ML());
+    addMouseMotionListener(<font color="#0000ff">new</font> MM());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">int</font> getCircleSize() { 
+    <font color="#0000ff">return</font> cSize; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> 
+  setCircleSize(<font color="#0000ff">int</font> newSize) {
+    cSize = newSize;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> String getBangText() { 
+    <font color="#0000ff">return</font> text; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> 
+  setBangText(String newText) {
+    text = newText;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">int</font> getFontSize() { 
+    <font color="#0000ff">return</font> fontSize; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> 
+  setFontSize(<font color="#0000ff">int</font> newSize) {
+    fontSize = newSize;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> Color getTextColor() {
+    <font color="#0000ff">return</font> tColor; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> 
+  setTextColor(Color newColor) {
+    tColor = newColor;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.setColor(Color.black);
+    g.drawOval(xm - cSize/2, ym - cSize/2, 
+      cSize, cSize);
+  }
+  <font color="#009900">// This is a multicast listener, which is</font>
+  <font color="#009900">// more typically used than the unicast</font>
+  <font color="#009900">// approach taken in BangBean.java:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> addActionListener (
+      ActionListener l) {
+    actionListeners.addElement(l);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">synchronized</font> <font color="#0000ff">void</font> removeActionListener(
+      ActionListener l) {
+    actionListeners.removeElement(l);
+  }
+  <font color="#009900">// Notice this isn't synchronized:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> notifyListeners() {
+    ActionEvent a =
+      <font color="#0000ff">new</font> ActionEvent(BangBean2.<font color="#0000ff">this</font>,
+        ActionEvent.ACTION_PERFORMED, <font color="#0000ff">null</font>);
+    Vector lv = <font color="#0000ff">null</font>;
+    <font color="#009900">// Make a copy of the vector in case someone</font>
+    <font color="#009900">// adds a listener while we're </font>
+    <font color="#009900">// calling listeners:</font>
+    <font color="#0000ff">synchronized</font>(<font color="#0000ff">this</font>) {
+      lv = (Vector)actionListeners.clone();
+    }
+    <font color="#009900">// Call all the listener methods:</font>
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; lv.size(); i++) {
+      ActionListener al = 
+        (ActionListener)lv.elementAt(i);
+      al.actionPerformed(a);
+    }
+  }
+  <font color="#0000ff">class</font> ML <font color="#0000ff">extends</font> MouseAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mousePressed(MouseEvent e) {
+      Graphics g = getGraphics();
+      g.setColor(tColor);
+      g.setFont(
+        <font color="#0000ff">new</font> Font(
+          "TimesRoman", Font.BOLD, fontSize));
+      <font color="#0000ff">int</font> width = 
+        g.getFontMetrics().stringWidth(text);
+      g.drawString(text, 
+        (getSize().width - width) /2,
+        getSize().height/2);
+      g.dispose();
+      notifyListeners();
+    }
+  }
+  <font color="#0000ff">class</font> MM <font color="#0000ff">extends</font> MouseMotionAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseMoved(MouseEvent e) {
+      xm = e.getX();
+      ym = e.getY();
+      repaint();
+    }
+  }
+  <font color="#009900">// Testing the BangBean2:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    BangBean2 bb = <font color="#0000ff">new</font> BangBean2();
+    bb.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        System.out.println("ActionEvent" + e);
+      }
+    });
+    bb.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        System.out.println("BangBean2 action");
+      }
+    });
+    bb.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        System.out.println("More action");
+      }
+    });
+    Frame aFrame = <font color="#0000ff">new</font> Frame("BangBean2 Test");
+    aFrame.addWindowListener(<font color="#0000ff">new</font> WindowAdapter(){
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+        System.exit(0);
+      }
+    });
+    aFrame.add(bb, BorderLayout.CENTER);
+    aFrame.setSize(300,300);
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Adding
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the methods is an easy change. However, notice in <A NAME="Index2512"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2513"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are now added to and removed from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you can have as many as you want.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that the method <A NAME="Index2514"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyListeners(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It can be called from more than one thread at a time. It&#8217;s also possible
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be called in the middle of a call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyListeners(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is a problem since it traverses the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector
+actionListeners
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To alleviate the problem, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is cloned inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause and the clone is traversed. This way the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be manipulated without impact on 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>notifyListeners(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is also not <A NAME="Index2515"></A><A NAME="Index2516"></A><A NAME="Index2517"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Deciding whether to synchronize overridden methods is not as clear as when
+you&#8217;re just adding your own methods. In this example it turns out that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+seems to work OK whether it&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or not. But the issues you must consider are:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Does
+the method modify the state of &#8220;critical&#8221; variables within the
+object? To discover whether the variables are &#8220;critical&#8221; you must
+determine whether they will be read or set by other threads in the program. (In
+this case, the reading or setting is virtually always accomplished via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, so you can just examine those.) In the case of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+no modification takes place.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Does
+the method depend on the state of these &#8220;critical&#8221; variables? If a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method modifies a variable that your method uses, then you might very well want
+to make your method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well. Based on this, you might observe that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cSize</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is changed by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods and therefore 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, however, you can ask &#8220;What&#8217;s the worst thing that will happen
+if 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cSize</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is changed during a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?&#8221;
+When you see that it&#8217;s nothing too bad, and a transient effect at that,
+it&#8217;s best to leave 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+un-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to prevent the extra overhead from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method call.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+third clue is to notice whether the base-class version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which it isn&#8217;t. This isn&#8217;t an airtight argument, just a clue. In
+this case, for example, a field that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+changed via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods (that is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cSize</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+has been mixed into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+formula and might have changed the situation. Notice, however, that <A NAME="Index2518"></A><A NAME="Index2519"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t inherit &#8211; that is, if a method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the base class then it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>is
+not
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>synchronized</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the derived class overridden version.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+test code in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TestBangBean2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been modified from that in the previous chapter to demonstrate the
+multicast ability of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by adding extra listeners.
+</FONT><a name="_Toc375545481"></a><a name="_Toc408018755"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0155.html">Prev</a> | <a href="tij0157.html">Next</a>
+</div>
+</body></html>
+

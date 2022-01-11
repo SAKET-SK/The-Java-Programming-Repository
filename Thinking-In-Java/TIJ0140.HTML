@@ -1,0 +1,86 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0139.html">Prev</a> | <a href="tij0141.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Check
+boxes
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+check box provides a way to make a single on-off choice; it consists of a tiny
+box and a label. The box typically holds a little &#8216;x&#8217; (or some
+other indication that it is set) or is empty depending on whether that item was
+selected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+normally create a <A NAME="Index1633"></A><A NAME="Index1634"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using a constructor that takes the label as an argument. You can get and set
+the state, and also get and set the label if you want to read or change it
+after the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been created. Note that the capitalization of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is inconsistent with the other controls, which could catch you by surprise
+since you might expect it to be &#8220;CheckBox.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Whenever
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is set or cleared an event occurs, which you can capture the same way you do a
+button. The following example uses a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to enumerate all the check boxes that have been checked:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CheckBox1.java</font>
+<font color="#009900">// Using check boxes</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CheckBox1 <font color="#0000ff">extends</font> Applet {
+  TextArea t = <font color="#0000ff">new</font> TextArea(6, 20);
+  Checkbox cb1 = <font color="#0000ff">new</font> Checkbox("Check Box 1");
+  Checkbox cb2 = <font color="#0000ff">new</font> Checkbox("Check Box 2");
+  Checkbox cb3 = <font color="#0000ff">new</font> Checkbox("Check Box 3");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t); add(cb1); add(cb2); add(cb3);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(cb1))
+      trace("1", cb1.getState());
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(cb2))
+      trace("2", cb2.getState());
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(cb3))
+      trace("3", cb3.getState());
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">void</font> trace(String b, <font color="#0000ff">boolean</font> state) {
+    <font color="#0000ff">if</font>(state)
+      t.appendText("Box " + b + " Set\n");
+    <font color="#0000ff">else</font>
+      t.appendText("Box " + b + " Cleared\n");
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trace(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method sends the name of the selected 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its current state to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using <A NAME="Index1635"></A><A NAME="Index1636"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>appendText(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you&#8217;ll see a cumulative list of the checkboxes that were selected and
+what their state is.
+</FONT><a name="_Toc375545453"></a><a name="_Toc408018689"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0139.html">Prev</a> | <a href="tij0141.html">Next</a>
+</div>
+</body></html>
+

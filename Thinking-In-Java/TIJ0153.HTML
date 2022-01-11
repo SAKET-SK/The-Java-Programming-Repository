@@ -1,0 +1,83 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0152.html">Prev</a> | <a href="tij0154.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Exercises</H2>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+an applet with a text field and three buttons. When you press each button, make
+some different text appear in the text field.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Add
+a check box to the applet created in Exercise 1, capture the event, and insert
+different text into the text field.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+an applet and add all the components that cause 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be called, then capture their events and display an appropriate message for
+each inside a text field.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Add
+to Exercise 3 the components that can be used only with events detected by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and display appropriate messages for each inside a text field.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+an applet with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Write a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that if the button has the focus, characters typed into it will appear in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+an application and add to the main frame all the components described in this
+chapter, including menus and a dialog box.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextNew.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that the characters in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+retain the original case that they were typed in, instead of automatically
+being forced to upper case.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modify
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout1.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it uses the Java 1.1 event model.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Add
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the manifest file shown in this chapter and run 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create a JAR file containing both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BangBean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Now either download and install the BDK from Sun or use your own Beans-enabled
+program builder tool and add the JAR file to your environment so you can test
+the two Beans.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+your own Java Bean called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Valve
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+contains two properties: a Boolean called &#8220;on&#8221; and an integer
+called &#8220;level.&#8221; Create a manifest file, use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to package your Bean, then load it into the beanbox or into your own
+Beans-enabled program builder tool so that you can test it.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=5 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Somewhat
+challenging) Change 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menus.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that it handles cascading menus.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Da Vinci Extras" SIZE=39 COLOR="Black">A</FONT><a name="Chapter_16"></a><a name="_Toc375545471"></a><a name="_Toc407441458"></a><a name="_Toc408018744"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0152.html">Prev</a> | <a href="tij0154.html">Next</a>
+</div>
+</body></html>
+

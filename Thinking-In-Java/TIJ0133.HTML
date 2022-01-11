@@ -1,0 +1,99 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0132.html">Prev</a> | <a href="tij0134.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Why
+use the AWT?
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the problems with the &#8220;old&#8221; AWT that you&#8217;ll learn about in
+this chapter is that it is a poor example of both object-oriented design and
+GUI development kit design. It throws us back into the dark ages of programming
+(some suggest that the &#8216;A&#8217; in AWT stands for &#8220;awkward,&#8221;
+&#8220;awful,&#8221; &#8220;abominable,&#8221; etc.). You must write lines of
+code to do 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>everything</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+including tasks that are accomplished much more easily using <A NAME="Index1522"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>resources</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in other environments.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Many
+of these problems are reduced or eliminated in <A NAME="Index1523"></A>Java
+1.1 because:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+new AWT in Java 1.1 is a much better programming model and a significant step
+towards a better library. Java Beans is the framework for that library.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	&#8220;<A NAME="Index1524"></A>GUI
+builders&#8221; (<A NAME="Index1525"></A>visual
+programming environments) will become 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>de
+rigeur
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for all development systems. Java Beans and the new AWT allow the GUI builder
+to write code for you as you place components onto forms using graphical tools.
+Other component technologies such as ActiveX will be supported in the same
+fashion.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+why learn to use the old AWT? &#8220;Because it&#8217;s there.&#8221; In this
+case, &#8220;there&#8221; has a much more ominous meaning and points to a tenet
+of object-oriented library design: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Once
+you publicize a component in your library, you can never take it out
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you do, you&#8217;ll wreck somebody&#8217;s existing code. In addition,
+there are many existing code examples out there that you&#8217;ll read as you
+learn about Java and they all use the old AWT.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+AWT must reach into the GUI components of the native OS, which means that it
+performs a task that an applet cannot otherwise accomplish. An untrusted applet
+cannot make any direct calls into an OS because otherwise it could do bad
+things to the user&#8217;s machine. The only way an untrusted applet can access
+important functionality such as &#8220;draw a window on the screen&#8221; is
+through calls in the standard Java library that&#8217;s been specially ported
+and safety checked for that machine. The original model that Sun created is
+that this &#8220;trusted library&#8221; will be provided only by the trusted
+vendor of the Java system in your Web browser, and the vendor will control what
+goes into that library. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+what if you want to extend the system by adding a new component that accesses
+functionality in the OS? Waiting for Sun to decide that your extension should
+be incorporated into the standard Java library isn&#8217;t going to solve your
+problem. The new model in Java 1.1 is &#8220;trusted code&#8221; or
+&#8220;signed code&#8221; whereby a special server verifies that a piece of
+code that you download is in fact &#8220;signed&#8221; by the stated author
+using a public-key encryption system. This way, you&#8217;ll know for sure
+where the code comes from, that it&#8217;s Bob&#8217;s code and not just
+someone pretending to be Bob. This doesn&#8217;t prevent Bob from making
+mistakes or doing something malicious, but it does prevent Bob from shirking
+responsibility &#8211; anonymity is what makes computer viruses possible. A
+digitally signed applet &#8211; a &#8220;trusted applet&#8221; &#8211; in Java
+1.1 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+reach into your machine and manipulate it directly, just like any other
+application you get from a &#8220;trusted&#8221; vendor and install onto your
+computer.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+the point of all this is that the old AWT is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>there</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+There will always be old AWT code floating around and new Java programmers
+learning from old books will encounter that code. Also, the old AWT is worth
+studying as an example of poor library design. The coverage of the old AWT
+given here will be relatively painless since it won&#8217;t go into depth and
+enumerate every single method and class, but instead give you an overview of
+the old AWT design. 
+</FONT><a name="_Toc375545446"></a><a name="_Toc408018679"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0132.html">Prev</a> | <a href="tij0134.html">Next</a>
+</div>
+</body></html>
+

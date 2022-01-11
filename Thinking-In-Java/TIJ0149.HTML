@@ -1,0 +1,694 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0148.html">Prev</a> | <a href="tij0150.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Java
+1.1 UI APIs
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index2108"></A>
+has also added some important new functionality, including focus traversal,
+desktop color access, printing &#8220;inside the sandbox,&#8221; and the
+beginnings of clipboard support.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2109"></A><A NAME="Index2110"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Focus
+traversal is quite easy, since it&#8217;s transparently present in the AWT
+library components and you don&#8217;t have to do anything to make it work. If
+you make your own components and want them to handle focus traversal, you
+override <A NAME="Index2111"></A><A NAME="Index2112"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isFocusTraversable(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+If you want to capture the keyboard focus on a mouse click, you catch the mouse
+down event and call <A NAME="Index2113"></A><A NAME="Index2114"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>requestFocus(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018714"></a><P></DIV>
+<A NAME="Heading448"></A><H3 ALIGN=LEFT>
+Desktop
+colors
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2115"></A><A NAME="Index2116"></A><A NAME="Index2117"></A>desktop
+colors provide a way for you to know what the various color choices are on the
+current user&#8217;s desktop. This way, you can use those colors in your
+program if you desire. The colors are automatically initialized and placed in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members of class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>SystemColor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so all you need to do is read the member you&#8217;re interested in. The names
+are intentionally self-explanatory: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>desktop</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>activeCaption</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>activeCaptionText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>activeCaptionBorder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>inactiveCaption</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>inactiveCaptionText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>inactiveCaptionBorder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowBorder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>menuText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>text</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>textText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>textHighlight</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>textHighlightText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>textInactiveText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>control</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>controlText</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>controlHighlight</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>controlLtHighlight</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>controlShadow</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>controlDkShadow</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>info
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(for
+help), and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>infoText
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(for
+help text).
+</FONT><a name="_Toc408018715"></a><P></DIV>
+<A NAME="Heading449"></A><H3 ALIGN=LEFT>
+Printing</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Unfortunately,
+there isn&#8217;t much that&#8217;s automatic with printing. Instead you must
+go through a number of mechanical, non-OO steps in order to print. Printing a
+component graphically can be slightly more automatic: by default, the <A NAME="Index2118"></A><A NAME="Index2119"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method calls <A NAME="Index2120"></A><A NAME="Index2121"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to do its work. There are times when this is satisfactory, but if you want to
+do anything more specialized you must know that you&#8217;re printing so you
+can in particular find out the page dimensions.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example demonstrates the printing of both text and graphics, and the
+different approaches you can use for printing graphics. In addition, it tests
+the printing support:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PrintDemo.java</font>
+<font color="#009900">// Printing with Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PrintDemo <font color="#0000ff">extends</font> Frame {
+  Button 
+    printText = <font color="#0000ff">new</font> Button("Print Text"),
+    printGraphics = <font color="#0000ff">new</font> Button("Print Graphics");
+  TextField ringNum = <font color="#0000ff">new</font> TextField(3);
+  Choice faces = <font color="#0000ff">new</font> Choice();
+  Graphics g = <font color="#0000ff">null</font>;
+  Plot plot = <font color="#0000ff">new</font> Plot3(); <font color="#009900">// Try different plots</font>
+  Toolkit tk = Toolkit.getDefaultToolkit();
+  <font color="#0000ff">public</font> PrintDemo() {
+    ringNum.setText("3");
+    ringNum.addTextListener(<font color="#0000ff">new</font> RingL());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> FlowLayout());
+    printText.addActionListener(<font color="#0000ff">new</font> TBL());
+    p.add(printText);
+    p.add(<font color="#0000ff">new</font> Label("Font:"));
+    p.add(faces);
+    printGraphics.addActionListener(<font color="#0000ff">new</font> GBL());
+    p.add(printGraphics);
+    p.add(<font color="#0000ff">new</font> Label("Rings:"));
+    p.add(ringNum);
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(p, BorderLayout.NORTH);
+    add(plot, BorderLayout.CENTER);
+    String[] fontList = tk.getFontList();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; fontList.length; i++)
+      faces.add(fontList[i]);
+    faces.select("Serif");
+  }
+  <font color="#0000ff">class</font> PrintData {
+    <font color="#0000ff">public</font> PrintJob pj;
+    <font color="#0000ff">public</font> <font color="#0000ff">int</font> pageWidth, pageHeight;
+    PrintData(String jobName) {
+      pj = getToolkit().getPrintJob(
+        PrintDemo.<font color="#0000ff">this</font>, jobName, <font color="#0000ff">null</font>);
+      <font color="#0000ff">if</font>(pj != <font color="#0000ff">null</font>) {
+        pageWidth = pj.getPageDimension().width;
+        pageHeight= pj.getPageDimension().height;
+        g = pj.getGraphics();
+      }
+    }
+    <font color="#0000ff">void</font> end() { pj.end(); }
+  }
+  <font color="#0000ff">class</font> ChangeFont {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> stringHeight;
+    ChangeFont(String face, <font color="#0000ff">int</font> style,<font color="#0000ff">int</font> point){
+      <font color="#0000ff">if</font>(g != <font color="#0000ff">null</font>) {
+        g.setFont(<font color="#0000ff">new</font> Font(face, style, point));
+        stringHeight = 
+          g.getFontMetrics().getHeight();
+      }
+    }
+    <font color="#0000ff">int</font> stringWidth(String s) {
+      <font color="#0000ff">return</font> g.getFontMetrics().stringWidth(s);
+    }
+    <font color="#0000ff">int</font> stringHeight() { <font color="#0000ff">return</font> stringHeight; }
+  }
+  <font color="#0000ff">class</font> TBL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      PrintData pd = 
+        <font color="#0000ff">new</font> PrintData("Print Text Test");
+      <font color="#009900">// Null means print job canceled:</font>
+      <font color="#0000ff">if</font>(pd == <font color="#0000ff">null</font>) <font color="#0000ff">return</font>;
+      String s = "PrintDemo";
+      ChangeFont cf = <font color="#0000ff">new</font> ChangeFont(
+        faces.getSelectedItem(), Font.ITALIC,72);
+      g.drawString(s, 
+        (pd.pageWidth - cf.stringWidth(s)) / 2,
+        (pd.pageHeight - cf.stringHeight()) / 3);
+
+      s = "A smaller point size";
+      cf = <font color="#0000ff">new</font> ChangeFont(
+        faces.getSelectedItem(), Font.BOLD, 48);
+      g.drawString(s, 
+        (pd.pageWidth - cf.stringWidth(s)) / 2,
+        (<font color="#0000ff">int</font>)((pd.pageHeight - 
+           cf.stringHeight())/1.5));
+      g.dispose();
+      pd.end();
+    }
+  }
+  <font color="#0000ff">class</font> GBL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      PrintData pd = 
+        <font color="#0000ff">new</font> PrintData("Print Graphics Test");
+      <font color="#0000ff">if</font>(pd == <font color="#0000ff">null</font>) <font color="#0000ff">return</font>;
+      plot.print(g);
+      g.dispose();
+      pd.end();
+    }
+  }
+  <font color="#0000ff">class</font> RingL <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      <font color="#0000ff">int</font> i = 1;
+      <font color="#0000ff">try</font> {
+        i = Integer.parseInt(ringNum.getText());
+      } <font color="#0000ff">catch</font>(NumberFormatException ex) {
+        i = 1;
+      }
+      plot.rings = i;
+      plot.repaint();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame pdemo = <font color="#0000ff">new</font> PrintDemo();
+    pdemo.setTitle("Print Demo");
+    pdemo.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    pdemo.setSize(500, 500);
+    pdemo.setVisible(<font color="#0000ff">true</font>);
+  }
+}
+
+<font color="#0000ff">class</font> Plot <font color="#0000ff">extends</font> Canvas {
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> rings = 3;
+}
+
+<font color="#0000ff">class</font> Plot1 <font color="#0000ff">extends</font> Plot {
+  <font color="#009900">// Default print() calls paint():</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    <font color="#0000ff">int</font> w = getSize().width;
+    <font color="#0000ff">int</font> h = getSize().height;
+    <font color="#0000ff">int</font> xc = w / 2;
+    <font color="#0000ff">int</font> yc = w / 2;
+    <font color="#0000ff">int</font> x = 0, y = 0;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; rings; i++) {
+      <font color="#0000ff">if</font>(x &lt; xc &amp;&amp; y &lt; yc) {
+        g.drawOval(x, y, w, h);
+        x += 10; y += 10;
+        w -= 20; h -= 20;
+      }
+    }
+  }
+} 
+
+<font color="#0000ff">class</font> Plot2 <font color="#0000ff">extends</font> Plot {
+  <font color="#009900">// To fit the picture to the page, you must</font>
+  <font color="#009900">// know whether you're printing or painting:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    <font color="#0000ff">int</font> w, h;
+    <font color="#0000ff">if</font>(g <font color="#0000ff">instanceof</font> PrintGraphics) {
+      PrintJob pj = 
+        ((PrintGraphics)g).getPrintJob();
+      w = pj.getPageDimension().width;
+      h = pj.getPageDimension().height;
+    } 
+    <font color="#0000ff">else</font> {
+      w = getSize().width;
+      h = getSize().height;
+    }
+    <font color="#0000ff">int</font> xc = w / 2;
+    <font color="#0000ff">int</font> yc = w / 2;
+    <font color="#0000ff">int</font> x = 0, y = 0;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; rings; i++) {
+      <font color="#0000ff">if</font>(x &lt; xc &amp;&amp; y &lt; yc) {
+        g.drawOval(x, y, w, h);
+        x += 10; y += 10;
+        w -= 20; h -= 20;
+      }
+    }
+  }
+} 
+
+<font color="#0000ff">class</font> Plot3 <font color="#0000ff">extends</font> Plot {
+  <font color="#009900">// Somewhat better. Separate </font>
+  <font color="#009900">// printing from painting:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> print(Graphics g) {
+    <font color="#009900">// Assume it's a PrintGraphics object:</font>
+    PrintJob pj = 
+      ((PrintGraphics)g).getPrintJob();
+    <font color="#0000ff">int</font> w = pj.getPageDimension().width;
+    <font color="#0000ff">int</font> h = pj.getPageDimension().height;
+    doGraphics(g, w, h);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    <font color="#0000ff">int</font> w = getSize().width;
+    <font color="#0000ff">int</font> h = getSize().height;
+    doGraphics(g, w, h);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> doGraphics(
+      Graphics g, <font color="#0000ff">int</font> w, <font color="#0000ff">int</font> h) {
+    <font color="#0000ff">int</font> xc = w / 2;
+    <font color="#0000ff">int</font> yc = w / 2;
+    <font color="#0000ff">int</font> x = 0, y = 0;
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; rings; i++) {
+      <font color="#0000ff">if</font>(x &lt; xc &amp;&amp; y &lt; yc) {
+        g.drawOval(x, y, w, h);
+        x += 10; y += 10;
+        w -= 20; h -= 20;
+      }
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+program allows you to select fonts from a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+list (and you&#8217;ll see that the number of fonts available in Java 1.1<A NAME="Index2122"></A>
+is still extremely limited, and has nothing to do with any extra fonts you
+install on your machine). It uses these to print out text in bold, italic, and
+in different sizes. In addition, a new type of component called a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created to demonstrate graphics. A 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has rings that it will display on the screen and print onto paper, and the
+three derived classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot2,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+perform these tasks in different ways so that you can see your alternatives
+when printing graphics. Also, you can change the number of rings in a plot
+&#8211; this is interesting because it shows the printing fragility in Java 1.1<A NAME="Index2123"></A>.
+On my system, the printer gave error messages and didn&#8217;t print correctly
+when the ring count got &#8220;too high&#8221; (whatever that means), but
+worked fine when the count was &#8220;low enough.&#8221; You will notice, too,
+that the page dimensions produced when printing do not seem to correspond to
+the actual dimensions of the page. This might be fixed in a future release of
+Java, and you can use this program to test it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program encapsulates functionality inside inner classes whenever possible, to
+facilitate reuse. For example, whenever you want to begin a print job (whether
+for graphics or text), you must create a <A NAME="Index2124"></A><A NAME="Index2125"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintJob</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which has its own 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">object
+along with the width and height of the page. The creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintJob</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and extraction of page dimensions is encapsulated in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class.
+</FONT><P></DIV>
+<A NAME="Heading450"></A><H4 ALIGN=LEFT>
+Printing
+text
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Conceptually,
+<A NAME="Index2126"></A><A NAME="Index2127"></A>printing
+text is straightforward: you choose a typeface and size, decide where the
+string should go on the page, and draw it with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics.drawString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This means, however, that you must perform the calculations of exactly where
+each line will go on the page to make sure it doesn&#8217;t run off the end of
+the page or collide with other lines. If you want to make a word processor,
+your work is cut out for you.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChangeFont</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+encapsulates a little of the process of changing from one font to another by
+automatically creating a new <A NAME="Index2128"></A><A NAME="Index2129"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Font</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object with your desired typeface, style (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Font.BOLD</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Font.ITALIC</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; there&#8217;s no support for underline, strikethrough, etc.), and point
+size. It also simplifies the calculation of the width and height of a string.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press the &#8220;Print text&#8221; button, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TBL
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">listener
+is activated. You can see that it goes through two iterations of creating a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ChangeFont</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>drawString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to print out the string in a calculated position, centered, one-third, and
+two-thirds down the page, respectively. Notice whether these calculations
+produce the expected results. (They didn&#8217;t with the version I used.)
+</FONT><P></DIV>
+<A NAME="Heading451"></A><H4 ALIGN=LEFT>
+Printing
+graphics
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press the &#8220;Print graphics&#8221; button the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GBL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener is activated. The creation of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object initializes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then you simply call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the component you want to print. To force printing you must call <A NAME="Index2130"></A><A NAME="Index2131"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dispose(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the <A NAME="Index2132"></A><A NAME="Index2133"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and <A NAME="Index2134"></A><A NAME="Index2135"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>end(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintData</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (which turns around and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>end(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintJob</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+work is going on inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. You can see that the base-class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is simple &#8211; it extends 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and contains an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rings</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to indicate how many concentric rings to draw on this particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The three derived classes show different approaches to accomplishing the same
+goal: drawing on both the screen and on the printed page.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">takes
+the simplest approach to coding: ignore the fact that there are differences in
+painting and printing, and just override <A NAME="Index2136"></A><A NAME="Index2137"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The reason this works is that the default
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index2138"></A><A NAME="Index2139"></A>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method simply turns around and calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, you&#8217;ll notice that the size of the output depends on the size of
+the on-screen canvas, which makes sense since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>width</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>height</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are determined by calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas.getSize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The other situation in which this is acceptable is if your image is always a
+fixed size.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+the size of the drawing surface is important, then you must discover the
+dimensions. Unfortunately, this turns out to be awkward, as you can see in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For some possibly good reason that I don&#8217;t know, you cannot simply ask the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object the dimensions of its drawing surface. This would have made the whole
+process quite elegant. Instead, to see if you&#8217;re printing rather than
+painting, you must detect the <A NAME="Index2140"></A><A NAME="Index2141"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintGraphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using the RTTI 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword (described in Chapter 11), then downcast and call the sole 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintGraphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method: <A NAME="Index2142"></A><A NAME="Index2143"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPrintJob(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Now you have a handle to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintJob</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and you can find out the width and height of the paper. This is a hacky
+approach, but perhaps there is some rational reason for it. (On the other hand,
+you&#8217;ve seen some of the other library designs by now so you might get the
+impression that the designers were, in fact, just hacking around...)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">goes
+through both possibilities of printing or painting. But since the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method should be called when printing, why not use that? This approach is used
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Plot3</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it eliminates the need to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>instanceof</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+since inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>print(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you can assume that you can cast to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintGraphics</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is a little better. The situation is improved by placing the
+common drawing code (once the dimensions have been detected) inside a separate
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>doGraphics(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+<A NAME="Heading452"></A><H4 ALIGN=LEFT>
+Running
+Frames within applets
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if you&#8217;d like to print from within an applet? Well, to print anything you
+must get a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintJob</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object through a <A NAME="Index2144"></A><A NAME="Index2145"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toolkit</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object&#8217;s <A NAME="Index2146"></A><A NAME="Index2147"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getPrintJob(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which takes only a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and not an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus it would seem that it&#8217;s possible to print from within an
+application, but not an applet. However, it turns out that you can <A NAME="Index2148"></A><A NAME="Index2149"></A>create
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from within an applet (which is the reverse of what I&#8217;ve been doing for
+the applet/application examples so far, which has been making an applet and
+putting inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+This is a useful technique since it allows you to use many <A NAME="Index2150"></A>applications
+within applets (as long as they don&#8217;t violate applet security). When the
+application window comes up within an applet, however, you&#8217;ll notice that
+the Web browser sticks a little caveat on it, something to the effect of
+&#8220;Warning: Applet Window.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that it&#8217;s quite straightforward to put a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside an applet. The only thing that you must add is code to <A NAME="Index2151"></A><A NAME="Index2152"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dispose(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when the user closes it (instead of calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.exit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">):</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PrintDemoApplet.java</font>
+<font color="#009900">// Creating a Frame from within an Applet</font>
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PrintDemoApplet <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    Button b = <font color="#0000ff">new</font> Button("Run PrintDemo");
+    b.addActionListener(<font color="#0000ff">new</font> PDL());
+    add(b);
+  }
+  <font color="#0000ff">class</font> PDL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">final</font> PrintDemo pd = <font color="#0000ff">new</font> PrintDemo();
+      pd.addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          pd.dispose();
+        }
+      });
+      pd.setSize(500, 500);
+      pd.show();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+some confusion involved with Java 1.1<A NAME="Index2153"></A>
+<A NAME="Index2154"></A><A NAME="Index2155"></A>printing
+support. Some of the publicity seemed to claim that you&#8217;d be able to
+print from within an applet. However, the Java security system contains a
+feature that could lock out an applet from initiating its own print job,
+requiring that the initiation be done via a Web browser or applet viewer. At
+the time of this writing, this seemed to remain an unresolved issue. When I ran
+this program from within a Web browser, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PrintDemo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+window came up just fine, but it wouldn&#8217;t print from the browser.
+</FONT><a name="_Toc408018716"></a><P></DIV>
+<A NAME="Heading453"></A><H3 ALIGN=LEFT>
+The
+clipboard
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index2156"></A>
+supports limited operations with the <A NAME="Index2157"></A><A NAME="Index2158"></A><A NAME="Index2159"></A>system
+clipboard (in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.awt.datatransfer
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">package).
+You can copy 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects to the clipboard as text, and you can paste text from the clipboard into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. Of course, the clipboard is designed to hold any type of data, but how
+this data is represented on the clipboard is up to the program doing the
+cutting and pasting. Although it currently supports only string data, the Java
+clipboard API provides for extensibility through the concept of a
+&#8220;flavor.&#8221; When data comes off the clipboard, it has an associated
+set of <A NAME="Index2160"></A><A NAME="Index2161"></A>flavors
+that it can be converted to (for example, a graph might be represented as a
+string of numbers or as an image) and you can see if that particular clipboard
+data supports the flavor you&#8217;re interested in.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following program is a simple demonstration of cut, copy, and paste with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data in a <A NAME="Index2162"></A><A NAME="Index2163"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+One thing you&#8217;ll notice is that the keyboard sequences you normally use
+for cutting, copying, and pasting also work. But if you look at any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in any other program you&#8217;ll find that they also automatically support the
+clipboard key sequences. This example simply adds programmatic control of the
+clipboard, and you could use these techniques if you want to capture clipboard
+text into some non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CutAndPaste.java</font>
+<font color="#009900">// Using the clipboard from Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.awt.datatransfer.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> CutAndPaste <font color="#0000ff">extends</font> Frame {
+  MenuBar mb = <font color="#0000ff">new</font> MenuBar();
+  Menu edit = <font color="#0000ff">new</font> Menu("Edit");
+  MenuItem
+    cut = <font color="#0000ff">new</font> MenuItem("Cut"),
+    copy = <font color="#0000ff">new</font> MenuItem("Copy"),
+    paste = <font color="#0000ff">new</font> MenuItem("Paste");
+  TextArea text = <font color="#0000ff">new</font> TextArea(20,20);
+  Clipboard clipbd = 
+    getToolkit().getSystemClipboard();
+  <font color="#0000ff">public</font> CutAndPaste() {
+    cut.addActionListener(<font color="#0000ff">new</font> CutL());
+    copy.addActionListener(<font color="#0000ff">new</font> CopyL());
+    paste.addActionListener(<font color="#0000ff">new</font> PasteL());
+    edit.add(cut);
+    edit.add(copy);
+    edit.add(paste);
+    mb.add(edit);
+    setMenuBar(mb);
+    add(text, BorderLayout.CENTER);
+  }
+  <font color="#0000ff">class</font> CopyL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      String selection = text.getSelectedText();
+      StringSelection clipString = 
+        <font color="#0000ff">new</font> StringSelection(selection);
+      clipbd.setContents(clipString, clipString);
+    }
+  }
+  <font color="#0000ff">class</font> CutL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      String selection = text.getSelectedText();
+      StringSelection clipString = 
+        <font color="#0000ff">new</font> StringSelection(selection);
+      clipbd.setContents(clipString, clipString);
+      text.replaceRange("", 
+        text.getSelectionStart(), 
+        text.getSelectionEnd());
+    }
+  }
+  <font color="#0000ff">class</font> PasteL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      Transferable clipData =
+        clipbd.getContents(CutAndPaste.<font color="#0000ff">this</font>);
+      <font color="#0000ff">try</font> {
+        String clipString = 
+          (String)clipData.
+            getTransferData(
+              DataFlavor.stringFlavor);
+        text.replaceRange(clipString, 
+          text.getSelectionStart(), 
+          text.getSelectionEnd());
+      } <font color="#0000ff">catch</font>(Exception ex) {
+        System.out.println("not String flavor");
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    CutAndPaste cp = <font color="#0000ff">new</font> CutAndPaste();
+    cp.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    cp.setSize(300,200);
+    cp.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+creation and addition of the menu and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should by now seem a pedestrian activity. What&#8217;s different is the
+creation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Clipboard</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clipbd</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is done through the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Toolkit</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+the action takes place in the listeners. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CopyL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CutL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listeners are the same except for the last line of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CutL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which erases the line that&#8217;s been copied. The special two lines are the
+creation of a <A NAME="Index2164"></A><A NAME="Index2165"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringSelection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the call to <A NAME="Index2166"></A><A NAME="Index2167"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setContents(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringSelection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That&#8217;s all there is to putting a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on the clipboard.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PasteL,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data is pulled off the clipboard using <A NAME="Index2168"></A><A NAME="Index2169"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getContents(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+What comes back is a fairly anonymous <A NAME="Index2170"></A><A NAME="Index2171"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Transferable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, and you don&#8217;t really know what it contains. One way to find out
+is to call <A NAME="Index2172"></A><A NAME="Index2173"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getTransferDataFlavors(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which returns an array of <A NAME="Index2174"></A><A NAME="Index2175"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataFlavor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects indicating which flavors are supported by this particular object. You
+can also ask it directly with <A NAME="Index2176"></A><A NAME="Index2177"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isDataFlavorSupported(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+passing in the flavor you&#8217;re interested in. Here, however, the bold
+approach is taken: <A NAME="Index2178"></A><A NAME="Index2179"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getTransferData(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called assuming that the contents supports the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+flavor, and if it doesn&#8217;t the problem is sorted out in the exception
+handler.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the future you can expect more data flavors to be supported.
+</FONT><a name="_Toc408018717"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0148.html">Prev</a> | <a href="tij0150.html">Next</a>
+</div>
+</body></html>
+

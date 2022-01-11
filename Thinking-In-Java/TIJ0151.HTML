@@ -1,0 +1,1516 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0150.html">Prev</a> | <a href="tij0152.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Introduction
+to Swing
+<A NAME="fnB60" HREF="#fn60">[60]</A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+I suggest placing the superscript after Swing in &#8220;Introduction to
+Swing.&#8221;After working your way through this chapter and seeing the huge
+changes that have occurred within the AWT (although, if you can remember back
+that far, Sun claimed Java was a &#8220;stable&#8221; language when it first
+appeared), you might still have the feeling that it&#8217;s not quite done.
+Sure, there&#8217;s now a good event model, and JavaBeans is an excellent
+component-reuse design. But the GUI components still seem rather minimal,
+primitive, and awkward.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That&#8217;s
+where <A NAME="Index2274"></A>Swing
+comes in. The Swing library appeared after Java 1.1 so you might naturally
+assume that it&#8217;s part of <A NAME="Index2275"></A>Java
+1.2. However, it is designed to work with <A NAME="Index2276"></A>Java
+1.1 as an add-on. This way, you don&#8217;t have to wait for your platform to
+support Java 1.2 in order to enjoy a good UI component library. Your users
+might actually need to download the Swing library if it isn&#8217;t part of
+their Java 1.1 support, and this could cause a few snags. But it works.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Swing
+contains all the components that you&#8217;ve been missing throughout the rest
+of this chapter: those you expect to see in a modern UI, everything from
+buttons that contain pictures to trees and grids. It&#8217;s a big library, but
+it&#8217;s designed to have appropriate complexity for the task at hand &#8211;
+if something is simple, you don&#8217;t have to write much code but as you try
+to do more your code becomes increasingly complex. This means an easy entry
+point, but you&#8217;ve got the power if you need it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Swing
+has great depth. This section does not attempt to be comprehensive, but instead
+introduces the power and simplicity of Swing to get you started using the
+library. Please be aware that what you see here is intended to be simple. If
+you need to do more, then Swing can probably give you what you want if
+you&#8217;re willing to do the research by hunting through the online
+documentation from Sun.
+</FONT><a name="_Toc408018725"></a><P></DIV>
+<A NAME="Heading462"></A><H3 ALIGN=LEFT>
+Benefits
+of Swing
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you begin to use the Swing library, you&#8217;ll see that it&#8217;s a huge
+step forward. Swing components are Beans (and thus use the Java 1.1 event
+model), so they can be used in any development environment that supports Beans.
+Swing provides a full set of UI components. For speed, all the <A NAME="Index2277"></A>components
+are lightweight (no &#8220;peer&#8221; components are used), and Swing is
+written entirely in Java for portability.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Much
+of what you&#8217;ll like about Swing could be called &#8220;orthogonality of
+use;&#8221; that is, once you pick up the general ideas about the library you
+can apply them everywhere. Primarily because of the Beans naming conventions,
+much of the time I was writing these examples I could guess at the method names
+and get it right the first time, without looking anything up. This is certainly
+the hallmark of a good library design. In addition, you can generally plug
+components into other components and things will work correctly.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2278"></A><A NAME="Index2279"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Keyboard
+navigation is automatic &#8211; you can use a Swing application without the
+mouse, but you don&#8217;t have to do any extra programming (the old AWT
+required some ugly code to achieve keyboard navigation). Scrolling support is
+effortless &#8211; you simply wrap your component in a <A NAME="Index2280"></A><A NAME="Index2281"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as you add it to your form. Other features such as tool tips typically require
+a single line of code to implement.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Swing
+also supports something called &#8220;pluggable look and feel,&#8221; which
+means that the appearance of the UI can be dynamically changed to suit the
+expectations of users working under different platforms and operating systems.
+It&#8217;s even possible to invent your own look and feel.
+</FONT><a name="_Toc408018726"></a><P></DIV>
+<A NAME="Heading463"></A><H3 ALIGN=LEFT>
+Easy
+conversion
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you&#8217;ve struggled long and hard to build your UI using Java 1.1, you
+don&#8217;t want to throw it away to convert to Swing. Fortunately, the library
+is designed to allow easy conversion &#8211; in many cases you can simply put a
+&#8216;J&#8217; in front of the class names of each of your old AWT components.
+Here&#8217;s an example that should have a familiar flavor to it:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: JButtonDemo.java</font>
+<font color="#009900">// Looks like Java 1.1 but with J's added</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> JButtonDemo <font color="#0000ff">extends</font> Applet {
+  JButton 
+    b1 = <font color="#0000ff">new</font> JButton("JButton 1"),
+    b2 = <font color="#0000ff">new</font> JButton("JButton 2");
+  JTextField t = <font color="#0000ff">new</font> JTextField(20);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    ActionListener al = <font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        String name = 
+          ((JButton)e.getSource()).getText();
+        t.setText(name + " Pressed");
+      }
+    };
+    b1.addActionListener(al);
+    add(b1);
+    b2.addActionListener(al);
+    add(b2);
+    add(t);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    JButtonDemo applet = <font color="#0000ff">new</font> JButtonDemo();
+    JFrame frame = <font color="#0000ff">new</font> JFrame("TextAreaNew");
+    frame.addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+        System.exit(0);
+      }
+    });
+    frame.getContentPane().add(
+      applet, BorderLayout.CENTER);
+    frame.setSize(300,100);
+    applet.init();
+    applet.start();
+    frame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>import</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, but everything else looks like the Java 1.1 AWT with the addition of
+some J&#8217;s. Also, you don&#8217;t just 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">something
+to a Swing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JFrame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you must get the &#8220;content pane&#8221; first, as seen above.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">But
+you can easily get many of the benefits of Swing with a simple conversion.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, you&#8217;ll have to invoke this program by saying:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+c13.swing.JbuttonDemo
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+of the programs in this section will require a similar form to run them.
+</FONT><a name="_Toc408018727"></a><P></DIV>
+<A NAME="Heading464"></A><H3 ALIGN=LEFT>
+A
+display framework
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Although
+the programs that are both applets and applications can be valuable, if used
+everywhere they become distracting and waste paper. Instead, a display
+framework will be used for the Swing examples in the rest of this section:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Show.java</font>
+<font color="#009900">// Tool for displaying Swing demos</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Show {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> 
+  inFrame(JPanel jp, <font color="#0000ff">int</font> width, <font color="#0000ff">int</font> height) {
+    String title = jp.getClass().toString();
+    <font color="#009900">// Remove the word "class":</font>
+    <font color="#0000ff">if</font>(title.indexOf("<font color="#0000ff">class</font>") != -1)
+      title = title.substring(6);
+    JFrame frame = <font color="#0000ff">new</font> JFrame(title);
+    frame.addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+        System.exit(0);
+      }
+    });
+    frame.getContentPane().add(
+      jp, BorderLayout.CENTER);
+    frame.setSize(width, height);
+    frame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Classes
+that want to display themselves should inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and then add any visual components to themselves. Finally, they create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Show.inFrame(new
+MyClass(), 500, 300);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+which the last two arguments are the display width and height.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the title for the <A NAME="Index2282"></A><A NAME="Index2283"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JFrame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is produced using RTTI.
+</FONT><a name="_Toc408018728"></a><P></DIV>
+<A NAME="Heading465"></A><H3 ALIGN=LEFT>
+Tool
+tips
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Almost
+all of the classes that you&#8217;ll be using to create your user interfaces
+are derived from <A NAME="Index2284"></A><A NAME="Index2285"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which contains a method called <A NAME="Index2286"></A><A NAME="Index2287"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setToolTipText(String)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So, for virtually anything you place on your form, all you need to do is say
+(for an object 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>jc
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">of
+any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">-derived
+class):
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jc.setToolTipText("My
+tip");
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+when the mouse stays over that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a predetermined period of time, a tiny box containing your text will pop up
+next to the mouse.
+</FONT><a name="_Toc408018729"></a><P></DIV>
+<A NAME="Heading466"></A><H3 ALIGN=LEFT>
+Borders</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+also contains a method called <A NAME="Index2288"></A><A NAME="Index2289"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setBorder(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which allows you to place various interesting borders on any visible component.
+The following example demonstrates a number of the different borders that are
+available, using a method called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>showBorder(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and puts on the border in each case. Also, it uses RTTI to find the name of the
+border that you&#8217;re using (stripping off all the path information), then
+puts that name in a <A NAME="Index2290"></A><A NAME="Index2291"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLabel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the middle of the panel:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Borders.java</font>
+<font color="#009900">// Different Swing borders</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.border.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Borders <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">static</font> JPanel showBorder(Border b) {
+    JPanel jp = <font color="#0000ff">new</font> JPanel();
+    jp.setLayout(<font color="#0000ff">new</font> BorderLayout());
+    String nm = b.getClass().toString();
+    nm = nm.substring(nm.lastIndexOf('.') + 1);
+    jp.add(<font color="#0000ff">new</font> JLabel(nm, JLabel.CENTER), 
+      BorderLayout.CENTER);
+    jp.setBorder(b);
+    <font color="#0000ff">return</font> jp;
+  }
+  <font color="#0000ff">public</font> Borders() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(2,4));
+    add(showBorder(<font color="#0000ff">new</font> TitledBorder("Title")));
+    add(showBorder(<font color="#0000ff">new</font> EtchedBorder()));
+    add(showBorder(<font color="#0000ff">new</font> LineBorder(Color.blue)));
+    add(showBorder(
+      <font color="#0000ff">new</font> MatteBorder(5,5,30,30,Color.green)));
+    add(showBorder(
+      <font color="#0000ff">new</font> BevelBorder(BevelBorder.RAISED)));
+    add(showBorder(
+      <font color="#0000ff">new</font> SoftBevelBorder(BevelBorder.LOWERED)));
+    add(showBorder(<font color="#0000ff">new</font> CompoundBorder(
+      <font color="#0000ff">new</font> EtchedBorder(),
+      <font color="#0000ff">new</font> LineBorder(Color.red))));
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Borders(), 500, 300);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the examples in this section use <A NAME="Index2292"></A><A NAME="Index2293"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TitledBorder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but you can see that the rest of the borders are as easy to use. You can also
+create your own borders and put them inside buttons, labels, etc. &#8211;
+anything derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018730"></a><P></DIV>
+<A NAME="Heading467"></A><H3 ALIGN=LEFT>
+Buttons</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Swing
+adds a number of different types of buttons, and it also changes the
+organization of the selection components: all buttons, checkboxes, radio
+buttons, and even menu items are inherited from <A NAME="Index2294"></A><A NAME="Index2295"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which, since menu items are included, would probably have been better named
+&#8220;AbstractChooser&#8221; or something equally general). You&#8217;ll see
+the use of menu items shortly, but the following example shows the various
+types of buttons available:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Buttons.java</font>
+<font color="#009900">// Various Swing buttons</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.basic.*;
+<font color="#0000ff">import</font> com.sun.java.swing.border.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Buttons <font color="#0000ff">extends</font> JPanel {
+  JButton jb = <font color="#0000ff">new</font> JButton("JButton");
+  BasicArrowButton
+    up = <font color="#0000ff">new</font> BasicArrowButton(
+      BasicArrowButton.NORTH),
+    down = <font color="#0000ff">new</font> BasicArrowButton(
+      BasicArrowButton.SOUTH),
+    right = <font color="#0000ff">new</font> BasicArrowButton(
+      BasicArrowButton.EAST),
+    left = <font color="#0000ff">new</font> BasicArrowButton(
+      BasicArrowButton.WEST);
+  Spinner spin = <font color="#0000ff">new</font> Spinner(47, "");
+  StringSpinner stringSpin = 
+    <font color="#0000ff">new</font> StringSpinner(3, "",
+      <font color="#0000ff">new</font> String[] { 
+        "red", "green", "blue", "yellow" });
+  <font color="#0000ff">public</font> Buttons() {
+    add(jb);
+    add(<font color="#0000ff">new</font> JToggleButton("JToggleButton"));
+    add(<font color="#0000ff">new</font> JCheckBox("JCheckBox"));
+    add(<font color="#0000ff">new</font> JRadioButton("JRadioButton"));
+    up.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        spin.setValue(spin.getValue() + 1);
+      }
+    });
+    down.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        spin.setValue(spin.getValue() - 1);
+      }
+    });
+    JPanel jp = <font color="#0000ff">new</font> JPanel();
+    jp.add(spin);
+    jp.add(up);
+    jp.add(down);
+    jp.setBorder(<font color="#0000ff">new</font> TitledBorder("Spinner"));
+    add(jp);
+    left.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        stringSpin.setValue(
+          stringSpin.getValue() + 1);
+      }
+    });
+    right.addActionListener(<font color="#0000ff">new</font> ActionListener(){
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        stringSpin.setValue(
+          stringSpin.getValue() - 1);
+      }
+    });
+    jp = <font color="#0000ff">new</font> JPanel();
+    jp.add(stringSpin);
+    jp.add(left);
+    jp.add(right);
+    jp.setBorder(
+      <font color="#0000ff">new</font> TitledBorder("StringSpinner"));
+    add(jp);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Buttons(), 300, 200);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2296"></A><A NAME="Index2297"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+looks like the AWT button, but there&#8217;s more you can do to it (like add
+images, as you&#8217;ll see later). In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>com.sun.java.swing.basic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+there is a <A NAME="Index2298"></A><A NAME="Index2299"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BasicArrowButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that is convenient, but what to test it on? There are two types of
+&#8220;spinners&#8221; that just beg to be used with arrow buttons: <A NAME="Index2300"></A><A NAME="Index2301"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Spinner,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which changes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value, and <A NAME="Index2302"></A><A NAME="Index2303"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringSpinner,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which moves through an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(even automatically wrapping when it reaches the end of the array). The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+attached to the arrow buttons
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">shows
+how relatively obvious it is to use these spinners: you just get and set
+values, using method names you would expect since they&#8217;re Beans.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run the example, you&#8217;ll see that the toggle button holds its last
+position, in or out. But the check boxes and radio buttons behave identically
+to each other, just clicking on or off (they are inherited from <A NAME="Index2304"></A><A NAME="Index2305"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JToggleButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+</FONT><a name="_Toc408018731"></a><P></DIV>
+<A NAME="Heading468"></A><H3 ALIGN=LEFT>
+Button
+groups
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you want radio buttons to behave in an &#8220;exclusive or&#8221; fashion, you
+must add them to a button group, in a similar but less awkward way as the old
+AWT. But as the example below demonstrates, any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be added to a <A NAME="Index2306"></A><A NAME="Index2307"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ButtonGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+avoid repeating a lot of code, this example uses reflection to generate the
+groups of different types of buttons. This is seen in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>makeBPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which creates a button group and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and for each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the array that&#8217;s the second argument to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>makeBPanel(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it adds an object of the class represented by the first argument:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ButtonGroups.java</font>
+<font color="#009900">// Uses reflection to create groups of different</font>
+<font color="#009900">// types of AbstractButton.</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.border.*;
+<font color="#0000ff">import</font> java.lang.reflect.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ButtonGroups <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">static</font> String[] ids = { 
+    "June", "Ward", "Beaver", 
+    "Wally", "Eddie", "Lumpy",
+  };
+  <font color="#0000ff">static</font> JPanel 
+  makeBPanel(Class bClass, String[] ids) {
+    ButtonGroup bg = <font color="#0000ff">new</font> ButtonGroup();
+    JPanel jp = <font color="#0000ff">new</font> JPanel();
+    String title = bClass.getName();
+    title = title.substring(
+      title.lastIndexOf('.') + 1);
+    jp.setBorder(<font color="#0000ff">new</font> TitledBorder(title));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; ids.length; i++) {
+      AbstractButton ab = <font color="#0000ff">new</font> JButton("failed");
+      <font color="#0000ff">try</font> {
+        <font color="#009900">// Get the dynamic constructor method</font>
+        <font color="#009900">// that takes a String argument:</font>
+        Constructor ctor = bClass.getConstructor(
+          <font color="#0000ff">new</font> Class[] { String.<font color="#0000ff">class</font> });
+        <font color="#009900">// Create a new object:</font>
+        ab = (AbstractButton)ctor.newInstance(
+          <font color="#0000ff">new</font> Object[]{ids[i]});
+      } <font color="#0000ff">catch</font>(Exception ex) {
+        System.out.println("can't create " + 
+          bClass);
+      }
+      bg.add(ab);
+      jp.add(ab);
+    }
+    <font color="#0000ff">return</font> jp;
+  }
+  <font color="#0000ff">public</font> ButtonGroups() {
+    add(makeBPanel(JButton.<font color="#0000ff">class</font>, ids));
+    add(makeBPanel(JToggleButton.<font color="#0000ff">class</font>, ids));
+    add(makeBPanel(JCheckBox.<font color="#0000ff">class</font>, ids));
+    add(makeBPanel(JRadioButton.<font color="#0000ff">class</font>, ids));
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> ButtonGroups(), 500, 300);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+title for the border is taken from the name of the class, stripping off all the
+path information. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is initialized to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that has the label &#8220;Failed&#8221; so if you ignore the exception message,
+you&#8217;ll still see the problem on screen. The <A NAME="Index2308"></A><A NAME="Index2309"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructor(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method produces a <A NAME="Index2310"></A><A NAME="Index2311"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Constructor</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object that takes the array of arguments of the types in the <A NAME="Index2312"></A><A NAME="Index2313"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">array
+passed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getConstructor(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then all you do is call <A NAME="Index2314"></A><A NAME="Index2315"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+passing it an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing your actual arguments &#8211; in this case, just the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ids</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+adds a little complexity to what is a simple process. To get &#8220;exclusive
+or&#8221; behavior with buttons, you create a button group and add each button
+for which you want that behavior to the group. When you run the program,
+you&#8217;ll see that all the buttons except 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exhibit this &#8220;exclusive or&#8221; behavior.
+</FONT><a name="_Toc408018732"></a><P></DIV>
+<A NAME="Heading469"></A><H3 ALIGN=LEFT>
+Icons</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can use an <A NAME="Index2316"></A><A NAME="Index2317"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLabel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or anything that inherits from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2318"></A><A NAME="Index2319"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JCheckbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2320"></A><A NAME="Index2321"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JradioButton,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the different kinds of <A NAME="Index2322"></A><A NAME="Index2323"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLabel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+is quite straightforward (you&#8217;ll see an example later). The following
+example explores all the additional ways you can use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+with buttons and their descendants.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can use any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>gif</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files you want, but the ones used in this example are part of the book&#8217;s
+code distribution, available at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>www.BruceEckel.com</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To open a file and bring in the image, simply create an <A NAME="Index2324"></A><A NAME="Index2325"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ImageIcon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and hand it the file name. From then on, you can use the resulting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in your program.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Faces.java</font>
+<font color="#009900">// Icon behavior in JButtons</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Faces <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">static</font> Icon[] faces = {
+    <font color="#0000ff">new</font> ImageIcon("face0.gif"),
+    <font color="#0000ff">new</font> ImageIcon("face1.gif"),
+    <font color="#0000ff">new</font> ImageIcon("face2.gif"),
+    <font color="#0000ff">new</font> ImageIcon("face3.gif"),
+    <font color="#0000ff">new</font> ImageIcon("face4.gif"),
+  };
+  JButton 
+    jb = <font color="#0000ff">new</font> JButton("JButton", faces[3]),
+    jb2 = <font color="#0000ff">new</font> JButton("Disable");
+  <font color="#0000ff">boolean</font> mad = <font color="#0000ff">false</font>;
+  <font color="#0000ff">public</font> Faces() {
+    jb.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        <font color="#0000ff">if</font>(mad) {
+          jb.setIcon(faces[3]);
+          mad = <font color="#0000ff">false</font>;
+        } <font color="#0000ff">else</font> {
+          jb.setIcon(faces[0]);
+          mad = <font color="#0000ff">true</font>;
+        }
+        jb.setVerticalAlignment(JButton.TOP);
+        jb.setHorizontalAlignment(JButton.LEFT);
+      }
+    });
+    jb.setRolloverEnabled(<font color="#0000ff">true</font>);
+    jb.setRolloverIcon(faces[1]);
+    jb.setPressedIcon(faces[2]);
+    jb.setDisabledIcon(faces[4]);
+    jb.setToolTipText("Yow!");
+    add(jb);
+    jb2.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        <font color="#0000ff">if</font>(jb.isEnabled()) {
+          jb.setEnabled(<font color="#0000ff">false</font>);
+          jb2.setText("Enable");
+        } <font color="#0000ff">else</font> {
+          jb.setEnabled(<font color="#0000ff">true</font>);
+          jb2.setText("Disable");
+        }
+      }
+    });
+    add(jb2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Faces(), 300, 200);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used in many constructors, but you can also use <A NAME="Index2326"></A><A NAME="Index2327"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setIcon(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to add or change an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This example also shows how a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(or any 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+can set the various different sorts of icons that appear when things happen to
+that button: when it&#8217;s pressed, disabled, or &#8220;rolled <A NAME="Index2328"></A><A NAME="Index2329"></A>over&#8221;
+(the mouse moves over it without clicking). You&#8217;ll see that this gives
+the button a rather animated feel.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that a <A NAME="Index2330"></A><A NAME="Index2331"></A>tool
+tip is also added to the button.
+</FONT><a name="_Toc408018733"></a><P></DIV>
+<A NAME="Heading470"></A><H3 ALIGN=LEFT>
+Menus<P><A NAME="Index2332"></A><A NAME="Index2333"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Menus
+are much improved and more flexible in Swing &#8211; for example, you can use
+them just about anywhere, including panels and applets. The syntax for using
+them is much the same as it was in the old AWT, and this preserves the same
+problem present in the old AWT: you must hard-code your menus and there
+isn&#8217;t any support for menus as resources (which, among other things,
+would make them easier to change for other languages). In addition, menu code
+gets long-winded and sometimes messy. The following approach takes a step in
+the direction of solving this problem by putting all the information about each
+menu into a two-dimensional <A NAME="Index2334"></A><A NAME="Index2335"></A>array
+of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(that way you can put anything you want into the array). This array is
+organized so that the first row represents the menu name, and the remaining
+rows represent the menu items and their characteristics. You&#8217;ll notice
+the rows of the array do not have to be uniform from one to the next &#8211; as
+long as your code knows where everything should be, each row can be completely
+different.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Menus.java</font>
+<font color="#009900">// A menu-building system; also demonstrates</font>
+<font color="#009900">// icons in labels and menu items.</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Menus <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> Boolean
+    bT = <font color="#0000ff">new</font> Boolean(<font color="#0000ff">true</font>), 
+    bF = <font color="#0000ff">new</font> Boolean(<font color="#0000ff">false</font>);
+  <font color="#009900">// Dummy class to create type identifiers:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">class</font> MType { MType(<font color="#0000ff">int</font> i) {} };
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> MType
+    mi = <font color="#0000ff">new</font> MType(1), <font color="#009900">// Normal menu item</font>
+    cb = <font color="#0000ff">new</font> MType(2), <font color="#009900">// Checkbox menu item</font>
+    rb = <font color="#0000ff">new</font> MType(3); <font color="#009900">// Radio button menu item</font>
+  JTextField t = <font color="#0000ff">new</font> JTextField(10);
+  JLabel l = <font color="#0000ff">new</font> JLabel("Icon Selected", 
+    Faces.faces[0], JLabel.CENTER);
+  ActionListener a1 = <font color="#0000ff">new</font> ActionListener() {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText(
+        ((JMenuItem)e.getSource()).getText());
+    }
+  };
+  ActionListener a2 = <font color="#0000ff">new</font> ActionListener() {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      JMenuItem mi = (JMenuItem)e.getSource();
+      l.setText(mi.getText());
+      l.setIcon(mi.getIcon());
+    }
+  };
+  <font color="#009900">// Store menu data as "resources":</font>
+  <font color="#0000ff">public</font> Object[][] fileMenu = {
+    <font color="#009900">// Menu name and accelerator:</font>
+    { "File", <font color="#0000ff">new</font> Character('F') },
+    <font color="#009900">// Name type accel listener enabled</font>
+    { "New", mi, <font color="#0000ff">new</font> Character('N'), a1, bT },
+    { "Open", mi, <font color="#0000ff">new</font> Character('O'), a1, bT },
+    { "Save", mi, <font color="#0000ff">new</font> Character('S'), a1, bF },
+    { "Save As", mi, <font color="#0000ff">new</font> Character('A'), a1, bF},
+    { <font color="#0000ff">null</font> }, <font color="#009900">// Separator</font>
+    { "Exit", mi, <font color="#0000ff">new</font> Character('x'), a1, bT },
+  };
+  <font color="#0000ff">public</font> Object[][] editMenu = {
+    <font color="#009900">// Menu name:</font>
+    { "Edit", <font color="#0000ff">new</font> Character('E') },
+    <font color="#009900">// Name type accel listener enabled</font>
+    { "Cut", mi, <font color="#0000ff">new</font> Character('t'), a1, bT },
+    { "Copy", mi, <font color="#0000ff">new</font> Character('C'), a1, bT },
+    { "Paste", mi, <font color="#0000ff">new</font> Character('P'), a1, bT },
+    { <font color="#0000ff">null</font> }, <font color="#009900">// Separator</font>
+    { "Select All", mi,<font color="#0000ff">new</font> Character('l'),a1,bT},
+  };
+  <font color="#0000ff">public</font> Object[][] helpMenu = {
+    <font color="#009900">// Menu name:</font>
+    { "Help", <font color="#0000ff">new</font> Character('H') },
+    <font color="#009900">// Name type accel listener enabled</font>
+    { "Index", mi, <font color="#0000ff">new</font> Character('I'), a1, bT },
+    { "Using help", mi,<font color="#0000ff">new</font> Character('U'),a1,bT},
+    { <font color="#0000ff">null</font> }, <font color="#009900">// Separator</font>
+    { "About", mi, <font color="#0000ff">new</font> Character('t'), a1, bT },
+  };
+  <font color="#0000ff">public</font> Object[][] optionMenu = {
+    <font color="#009900">// Menu name:</font>
+    { "Options", <font color="#0000ff">new</font> Character('O') },
+    <font color="#009900">// Name type accel listener enabled</font>
+    { "Option 1", cb, <font color="#0000ff">new</font> Character('1'), a1,bT},
+    { "Option 2", cb, <font color="#0000ff">new</font> Character('2'), a1,bT},
+  };
+  <font color="#0000ff">public</font> Object[][] faceMenu = {
+    <font color="#009900">// Menu name:</font>
+    { "Faces", <font color="#0000ff">new</font> Character('a') },
+    <font color="#009900">// Optinal last element is icon</font>
+    { "Face 0", rb, <font color="#0000ff">new</font> Character('0'), a2, bT, 
+      Faces.faces[0] },
+    { "Face 1", rb, <font color="#0000ff">new</font> Character('1'), a2, bT, 
+      Faces.faces[1] },
+    { "Face 2", rb, <font color="#0000ff">new</font> Character('2'), a2, bT, 
+      Faces.faces[2] },
+    { "Face 3", rb, <font color="#0000ff">new</font> Character('3'), a2, bT, 
+      Faces.faces[3] },
+    { "Face 4", rb, <font color="#0000ff">new</font> Character('4'), a2, bT, 
+      Faces.faces[4] },
+  };
+  <font color="#0000ff">public</font> Object[] menuBar = {
+    fileMenu, editMenu, faceMenu, 
+    optionMenu, helpMenu,
+  };
+  <font color="#0000ff">static</font> <font color="#0000ff">public</font> JMenuBar
+  createMenuBar(Object[] menuBarData) {
+    JMenuBar menuBar = <font color="#0000ff">new</font> JMenuBar();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; menuBarData.length; i++)
+      menuBar.add(
+        createMenu((Object[][])menuBarData[i]));
+    <font color="#0000ff">return</font> menuBar;
+  }
+  <font color="#0000ff">static</font> ButtonGroup bgroup;
+  <font color="#0000ff">static</font> <font color="#0000ff">public</font> JMenu 
+  createMenu(Object[][] menuData) {
+    JMenu menu = <font color="#0000ff">new</font> JMenu();
+    menu.setText((String)menuData[0][0]);
+    menu.setKeyAccelerator(
+      ((Character)menuData[0][1]).charValue());
+    <font color="#009900">// Create redundantly, in case there are</font>
+    <font color="#009900">// any radio buttons:</font>
+    bgroup = <font color="#0000ff">new</font> ButtonGroup();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 1; i &lt; menuData.length; i++) {
+      <font color="#0000ff">if</font>(menuData[i][0] == <font color="#0000ff">null</font>)
+        menu.add(<font color="#0000ff">new</font> JSeparator());
+      <font color="#0000ff">else</font>
+        menu.add(createMenuItem(menuData[i]));
+    }
+    <font color="#0000ff">return</font> menu;
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">public</font> JMenuItem 
+  createMenuItem(Object[] data) {
+    JMenuItem m = <font color="#0000ff">null</font>;
+    MType type = (MType)data[1];
+    <font color="#0000ff">if</font>(type == mi)
+      m = <font color="#0000ff">new</font> JMenuItem();
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(type == cb)
+      m = <font color="#0000ff">new</font> JCheckBoxMenuItem();
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(type == rb) {
+      m = <font color="#0000ff">new</font> JRadioButtonMenuItem();
+      bgroup.add(m);
+    }
+    m.setText((String)data[0]);
+    m.setKeyAccelerator(
+      ((Character)data[2]).charValue());
+    m.addActionListener(
+      (ActionListener)data[3]);
+    m.setEnabled(
+      ((Boolean)data[4]).booleanValue());
+    <font color="#0000ff">if</font>(data.length == 6)
+      m.setIcon((Icon)data[5]);
+    <font color="#0000ff">return</font> m;
+  }
+  Menus() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(createMenuBar(menuBar), 
+      BorderLayout.NORTH);
+    JPanel p = <font color="#0000ff">new</font> JPanel();
+    p.setLayout(<font color="#0000ff">new</font> BorderLayout());
+    p.add(t, BorderLayout.NORTH);
+    p.add(l, BorderLayout.CENTER);
+    add(p, BorderLayout.CENTER);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Menus(), 300, 200);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+goal is to allow the programmer to simply create tables to represent each menu,
+rather than typing lines of code to build the menus. Each table produces one
+menu, and the first row in the table contains the menu name and its keyboard
+accelerator. The remaining rows contain the data for each menu item: the string
+to be placed on the menu item, what type of menu item it is, its keyboard
+accelerator, the actionlistener that is fired when this menu item is selected,
+and whether this menu item is enabled. If a row starts with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it is treated as a separator.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+prevent wasteful and tedious multiple creations of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects and type flags, these are created as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+final
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+values at the beginning of the class: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bT</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bF</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to represent 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and different objects of the dummy class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MType</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to describe normal menu items (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mi</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+checkbox menu items (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cb</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and radio button menu items (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rb</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Remember that an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+may hold only
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Object
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles and not primitive values.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also shows how <A NAME="Index2336"></A><A NAME="Index2337"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLabel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and <A NAME="Index2338"></A><A NAME="Index2339"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JMenuItems</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(and their descendants) may hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+An 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Icon
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+placed into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLabel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+via its constructor and changed when the corresponding menu item is selected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>menuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+array contains the handles to all the file menus in the order that you want
+them to appear on the menu bar. You pass this array to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createMenuBar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which breaks it up into individual arrays of menu data, passing each to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createMenu(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This method, in turn, takes the first line of the menu data and creates a <A NAME="Index2340"></A><A NAME="Index2341"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JMenu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from it, then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createMenuItem(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for each of the remaining lines of menu data. Finally, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createMenuItem(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+parses each line of menu data and determines the type of menu and its
+attributes, and creates that menu item appropriately. In the end, as you can
+see in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menus(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor, to create a menu from these tables say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>createMenuBar(menuBar)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and everything is handled recursively.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example does not take care of building cascading menus, but you should have
+enough of the concept that you can add that capability if you need it.
+</FONT><a name="_Toc408018734"></a><P></DIV>
+<A NAME="Heading471"></A><H3 ALIGN=LEFT>
+Popup
+menus
+<P><A NAME="Index2342"></A><A NAME="Index2343"></A><A NAME="Index2344"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+implementation of <A NAME="Index2345"></A><A NAME="Index2346"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPopupMenu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+seems a bit strange: you must call <A NAME="Index2347"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enableEvents(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and select for mouse events instead of using an event listener. That is,
+it&#8217;s possible to add a mouse listener but the <A NAME="Index2348"></A><A NAME="Index2349"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that comes through doesn&#8217;t return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from <A NAME="Index2350"></A><A NAME="Index2351"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isPopupTrigger(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; it doesn&#8217;t know that it should trigger a popup menu.
+</FONT><A NAME="fnB61" HREF="#fn61">[61]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+In addition, when I tried the listener approach it behaved strangely, possibly
+from recursive click handling. In any event, the following example produces the
+desired popup behavior:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Popup.java</font>
+<font color="#009900">// Creating popup menus with Swing</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Popup <font color="#0000ff">extends</font> JPanel {
+  JPopupMenu popup = <font color="#0000ff">new</font> JPopupMenu();
+  JTextField t = <font color="#0000ff">new</font> JTextField(10);
+  <font color="#0000ff">public</font> Popup() {
+    add(t);
+    ActionListener al = <font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        t.setText(
+          ((JMenuItem)e.getSource()).getText());
+      }
+    };
+    JMenuItem m = <font color="#0000ff">new</font> JMenuItem("Hither");
+    m.addActionListener(al);
+    popup.add(m);
+    m = <font color="#0000ff">new</font> JMenuItem("Yon");
+    m.addActionListener(al);
+    popup.add(m);
+    m = <font color="#0000ff">new</font> JMenuItem("Afar");
+    m.addActionListener(al);
+    popup.add(m);
+    popup.addSeparator();
+    m = <font color="#0000ff">new</font> JMenuItem("Stay Here");
+    m.addActionListener(al);
+    popup.add(m);
+    enableEvents(AWTEvent.MOUSE_EVENT_MASK);
+  }
+  <font color="#0000ff">protected</font> <font color="#0000ff">void</font> processMouseEvent(MouseEvent e){
+    <font color="#0000ff">if</font> (e.isPopupTrigger())
+      popup.show(
+        e.getComponent(), e.getX(), e.getY());
+    <font color="#0000ff">super</font>.processMouseEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Popup(),200,150);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+same 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to each <A NAME="Index2352"></A><A NAME="Index2353"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so that it fetches the text from the menu label and inserts it into the <A NAME="Index2354"></A><A NAME="Index2355"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018735"></a><P></DIV>
+<A NAME="Heading472"></A><H3 ALIGN=LEFT>
+List
+boxes and combo boxes
+<P><A NAME="Index2356"></A><A NAME="Index2357"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">List
+boxes and <A NAME="Index2358"></A><A NAME="Index2359"></A>combo
+boxes in Swing work much as they do in the old AWT, but they also have
+increased functionality if you need it. In addition, some conveniences have
+been added. For example, the <A NAME="Index2360"></A><A NAME="Index2361"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a constructor that takes an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to display (oddly enough this same feature is not available in <A NAME="Index2362"></A><A NAME="Index2363"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComboBox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Here&#8217;s a simple example that shows the basic use of each:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ListCombo.java</font>
+<font color="#009900">// List boxes &amp; Combo boxes</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ListCombo <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">public</font> ListCombo() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(2,1));
+    JList list = <font color="#0000ff">new</font> JList(ButtonGroups.ids);
+    add(<font color="#0000ff">new</font> JScrollPane(list));
+    JComboBox combo = <font color="#0000ff">new</font> JComboBox();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 100; i++)
+      combo.addItem(Integer.toString(i));
+    add(combo);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> ListCombo(),200,200);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Something
+else that seems a bit odd at first is that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+do not automatically provide scrolling, even though that&#8217;s something you
+always expect. Adding support for scrolling turns out to be quite easy, as
+shown above &#8211; you simply wrap the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JList</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a <A NAME="Index2364"></A><A NAME="Index2365"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all the details are automatically managed for you.
+</FONT><a name="_Toc408018736"></a><P></DIV>
+<A NAME="Heading473"></A><H3 ALIGN=LEFT>
+Sliders
+and progress bars
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index2366"></A><A NAME="Index2367"></A>slider
+allows the user to input data by moving a point back and forth, which is
+intuitive in some situations (volume controls, for example). A <A NAME="Index2368"></A><A NAME="Index2369"></A>progress
+bar displays data in a relative fashion from &#8220;full&#8221; to
+&#8220;empty&#8221; so the user gets a perspective. My favorite example for
+these is to simply hook the slider to the progress bar so when you move the
+slider the progress bar changes accordingly:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Progress.java</font>
+<font color="#009900">// Using progress bars and sliders</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.border.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Progress <font color="#0000ff">extends</font> JPanel {
+  JProgressBar pb = <font color="#0000ff">new</font> JProgressBar();
+  JSlider sb = 
+    <font color="#0000ff">new</font> JSlider(JSlider.HORIZONTAL, 0, 100, 60);
+  <font color="#0000ff">public</font> Progress() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(2,1));
+    add(pb);
+    sb.setValue(0);
+    sb.setPaintTicks(<font color="#0000ff">true</font>);
+    sb.setMajorTickSpacing(20);
+    sb.setMinorTickSpacing(5);
+    sb.setBorder(<font color="#0000ff">new</font> TitledBorder("Slide Me"));
+    sb.addChangeListener(<font color="#0000ff">new</font> ChangeListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> stateChanged(ChangeEvent e) {
+        pb.setValue(sb.getValue());
+      }
+    });
+    add(sb);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Progress(),200,150);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2370"></A><A NAME="Index2371"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JProgressBar
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+fairly straightforward, but the <A NAME="Index2372"></A><A NAME="Index2373"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JSlider</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a lot of options, such as the orientation and major and minor tick marks.
+Notice how straightforward it is to add a titled border.
+</FONT><a name="_Toc408018737"></a><P></DIV>
+<A NAME="Heading474"></A><H3 ALIGN=LEFT>
+Trees</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Using
+a <A NAME="Index2374"></A><A NAME="Index2375"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTree
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">can
+be as simple as saying:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>add(<font color="#0000ff">new</font> JTree(
+  <font color="#0000ff">new</font> Object[] {"<font color="#0000ff">this</font>", "that", "other"})); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+displays a primitive <A NAME="Index2376"></A><A NAME="Index2377"></A>tree.
+The API for trees is vast, however &#8211; certainly one of the largest in
+Swing. It appears that you can do just about anything with trees, but more
+sophisticated tasks might require quite a bit of research and experimentation. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Fortunately,
+there is a middle ground provided in the library: the &#8220;default&#8221;
+tree components, which generally do what you need. So most of the time you can
+use these components, and only in special cases will you need to delve in and
+understand trees more deeply.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example uses the &#8220;default&#8221; tree components to display a
+tree in an applet. When you press the button, a new subtree is added under the
+currently-selected node (if no node is selected, the root node is used):
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Trees.java</font>
+<font color="#009900">// Simple Swing tree example. Trees can be made</font>
+<font color="#009900">// vastly more complex than this.</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.tree.*;
+
+<font color="#009900">// Takes an array of Strings and makes the first</font>
+<font color="#009900">// element a node and the rest leaves:</font>
+<font color="#0000ff">class</font> Branch {
+  DefaultMutableTreeNode r;
+  <font color="#0000ff">public</font> Branch(String[] data) {
+    r = <font color="#0000ff">new</font> DefaultMutableTreeNode(data[0]);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 1; i &lt; data.length; i++)
+      r.add(<font color="#0000ff">new</font> DefaultMutableTreeNode(data[i]));
+  }
+  <font color="#0000ff">public</font> DefaultMutableTreeNode node() { 
+    <font color="#0000ff">return</font> r; 
+  }
+}  
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Trees <font color="#0000ff">extends</font> JPanel {
+  String[][] data = {
+    { "Colors", "Red", "Blue", "Green" },
+    { "Flavors", "Tart", "Sweet", "Bland" },
+    { "Length", "Short", "Medium", "Long" },
+    { "Volume", "High", "Medium", "Low" },
+    { "Temperature", "High", "Medium", "Low" },
+    { "Intensity", "High", "Medium", "Low" },
+  };
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> i = 0;
+  DefaultMutableTreeNode root, child, chosen;
+  JTree tree;
+  DefaultTreeModel model;
+  <font color="#0000ff">public</font> Trees() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    root = <font color="#0000ff">new</font> DefaultMutableTreeNode("root");
+    tree = <font color="#0000ff">new</font> JTree(root);
+    <font color="#009900">// Add it and make it take care of scrolling:</font>
+    add(<font color="#0000ff">new</font> JScrollPane(tree), 
+      BorderLayout.CENTER);
+    <font color="#009900">// Capture the tree's model:</font>
+    model =(DefaultTreeModel)tree.getModel();
+    JButton test = <font color="#0000ff">new</font> JButton("Press me");
+    test.addActionListener(<font color="#0000ff">new</font> ActionListener() {
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e){
+        <font color="#0000ff">if</font>(i &lt; data.length) {
+          child = <font color="#0000ff">new</font> Branch(data[i++]).node();
+          <font color="#009900">// What's the last one you clicked?</font>
+          chosen = (DefaultMutableTreeNode)
+            tree.getLastSelectedPathComponent();
+          <font color="#0000ff">if</font>(chosen == <font color="#0000ff">null</font>) chosen = root;
+          <font color="#009900">// The model will create the </font>
+          <font color="#009900">// appropriate event. In response, the</font>
+          <font color="#009900">// tree will update itself:</font>
+          model.insertNodeInto(child, chosen, 0);
+          <font color="#009900">// This puts the new node on the </font>
+          <font color="#009900">// currently chosen node.</font>
+        }
+      }
+    });
+    <font color="#009900">// Change the button's colors:</font>
+    test.setBackground(Color.blue);
+    test.setForeground(Color.white);
+    JPanel p = <font color="#0000ff">new</font> JPanel();
+    p.add(test);
+    add(p, BorderLayout.SOUTH);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Trees(),200,500);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first class, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Branch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+is a tool to take an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and build a <A NAME="Index2378"></A><A NAME="Index2379"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DefaultMutableTreeNode</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the first 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as the root and the rest of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+in the array as leaves. Then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>node(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be called to produce the root of this &#8220;branch.&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Trees</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class contains a two-dimensional array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+from which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Branch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">es
+can be made and a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+int i
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to count through this array. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DefaultMutableTreeNode</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects hold the nodes, but the physical representation on screen is controlled
+by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its associated model, the <A NAME="Index2380"></A><A NAME="Index2381"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DefaultTreeModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Note that when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is added to the applet, it is wrapped in a <A NAME="Index2382"></A><A NAME="Index2383"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8211; this is all it takes to provide automatic scrolling.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is controlled through its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>model</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When you make a change to the model, the model generates an event that causes
+the <A NAME="Index2384"></A><A NAME="Index2385"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTree</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform any necessary updates to the visible representation of the tree. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the model is captured by calling <A NAME="Index2386"></A><A NAME="Index2387"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getModel(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When the button is pressed, a new &#8220;branch&#8221; is created. Then the
+currently selected component is found (or the root if nothing is selected) and
+the model&#8217;s <A NAME="Index2388"></A><A NAME="Index2389"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>insertNodeInto(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method does all the work of changing the tree and causing it to be updated.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Most
+of the time an example like the one above will give you what you need in a
+tree. However, trees have the power to do just about anything you can imagine
+&#8211; everywhere you see the word &#8220;default&#8221; in the example above,
+you can substitute your own class to get different behavior. But beware: almost
+all of these classes have a large interface, so you could spend a lot of time
+struggling to understand the intricacies of trees.
+</FONT><a name="_Toc408018738"></a><P></DIV>
+<A NAME="Heading475"></A><H3 ALIGN=LEFT>
+Tables</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+trees, <A NAME="Index2390"></A><A NAME="Index2391"></A>tables
+in Swing are vast and powerful. They are primarily intended to be the popular
+&#8220;grid&#8221; interface to databases via Java Database Connectivity (JDBC,
+discussed in Chapter 15) and thus they have a tremendous amount of flexibility,
+which you pay for in complexity. There&#8217;s easily enough here to be the
+basis of a full-blown spreadsheet and could probably justify an entire book.
+However, it is also possible to create a relatively simple 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if you understand the basics.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+controls how the data is displayed, but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+controls the data itself. So to create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you&#8217;ll typically create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+first. You can fully implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface, but it&#8217;s usually simpler to inherit from the helper class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractTableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Table.java</font>
+<font color="#009900">// Simple demonstration of JTable</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.table.*;
+<font color="#0000ff">import</font> com.sun.java.swing.event.*;
+
+<font color="#009900">// The TableModel controls all the data:</font>
+<font color="#0000ff">class</font> DataModel <font color="#0000ff">extends</font> AbstractTableModel {
+  Object[][] data = {
+    {"one", "two", "three", "four"},
+    {"five", "six", "seven", "eight"},
+    {"nine", "ten", "eleven", "twelve"},
+  };
+  <font color="#009900">// Prints data when table changes:</font>
+  <font color="#0000ff">class</font> TML <font color="#0000ff">implements</font> TableModelListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> tableChanged(TableModelEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; data.length; i++) {
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> j = 0; j &lt; data[0].length; j++)
+          System.out.print(data[i][j] + " ");
+        System.out.println();
+      }
+    }
+  }
+  DataModel() {
+    addTableModelListener(<font color="#0000ff">new</font> TML());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getColumnCount() { 
+    <font color="#0000ff">return</font> data[0].length; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getRowCount() { 
+    <font color="#0000ff">return</font> data.length;
+  }
+  <font color="#0000ff">public</font> Object getValueAt(<font color="#0000ff">int</font> row, <font color="#0000ff">int</font> col) { 
+    <font color="#0000ff">return</font> data[row][col]; 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> 
+  setValueAt(Object val, <font color="#0000ff">int</font> row, <font color="#0000ff">int</font> col) {
+    data[row][col] = val;
+    <font color="#009900">// Indicate the change has happened:</font>
+    fireTableDataChanged();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  isCellEditable(<font color="#0000ff">int</font> row, <font color="#0000ff">int</font> col) { 
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>; 
+  }
+};       
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Table <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">public</font> Table() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    JTable table = <font color="#0000ff">new</font> JTable(<font color="#0000ff">new</font> DataModel());
+    JScrollPane scrollpane = 
+      JTable.createScrollPaneForTable(table);
+    add(scrollpane, BorderLayout.CENTER);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Table(),200,200);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+contains an array of data, but you could also get the data from some other
+source such as a database. The constructor adds a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TableModelListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which prints the array every time the table is changed. The rest of the methods
+follow the Beans naming convention, and are used by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when it wants to present the information in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AbstractTableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides default methods for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setValueAt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>isCellEditable(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that prevent changes to the data, so if you want to be able to edit the data,
+you must override these methods.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TableModel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you only need to hand it to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor. All the details of displaying, editing and updating will be taken
+care of for you. Notice that this example also puts the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which requires a special 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method.
+</FONT><a name="_Toc408018739"></a><P></DIV>
+<A NAME="Heading476"></A><H3 ALIGN=LEFT>
+Tabbed
+Panes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Earlier
+in this chapter you were introduced to the positively medieval <A NAME="Index2392"></A><A NAME="Index2393"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and saw how you had to manage all the switching of the ugly cards yourself.
+Someone actually thought this was a good design. Fortunately, Swing remedies
+this by providing
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index2394"></A><A NAME="Index2395"></A>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which handles all the tabs, the switching, and everything. The contrast between 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CardLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is breathtaking.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example is quite fun because it takes advantage of the design of the
+previous examples. They are all built as descendants of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so this example will place each one of the previous examples in its own pane on
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You&#8217;ll notice that the use of RTTI makes the example quite small and
+elegant:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Tabbed.java</font>
+<font color="#009900">// Using tabbed panes</font>
+<font color="#0000ff">package</font> c13.swing;
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> com.sun.java.swing.*;
+<font color="#0000ff">import</font> com.sun.java.swing.border.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Tabbed <font color="#0000ff">extends</font> JPanel {
+  <font color="#0000ff">static</font> Object[][] q = {
+    { "Felix", Borders.<font color="#0000ff">class</font> },
+    { "The Professor", Buttons.<font color="#0000ff">class</font> },
+    { "Rock Bottom", ButtonGroups.<font color="#0000ff">class</font> },
+    { "Theodore", Faces.<font color="#0000ff">class</font> },
+    { "Simon", Menus.<font color="#0000ff">class</font> },
+    { "Alvin", Popup.<font color="#0000ff">class</font> },
+    { "Tom", ListCombo.<font color="#0000ff">class</font> },
+    { "Jerry", Progress.<font color="#0000ff">class</font> },
+    { "Bugs", Trees.<font color="#0000ff">class</font> },
+    { "Daffy", Table.<font color="#0000ff">class</font> },
+  };
+  <font color="#0000ff">static</font> JPanel makePanel(Class c) {
+    String title = c.getName();
+    title = title.substring(
+      title.lastIndexOf('.') + 1);
+    JPanel sp = <font color="#0000ff">null</font>;
+    <font color="#0000ff">try</font> {
+      sp = (JPanel)c.newInstance();
+    } <font color="#0000ff">catch</font>(Exception e) {
+      System.out.println(e);
+    }
+    sp.setBorder(<font color="#0000ff">new</font> TitledBorder(title));
+    <font color="#0000ff">return</font> sp;
+  }
+  <font color="#0000ff">public</font> Tabbed() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    JTabbedPane tabbed = <font color="#0000ff">new</font> JTabbedPane();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; q.length; i++)
+      tabbed.addTab((String)q[i][0], 
+        makePanel((Class)q[i][1]));
+    add(tabbed, BorderLayout.CENTER);
+    tabbed.setSelectedIndex(q.length/2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String args[]) {
+    Show.inFrame(<font color="#0000ff">new</font> Tabbed(),460,350);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Again,
+you can see the theme of an array used for configuration: the first element is
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be placed on the tab and the second is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class that will be displayed inside of the corresponding pane. In the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Tabbed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor, you can see the two important 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods that are used: <A NAME="Index2396"></A><A NAME="Index2397"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to put a new pane in, and <A NAME="Index2398"></A><A NAME="Index2399"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setSelectedIndex(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to choose the pane to start with. (One in the middle is chosen just to show
+that you don&#8217;t have to start with the first pane.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you supply it with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the tab and any <A NAME="Index2400"></A><A NAME="Index2401"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(that is, an AWT 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not just a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is derived from the AWT 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be displayed in the pane. Once you do this, no further management is
+necessary &#8211; the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes care of everything else for you (as it should).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>makePanel(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method takes the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object of the class you want to create and uses <A NAME="Index2402"></A><A NAME="Index2403"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>newInstance(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create one, casting it to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(of course, this assumes that any class you want to add must inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but that&#8217;s been the structure used for the examples in this section). It
+adds a <A NAME="Index2404"></A><A NAME="Index2405"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TitledBorder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that contains the name of the class and returns the result as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be used in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTab(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you run the program you&#8217;ll see that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTabbedPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+automatically stacks the tabs if there are too many of them to fit on one row.
+</FONT><a name="_Toc408018740"></a><P></DIV>
+<A NAME="Heading477"></A><H3 ALIGN=LEFT>
+The
+Swing message box
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Windowing
+environments commonly contain a standard set of <A NAME="Index2406"></A><A NAME="Index2407"></A>message
+boxes that allow you to quickly post information to the user or to capture
+information from the user. In Swing, these message boxes are contained in <A NAME="Index2408"></A><A NAME="Index2409"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JOptionPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You have many different possibilities (some quite sophisticated), but the ones
+you&#8217;ll most commonly use are probably the message dialog and confirmation
+dialog, invoked using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JOptionPane.showMessageDialog(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JOptionPane.
+showConfirmDialog(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index2410"></A><A NAME="Index2411"></A><A NAME="Index2412"></A><A NAME="Index2413"></A></B></FONT><a name="_Toc408018741"></a><P></DIV>
+<A NAME="Heading478"></A><H3 ALIGN=LEFT>
+More
+to Swing
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+section was meant only to give you an introduction to the power of Swing and to
+get you started so you could see how relatively simple it is to feel your way
+through the libraries. What you&#8217;ve seen so far will probably suffice for
+a good portion of your UI design needs. However, there&#8217;s a lot more to
+Swing &#8211; it&#8217;s intended to be a fully-powered UI design tool kit. If
+you don&#8217;t see what you need here, delve into the online documentation
+from Sun and search the Web. There&#8217;s probably a way to accomplish just
+about everything you can imagine.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+of the topics that were not covered in this section include:
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">More
+specific components such as
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2414"></A><A NAME="Index2415"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JColorChooser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2416"></A><A NAME="Index2417"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JFileChooser</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2418"></A><A NAME="Index2419"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JPasswordField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+<A NAME="Index2420"></A><A NAME="Index2421"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JHTMLPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which performs simple HTML formatting and display), and <A NAME="Index2422"></A><A NAME="Index2423"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JTextPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(a text editor that supports formatting, word wrap, and images). These are
+fairly straightforward to use.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new event types for Swing. In many ways, these are like exceptions: the type is
+what&#8217;s important, and the name can be used to infer just about everything
+else about them.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">New
+layout managers:
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2424"></A><A NAME="Index2425"></A>Springs
+&amp; Struts (a la Smalltalk) and <A NAME="Index2426"></A><A NAME="Index2427"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BoxLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2428"></A><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	<A NAME="Index2429"></A></FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Splitter
+control: a divider style splitter bar that allows you to dynamically manipulate
+the position of other components.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2430"></A><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	<A NAME="Index2431"></A></FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JLayeredPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and <A NAME="Index2432"></A><A NAME="Index2433"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JInternalFrame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+used together to create child frame windows inside parent frame windows, to
+produce <A NAME="Index2434"></A><A NAME="Index2435"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multiple-document
+interface
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(<A NAME="Index2436"></A><A NAME="Index2437"></A>MDI)
+applications.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Pluggable
+look and feel, so you can write a single program that can dynamically adapt to
+behave as expected under different platforms and operating systems.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Custom
+cursors.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Dockable
+floating
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2438"></A><A NAME="Index2439"></A>toolbars
+with the <A NAME="Index2440"></A><A NAME="Index2441"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>JToolbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+API.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Double-buffering
+and Automatic repaint batching for smoother screen redraws.
+</FONT><LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Built-in
+</FONT></UL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8220;<A NAME="Index2442"></A><A NAME="Index2443"></A>undo&#8221;
+support.
+</FONT><P></DIV>
+<UL>
+<LI><FONT FACE="Symbol" SIZE=3 COLOR="Black">	</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Drag
+and drop support.
+</FONT><a name="_Toc408018742"></a></UL><HR><DIV ALIGN=LEFT><A NAME="fn60" HREF="#fnB60">[60]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+At the time this section was written, the Swing library had been pronounced
+&#8220;frozen&#8221; by Sun, so this code should compile and run without
+problems as long as you&#8217;ve downloaded and installed the Swing library.
+(You should be able to compile one of Sun&#8217;s included demonstration
+programs to test your installation.) If you do encounter difficulties, check 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>www.BruceEckel.com</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+for updated code.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn61" HREF="#fnB61">[61]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This may also be a result of using pre-beta software.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0150.html">Prev</a> | <a href="tij0152.html">Next</a>
+</div>
+</body></html>
+

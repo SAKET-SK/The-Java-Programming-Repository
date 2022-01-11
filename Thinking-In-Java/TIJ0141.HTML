@@ -1,0 +1,99 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0140.html">Prev</a> | <a href="tij0142.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Radio
+buttons
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+concept of a <A NAME="Index1637"></A><A NAME="Index1638"></A><A NAME="Index1639"></A>radio
+button in GUI programming comes from pre-electronic car radios with mechanical
+buttons: when you push one in, any other button that was pressed pops out. Thus
+it allows you to force a single choice among many.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+AWT does not have a separate class to represent the radio button; instead it
+reuses the <A NAME="Index1640"></A><A NAME="Index1641"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, to put the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a radio button group (and to change its shape so it&#8217;s visually
+different from an ordinary 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+you must use a special constructor that takes a <A NAME="Index1642"></A><A NAME="Index1643"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object as an argument. (You can also call <A NAME="Index1644"></A><A NAME="Index1645"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setCheckboxGroup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+after the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has been created.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxGroup
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+no constructor argument; its sole reason for existence is to collect some 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">es
+into a group of radio buttons. One of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects must have its state set to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before you try to display the group of radio buttons; otherwise you&#8217;ll
+get an exception at run time. If you try to set more than one radio button to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+then only the final one set will be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple example of the use of radio buttons. Note that you capture radio
+button events like all others:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RadioButton1.java</font>
+<font color="#009900">// Using radio buttons</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RadioButton1 <font color="#0000ff">extends</font> Applet {
+  TextField t = 
+    <font color="#0000ff">new</font> TextField("Radio button 2", 30);
+  CheckboxGroup g = <font color="#0000ff">new</font> CheckboxGroup();
+  Checkbox 
+    cb1 = <font color="#0000ff">new</font> Checkbox("one", g, <font color="#0000ff">false</font>),
+    cb2 = <font color="#0000ff">new</font> Checkbox("two", g, <font color="#0000ff">true</font>),
+    cb3 = <font color="#0000ff">new</font> Checkbox("three", g, <font color="#0000ff">false</font>);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    add(t); 
+    add(cb1); add(cb2); add(cb3); 
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(cb1))
+      t.setText("Radio button 1");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(cb2))
+      t.setText("Radio button 2");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(cb3))
+      t.setText("Radio button 3");
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+display the state, an text field is used. This field is set to non-editable
+because it&#8217;s used only to display data, not to collect it. This is shown
+as an alternative to using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Notice the text in the field is initialized to &#8220;Radio button 2&#8221;
+since that&#8217;s the initial selected radio button.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can have any number of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+on a form.
+</FONT><a name="_Toc375545454"></a><a name="_Toc408018690"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0140.html">Prev</a> | <a href="tij0142.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,427 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0169.html">Prev</a> | <a href="tij0171.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Remote
+methods
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Traditional
+approaches to executing code on other machines across a network have been
+confusing as well as tedious and error-prone to implement. The nicest way to
+think about this problem is that some object happens to live on another
+machine, and you can send a message to that object and get a result as if the
+object lived on your local machine. This simplification is exactly what Java 1.1<A NAME="Index2865"></A>
+<A NAME="Index2866"></A><A NAME="Index2867"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Remote
+Method Invocation
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(RMI) allows you to do. This section walks you through the steps necessary to
+create your own RMI objects.
+</FONT><a name="_Toc408018786"></a><P></DIV>
+<A NAME="Heading543"></A><H3 ALIGN=LEFT>
+Remote
+interfaces
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">RMI
+makes heavy use of interfaces. When you want to create a remote object, you
+mask the underlying implementation by passing around an interface. Thus, when
+the client gets a handle to a remote object, what they really get is an
+interface handle, which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>happens</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to connect to some local stub code that talks across the network. But you
+don&#8217;t think about this, you just send messages via your interface handle.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you create a <A NAME="Index2868"></A>remote
+interface, you must follow these guidelines:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+remote interface must be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(it cannot have &#8220;package access,&#8221; that is, it cannot be
+&#8220;friendly&#8221;). Otherwise, a client will get an error when attempting
+to load a remote object that implements the remote interface. 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+remote interface must extend the interface <A NAME="Index2869"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.rmi.Remote</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Each
+method in the remote interface must declare <A NAME="Index2870"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.rmi.RemoteException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>throws</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+clause in addition to any application-specific exceptions. 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	A
+remote object passed as an argument or return value (either directly or
+embedded within a local object) must be declared as the remote interface, not
+the implementation class.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+a simple remote interface that represents an accurate time service:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PerfectTimeI.java</font>
+<font color="#009900">// The PerfectTime remote interface</font>
+<font color="#0000ff">package</font> c15.ptime;
+<font color="#0000ff">import</font> java.rmi.*;
+
+<font color="#0000ff">interface</font> PerfectTimeI <font color="#0000ff">extends</font> Remote {
+  <font color="#0000ff">long</font> getPerfectTime() <font color="#0000ff">throws</font> RemoteException;
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+looks like any other interface except that it extends 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Remote</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all of its methods throw 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Remember that an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and all of its methods are automatically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018787"></a><P></DIV>
+<A NAME="Heading544"></A><H3 ALIGN=LEFT>
+Implementing
+the remote interface
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+server must contain a class that extends <A NAME="Index2871"></A><A NAME="Index2872"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>UnicastRemoteObject</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and implements the remote interface. This class can also have additional
+methods, but only the methods in the remote interface will be available to the
+client, of course, since the client will get only a handle to the interface,
+not the class that implements it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+must explicitly define the constructor for the remote object even if
+you&#8217;re only defining a default constructor that calls the base-class
+constructor. You must write it out since it must throw 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the implementation of the remote interface 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTimeI</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: PerfectTime.java</font>
+<font color="#009900">// The implementation of the PerfectTime </font>
+<font color="#009900">// remote object</font>
+<font color="#0000ff">package</font> c15.ptime;
+<font color="#0000ff">import</font> java.rmi.*;
+<font color="#0000ff">import</font> java.rmi.server.*;
+<font color="#0000ff">import</font> java.rmi.registry.*;
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> PerfectTime 
+    <font color="#0000ff">extends</font> UnicastRemoteObject
+    <font color="#0000ff">implements</font> PerfectTimeI {
+  <font color="#009900">// Implementation of the interface:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">long</font> getPerfectTime() 
+      <font color="#0000ff">throws</font> RemoteException {
+    <font color="#0000ff">return</font> System.currentTimeMillis();
+  }
+  <font color="#009900">// Must implement constructor to throw</font>
+  <font color="#009900">// RemoteException:</font>
+  <font color="#0000ff">public</font> PerfectTime() <font color="#0000ff">throws</font> RemoteException {
+    <font color="#009900">// super(); // Called automatically</font>
+  }
+  <font color="#009900">// Registration for RMI serving:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.setSecurityManager(
+      <font color="#0000ff">new</font> RMISecurityManager());
+    <font color="#0000ff">try</font> {
+      PerfectTime pt = <font color="#0000ff">new</font> PerfectTime();
+      Naming.bind(
+        "<font color="#009900">//colossus:2005/PerfectTime", pt);</font>
+      System.out.println("Ready to <font color="#0000ff">do</font> time");
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles all the details of setting up the server. When you&#8217;re serving RMI
+objects, at some point in your program you must:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Create
+and install a security manager that supports RMI. The only one available for
+RMI as part of the Java distribution is <A NAME="Index2873"></A><A NAME="Index2874"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RMISecurityManager</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Create
+one or more instances of a remote object. Here, you can see the creation of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Register
+at least one of the remote objects with the RMI <A NAME="Index2875"></A><A NAME="Index2876"></A>remote
+object registry for bootstrapping purposes. One remote object can have methods
+that produce handles to other remote objects. This allows you to set it up so
+the client must go to the registry only once, to get the first remote object.
+</FONT></OL><A NAME="Heading545"></A><H4 ALIGN=LEFT>
+Setting
+up the registry
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here,
+you see a call to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method <A NAME="Index2877"></A><A NAME="Index2878"></A><A NAME="Index2879"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Naming.bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+However, this call requires that the registry be running as a separate process
+on the computer. The name of the registry server is <A NAME="Index2880"></A><A NAME="Index2881"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and under 32-bit Windows you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">start
+rmiregistry
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+start it in the background. On Unix, it is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">rmiregistry
+&amp;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+many network programs, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is located at the IP address of whatever machine started it up, but it must
+also be listening at a port. If you invoke the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as above, with no argument, the registry&#8217;s port will default to 1099. If
+you want it to be at some other port, you add an argument on the command line
+to specify the port. For this example, the port will be located at 2005, so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+should be started like this under 32-bit Windows:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">start
+rmiregistry 2005
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+for Unix:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">rmiregistry
+2005 &amp;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+information about the port must also be given to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+command, as well as the IP address of the machine where the registry is
+located. But this brings up what can be a frustrating problem if you&#8217;re
+expecting to test RMI programs locally the way the network programs have been
+tested so far in this chapter. In the JDK 1.1.1 release, there are a couple of
+problems:
+</FONT><A NAME="fnB69" HREF="#fn69">[69]</A><P></DIV><DIV ALIGN=LEFT><A NAME="Index2882"></A><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	<A NAME="Index2883"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">does
+not work with RMI. Thus, to experiment with RMI on a single machine, you must
+provide the name of the machine. To find out the name of your machine under
+32-bit Windows, go to the control panel and select &#8220;Network.&#8221;
+Select the &#8220;Identification&#8221; tab, and you&#8217;ll see your computer
+name. In my case, I called my computer &#8220;Colossus&#8221; (for all the hard
+disks I&#8217;ve had to put on to hold all the different development systems).
+It appears that capitalization is ignored.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	RMI
+will not work unless your computer has an active <A NAME="Index2884"></A><A NAME="Index2885"></A>TCP/IP
+connection, even if all your components are just talking to each other on the
+local machine. This means that you must connect to your Internet service
+provider before trying to run the program or you&#8217;ll get some obscure
+exception messages.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Will
+all this in mind, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+command becomes:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Naming.bind("//colossus:2005/PerfectTime",
+pt);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you are using the default port 1099, you don&#8217;t need to specify a port, so
+you could say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Naming.bind("//colossus/PerfectTime",
+pt);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+a future release of the JDK (after 1.1) when the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+bug is fixed, you will be able to perform local testing by leaving off the IP
+address and using only the identifier:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Naming.bind("PerfectTime",
+pt);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+name for the service is arbitrary; it happens to be PerfectTime here, just like
+the name of the class, but you could call it anything you want. The important
+thing is that it&#8217;s a unique name in the registry that the client knows to
+look for to procure the remote object. If the name is already in the registry,
+you&#8217;ll get an <A NAME="Index2886"></A><A NAME="Index2887"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AlreadyBoundException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+To prevent this, you can always use <A NAME="Index2888"></A><A NAME="Index2889"></A><A NAME="Index2890"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rebind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rebind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+either adds a new entry or replaces the one that&#8217;s already there.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Even
+though 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+exits, your object has been created and registered so it&#8217;s kept alive by
+the registry, waiting for a client to come along and request it. As long as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is running and you don&#8217;t call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Naming.unbind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index2891"></A><A NAME="Index2892"></A><A NAME="Index2893"></A>on
+your name, the object will be there. For this reason, when you&#8217;re
+developing your code you need to shut down the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and restart it when you compile a new version of your remote object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+aren&#8217;t forced to start up 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as an external process. If you know that your application is the only one
+that&#8217;s going to use the registry, you can start it up inside your program
+with the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">LocateRegistry.createRegistry(2005);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Like
+before, 2005 is the port number we happen to be using in this example. This is
+the equivalent of running 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry
+2005
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from a command line, but it can often be more convenient when you&#8217;re
+developing RMI code since it eliminates the extra steps of starting and
+stopping the registry. Once you&#8217;ve executed this code, you can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bind(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Naming</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as before.
+</FONT><a name="_Toc408018788"></a><P></DIV>
+<A NAME="Heading546"></A><H3 ALIGN=LEFT>
+Creating
+stubs and skeletons
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you compile and run 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it won&#8217;t work even if you have the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmiregistry</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+running correctly. That&#8217;s because the framework for RMI isn&#8217;t all
+there yet. You must first create the <A NAME="Index2894"></A><A NAME="Index2895"></A>stubs
+and <A NAME="Index2896"></A><A NAME="Index2897"></A>skeletons
+that provide the network connection operations and allow you to pretend that
+the remote object is just another local object on your machine.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What&#8217;s
+going on behind the scenes is complex. Any objects that you pass into or return
+from a remote object must 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implement
+<A NAME="Index2898"></A><A NAME="Index2899"></A>Serializable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(if you want to pass remote references instead of the entire objects, the
+object arguments can 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>implement
+Remote
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+so you can imagine that the stubs and skeletons are automatically performing
+serialization and deserialization as they &#8220;marshal&#8221; all of the
+arguments across the network and return the result. Fortunately, you
+don&#8217;t have to know any of this, but you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>do</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have to create the stubs and skeletons. This is a simple process: you invoke the <A NAME="Index2900"></A><A NAME="Index2901"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool on your compiled code, and it creates the necessary files. So the only
+requirement is that another step be added to your compilation process.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tool is particular about packages and <A NAME="Index2902"></A><A NAME="Index2903"></A>classpaths,
+however. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in the package 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>c15.Ptime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and even if you invoke 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the same directory in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is located, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+won&#8217;t find the file, since it searches the classpath. So you must specify
+the location off the class path, like so:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">rmic
+c15.PTime.PerfectTime
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+don&#8217;t have to be in the directory containing 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+when you execute this command, but the results will be placed in the current
+directory.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>rmic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+runs successfully, you&#8217;ll have two new classes in the directory:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>PerfectTime_Stub.<font color="#0000ff">class</font>
+PerfectTime_Skel.<font color="#0000ff">class</font></PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">corresponding
+to the stub and skeleton. Now you&#8217;re ready to get the server and client
+to talk to each other.
+</FONT><a name="_Toc408018789"></a><P></DIV>
+<A NAME="Heading547"></A><H3 ALIGN=LEFT>
+Using
+the remote object
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+whole point of RMI is to make the use of remote objects simple. The only extra
+thing that you must do in your client program is to look up and fetch the
+remote interface from the server. From then on, it&#8217;s just regular Java
+programming: sending messages to objects. Here&#8217;s the program that uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PerfectTime</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DisplayPerfectTime.java</font>
+<font color="#009900">// Uses remote object PerfectTime</font>
+<font color="#0000ff">package</font> c15.ptime;
+<font color="#0000ff">import</font> java.rmi.*;
+<font color="#0000ff">import</font> java.rmi.registry.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DisplayPerfectTime {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    System.setSecurityManager(
+      <font color="#0000ff">new</font> RMISecurityManager());
+    <font color="#0000ff">try</font> {
+      PerfectTimeI t = 
+        (PerfectTimeI)Naming.lookup(
+          "<font color="#009900">//colossus:2005/PerfectTime");</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++)
+        System.out.println("Perfect time = " +
+          t.getPerfectTime());
+    } <font color="#0000ff">catch</font>(Exception e) {
+      e.printStackTrace();
+    }
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+ID string is the same as the one used to register the object with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Naming</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the first part represents the URL and port number. Since you&#8217;re using
+a URL, you can also specify a machine on the Internet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+comes back from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Naming.lookup(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+must be cast to the remote interface, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the class. If you use the class instead, you&#8217;ll get an exception.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see in the method call
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">t.getPerfectTime(&#160;)</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+once you have a handle to the remote object, programming with it is
+indistinguishable from programming with a local object (with one difference:
+remote methods throw <A NAME="Index2904"></A><A NAME="Index2905"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>RemoteException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><a name="_Toc408018790"></a><P></DIV>
+<A NAME="Heading548"></A><H3 ALIGN=LEFT>
+Alternatives
+to RMI
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">RMI
+is just one way to create objects that can be distributed across a network. It
+has the advantage of being a &#8220;pure Java&#8221; solution, but if you have
+a lot of code written in some other language, it might not meet your needs. The
+two most compelling alternatives are Microsoft&#8217;s <A NAME="Index2906"></A>DCOM
+(which, according to Microsoft&#8217;s plan, will eventually be hosted on
+platforms other than Windows) and <A NAME="Index2907"></A><A NAME="Index2908"></A>CORBA,
+which is supported in Java 1.1<A NAME="Index2909"></A>
+and was designed from the start to be cross-platform. You can get an
+introduction to distributed objects in Java (albeit with a clear bias towards
+CORBA) in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Client/Server
+Programming with Java and CORBA
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by Orfali &amp; Harkey (John Wiley &amp; Sons, 1997). A more serious treatment
+of CORBA is given by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Java
+Programming with CORBA
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Andreas
+Vogel
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+Keith Duddy (John Wiley &amp; Sons, 1997).
+</FONT><a name="_Toc375545499"></a><a name="_Toc408018791"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn69" HREF="#fnB69">[69]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Many brain cells died in agony to discover this information.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0169.html">Prev</a> | <a href="tij0171.html">Next</a>
+</div>
+</body></html>
+

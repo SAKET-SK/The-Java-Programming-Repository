@@ -1,0 +1,223 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0162.html">Prev</a> | <a href="tij0164.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Identifying
+a machine
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, in order to tell one machine from another and to make sure that you are
+connected with the machine you want, there must be some way of uniquely <A NAME="Index2614"></A>identifying
+machines on a network. Early networks were satisfied to provide unique names
+for machines within the local network. However, Java works within the Internet,
+which requires a way to uniquely identify a machine from all the others 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>in
+the world
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is accomplished with the <A NAME="Index2615"></A><A NAME="Index2616"></A><A NAME="Index2617"></A>IP
+(Internet Protocol) address that can exist in two forms:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+familiar <A NAME="Index2618"></A><A NAME="Index2619"></A>DNS
+(Domain Name Service) form. My domain name is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bruceeckel.com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so suppose I have a computer called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Opus</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in my domain. Its domain name would be 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Opus.bruceeckel.com</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is exactly the kind of name that you use when you send email to people,
+and is often incorporated into a World-Wide-Web address.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Alternatively,
+you can use the &#8220;<A NAME="Index2620"></A><A NAME="Index2621"></A>dotted
+quad&#8221; form, which is four numbers separated by dots, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>123.255.28.120</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+both cases, the IP address is represented internally as a 32-bit number
+</FONT><A NAME="fnB63" HREF="#fn63">[63]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(so each of the quad numbers cannot exceed 255), and you can get a special Java
+object to represent this number from either of the forms above by using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress.getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that&#8217;s in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java.net</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The result is an object of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that you can use to build a &#8220;socket&#8221; as you will see later.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a simple example of using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress.getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+consider what happens if you have a dial-up Internet service provider (ISP).
+Each time you dial up, you are assigned a temporary IP address. But while
+you&#8217;re connected, your IP address has the same validity as any other IP
+address on the Internet. If someone connects to your machine using your IP
+address then they can connect to a Web server or FTP server that you have
+running on your machine. Of course, they need to know your IP address, and
+since it&#8217;s assigned each time you dial up, how can you find out what it is?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following program uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress.getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce your IP address. To use it, you must know the name of your computer.
+It has been tested only on Windows 95, but there you can go to
+&#8220;Settings,&#8221; &#8220;Control Panel,&#8221; &#8220;Network,&#8221; and
+then select the &#8220;Identification&#8221; tab. &#8220;Computer name&#8221;
+is the name to put on the command line.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: WhoAmI.java</font>
+<font color="#009900">// Finds out your network address when you're </font>
+<font color="#009900">// connected to the Internet.</font>
+<font color="#0000ff">package</font> c15;
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> WhoAmI {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) 
+      <font color="#0000ff">throws</font> Exception {
+    <font color="#0000ff">if</font>(args.length != 1) {
+      System.err.println(
+        "Usage: WhoAmI MachineName");
+      System.exit(1);
+    }
+    InetAddress a = 
+      InetAddress.getByName(args[0]);
+    System.out.println(a);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+my case, the machine is called &#8220;Colossus&#8221; (from the movie of the
+same name, because I keep putting bigger disks on it). So, once I&#8217;ve
+connected to my ISP I run the program:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">java
+WhoAmI Colossus
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">I
+get back a message like this (of course, the address is different each time):
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">Colossus/199.190.87.75</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+I tell my friend this address, he can log onto my personal Web server by going
+to the URL 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>http://199.190.87.75</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(only as long as I continue to stay connected during that session). This can
+sometimes be a handy way to distribute information to someone else or to test
+out a Web site configuration before posting it to a &#8220;real&#8221; server.
+</FONT><a name="_Toc375545493"></a><a name="_Toc408018766"></a><P></DIV>
+<A NAME="Heading513"></A><H3 ALIGN=LEFT>
+Servers
+and clients
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+whole point of a network is to allow two machines to connect and talk to each
+other. Once the two machines have found each other they can have a nice,
+two-way conversation. But how do they find each other? It&#8217;s like getting
+lost in an amusement park: one machine has to stay in one place and listen
+while the other machine says, &#8220;Hey, where are you?&#8221;
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+machine that &#8220;stays in one place&#8221; is called the <A NAME="Index2622"></A><A NAME="Index2623"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>server</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the one that seeks is called the <A NAME="Index2624"></A><A NAME="Index2625"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>client</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This distinction is important only while the client is trying to connect to the
+server. Once they&#8217;ve connected, it becomes a two-way communication
+process and it doesn&#8217;t matter anymore that one happened to take the role
+of server and the other happened to take the role of the client.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+the job of the server is to listen for a connection, and that&#8217;s performed
+by the special server object that you create. The job of the client is to try
+to make a connection to a server, and this is performed by the special client
+object you create. Once the connection is made, you&#8217;ll see that at both
+server and client ends, the connection is just magically turned into an IO
+stream object, and from then on you can treat the connection as if you were
+reading from and writing to a file. Thus, after the connection is made you will
+just use the familiar IO commands from Chapter 10. This is one of the nice
+features of Java networking.
+</FONT><P></DIV>
+<A NAME="Heading514"></A><H4 ALIGN=LEFT>
+Testing
+programs without a network
+<P><A NAME="Index2626"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+many reasons, you might not have a client machine, a server machine, and a
+network available to test your programs. You might be performing exercises in a
+classroom situation, or you could be writing programs that aren&#8217;t yet
+stable enough to put onto the network. The creators of the Internet Protocol
+were aware of this issue, and they created a special address called <A NAME="Index2627"></A><A NAME="Index2628"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be the <A NAME="Index2629"></A><A NAME="Index2630"></A>&#8220;local
+loopback&#8221; IP address for testing without a network. The generic way to
+produce this address in Java is:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">InetAddress
+addr = InetAddress.getByName(null);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you hand 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it defaults to using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is what you use to refer to the particular machine, and you must produce this
+before you can go any further. You can&#8217;t manipulate the contents of an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(but
+you can print them out, as you&#8217;ll see in the next example). The only way
+you can create an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InetAddress</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is through one of that class&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is what you&#8217;ll usually use), 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAllByName(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getLocalHost(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also produce the local loopback address by handing it the string 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>localhost</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">InetAddress.getByName("localhost");</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">or
+by using its dotted quad form to name the reserved IP number for the loopback:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">InetAddress.getByName("127.0.0.1");</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+three forms produce the same result.
+</FONT><a name="_Toc375545494"></a><a name="_Toc408018767"></a><P></DIV>
+<A NAME="Heading515"></A><H3 ALIGN=LEFT>
+Port:
+a unique place 
+<P>within
+the machine
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+IP address isn&#8217;t enough to identify a unique server, since many servers
+can exist on one machine. Each IP machine also contains 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>ports</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and when you&#8217;re setting up a client or a server you must choose a <A NAME="Index2631"></A><A NAME="Index2632"></A>port
+where both client and server agree to connect; if you&#8217;re meeting someone,
+the IP address is the neighborhood and the port is the bar.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+port is not a physical location in a machine, but a software abstraction
+(mainly for bookkeeping purposes). The client program knows how to connect to
+the machine via its IP address, but how does it connect to a desired service
+(potentially one of many on that machine)? That&#8217;s where the port numbers
+come in as second level of addressing. The idea is that if you ask for a
+particular port, you&#8217;re requesting the service that&#8217;s associated
+with the port number. The time of day is a simple example of a service.
+Typically, each service is associated with a unique port number on a given
+server machine. It&#8217;s up to the client to know ahead of time which port
+number the desired service is running on. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+system services reserve the use of ports 1 through 1024, so you shouldn&#8217;t
+use those or any other port that you know to be in use. The first choice for
+examples in this book will be port 8080 (in memory of the venerable old 8-bit
+Intel 8080 chip in my first computer, a CP/M machine).
+</FONT><a name="_Toc375545495"></a><a name="_Toc408018768"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn63" HREF="#fnB63">[63]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+This means a maximum of just over four billion numbers, which is rapidly
+running out. The new standard for IP addresses will use a 128-bit number, which
+should produce enough unique IP addresses for the foreseeable future.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0162.html">Prev</a> | <a href="tij0164.html">Next</a>
+</div>
+</body></html>
+

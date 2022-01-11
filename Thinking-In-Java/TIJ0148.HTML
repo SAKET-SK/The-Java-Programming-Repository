@@ -1,0 +1,3241 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0147.html">Prev</a> | <a href="tij0149.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+The
+new AWT
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+<A NAME="Index1810"></A>Java
+1.1 a dramatic change has been accomplished in the creation of the new AWT.
+Most of this change revolves around the <A NAME="Index1811"></A><A NAME="Index1812"></A>new
+event model used in Java 1.1: as bad, awkward, and non-object-oriented as the
+old event model was, the new event model is possibly the most elegant I have
+seen. It&#8217;s difficult to understand how such a bad design (the old AWT)
+and such a good one (the new event model) could come out of the same group.
+This new way of thinking about events seems to drop so easily into your mind
+that the issue no longer becomes an impediment; instead, it&#8217;s a tool that
+helps you design the system. It&#8217;s also essential for Java Beans,
+described later in the chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Instead
+of the non-object-oriented cascaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements in the old AWT, the new approach designates objects as
+&#8220;sources&#8221; and &#8220;listeners&#8221; of events. As you will see,
+the use of inner classes is integral to the object-oriented nature of the new
+event model. In addition, events are now represented in a class hierarchy
+instead of a single class, and you can create your own event types.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+also find, if you&#8217;ve programmed with the old AWT, that Java 1.1 has made
+a number of what might seem like gratuitous name changes. For example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setSize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+replaces 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>resize(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This will make sense when you learn about Java Beans, because Beans use a
+particular naming convention. The names had to be modified to make the standard
+AWT components into Beans.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1 continues to support the old AWT to ensure backward compatibility with
+existing programs. Without fully admitting disaster, the online documents for
+Java 1.1 list all the problems involved with programming the old AWT and
+describe how those problems are addressed in the new AWT.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Clipboard
+operations are supported in 1.1, although drag-and-drop &#8220;will be
+supported in a future release.&#8221; You can access the desktop color scheme
+so your Java program can fit in with the rest of the desktop. Pop-up menus are
+available, and there are some improvements for graphics and images. Mouseless
+operation is supported. There is a simple API for printing and simplified
+support for scrolling.
+</FONT><a name="_Toc408018706"></a><P></DIV>
+<A NAME="Heading424"></A><H3 ALIGN=LEFT>
+The
+new event model
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the new event model a component can initiate (&#8220;fire&#8221;) an event.
+Each type of event is represented by a distinct class. When an event is fired,
+it is received by one or more &#8220;listeners,&#8221; which act on that event.
+Thus, the source of an event and the place where the event is handled can be
+separate.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+<A NAME="Index1813"></A><A NAME="Index1814"></A>event
+listener is an object of a class that implements a particular type of listener 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So as a programmer, all you do is create a listener object and register it with
+the component that&#8217;s firing the event. This registration is performed by
+calling a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the event-firing component, in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>XXX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents the type of event listened for. You can easily know what types of
+events can be handled by noticing the names of the <A NAME="Index1815"></A><A NAME="Index1816"></A>addListener
+methods, and if you try to listen for the wrong events you&#8217;ll find out
+your mistake at compile time. Java Beans also uses the names of the addListener
+methods to determine what a Bean can do.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+of your event logic, then, will go inside a listener class. When you create a
+listener class, the sole restriction is that it must implement the appropriate
+interface. You can create a global listener class, but this is a situation in
+which <A NAME="Index1817"></A><A NAME="Index1818"></A><A NAME="Index1819"></A>inner
+classes tend to be quite useful, not only because they provide a logical
+grouping of your listener classes inside the UI or business logic classes they
+are serving, but because (as you shall see later) the fact that an inner class
+object keeps a handle to its parent object provides a nice way to call across
+class and subsystem boundaries.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+simple example will make this clear. Consider the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button2.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example from earlier in this chapter. 
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Button2New.java</font>
+<font color="#009900">// Capturing button presses</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*; <font color="#009900">// Must add this</font>
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Button2New <font color="#0000ff">extends</font> Applet {
+  Button
+    b1 = <font color="#0000ff">new</font> Button("Button 1"),
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    b1.addActionListener(<font color="#0000ff">new</font> B1());
+    b2.addActionListener(<font color="#0000ff">new</font> B2());
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">class</font> B1 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      getAppletContext().showStatus("Button 1");
+    }
+  }
+  <font color="#0000ff">class</font> B2 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      getAppletContext().showStatus("Button 2");
+    }
+  }
+  <font color="#009900">/* The old way:
+  public boolean action(Event evt, Object arg) {
+    if(evt.target.equals(b1))
+      getAppletContext().showStatus("Button 1");
+    else if(evt.target.equals(b2))
+      getAppletContext().showStatus("Button 2");
+    // Let the base class handle it:
+    else 
+      return super.action(evt, arg);
+    return true; // We've handled it here
+  }
+  */</font>
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+you can compare the two approaches, the old code is left in as a comment. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the only change is the addition of the two lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>b1.addActionListener(<font color="#0000ff">new</font> B1());
+b2.addActionListener(<font color="#0000ff">new</font> B2()); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tells a button which object to activate when the button is pressed. The classes 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>B2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are inner classes that implement the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface
+ActionListener
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This interface contains a single method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(meaning &#8220;This is the action that will be performed when the event is
+fired&#8221;). Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not take a generic event, but rather a specific type of event, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+So you don&#8217;t need to bother testing and downcasting the argument if you
+want to extract specific 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+information.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the nicest things about 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is how simple it is. It&#8217;s just a method that gets called. Compare it to
+the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, in which you must figure out what happened and act appropriately, and
+also worry about calling the base class version of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and return a value to indicate whether it&#8217;s been handled. With the new
+event model you know that all the event-detection logic is taken care of so you
+don&#8217;t have to figure that out; you just say what happens and you&#8217;re
+done. If you&#8217;re don&#8217;t already prefer this approach over the old
+one, you will soon.
+</FONT><a name="_Toc408018707"></a><P></DIV>
+<A NAME="Heading425"></A><H3 ALIGN=LEFT>
+Event
+and listener types
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+the AWT components have been changed to include 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods so that the appropriate types of listeners can be added and removed
+from each component. You&#8217;ll notice that the &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>XXX</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+in each case also represents the argument for the method, for example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addFooListener(FooListener
+fl)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The following table includes the associated events, listeners, methods, and the
+components that support those particular events by providing the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. <A NAME="Index1820"></A><A NAME="Index1821"></A><A NAME="Index1822"></A><A NAME="Index1823"></A></FONT><P><A NAME="Index1824"></A><A NAME="Index1825"></A><A NAME="Index1826"></A><A NAME="Index1827"></A><A NAME="Index1828"></A><A NAME="Index1829"></A><A NAME="Index1830"></A><A NAME="Index1831"></A><A NAME="Index1832"></A><A NAME="Index1833"></A><A NAME="Index1834"></A><A NAME="Index1835"></A><A NAME="Index1836"></A><A NAME="Index1837"></A><A NAME="Index1838"></A><A NAME="Index1839"></A><A NAME="Index1840"></A><A NAME="Index1841"></A><A NAME="Index1842"></A><A NAME="Index1843"></A><A NAME="Index1844"></A><A NAME="Index1845"></A><A NAME="Index1846"></A><A NAME="Index1847"></A><A NAME="Index1848"></A><A NAME="Index1849"></A><A NAME="Index1850"></A><A NAME="Index1851"></A><A NAME="Index1852"></A><A NAME="Index1853"></A><A NAME="Index1854"></A><A NAME="Index1855"></A><A NAME="Index1856"></A><A NAME="Index1857"></A><A NAME="Index1858"></A><A NAME="Index1859"></A><A NAME="Index1860"></A><A NAME="Index1861"></A><A NAME="Index1862"></A><A NAME="Index1863"></A><A NAME="Index1864"></A><A NAME="Index1865"></A><A NAME="Index1866"></A><A NAME="Index1867"></A><A NAME="Index1868"></A><A NAME="Index1869"></A><A NAME="Index1870"></A><A NAME="Index1871"></A><A NAME="Index1872"></A><A NAME="Index1873"></A><A NAME="Index1874"></A><A NAME="Index1875"></A><A NAME="Index1876"></A><A NAME="Index1877"></A><A NAME="Index1878"></A><A NAME="Index1879"></A><A NAME="Index1880"></A><A NAME="Index1881"></A><A NAME="Index1882"></A><A NAME="Index1883"></A><A NAME="Index1884"></A><A NAME="Index1885"></A><A NAME="Index1886"></A><A NAME="Index1887"></A><A NAME="Index1888"></A><A NAME="Index1889"></A><A NAME="Index1890"></A><A NAME="Index1891"></A><A NAME="Index1892"></A><A NAME="Index1893"></A><A NAME="Index1894"></A><A NAME="Index1895"></A><A NAME="Index1896"></A><A NAME="Index1897"></A><A NAME="Index1898"></A><A NAME="Index1899"></A><A NAME="Index1900"></A><A NAME="Index1901"></A><A NAME="Index1902"></A><A NAME="Index1903"></A><A NAME="Index1904"></A><A NAME="Index1905"></A><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="166">
+      <COL width="175">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Event,
+listener interface and add- and remove-methods
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Components
+supporting this event
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addActionListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeActionListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+TextField, MenuItem,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PopupMenu</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AdjustmentEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AdjustmentListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addAdjustmentListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeAdjustmentListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Anything
+you create that implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adjustable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ComponentEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ComponentListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addComponentListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeComponentListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,
+Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addContainerListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeContainerListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addFocusListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeFocusListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,
+Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>KeyEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>KeyListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addKeyListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeKeyListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,
+Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(for both clicks and motion)
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addMouseListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeMouseListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,
+Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseEvent</B></FONT><A NAME="fnB58" HREF="#fn58">[58]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(for
+both clicks and motion)
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseMotionListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addMouseMotionListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeMouseMotionListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+Container
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,
+Frame
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea,
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addWindowListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeWindowListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its derivatives, including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addItemListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeItemListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and anything that implements the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemSelectable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=166 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextEvent</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextListener</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addTextListener(&#160;)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeTextListener(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=175 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Anything
+derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+including 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that each type of component supports only certain types of events.
+It&#8217;s helpful to see the events supported by each component, as shown in
+the following table: <A NAME="Index1906"></A><A NAME="Index1907"></A><A NAME="Index1908"></A><A NAME="Index1909"></A><A NAME="Index1910"></A><A NAME="Index1911"></A><A NAME="Index1912"></A><A NAME="Index1913"></A><A NAME="Index1914"></A><A NAME="Index1915"></A><A NAME="Index1916"></A><A NAME="Index1917"></A><A NAME="Index1918"></A><A NAME="Index1919"></A><A NAME="Index1920"></A><A NAME="Index1921"></A><A NAME="Index1922"></A><A NAME="Index1923"></A><A NAME="Index1924"></A><A NAME="Index1925"></A></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="144">
+      <COL width="198">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Component
+type
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Events
+supported by this component
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Adjustable</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AdjustmentEvent</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Canvas</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusEvent,
+KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent,
+ItemEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusEvent,
+KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Container</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+WindowEvent, FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+WindowEvent, FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+WindowEvent, FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusEvent,
+KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent,
+FocusEvent, KeyEvent, MouseEvent, ItemEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Panel</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>PopupMenu</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Scrollbar</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AdjustmentEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ScrollPane</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextComponent</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextEvent,
+FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent,
+TextEvent, FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=144 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=198 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerEvent,
+WindowEvent, FocusEvent, KeyEvent, MouseEvent, ComponentEvent
+</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+you know which events a particular component supports, you don&#8217;t need to
+look anything up to react to that event. You simply:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Take
+the name of the event class and remove the word &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.&#8221;
+Add the word &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Listener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+to what remains. This is the listener interface you need to implement in your
+inner class. 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Implement
+the interface above and write out the methods for the events you want to
+capture. For example, you might be looking for mouse movements, so you write
+code for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseMoved(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseMotionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. (You must implement the other methods, of course, but there&#8217;s
+a shortcut for that which you&#8217;ll see soon.)
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Create
+an object of the listener class in step 2. Register it with your component with
+the method produced by prefixing &#8220;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8221;
+to your listener name. For example, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addMouseMotionListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+finish what you need to know, here are the listener interfaces: <A NAME="Index1926"></A><A NAME="Index1927"></A><A NAME="Index1928"></A><A NAME="Index1929"></A><A NAME="Index1930"></A><A NAME="Index1931"></A><A NAME="Index1932"></A><A NAME="Index1933"></A><A NAME="Index1934"></A><A NAME="Index1935"></A><A NAME="Index1936"></A><A NAME="Index1937"></A><A NAME="Index1938"></A><A NAME="Index1939"></A><A NAME="Index1940"></A><A NAME="Index1941"></A><A NAME="Index1942"></A><A NAME="Index1943"></A><A NAME="Index1944"></A><A NAME="Index1945"></A><A NAME="Index1946"></A><A NAME="Index1947"></A><A NAME="Index1948"></A><A NAME="Index1949"></A><A NAME="Index1950"></A><A NAME="Index1951"></A><A NAME="Index1952"></A><A NAME="Index1953"></A><A NAME="Index1954"></A><A NAME="Index1955"></A><A NAME="Index1956"></A><A NAME="Index1957"></A><A NAME="Index1958"></A><A NAME="Index1959"></A><A NAME="Index1960"></A><A NAME="Index1961"></A><A NAME="Index1962"></A><A NAME="Index1963"></A><A NAME="Index1964"></A><A NAME="Index1965"></A><A NAME="Index1966"></A><A NAME="Index1967"></A><A NAME="Index1968"></A><A NAME="Index1969"></A><A NAME="Index1970"></A><A NAME="Index1971"></A><A NAME="Index1972"></A><A NAME="Index1973"></A><A NAME="Index1974"></A><A NAME="Index1975"></A><A NAME="Index1976"></A><A NAME="Index1977"></A><A NAME="Index1978"></A><A NAME="Index1979"></A><A NAME="Index1980"></A><A NAME="Index1981"></A><A NAME="Index1982"></A><A NAME="Index1983"></A></FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="121">
+      <COL width="220">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Listener
+interface
+</FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">w/
+adapter
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Methods
+in interface
+</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(ActionEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>AdjustmentListener</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>adjustmentValueChanged(</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+ AdjustmentEvent)
+</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ComponentListener</B></FONT><P><A NAME="Index1984"></A><A NAME="Index1985"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ComponentAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentHidden(ComponentEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentShown(ComponentEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentMoved(ComponentEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentResized(ComponentEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerListener</B></FONT><P><A NAME="Index1986"></A><A NAME="Index1987"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ContainerAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentAdded(ContainerEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>componentRemoved(ContainerEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusListener</B></FONT><P><A NAME="Index1988"></A><A NAME="Index1989"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FocusAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>focusGained(FocusEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>focusLost(FocusEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>KeyListener</B></FONT><P><A NAME="Index1990"></A><A NAME="Index1991"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>KeyAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyPressed(KeyEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyReleased(KeyEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>keyTyped(KeyEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseListener</B></FONT><P><A NAME="Index1992"></A><A NAME="Index1993"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseClicked(MouseEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseEntered(MouseEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseExited(MouseEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mousePressed(MouseEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseReleased(MouseEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseMotionListener</B></FONT><P><A NAME="Index1994"></A><A NAME="Index1995"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MouseMotionAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDragged(MouseEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseMoved(MouseEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener</B></FONT><P><A NAME="Index1996"></A><A NAME="Index1997"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowAdapter</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowOpened(WindowEvent)</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosing(WindowEvent)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosed(WindowEvent)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowActivated(WindowEvent)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowDeactivated(WindowEvent)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowIconified(WindowEvent)
+</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowDeiconified(WindowEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>itemStateChanged(ItemEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextListener</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=220 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>textValueChanged(TextEvent)</B></FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<A NAME="Heading426"></A><H4 ALIGN=LEFT>
+Using
+listener adapters for simplicity
+<P><A NAME="Index1998"></A><A NAME="Index1999"></A><A NAME="Index2000"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the table above, you can see that some listener interfaces have only one
+method. These are trivial to implement since you&#8217;ll implement them only
+when you want to write that particular method. However, the listener interfaces
+that have multiple methods could be less pleasant to use. For example,
+something you must always do when creating an application is provide a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that when you get the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+event you can call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.exit(0)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to exit the application. But since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>interface</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you must implement all of the other methods even if they don&#8217;t do
+anything. This can be annoying.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+solve the problem, each of the listener interfaces that have more than one
+method are provided with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>adapters</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the names of which you can see in the table above. Each adapter provides
+default methods for each of the interface methods. (Alas, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowAdapter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+have a default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.exit(0)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+Then all you need to do is inherit from the adapter and override only the
+methods you need to change. For example, the typical 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you&#8217;ll use looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> MyWindowListener <font color="#0000ff">extends</font> WindowAdapter {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+    System.exit(0);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+whole point of the adapters is to make the creation of listener classes easy.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+is a downside to adapters, however, in the form of a pitfall. Suppose you write
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowAdapter</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+like the one above:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> MyWindowListener <font color="#0000ff">extends</font> WindowAdapter {
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> WindowClosing(WindowEvent e) {
+    System.exit(0);
+  }
+}</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+doesn&#8217;t work, but it will drive you crazy trying to figure out why, since
+everything will compile and run fine &#8211; except that closing the window
+won&#8217;t exit the program. Can you see the problem? It&#8217;s in the name
+of the method: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+A simple slip in capitalization results in the addition of a completely new
+method. However, this is not the method that&#8217;s called when the window is
+closing, so you don&#8217;t get the desired results.
+</FONT><a name="_Toc408018708"></a><P></DIV>
+<A NAME="Heading427"></A><H3 ALIGN=LEFT>
+Making
+windows and applets 
+<P>with
+the Java 1.1 AWT
+<P><A NAME="Index2001"></A><A NAME="Index2002"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Often
+you&#8217;ll want to be able to create a class that can be invoked as either a
+window or an applet. To accomplish this, you simply add a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to your applet that builds an instance of the applet inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As a simple example, let&#8217;s look at 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button2New.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+modified to work as both an application and an applet:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Button2NewB.java</font>
+<font color="#009900">// An application and an applet</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*; <font color="#009900">// Must add this</font>
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Button2NewB <font color="#0000ff">extends</font> Applet {
+  Button
+    b1 = <font color="#0000ff">new</font> Button("Button 1"),
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  TextField t = <font color="#0000ff">new</font> TextField(20);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    b1.addActionListener(<font color="#0000ff">new</font> B1());
+    b2.addActionListener(<font color="#0000ff">new</font> B2());
+    add(b1);
+    add(b2);
+    add(t);
+  }
+  <font color="#0000ff">class</font> B1 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText("Button 1");
+    }
+  }
+  <font color="#0000ff">class</font> B2 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText("Button 2");
+    }
+  }
+  <font color="#009900">// To close the application:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">class</font> WL <font color="#0000ff">extends</font> WindowAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+      System.exit(0);
+    }
+  }
+  <font color="#009900">// A main() for the application:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Button2NewB applet = <font color="#0000ff">new</font> Button2NewB();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Button2NewB");
+    aFrame.addWindowListener(<font color="#0000ff">new</font> WL());
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+inner class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the only two elements added to the applet, and the rest of the applet is
+untouched. In fact, you can usually copy and paste the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into your own applets with little modification. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WL
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">class
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">so
+it can be easily created in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;).
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Remember
+that an inner class normally needs an outer class handle when it&#8217;s
+created. Making it 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+eliminates this need.)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the applet is explicitly initialized and started since in this case the browser
+isn&#8217;t available to do it for you. Of course, this doesn&#8217;t provide
+the full behavior of the browser, which also calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but for most situations it&#8217;s acceptable. If it&#8217;s a problem, you can:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Make
+the handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of the class (instead of a local variable of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+and then:
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Call
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>applet.stop(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>applet.destroy(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowAdapter.windowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+before you call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>System.exit(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Notice
+the last line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">aFrame.setVisible(true);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is one of the changes in the Java 1.1<A NAME="Index2003"></A>
+AWT. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is deprecated and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setVisible(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+replaces it. These sorts of seemingly capricious changes will make more sense
+when you learn about Java Beans later in the chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example is also modified to use a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+rather than printing to the console or to the browser status line. One
+restriction in making a program that&#8217;s both an applet and an application
+is that you must choose input and output forms that work for both situations.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+another small new feature of the Java 1.1<A NAME="Index2004"></A>
+AWT shown here. You no longer need to use the error-prone approach of specifying <A NAME="Index2005"></A><A NAME="Index2006"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">positions
+using a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When adding an element to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java 1.1<A NAME="Index2007"></A>,
+you can say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">aFrame.add(applet,
+BorderLayout.CENTER);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+name the location with one of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constants, which can then be checked at compile-time (rather than just quietly
+doing the wrong thing, as with the old form). This is a definite improvement,
+and will be used throughout the rest of the book.
+</FONT><P></DIV>
+<A NAME="Heading428"></A><H4 ALIGN=LEFT>
+Making
+the window listener
+<P>an
+anonymous class
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Any
+of the listener classes could be implemented as <A NAME="Index2008"></A><A NAME="Index2009"></A>anonymous
+classes, but there&#8217;s always a chance that you might want to use their
+functionality elsewhere. However, the window listener is used here only to
+close the application&#8217;s window so you can safely make it an anonymous
+class. Then, in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">aFrame.addWindowListener(new
+WL());
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+become:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>aFrame.addWindowListener(
+  <font color="#0000ff">new</font> WindowAdapter() {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+      System.exit(0);
+    }
+  }); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+has the advantage that it doesn&#8217;t require yet another class name. You
+must decide for yourself whether it makes the code easier to understand or more
+difficult. However, for the remainder of the book an anonymous inner class will
+usually be used for the window listener.
+</FONT><P></DIV>
+<A NAME="Heading429"></A><H4 ALIGN=LEFT>
+Packaging
+the applet into a JAR file
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+important <A NAME="Index2010"></A><A NAME="Index2011"></A><A NAME="Index2012"></A>JAR
+use is to optimize applet loading. In Java 1.0, people tended to try to cram
+all their code into a single 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class so the client would need only a single server hit to download the applet
+code. Not only did this result in messy, hard to read (and maintain) programs,
+but the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+file was still uncompressed so downloading wasn&#8217;t as fast as it could
+have been.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">JAR
+files change all of that by compressing all of your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files into a single file that is downloaded by the browser. Now you don&#8217;t
+need to create an ugly design to minimize the number of classes you create, and
+the user will get a much faster download time.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+the example above. It looks like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button2NewB</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a single class, but in fact it contains three inner classes, so that&#8217;s
+four in all. Once you&#8217;ve compiled the program, you package it into a JAR
+file with the line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">jar
+cf Button2NewB.jar *.class
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+assumes that the only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files in the current directory are the ones from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button2NewB</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(otherwise you&#8217;ll get extra baggage).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+you can create an HTML page with the new <A NAME="Index2013"></A><A NAME="Index2014"></A><A NAME="Index2015"></A><A NAME="Index2016"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>archive</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+tag to indicate the name of the JAR file, like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;head&gt;&lt;title&gt;Button2NewB Example Applet
+&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;applet code="Button2NewB.<font color="#0000ff">class</font>" 
+        archive="Button2NewB.jar" 
+        width=200 height=150&gt;
+&lt;/applet&gt;
+&lt;/body&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Everything
+else about applet tags in HTML files remains the same.
+</FONT><a name="_Toc408018709"></a><P></DIV>
+<A NAME="Heading430"></A><H3 ALIGN=LEFT>
+Revisiting
+the earlier examples
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+see a number of examples using the new event model and to study the way a
+program can be converted from the old to the new event model, the following
+examples revisit many of the issues demonstrated in the first part of this
+chapter using the old event model. In addition, each program is now both an
+applet and an application so you can run it with or without a browser.
+</FONT><P></DIV>
+<A NAME="Heading431"></A><H4 ALIGN=LEFT>
+Text
+fields
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is similar to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField1.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it adds significant extra behavior:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TextNew.java</font>
+<font color="#009900">// Text fields with Java 1.1 events</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TextNew <font color="#0000ff">extends</font> Applet {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Get Text"), 
+    b2 = <font color="#0000ff">new</font> Button("Set Text");
+  TextField 
+    t1 = <font color="#0000ff">new</font> TextField(30),
+    t2 = <font color="#0000ff">new</font> TextField(30),
+    t3 = <font color="#0000ff">new</font> TextField(30);
+  String s = <font color="#0000ff">new</font> String();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    b1.addActionListener(<font color="#0000ff">new</font> B1());
+    b2.addActionListener(<font color="#0000ff">new</font> B2());
+    t1.addTextListener(<font color="#0000ff">new</font> T1());
+    t1.addActionListener(<font color="#0000ff">new</font> T1A());
+    t1.addKeyListener(<font color="#0000ff">new</font> T1K());
+    add(b1);
+    add(b2);
+    add(t1);
+    add(t2);
+    add(t3);
+  }
+  <font color="#0000ff">class</font> T1 <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      t2.setText(t1.getText());
+    }
+  }
+  <font color="#0000ff">class</font> T1A <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">private</font> <font color="#0000ff">int</font> count = 0;
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t3.setText("t1 Action Event " + count++);
+    }
+  }
+  <font color="#0000ff">class</font> T1K <font color="#0000ff">extends</font> KeyAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyTyped(KeyEvent e) {
+      String ts = t1.getText();
+      <font color="#0000ff">if</font>(e.getKeyChar() == 
+          KeyEvent.VK_BACK_SPACE) {
+        <font color="#009900">// Ensure it's not empty:</font>
+        <font color="#0000ff">if</font>( ts.length() &gt; 0) {
+          ts = ts.substring(0, ts.length() - 1);
+          t1.setText(ts);
+        }
+      } 
+      <font color="#0000ff">else</font>
+        t1.setText(
+          t1.getText() +
+            Character.toUpperCase(
+              e.getKeyChar()));
+      t1.setCaretPosition(
+        t1.getText().length());
+      <font color="#009900">// Stop regular character from appearing:</font>
+      e.consume(); 
+    }
+  }
+  <font color="#0000ff">class</font> B1 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      s = t1.getSelectedText();
+      <font color="#0000ff">if</font>(s.length() == 0) s = t1.getText();
+      t1.setEditable(<font color="#0000ff">true</font>);
+    }
+  }
+  <font color="#0000ff">class</font> B2 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t1.setText("Inserted by Button 2: " + s);
+      t1.setEditable(<font color="#0000ff">false</font>);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    TextNew applet = <font color="#0000ff">new</font> TextNew();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("TextNew");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2017"></A><A NAME="Index2018"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField
+t3
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is included as a place to report when the action listener for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is fired. You&#8217;ll see that the action listener for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is fired only when you press the &#8220;enter&#8221; key.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField
+t1
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has several listeners attached to it. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener copies all text from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1K</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener forces all characters to upper case. You&#8217;ll notice that the two
+work together, and if you add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1K</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>after</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you add the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener, it doesn&#8217;t matter: all characters will still be forced to upper
+case in both text fields. It would seem that keyboard events are always fired
+before <A NAME="Index2019"></A><A NAME="Index2020"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+events, and if you want the characters in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to retain the original case that was typed in, you must do some extra work.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1K</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has some other activities of interest. You must detect a backspace (since
+you&#8217;re controlling everything now) and perform the deletion. The caret
+must be explicitly set to the end of the field; otherwise it won&#8217;t behave
+as you expect. Finally, to prevent the original character from being handled by
+the default mechanism, the event must be &#8220;consumed&#8221; using the <A NAME="Index2021"></A><A NAME="Index2022"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>consume(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method that exists for event objects. This tells the system to stop firing the
+rest of the event handlers for this particular event.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also quietly demonstrates one of the benefits of the design of inner
+classes. Note that in the <A NAME="Index2023"></A><A NAME="Index2024"></A>inner
+class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">class</font> T1 <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      t2.setText(t1.getText());
+    }
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>t2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>not</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+members of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>T1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and yet they&#8217;re accessible without any special qualification. This is
+because an object of an inner class automatically captures a handle to the
+outer object that created it, so you can treat members and methods of the
+enclosing class object as if they&#8217;re yours. As you can see, this is quite
+convenient.
+</FONT><A NAME="fnB59" HREF="#fn59">[59]</A><P></DIV>
+<A NAME="Heading432"></A><H4 ALIGN=LEFT>
+Text
+areas
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most significant change to text areas in Java 1.1<A NAME="Index2025"></A>
+concerns scroll bars. With the <A NAME="Index2026"></A><A NAME="Index2027"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">constructor,
+you can now control whether a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will have scroll bars: vertical, horizontal, both, or neither. This example
+modifies the earlier Java 1.0<A NAME="Index2028"></A>
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea1.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to show the Java 1.1 scrollbar constructors:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: TextAreaNew.java</font>
+<font color="#009900">// Controlling scrollbars with the TextArea</font>
+<font color="#009900">// component in Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> TextAreaNew <font color="#0000ff">extends</font> Applet {
+  Button b1 = <font color="#0000ff">new</font> Button("Text Area 1");
+  Button b2 = <font color="#0000ff">new</font> Button("Text Area 2");
+  Button b3 = <font color="#0000ff">new</font> Button("Replace Text");
+  Button b4 = <font color="#0000ff">new</font> Button("Insert Text");
+  TextArea t1 = <font color="#0000ff">new</font> TextArea("t1", 1, 30);
+  TextArea t2 = <font color="#0000ff">new</font> TextArea("t2", 4, 30);
+  TextArea t3 = <font color="#0000ff">new</font> TextArea("t3", 1, 30,
+    TextArea.SCROLLBARS_NONE);
+  TextArea t4 = <font color="#0000ff">new</font> TextArea("t4", 10, 10,
+    TextArea.SCROLLBARS_VERTICAL_ONLY);
+  TextArea t5 = <font color="#0000ff">new</font> TextArea("t5", 4, 30,
+    TextArea.SCROLLBARS_HORIZONTAL_ONLY);
+  TextArea t6 = <font color="#0000ff">new</font> TextArea("t6", 10, 10,
+    TextArea.SCROLLBARS_BOTH);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    b1.addActionListener(<font color="#0000ff">new</font> B1L());
+    add(b1);
+    add(t1);
+    b2.addActionListener(<font color="#0000ff">new</font> B2L());
+    add(b2);
+    add(t2);
+    b3.addActionListener(<font color="#0000ff">new</font> B3L());
+    add(b3);
+    b4.addActionListener(<font color="#0000ff">new</font> B4L());
+    add(b4);
+    add(t3); add(t4); add(t5); add(t6);
+  }
+  <font color="#0000ff">class</font> B1L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t5.append(t1.getText() + "\n");
+    }
+  }
+  <font color="#0000ff">class</font> B2L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t2.setText("Inserted by Button 2");
+      t2.append(": " + t1.getText());
+      t5.append(t2.getText() + "\n");
+    }
+  }
+  <font color="#0000ff">class</font> B3L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      String s = " Replacement ";
+      t2.replaceRange(s, 3, 3 + s.length());
+    }
+  }
+  <font color="#0000ff">class</font> B4L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t2.insert(" Inserted ", 10);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    TextAreaNew applet = <font color="#0000ff">new</font> TextAreaNew();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("TextAreaNew");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,725);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that you can control the scrollbars only at the time of construction of
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Also, even if a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t have a scrollbar, you can move the cursor such that scrolling
+will be forced. (You can see this behavior by playing with the example.)
+</FONT><P></DIV>
+<A NAME="Heading433"></A><H4 ALIGN=LEFT>
+Check
+boxes and radio buttons
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+noted previously, check boxes and radio buttons are both created with the same
+class, <A NAME="Index2029"></A><A NAME="Index2030"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but radio buttons are 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">es
+placed into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxGroup</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In either case, the interesting event is <A NAME="Index2031"></A><A NAME="Index2032"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for which you create an <A NAME="Index2033"></A><A NAME="Index2034"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="AAAIndexingCurrentPoint"></a><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+dealing with a group of check boxes or radio buttons, you have a choice. You
+can either create a new inner class to handle the event for each different 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or you can create one inner class that determines which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+was clicked and register a single object of that inner class with each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. The following example shows both approaches:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: RadioCheckNew.java</font>
+<font color="#009900">// Radio buttons and Check Boxes in Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> RadioCheckNew <font color="#0000ff">extends</font> Applet {
+  TextField t = <font color="#0000ff">new</font> TextField(30);
+  Checkbox[] cb = {
+    <font color="#0000ff">new</font> Checkbox("Check Box 1"),
+    <font color="#0000ff">new</font> Checkbox("Check Box 2"),
+    <font color="#0000ff">new</font> Checkbox("Check Box 3") };
+  CheckboxGroup g = <font color="#0000ff">new</font> CheckboxGroup();
+  Checkbox 
+    cb4 = <font color="#0000ff">new</font> Checkbox("four", g, <font color="#0000ff">false</font>),
+    cb5 = <font color="#0000ff">new</font> Checkbox("five", g, <font color="#0000ff">true</font>),
+    cb6 = <font color="#0000ff">new</font> Checkbox("six", g, <font color="#0000ff">false</font>);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    add(t); 
+    ILCheck il = <font color="#0000ff">new</font> ILCheck();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; cb.length; i++) {
+      cb[i].addItemListener(il);
+      add(cb[i]);
+    }
+    cb4.addItemListener(<font color="#0000ff">new</font> IL4());
+    cb5.addItemListener(<font color="#0000ff">new</font> IL5());
+    cb6.addItemListener(<font color="#0000ff">new</font> IL6());
+    add(cb4); add(cb5); add(cb6); 
+  }
+  <font color="#009900">// Checking the source:</font>
+  <font color="#0000ff">class</font> ILCheck <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; cb.length; i++) {
+        <font color="#0000ff">if</font>(e.getSource().equals(cb[i])) {
+          t.setText("Check box " + (i + 1));
+          <font color="#0000ff">return</font>;
+        }
+      }
+    }
+  }
+  <font color="#009900">// vs. an individual class for each item:</font>
+  <font color="#0000ff">class</font> IL4 <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      t.setText("Radio button four");
+    }
+  }
+  <font color="#0000ff">class</font> IL5 <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      t.setText("Radio button five");
+    }
+  }
+  <font color="#0000ff">class</font> IL6 <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      t.setText("Radio button six");
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    RadioCheckNew applet = <font color="#0000ff">new</font> RadioCheckNew();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("RadioCheckNew");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ILCheck</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has the advantage that it automatically adapts when you add or subtract 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Checkbox</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">es.
+Of course, you can use this with radio buttons as well. It should be used,
+however, only when your logic is general enough to support this approach.
+Otherwise you&#8217;ll end up with a cascaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement, a sure sign that you should revert to using independent listener
+classes.
+</FONT><P></DIV>
+<A NAME="Heading434"></A><H4 ALIGN=LEFT>
+Drop-down
+lists
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Drop-down
+lists (<A NAME="Index2035"></A><A NAME="Index2036"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+in Java 1.1<A NAME="Index2037"></A>
+also use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to notify you when a choice has changed:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ChoiceNew.java</font>
+<font color="#009900">// Drop-down lists with Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ChoiceNew <font color="#0000ff">extends</font> Applet {
+  String[] description = { "Ebullient", "Obtuse",
+    "Recalcitrant", "Brilliant", "Somnescent",
+    "Timorous", "Florid", "Putrescent" };
+  TextField t = <font color="#0000ff">new</font> TextField(100);
+  Choice c = <font color="#0000ff">new</font> Choice();
+  Button b = <font color="#0000ff">new</font> Button("Add items");
+  <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      c.addItem(description[count++]);
+    add(t);
+    add(c);
+    add(b);
+    c.addItemListener(<font color="#0000ff">new</font> CL());
+    b.addActionListener(<font color="#0000ff">new</font> BL());
+  }
+  <font color="#0000ff">class</font> CL <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      t.setText("index: " +  c.getSelectedIndex()
+        + "   " + e.toString());
+    }
+  }
+  <font color="#0000ff">class</font> BL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(count &lt; description.length)
+        c.addItem(description[count++]);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    ChoiceNew applet = <font color="#0000ff">new</font> ChoiceNew();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("ChoiceNew");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(750,100);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Nothing
+else here is particularly new (except that Java 1.1<A NAME="Index2038"></A>
+has significantly fewer bugs in the UI classes).
+</FONT><P></DIV>
+<A NAME="Heading435"></A><H4 ALIGN=LEFT>
+Lists</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+recall that one of the problems with the Java 1.0<A NAME="Index2039"></A>
+<A NAME="Index2040"></A><A NAME="Index2041"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+design is that it took extra work to make it do what you&#8217;d expect: react
+to a single click on one of the list elements. Java 1.1<A NAME="Index2042"></A>
+has solved this problem:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ListNew.java</font>
+<font color="#009900">// Java 1.1 Lists are easier to use</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ListNew <font color="#0000ff">extends</font> Applet {
+  String[] flavors = { "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip", 
+    "Mocha Almond Fudge", "Rum Raisin", 
+    "Praline Cream", "Mud Pie" };
+  <font color="#009900">// Show 6 items, allow multiple selection:</font>
+  List lst = <font color="#0000ff">new</font> List(6, <font color="#0000ff">true</font>);
+  TextArea t = <font color="#0000ff">new</font> TextArea(flavors.length, 30);
+  Button b = <font color="#0000ff">new</font> Button("test");
+  <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      lst.addItem(flavors[count++]);
+    add(t);
+    add(lst);
+    add(b);
+    lst.addItemListener(<font color="#0000ff">new</font> LL());
+    b.addActionListener(<font color="#0000ff">new</font> BL());
+  }
+  <font color="#0000ff">class</font> LL <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      t.setText("");
+      String[] items = lst.getSelectedItems();
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; items.length; i++)
+        t.append(items[i] + "\n");
+    }
+  }
+  <font color="#0000ff">class</font> BL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#0000ff">if</font>(count &lt; flavors.length)
+        lst.addItem(flavors[count++], 0);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    ListNew applet = <font color="#0000ff">new</font> ListNew();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("ListNew");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(300,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that no extra logic is required to support a single click on a list
+item. You just attach a listener like you do everywhere else.
+</FONT><P></DIV>
+<A NAME="Heading436"></A><H4 ALIGN=LEFT>
+Menus</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+event handling for menus does seem to benefit from the Java 1.1<A NAME="Index2043"></A>
+event model, but Java&#8217;s approach to menus is still messy and requires a
+lot of hand coding. The right medium for a menu seems to be a resource rather
+than a lot of code. Keep in mind that program-building tools will generally
+handle the creation of menus for you, so that will reduce the pain somewhat (as
+long as they will also handle the maintenance!).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+addition, you&#8217;ll find the events for menus are inconsistent and can lead
+to confusion: <A NAME="Index2044"></A><A NAME="Index2045"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+but <A NAME="Index2046"></A><A NAME="Index2047"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+The <A NAME="Index2048"></A><A NAME="Index2049"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects can also support 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+but that&#8217;s not usually helpful. In general, you&#8217;ll attach listeners
+to each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but the following example (revised from the earlier version) also shows ways to
+combine the capture of multiple menu components into a single listener class.
+As you&#8217;ll see, it&#8217;s probably not worth the hassle to do this.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MenuNew.java</font>
+<font color="#009900">// Menus in Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MenuNew <font color="#0000ff">extends</font> Frame {
+  String[] flavors = { "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip", 
+    "Mocha Almond Fudge", "Rum Raisin", 
+    "Praline Cream", "Mud Pie" };
+  TextField t = <font color="#0000ff">new</font> TextField("No flavor", 30);
+  MenuBar mb1 = <font color="#0000ff">new</font> MenuBar();
+  Menu f = <font color="#0000ff">new</font> Menu("File");
+  Menu m = <font color="#0000ff">new</font> Menu("Flavors");
+  Menu s = <font color="#0000ff">new</font> Menu("Safety");
+  <font color="#009900">// Alternative approach:</font>
+  CheckboxMenuItem[] safety = {
+    <font color="#0000ff">new</font> CheckboxMenuItem("Guard"),
+    <font color="#0000ff">new</font> CheckboxMenuItem("Hide")
+  };
+  MenuItem[] file = {
+    <font color="#009900">// No menu shortcut:</font>
+    <font color="#0000ff">new</font> MenuItem("Open"),
+    <font color="#009900">// Adding a menu shortcut is very simple:</font>
+    <font color="#0000ff">new</font> MenuItem("Exit", 
+      <font color="#0000ff">new</font> MenuShortcut(KeyEvent.VK_E))
+  };
+  <font color="#009900">// A second menu bar to swap to:</font>
+  MenuBar mb2 = <font color="#0000ff">new</font> MenuBar();
+  Menu fooBar = <font color="#0000ff">new</font> Menu("fooBar");
+  MenuItem[] other = {
+    <font color="#0000ff">new</font> MenuItem("Foo"),
+    <font color="#0000ff">new</font> MenuItem("Bar"),
+    <font color="#0000ff">new</font> MenuItem("Baz"),
+  };
+  <font color="#009900">// Initialization code:</font>
+  {
+    ML ml = <font color="#0000ff">new</font> ML();
+    CMIL cmil = <font color="#0000ff">new</font> CMIL();
+    safety[0].setActionCommand("Guard");
+    safety[0].addItemListener(cmil);
+    safety[1].setActionCommand("Hide");
+    safety[1].addItemListener(cmil);
+    file[0].setActionCommand("Open");
+    file[0].addActionListener(ml);
+    file[1].setActionCommand("Exit");
+    file[1].addActionListener(ml);
+    other[0].addActionListener(<font color="#0000ff">new</font> FooL());
+    other[1].addActionListener(<font color="#0000ff">new</font> BarL());
+    other[2].addActionListener(<font color="#0000ff">new</font> BazL());
+  }
+  Button b = <font color="#0000ff">new</font> Button("Swap Menus");
+  <font color="#0000ff">public</font> MenuNew() {
+    FL fl = <font color="#0000ff">new</font> FL();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; flavors.length; i++) {
+      MenuItem mi = <font color="#0000ff">new</font> MenuItem(flavors[i]);
+      mi.addActionListener(fl);
+      m.add(mi);
+      <font color="#009900">// Add separators at intervals:</font>
+      <font color="#0000ff">if</font>((i+1) % 3 == 0) 
+        m.addSeparator();
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; safety.length; i++)
+      s.add(safety[i]);
+    f.add(s);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; file.length; i++)
+      f.add(file[i]);
+    mb1.add(f);
+    mb1.add(m);
+    setMenuBar(mb1);
+    t.setEditable(<font color="#0000ff">false</font>);
+    add(t, BorderLayout.CENTER);
+    <font color="#009900">// Set up the system for swapping menus:</font>
+    b.addActionListener(<font color="#0000ff">new</font> BL());
+    add(b, BorderLayout.NORTH);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; other.length; i++)
+      fooBar.add(other[i]);
+    mb2.add(fooBar);
+  }
+  <font color="#0000ff">class</font> BL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      MenuBar m = getMenuBar();
+      <font color="#0000ff">if</font>(m == mb1) setMenuBar(mb2);
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font> (m == mb2) setMenuBar(mb1);
+    }
+  }
+  <font color="#0000ff">class</font> ML <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      MenuItem target = (MenuItem)e.getSource();
+      String actionCommand = 
+        target.getActionCommand();
+      <font color="#0000ff">if</font>(actionCommand.equals("Open")) {
+        String s = t.getText();
+        <font color="#0000ff">boolean</font> chosen = <font color="#0000ff">false</font>;
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; flavors.length; i++)
+          <font color="#0000ff">if</font>(s.equals(flavors[i])) chosen = <font color="#0000ff">true</font>;
+        <font color="#0000ff">if</font>(!chosen)
+          t.setText("Choose a flavor first!");
+        <font color="#0000ff">else</font>
+          t.setText("Opening "+ s +". Mmm, mm!");
+      } <font color="#0000ff">else</font> <font color="#0000ff">if</font>(actionCommand.equals("Exit")) {
+        dispatchEvent(
+          <font color="#0000ff">new</font> WindowEvent(MenuNew.<font color="#0000ff">this</font>, 
+            WindowEvent.WINDOW_CLOSING));
+      }
+    }
+  }
+  <font color="#0000ff">class</font> FL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      MenuItem target = (MenuItem)e.getSource();
+      t.setText(target.getLabel());
+    }
+  }
+  <font color="#009900">// Alternatively, you can create a different</font>
+  <font color="#009900">// class for each different MenuItem. Then you</font>
+  <font color="#009900">// Don't have to figure out which one it is:</font>
+  <font color="#0000ff">class</font> FooL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText("Foo selected");
+    }
+  }
+  <font color="#0000ff">class</font> BarL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText("Bar selected");
+    }
+  }
+  <font color="#0000ff">class</font> BazL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText("Baz selected");
+    }
+  }
+  <font color="#0000ff">class</font> CMIL <font color="#0000ff">implements</font> ItemListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> itemStateChanged(ItemEvent e) {
+      CheckboxMenuItem target = 
+        (CheckboxMenuItem)e.getSource();
+      String actionCommand = 
+        target.getActionCommand();
+      <font color="#0000ff">if</font>(actionCommand.equals("Guard"))
+        t.setText("Guard the Ice Cream! " +
+          "Guarding is " + target.getState());
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(actionCommand.equals("Hide"))
+        t.setText("Hide the Ice Cream! " +
+          "Is it cold? " + target.getState());
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    MenuNew f = <font color="#0000ff">new</font> MenuNew();
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    f.setSize(300,200);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+code is similar to the previous (Java 1.0<A NAME="Index2050"></A>)
+version, until you get to the initialization section (marked by the opening
+brace right after the comment &#8220;Initialization code:&#8221;). Here you can
+see the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ItemListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+attached to the various menu components. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Java
+1.1<A NAME="Index2051"></A>
+supports &#8220;<A NAME="Index2052"></A><A NAME="Index2053"></A><A NAME="Index2054"></A>menu
+shortcuts,&#8221; so you can select a menu item using the keyboard instead of
+the mouse. These are quite simple; you just use the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor that takes as a second argument a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuShortcut</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. The constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuShortcut</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes the key of interest, which magically appears on the menu item when it
+drops down. The example above adds Control-E to the &#8220;Exit&#8221; menu item.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can also see the use of <A NAME="Index2055"></A><A NAME="Index2056"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setActionCommand(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This seems a bit strange because in each case the &#8220;action command&#8221;
+is exactly the same as the label on the menu component. Why not just use the
+label instead of this alternative string? The problem is internationalization.
+If you retarget this program to another language, you want to change only the
+label in the menu, and not go through the code changing all the logic that will
+no doubt introduce new errors. So to make this easy for code that checks the
+text string associated with a menu component, the &#8220;action command&#8221;
+can be immutable while the menu label can change. All the code works with the
+&#8220;action command,&#8221; so it&#8217;s unaffected by changes to the menu
+labels. Note that in this program, not all the menu components are examined for
+their action commands, so those that aren&#8217;t don&#8217;t have their action
+command set.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Much
+of the constructor is the same as before, with the exception of a couple of
+calls to add listeners. The bulk of the work happens in the listeners. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the <A NAME="Index2057"></A><A NAME="Index2058"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+swapping happens as in the previous example. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ML</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the &#8220;figure out who rang&#8221; approach is taken by getting the source
+of the <A NAME="Index2059"></A><A NAME="Index2060"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and casting it to a <A NAME="Index2061"></A><A NAME="Index2062"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then getting the action command string to pass it through a cascaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement. Much of this is the same as before, but notice that if
+&#8220;Exit&#8221; is chosen, a new <A NAME="Index2063"></A><A NAME="Index2064"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created, passing in the handle of the enclosing class object (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuNew.this</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and creating a <A NAME="Index2065"></A><A NAME="Index2066"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WINDOW_CLOSING</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+event. This is handed to the <A NAME="Index2067"></A><A NAME="Index2068"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dispatchEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method of the enclosing class object, which then ends up calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>windowClosing(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the window listener for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(this listener is created as an anonymous inner class, inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+just as if the message had been generated the &#8220;normal&#8221; way. Through
+this mechanism, you can <A NAME="Index2069"></A><A NAME="Index2070"></A>dispatch
+any message you want in any circumstances, so it&#8217;s quite powerful.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+listener is simple even though it&#8217;s handling all the different flavors in
+the flavor menu. This approach is useful if you have enough simplicity in your
+logic, but in general, you&#8217;ll want to take the approach used with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FooL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BarL,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BazL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in which they are each attached to only a single menu component so no extra
+detection logic is necessary and you know exactly who called the listener. Even
+with the profusion of classes generated this way, the code inside tends to be
+smaller and the process is more foolproof.
+</FONT><P></DIV>
+<A NAME="Heading437"></A><H4 ALIGN=LEFT>
+Dialog
+boxes
+<P><A NAME="Index2071"></A><A NAME="Index2072"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a direct rewrite of the earlier 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeTest.java.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+In this version, however, everything is placed inside an inner class. Although
+this completely eliminates the need to keep track of the object that spawned
+any class, as was the case in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeTest.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it could be taking the concept of inner classes a bit too far. At one point,
+the inner classes are nested four deep! This is the kind of design in which you
+need to decide whether the benefit of inner classes is worth the increased
+complexity. In addition, when you create a non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner class you&#8217;re tying that class to its surrounding class. Sometimes a
+standalone class can more easily be reused.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ToeTestNew.java</font>
+<font color="#009900">// Demonstration of dialog boxes</font>
+<font color="#009900">// and creating your own components</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ToeTestNew <font color="#0000ff">extends</font> Frame {
+  TextField rows = <font color="#0000ff">new</font> TextField("3");
+  TextField cols = <font color="#0000ff">new</font> TextField("3");
+  <font color="#0000ff">public</font> ToeTestNew() {
+    setTitle("Toe Test");
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(2,2));
+    p.add(<font color="#0000ff">new</font> Label("Rows", Label.CENTER));
+    p.add(rows);
+    p.add(<font color="#0000ff">new</font> Label("Columns", Label.CENTER));
+    p.add(cols);
+    add(p, BorderLayout.NORTH);
+    Button b = <font color="#0000ff">new</font> Button("go");
+    b.addActionListener(<font color="#0000ff">new</font> BL());
+    add(b, BorderLayout.SOUTH);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> BLANK = 0;
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> XX = 1;
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> OO = 2;
+  <font color="#0000ff">class</font> ToeDialog <font color="#0000ff">extends</font> Dialog {
+    <font color="#009900">// w = number of cells wide</font>
+    <font color="#009900">// h = number of cells high</font>
+    <font color="#0000ff">int</font> turn = XX; <font color="#009900">// Start with x's turn</font>
+    <font color="#0000ff">public</font> ToeDialog(<font color="#0000ff">int</font> w, <font color="#0000ff">int</font> h) {
+      <font color="#0000ff">super</font>(ToeTestNew.<font color="#0000ff">this</font>, 
+        "The game itself", <font color="#0000ff">false</font>);
+      setLayout(<font color="#0000ff">new</font> GridLayout(w, h));
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; w * h; i++)
+        add(<font color="#0000ff">new</font> ToeButton());
+      setSize(w * 50, h * 50);
+      addWindowListener(<font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          dispose();
+        }
+      });
+    }
+    <font color="#0000ff">class</font> ToeButton <font color="#0000ff">extends</font> Canvas {
+      <font color="#0000ff">int</font> state = BLANK;
+      ToeButton() {
+        addMouseListener(<font color="#0000ff">new</font> ML());
+      }
+      <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+        <font color="#0000ff">int</font> x1 = 0;
+        <font color="#0000ff">int</font> y1 = 0;
+        <font color="#0000ff">int</font> x2 = getSize().width - 1;
+        <font color="#0000ff">int</font> y2 = getSize().height - 1;
+        g.drawRect(x1, y1, x2, y2);
+        x1 = x2/4;
+        y1 = y2/4;
+        <font color="#0000ff">int</font> wide = x2/2;
+        <font color="#0000ff">int</font> high = y2/2;
+        <font color="#0000ff">if</font>(state == XX) {
+          g.drawLine(x1, y1, 
+            x1 + wide, y1 + high);
+          g.drawLine(x1, y1 + high, 
+            x1 + wide, y1);
+        }
+        <font color="#0000ff">if</font>(state == OO) {
+          g.drawOval(x1, y1, 
+            x1 + wide/2, y1 + high/2);
+        }
+      }
+      <font color="#0000ff">class</font> ML <font color="#0000ff">extends</font> MouseAdapter {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> mousePressed(MouseEvent e) {
+          <font color="#0000ff">if</font>(state == BLANK) {
+            state = turn;
+            turn = (turn == XX ? OO : XX);
+          } 
+          <font color="#0000ff">else</font>
+            state = (state == XX ? OO : XX);
+          repaint();
+        }
+      }
+    }
+  }
+  <font color="#0000ff">class</font> BL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      Dialog d = <font color="#0000ff">new</font> ToeDialog(
+        Integer.parseInt(rows.getText()),
+        Integer.parseInt(cols.getText()));
+      d.show();
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> ToeTestNew();
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    f.setSize(200,100);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+can be at only the outer level of the class, inner classes cannot have 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inner classes.
+</FONT><P></DIV>
+<A NAME="Heading438"></A><H4 ALIGN=LEFT>
+File
+dialogs
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Converting
+from <A NAME="Index2073"></A><A NAME="Index2074"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialogTest.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the new event model is straightforward:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FileDialogNew.java</font>
+<font color="#009900">// Demonstration of File dialog boxes</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FileDialogNew <font color="#0000ff">extends</font> Frame {
+  TextField filename = <font color="#0000ff">new</font> TextField();
+  TextField directory = <font color="#0000ff">new</font> TextField();
+  Button open = <font color="#0000ff">new</font> Button("Open");
+  Button save = <font color="#0000ff">new</font> Button("Save");
+  <font color="#0000ff">public</font> FileDialogNew() {
+    setTitle("File Dialog Test");
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> FlowLayout());
+    open.addActionListener(<font color="#0000ff">new</font> OpenL());
+    p.add(open);
+    save.addActionListener(<font color="#0000ff">new</font> SaveL());
+    p.add(save);
+    add(p, BorderLayout.SOUTH);
+    directory.setEditable(<font color="#0000ff">false</font>);
+    filename.setEditable(<font color="#0000ff">false</font>);
+    p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(2,1));
+    p.add(filename);
+    p.add(directory);
+    add(p, BorderLayout.NORTH);
+  }
+  <font color="#0000ff">class</font> OpenL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      <font color="#009900">// Two arguments, defaults to open file:</font>
+      FileDialog d = <font color="#0000ff">new</font> FileDialog(
+        FileDialogNew.<font color="#0000ff">this</font>,
+        "What file <font color="#0000ff">do</font> you want to open?");
+      d.setFile("*.java");
+      d.setDirectory("."); <font color="#009900">// Current directory</font>
+      d.show();
+      String yourFile = "*.*";
+      <font color="#0000ff">if</font>((yourFile = d.getFile()) != <font color="#0000ff">null</font>) {
+        filename.setText(yourFile);
+        directory.setText(d.getDirectory());
+      } <font color="#0000ff">else</font> {
+        filename.setText("You pressed cancel");
+        directory.setText("");
+      }
+    }
+  }
+  <font color="#0000ff">class</font> SaveL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      FileDialog d = <font color="#0000ff">new</font> FileDialog(
+        FileDialogNew.<font color="#0000ff">this</font>,
+        "What file <font color="#0000ff">do</font> you want to save?",
+        FileDialog.SAVE);
+      d.setFile("*.java");
+      d.setDirectory(".");
+      d.show();
+      String saveFile;
+      <font color="#0000ff">if</font>((saveFile = d.getFile()) != <font color="#0000ff">null</font>) {
+        filename.setText(saveFile);
+        directory.setText(d.getDirectory());
+      } <font color="#0000ff">else</font> {
+        filename.setText("You pressed cancel");
+        directory.setText("");
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> FileDialogNew();
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    f.setSize(250,110);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+would be nice if all the conversions were this easy, but they&#8217;re usually
+easy enough, and your code benefits from the improved readability.
+</FONT><a name="_Toc408018710"></a><P></DIV>
+<A NAME="Heading439"></A><H3 ALIGN=LEFT>
+Binding
+events dynamically
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the benefits of the new AWT event model is flexibility. In the old model you
+were forced to hard code the behavior of your program, but with the new model
+you can add and remove event behavior with single method calls. The following
+example demonstrates this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: DynamicEvents.java</font>
+<font color="#009900">// The new Java 1.1 event model allows you to</font>
+<font color="#009900">// change event behavior dynamically. Also</font>
+<font color="#009900">// demonstrates multiple actions for an event.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> DynamicEvents <font color="#0000ff">extends</font> Frame {
+  Vector v = <font color="#0000ff">new</font> Vector();
+  <font color="#0000ff">int</font> i = 0;
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> DynamicEvents() {
+    setLayout(<font color="#0000ff">new</font> FlowLayout());
+    b1.addActionListener(<font color="#0000ff">new</font> B());
+    b1.addActionListener(<font color="#0000ff">new</font> B1());
+    b2.addActionListener(<font color="#0000ff">new</font> B());
+    b2.addActionListener(<font color="#0000ff">new</font> B2());
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">class</font> B <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("A button was pressed");
+    }
+  }
+  <font color="#0000ff">class</font> CountListener <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">int</font> index;
+    <font color="#0000ff">public</font> CountListener(<font color="#0000ff">int</font> i) { index = i; }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println(
+        "Counted Listener " + index);
+    }
+  }    
+  <font color="#0000ff">class</font> B1 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("Button 1 pressed");
+      ActionListener a = <font color="#0000ff">new</font> CountListener(i++);
+      v.addElement(a);
+      b2.addActionListener(a);
+    }
+  }
+  <font color="#0000ff">class</font> B2 <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("Button 2 pressed");
+      <font color="#0000ff">int</font> end = v.size() -1;
+      <font color="#0000ff">if</font>(end &gt;= 0) {
+        b2.removeActionListener(
+          (ActionListener)v.elementAt(end));
+        v.removeElementAt(end);
+      }
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> DynamicEvents();
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.exit(0);
+        }
+      });
+    f.setSize(300,200);
+    f.show();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+new twists in this example are:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	There
+is more than one listener attached to each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Usually, components handle events as <A NAME="Index2075"></A><A NAME="Index2076"></A><A NAME="Index2077"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multicast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+meaning that you can register many listeners for a single event. In the special
+components in which an event is handled as <A NAME="Index2078"></A><A NAME="Index2079"></A><A NAME="Index2080"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>unicast</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you&#8217;ll get a <A NAME="Index2081"></A><A NAME="Index2082"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TooManyListenersException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	During
+the execution of the program, listeners are dynamically added and removed from
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Button
+b2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Adding is accomplished in the way you&#8217;ve seen before, but each component
+also has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>removeXXXListener(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to remove each type of listener.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+kind of flexibility provides much greater power in your programming.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+should notice that <A NAME="Index2083"></A>event
+listeners are not guaranteed to be called in the order they are added (although
+most implementations do in fact work that way).
+</FONT><a name="_Toc408018711"></a><P></DIV>
+<A NAME="Heading440"></A><H3 ALIGN=LEFT>
+Separating
+business logic 
+<P>from
+UI logic
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+general you&#8217;ll want to design your classes so that each one does
+&#8220;only one thing.&#8221; This is particularly important when
+user-interface code is concerned, since it&#8217;s easy to wrap up &#8220;what
+you&#8217;re doing&#8221; with &#8220;how you&#8217;re displaying it.&#8221;
+This kind of coupling prevents code reuse. It&#8217;s much more desirable to
+separate your &#8220;business logic&#8221; from the GUI. This way, you can not
+only reuse the business logic more easily, it&#8217;s also easier to reuse the
+GUI.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+issue is <A NAME="Index2084"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multi-tiered</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+systems, where the &#8220;<A NAME="Index2085"></A><A NAME="Index2086"></A>business
+objects&#8221; reside on a completely separate machine. This central location
+of the business rules allows changes to be instantly effective for all new
+transactions, and is thus a compelling way to set up a system. However, these
+business objects can be used in many different applications and so should not
+be tied to any particular mode of display. They should just perform the
+business operations and nothing more.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following example shows how easy it is to separate the business logic from the
+GUI code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Separation.java</font>
+<font color="#009900">// Separating GUI logic and business objects</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">class</font> BusinessLogic {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> modifier;
+  BusinessLogic(<font color="#0000ff">int</font> mod) {
+    modifier = mod;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> setModifier(<font color="#0000ff">int</font> mod) {
+    modifier = mod;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> getModifier() {
+    <font color="#0000ff">return</font> modifier;
+  }
+  <font color="#009900">// Some business operations:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> calculation1(<font color="#0000ff">int</font> arg) {
+    <font color="#0000ff">return</font> arg * modifier;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> calculation2(<font color="#0000ff">int</font> arg) {
+    <font color="#0000ff">return</font> arg + modifier;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Separation <font color="#0000ff">extends</font> Applet {
+  TextField 
+    t = <font color="#0000ff">new</font> TextField(20),
+    mod = <font color="#0000ff">new</font> TextField(20);
+  BusinessLogic bl = <font color="#0000ff">new</font> BusinessLogic(2);
+  Button
+    calc1 = <font color="#0000ff">new</font> Button("Calculation 1"),
+    calc2 = <font color="#0000ff">new</font> Button("Calculation 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(t);
+    calc1.addActionListener(<font color="#0000ff">new</font> Calc1L());
+    calc2.addActionListener(<font color="#0000ff">new</font> Calc2L());
+    add(calc1); add(calc2);
+    mod.addTextListener(<font color="#0000ff">new</font> ModL());
+    add(<font color="#0000ff">new</font> Label("Modifier:"));
+    add(mod);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">int</font> getValue(TextField tf) {
+    <font color="#0000ff">try</font> {
+      <font color="#0000ff">return</font> Integer.parseInt(tf.getText());
+    } <font color="#0000ff">catch</font>(NumberFormatException e) {
+      <font color="#0000ff">return</font> 0;
+    }
+  }
+  <font color="#0000ff">class</font> Calc1L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText(Integer.toString(
+        bl.calculation1(getValue(t))));
+    }
+  }
+  <font color="#0000ff">class</font> Calc2L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      t.setText(Integer.toString(
+        bl.calculation2(getValue(t))));
+    }
+  }
+  <font color="#0000ff">class</font> ModL <font color="#0000ff">implements</font> TextListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> textValueChanged(TextEvent e) {
+      bl.setModifier(getValue(mod));
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Separation applet = <font color="#0000ff">new</font> Separation();
+    Frame aFrame = <font color="#0000ff">new</font> Frame("Separation");
+    aFrame.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
+    aFrame.add(applet, BorderLayout.CENTER);
+    aFrame.setSize(200,200);
+    applet.init();
+    applet.start();
+    aFrame.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BusinessLogic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a straightforward class that performs its operations without even a hint
+that it might be used in a GUI environment. It just does its job.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Separation</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keeps track of all the UI details, and it talks to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BusinessLogic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only through its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+interface. All the operations are centered around getting information back and
+forth through the UI and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BusinessLogic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. So 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Separation</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in turn, just does its job. Since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Separation</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+knows only that it&#8217;s talking to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BusinessLogic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (that is, it isn&#8217;t highly coupled), it could be massaged into
+talking to other types of objects without much trouble.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Thinking
+in terms of separating UI from business logic also makes life easier when
+you&#8217;re adapting legacy code to work with Java.
+</FONT><a name="_Toc408018712"></a><P></DIV>
+<A NAME="Heading441"></A><H3 ALIGN=LEFT>
+Recommended
+coding approaches
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Inner
+classes, the new event model, and the fact that the old event model is still
+supported along with new library features that rely on old-style programming
+has added a new element of confusion. Now there are even more different ways
+for people to write unpleasant code. Unfortunately, this kind of code is
+showing up in books and article examples, and even in documentation and
+examples distributed from Sun! In this section we&#8217;ll look at some
+misunderstandings about what you should and shouldn&#8217;t do with the new
+AWT, and end by showing that except in extenuating circumstances you can always
+use <A NAME="Index2087"></A>listener
+classes (written as <A NAME="Index2088"></A><A NAME="Index2089"></A>inner
+classes) to solve your event-handling needs. Since this is also the simplest
+and clearest approach, it should be a relief for you to learn this.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Before
+looking at anything else, you should know that although Java 1.1<A NAME="Index2090"></A>
+is backward-compatible with Java 1.0<A NAME="Index2091"></A>
+(that is, you can compile and run 1.0 programs with 1.1), you cannot mix the
+event models within the same program. That is, you cannot use the old-style <A NAME="Index2092"></A><A NAME="Index2093"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in the same program in which you employ listeners. This can be a problem
+in a larger program when you&#8217;re trying to integrate old code with a new
+program, since you must decide whether to use the old, hard-to-maintain
+approach with the new program or to update the old code. This shouldn&#8217;t
+be too much of a battle since the new approach is so superior to the old.
+</FONT><P></DIV>
+<A NAME="Heading442"></A><H4 ALIGN=LEFT>
+Baseline:
+the good way to do it
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+give you something to compare with, here&#8217;s an example showing the
+recommended approach. By now it should be reasonably familiar and comfortable:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GoodIdea.java</font>
+<font color="#009900">// The best way to design classes using the new</font>
+<font color="#009900">// Java 1.1 event model: use an inner class for</font>
+<font color="#009900">// each different event. This maximizes </font>
+<font color="#009900">// flexibility and modularity.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> GoodIdea <font color="#0000ff">extends</font> Frame {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> GoodIdea() {
+    setLayout(<font color="#0000ff">new</font> FlowLayout());
+    b1.addActionListener(<font color="#0000ff">new</font> B1L());
+    b2.addActionListener(<font color="#0000ff">new</font> B2L());
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">class</font> B1L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("Button 1 pressed");
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">class</font> B2L <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      System.out.println("Button 2 pressed");
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> GoodIdea();
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.out.println("Window Closing");
+          System.exit(0);
+        }
+      });
+    f.setSize(300,200);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is fairly trivial: each button has its own listener that prints something out
+to the console. But notice that there isn&#8217;t an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement in the entire program, or any statement that says, &#8220;I wonder
+what caused this event.&#8221; Each piece of code is concerned with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>doing</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not type-checking. This is the best way to write your code; not only is it
+easier to conceptualize, but much easier to read and maintain. Cutting and
+pasting to create new programs is also much easier.
+</FONT><P></DIV>
+<A NAME="Heading443"></A><H4 ALIGN=LEFT>
+Implementing
+the main class as a listener
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+first bad idea is a common and recommended approach. This makes the main class
+(typically 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it could be any class) implement the various listeners. Here&#8217;s an
+example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BadIdea1.java</font>
+<font color="#009900">// Some literature recommends this approach,</font>
+<font color="#009900">// but it's missing the point of the new event</font>
+<font color="#009900">// model in Java 1.1</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BadIdea1 <font color="#0000ff">extends</font> Frame 
+    <font color="#0000ff">implements</font> ActionListener, WindowListener {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> BadIdea1() {
+    setLayout(<font color="#0000ff">new</font> FlowLayout());
+    addWindowListener(<font color="#0000ff">this</font>);
+    b1.addActionListener(<font color="#0000ff">this</font>);
+    b2.addActionListener(<font color="#0000ff">this</font>);
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+    Object source = e.getSource();
+    <font color="#0000ff">if</font>(source == b1)
+      System.out.println("Button 1 pressed");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(source == b2)
+      System.out.println("Button 2 pressed");
+    <font color="#0000ff">else</font>
+      System.out.println("Something <font color="#0000ff">else</font>");
+  }    
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+    System.out.println("Window Closing");
+    System.exit(0);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosed(WindowEvent e) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowDeiconified(WindowEvent e) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowIconified(WindowEvent e) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowActivated(WindowEvent e) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowDeactivated(WindowEvent e) {}
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowOpened(WindowEvent e) {}  
+
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> BadIdea1();
+    f.setSize(300,200);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+use of this shows up in the three lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>    addWindowListener(<font color="#0000ff">this</font>);
+    b1.addActionListener(<font color="#0000ff">this</font>);
+    b2.addActionListener(<font color="#0000ff">this</font>); </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BadIdea1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+implements 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ActionListener</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WindowListener,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+these lines are certainly acceptable, and if you&#8217;re still stuck in the
+mode of trying to make fewer classes to reduce server hits during applet
+loading, it seems to be a good idea. However:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Java
+1.1<A NAME="Index2094"></A>
+supports <A NAME="Index2095"></A>JAR
+files so all your files can be placed in a single compressed JAR archive that
+requires only one server hit. You no longer need to reduce class count for
+Internet efficiency.
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	The
+code above is much less modular so it&#8217;s harder to grab and paste. Note
+that you must not only implement the various interfaces for your main class,
+but in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you&#8217;ve got to detect which action was performed using a cascaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement. Not only is this going backwards, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>away</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the listener model, but you can&#8217;t easily reuse the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method since it&#8217;s specific to this particular application. Contrast this
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GoodIdea.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+in which you can just grab one listener class and paste it in anywhere else
+with minimal fuss. Plus you can register multiple listener classes with a
+single event, allowing even more modularity in what each listener class does.
+</FONT></OL><A NAME="Heading444"></A><H4 ALIGN=LEFT>
+Mixing
+the approaches
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second bad idea is to mix the two approaches: use inner listener classes, but
+also implement one or more listener interfaces as part of the main class. This
+approach has appeared without explanation in books and documentation, and I can
+only assume that the authors thought they must use the different approaches for
+different purposes. But you don&#8217;t &#8211; in your programming you can
+probably use inner listener classes exclusively.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BadIdea2.java</font>
+<font color="#009900">// An improvement over BadIdea1.java, since it</font>
+<font color="#009900">// uses the WindowAdapter as an inner class </font>
+<font color="#009900">// instead of implementing all the methods of</font>
+<font color="#009900">// WindowListener, but still misses the</font>
+<font color="#009900">// valuable modularity of inner classes</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BadIdea2 <font color="#0000ff">extends</font> Frame 
+    <font color="#0000ff">implements</font> ActionListener {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> BadIdea2() {
+    setLayout(<font color="#0000ff">new</font> FlowLayout());
+    addWindowListener(<font color="#0000ff">new</font> WL());
+    b1.addActionListener(<font color="#0000ff">this</font>);
+    b2.addActionListener(<font color="#0000ff">this</font>);
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+    Object source = e.getSource();
+    <font color="#0000ff">if</font>(source == b1)
+      System.out.println("Button 1 pressed");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(source == b2)
+      System.out.println("Button 2 pressed");
+    <font color="#0000ff">else</font>
+      System.out.println("Something <font color="#0000ff">else</font>");
+  }
+  <font color="#0000ff">class</font> WL <font color="#0000ff">extends</font> WindowAdapter {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e) {
+      System.out.println("Window Closing");
+      System.exit(0);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> BadIdea2();
+    f.setSize(300,200);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>actionPerformed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is still tightly coupled to the main class, it&#8217;s hard to reuse that code.
+It&#8217;s also messier and less pleasant to read than the inner class approach.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There&#8217;s
+no reason that you have to use any of the old thinking for events in Java 1.1<A NAME="Index2096"></A>
+&#8211; so why do it?
+</FONT><P></DIV>
+<A NAME="Heading445"></A><H4 ALIGN=LEFT>
+Inheriting
+a component
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Another
+place where you&#8217;ll often see variations on the old way of doing things is
+when creating a new type of component. Here&#8217;s an example showing that
+here, too, the new way works:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: GoodTechnique.java</font>
+<font color="#009900">// Your first choice when overriding components</font>
+<font color="#009900">// should be to install listeners. The code is</font>
+<font color="#009900">// much safer, more modular and maintainable.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">class</font> Display {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font>
+    EVENT = 0, COMPONENT = 1,
+    MOUSE = 2, MOUSE_MOVE = 3,
+    FOCUS = 4, KEY = 5, ACTION = 6,
+    LAST = 7;
+  <font color="#0000ff">public</font> String[] evnt;
+  Display() {
+    evnt = <font color="#0000ff">new</font> String[LAST];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; LAST; i++)
+      evnt[i] = <font color="#0000ff">new</font> String();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> show(Graphics g) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; LAST; i++)
+      g.drawString(evnt[i], 0, 10 * i + 10);
+  }
+}
+
+<font color="#0000ff">class</font> EnabledPanel <font color="#0000ff">extends</font> Panel {
+  Color c;
+  <font color="#0000ff">int</font> id;
+  Display display = <font color="#0000ff">new</font> Display();
+  <font color="#0000ff">public</font> EnabledPanel(<font color="#0000ff">int</font> i, Color mc) {
+    id = i;
+    c = mc;
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(<font color="#0000ff">new</font> MyButton(), BorderLayout.SOUTH);
+    addComponentListener(<font color="#0000ff">new</font> CL());
+    addFocusListener(<font color="#0000ff">new</font> FL());
+    addKeyListener(<font color="#0000ff">new</font> KL());
+    addMouseListener(<font color="#0000ff">new</font> ML());
+    addMouseMotionListener(<font color="#0000ff">new</font> MML());
+  }
+  <font color="#009900">// To eliminate flicker:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> update(Graphics g) {
+    paint(g);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(c);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+    g.setColor(Color.black);
+    display.show(g);
+  }
+  <font color="#009900">// Don't need to enable anything for this:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processEvent(AWTEvent e) {
+    display.evnt[Display.EVENT]= e.toString();
+    repaint();
+    <font color="#0000ff">super</font>.processEvent(e);
+  }
+  <font color="#0000ff">class</font> CL <font color="#0000ff">implements</font> ComponentListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> componentMoved(ComponentEvent e){
+      display.evnt[Display.COMPONENT] = 
+        "Component moved";
+      repaint();
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> 
+    componentResized(ComponentEvent e) {
+      display.evnt[Display.COMPONENT] = 
+        "Component resized";
+      repaint();
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> 
+    componentHidden(ComponentEvent e) {
+      display.evnt[Display.COMPONENT] = 
+        "Component hidden";
+      repaint();
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> componentShown(ComponentEvent e){
+      display.evnt[Display.COMPONENT] = 
+        "Component shown";
+      repaint();
+    }
+  }
+  <font color="#0000ff">class</font> FL <font color="#0000ff">implements</font> FocusListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> focusGained(FocusEvent e) {
+      display.evnt[Display.FOCUS] = 
+        "FOCUS gained";
+      repaint();
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> focusLost(FocusEvent e) {
+      display.evnt[Display.FOCUS] = 
+        "FOCUS lost";
+      repaint();
+    }
+  }
+  <font color="#0000ff">class</font> KL <font color="#0000ff">implements</font> KeyListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyPressed(KeyEvent e) {
+      display.evnt[Display.KEY] = 
+        "KEY pressed: "; 
+      showCode(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyReleased(KeyEvent e) {
+      display.evnt[Display.KEY] = 
+        "KEY released: "; 
+      showCode(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> keyTyped(KeyEvent e) {
+      display.evnt[Display.KEY] = 
+        "KEY typed: ";
+      showCode(e);
+    }
+    <font color="#0000ff">void</font> showCode(KeyEvent e) {
+      <font color="#0000ff">int</font> code = e.getKeyCode();
+      display.evnt[Display.KEY] += 
+        KeyEvent.getKeyText(code);
+      repaint();
+    }
+  }
+  <font color="#0000ff">class</font> ML <font color="#0000ff">implements</font> MouseListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseClicked(MouseEvent e) {
+      requestFocus(); <font color="#009900">// Get FOCUS on click</font>
+      display.evnt[Display.MOUSE] = 
+        "MOUSE clicked";
+      showMouse(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mousePressed(MouseEvent e) {
+      display.evnt[Display.MOUSE] = 
+        "MOUSE pressed";
+      showMouse(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseReleased(MouseEvent e) {
+      display.evnt[Display.MOUSE] = 
+        "MOUSE released";
+      showMouse(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseEntered(MouseEvent e) { 
+      display.evnt[Display.MOUSE] = 
+        "MOUSE entered";
+      showMouse(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseExited(MouseEvent e) { 
+      display.evnt[Display.MOUSE] = 
+        "MOUSE exited";
+      showMouse(e);
+    }
+    <font color="#0000ff">void</font> showMouse(MouseEvent e) {
+      display.evnt[Display.MOUSE] += 
+        ", x = " + e.getX() + 
+        ", y = " + e.getY();
+      repaint();
+    }
+  }
+  <font color="#0000ff">class</font> MML <font color="#0000ff">implements</font> MouseMotionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseDragged(MouseEvent e) {
+      display.evnt[Display.MOUSE_MOVE] = 
+        "MOUSE dragged";
+      showMouse(e);
+    }
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> mouseMoved(MouseEvent e) {
+      display.evnt[Display.MOUSE_MOVE] = 
+        "MOUSE moved";
+      showMouse(e);
+    }
+    <font color="#0000ff">void</font> showMouse(MouseEvent e) {
+      display.evnt[Display.MOUSE_MOVE] += 
+        ", x = " + e.getX() + 
+        ", y = " + e.getY();
+      repaint();
+    }
+  }
+}
+
+<font color="#0000ff">class</font> MyButton <font color="#0000ff">extends</font> Button {
+  <font color="#0000ff">int</font> clickCounter;
+  String label = "";
+  <font color="#0000ff">public</font> MyButton() {
+    addActionListener(<font color="#0000ff">new</font> AL());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.setColor(Color.green);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+    g.setColor(Color.black);
+    g.drawRect(0, 0, s.width - 1, s.height - 1);
+    drawLabel(g);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> drawLabel(Graphics g) {
+    FontMetrics fm = g.getFontMetrics();
+    <font color="#0000ff">int</font> width = fm.stringWidth(label);
+    <font color="#0000ff">int</font> height = fm.getHeight();
+    <font color="#0000ff">int</font> ascent = fm.getAscent();
+    <font color="#0000ff">int</font> leading = fm.getLeading();
+    <font color="#0000ff">int</font> horizMargin = 
+      (getSize().width - width)/2;
+    <font color="#0000ff">int</font> verMargin = 
+      (getSize().height - height)/2;
+    g.setColor(Color.red);
+    g.drawString(label, horizMargin, 
+      verMargin + ascent + leading);
+  }
+  <font color="#0000ff">class</font> AL <font color="#0000ff">implements</font> ActionListener {
+    <font color="#0000ff">public</font> <font color="#0000ff">void</font> actionPerformed(ActionEvent e) {
+      clickCounter++;
+      label = "click #" + clickCounter +
+        " " + e.toString();
+      repaint();
+    }
+  }
+}
+  
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> GoodTechnique <font color="#0000ff">extends</font> Frame {
+  GoodTechnique() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(2,2));
+    add(<font color="#0000ff">new</font> EnabledPanel(1, Color.cyan));
+    add(<font color="#0000ff">new</font> EnabledPanel(2, Color.lightGray));
+    add(<font color="#0000ff">new</font> EnabledPanel(3, Color.yellow));
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> GoodTechnique();
+    f.setTitle("Good Technique");
+    f.addWindowListener(
+      <font color="#0000ff">new</font> WindowAdapter() {
+        <font color="#0000ff">public</font> <font color="#0000ff">void</font> windowClosing(WindowEvent e){
+          System.out.println(e);
+          System.out.println("Window Closing");
+          System.exit(0);
+        }
+      });
+    f.setSize(700,700);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also demonstrates the various events that occur and displays the
+information about them. The class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Display</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a way to centralize that information display. There&#8217;s an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to hold information about each type of event, and the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes a handle to whatever 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Graphic</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+object you have and writes directly on that surface. The scheme is intended to
+be somewhat reusable.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EnabledPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+represents the new type of component. It&#8217;s a colored panel with a button
+at the bottom, and it captures all the events that happen over it by using
+inner listener classes for every single event 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>except</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+those in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>EnabledPanel</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+overrides <A NAME="Index2097"></A><A NAME="Index2098"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>processEvent(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+the old style (notice it must also call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.processEvent(&#160;))</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The only reason for using this method is that it captures every event that
+happens, so you can view everything that goes on. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>processEvent(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">does
+nothing more than show the string representation of each event, otherwise it
+would have to use a cascade of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">statements
+to figure out what event it was. On the other hand, the inner listener classes
+already know precisely what event occurred. (Assuming you register them to
+components in which you don&#8217;t need any control logic, which should be
+your goal.) Thus, they don&#8217;t have to check anything out; they just do
+their stuff.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+listener modifies the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Display</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+string associated with its particular event and calls <A NAME="Index2099"></A><A NAME="Index2100"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>repaint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so the strings get displayed. You can also see a trick that will usually <A NAME="Index2101"></A><A NAME="Index2102"></A>eliminate
+flicker:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>  <font color="#0000ff">public</font> <font color="#0000ff">void</font> update(Graphics g) {
+    paint(g);
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+don&#8217;t always need to override <A NAME="Index2103"></A><A NAME="Index2104"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>update(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but if you write something that flickers, try it. The default version of update
+clears the background and then calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to redraw any graphics. This clearing is usually what causes flicker but is not
+necessary since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">redraws
+the entire surface.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that there are a lot of listeners &#8211; however, type checking occurs
+for the listeners, and you can&#8217;t listen for something that the component
+doesn&#8217;t support (unlike 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BadTechnique.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which you will see momentarily).
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Experimenting
+with this program is quite educational since you learn a lot about the way that
+events occur in Java. For one thing, it shows a flaw in the design of most
+windowing systems: it&#8217;s pretty hard to click and release the mouse
+without moving it, and the windowing system will often think you&#8217;re
+dragging when you&#8217;re actually just trying to click on something. A
+solution to this is to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mousePressed(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseReleased(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseClicked(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then determine whether to call your own
+&#8220;mouseReallyClicked(&#160;)&#8221; method based on time and about 4
+pixels of mouse hysteresis.
+</FONT><P></DIV>
+<A NAME="Heading446"></A><H4 ALIGN=LEFT>
+Ugly
+component inheritance
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+alternative, which you will see put forward in many published works, is to call <A NAME="Index2105"></A><A NAME="Index2106"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>enableEvents(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+pass it the masks corresponding to the events you want to handle. This causes
+those events to be sent to the old-style methods (although they&#8217;re new to
+Java 1.1<A NAME="Index2107"></A>)
+with names like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>processFocusEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You must also remember to call the base-class version. Here&#8217;s what it
+looks like:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: BadTechnique.java</font>
+<font color="#009900">// It's possible to override components this way,</font>
+<font color="#009900">// but the listener approach is much better, so</font>
+<font color="#009900">// why would you?</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.awt.event.*;
+
+<font color="#0000ff">class</font> Display {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font>
+    EVENT = 0, COMPONENT = 1,
+    MOUSE = 2, MOUSE_MOVE = 3,
+    FOCUS = 4, KEY = 5, ACTION = 6,
+    LAST = 7;
+  <font color="#0000ff">public</font> String[] evnt;
+  Display() {
+    evnt = <font color="#0000ff">new</font> String[LAST];
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; LAST; i++)
+      evnt[i] = <font color="#0000ff">new</font> String();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> show(Graphics g) {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; LAST; i++)
+      g.drawString(evnt[i], 0, 10 * i + 10);
+  }
+}
+
+<font color="#0000ff">class</font> EnabledPanel <font color="#0000ff">extends</font> Panel {
+  Color c;
+  <font color="#0000ff">int</font> id;
+  Display display = <font color="#0000ff">new</font> Display();
+  <font color="#0000ff">public</font> EnabledPanel(<font color="#0000ff">int</font> i, Color mc) {
+    id = i;
+    c = mc;
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    add(<font color="#0000ff">new</font> MyButton(), BorderLayout.SOUTH);
+    <font color="#009900">// Type checking is lost. You can enable and</font>
+    <font color="#009900">// process events that the component doesn't</font>
+    <font color="#009900">// capture:</font>
+    enableEvents(
+      <font color="#009900">// Panel doesn't handle these:</font>
+      AWTEvent.ACTION_EVENT_MASK |
+      AWTEvent.ADJUSTMENT_EVENT_MASK |
+      AWTEvent.ITEM_EVENT_MASK |
+      AWTEvent.TEXT_EVENT_MASK |
+      AWTEvent.WINDOW_EVENT_MASK |
+      <font color="#009900">// Panel can handle these:</font>
+      AWTEvent.COMPONENT_EVENT_MASK |
+      AWTEvent.FOCUS_EVENT_MASK |
+      AWTEvent.KEY_EVENT_MASK |
+      AWTEvent.MOUSE_EVENT_MASK |
+      AWTEvent.MOUSE_MOTION_EVENT_MASK |
+      AWTEvent.CONTAINER_EVENT_MASK);
+      <font color="#009900">// You can enable an event without</font>
+      <font color="#009900">// overriding its process method.</font>
+  }
+  <font color="#009900">// To eliminate flicker:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> update(Graphics g) {
+    paint(g);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    g.setColor(c);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+    g.setColor(Color.black);
+    display.show(g);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processEvent(AWTEvent e) {
+    display.evnt[Display.EVENT]= e.toString();
+    repaint();
+    <font color="#0000ff">super</font>.processEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font>
+  processComponentEvent(ComponentEvent e) {
+    <font color="#0000ff">switch</font>(e.getID()) {
+      <font color="#0000ff">case</font> ComponentEvent.COMPONENT_MOVED:
+        display.evnt[Display.COMPONENT] = 
+          "Component moved";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> ComponentEvent.COMPONENT_RESIZED:
+        display.evnt[Display.COMPONENT] = 
+          "Component resized";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> ComponentEvent.COMPONENT_HIDDEN:
+        display.evnt[Display.COMPONENT] = 
+          "Component hidden";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> ComponentEvent.COMPONENT_SHOWN:
+        display.evnt[Display.COMPONENT] = 
+          "Component shown";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+    }
+    repaint();
+    <font color="#009900">// Must always remember to call the "super"</font>
+    <font color="#009900">// version of whatever you override:</font>
+    <font color="#0000ff">super</font>.processComponentEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processFocusEvent(FocusEvent e) {
+    <font color="#0000ff">switch</font>(e.getID()) {
+      <font color="#0000ff">case</font> FocusEvent.FOCUS_GAINED:
+        display.evnt[Display.FOCUS] = 
+          "FOCUS gained";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> FocusEvent.FOCUS_LOST:
+        display.evnt[Display.FOCUS] = 
+          "FOCUS lost";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+    }
+    repaint();
+    <font color="#0000ff">super</font>.processFocusEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processKeyEvent(KeyEvent e) {
+    <font color="#0000ff">switch</font>(e.getID()) {
+      <font color="#0000ff">case</font> KeyEvent.KEY_PRESSED:
+        display.evnt[Display.KEY] = 
+          "KEY pressed: "; 
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> KeyEvent.KEY_RELEASED:
+        display.evnt[Display.KEY] = 
+          "KEY released: "; 
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> KeyEvent.KEY_TYPED:
+        display.evnt[Display.KEY] = 
+          "KEY typed: ";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+    }
+    <font color="#0000ff">int</font> code = e.getKeyCode();
+    display.evnt[Display.KEY] += 
+      KeyEvent.getKeyText(code);
+    repaint();
+    <font color="#0000ff">super</font>.processKeyEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processMouseEvent(MouseEvent e) {
+    <font color="#0000ff">switch</font>(e.getID()) {
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_CLICKED:
+        requestFocus(); <font color="#009900">// Get FOCUS on click</font>
+        display.evnt[Display.MOUSE] = 
+          "MOUSE clicked";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_PRESSED:
+        display.evnt[Display.MOUSE] = 
+          "MOUSE pressed";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_RELEASED:
+        display.evnt[Display.MOUSE] = 
+          "MOUSE released";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_ENTERED: 
+        display.evnt[Display.MOUSE] = 
+          "MOUSE entered";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_EXITED: 
+        display.evnt[Display.MOUSE] = 
+          "MOUSE exited";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+    }
+    display.evnt[Display.MOUSE] += 
+      ", x = " + e.getX() + 
+      ", y = " + e.getY();
+    repaint();
+    <font color="#0000ff">super</font>.processMouseEvent(e);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font>
+  processMouseMotionEvent(MouseEvent e) {
+    <font color="#0000ff">switch</font>(e.getID()) {
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_DRAGGED:
+        display.evnt[Display.MOUSE_MOVE] = 
+          "MOUSE dragged";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">case</font> MouseEvent.MOUSE_MOVED:
+        display.evnt[Display.MOUSE_MOVE] = 
+          "MOUSE moved";
+        <font color="#0000ff">break</font>;
+      <font color="#0000ff">default</font>:
+    }
+    display.evnt[Display.MOUSE_MOVE] += 
+      ", x = " + e.getX() + 
+      ", y = " + e.getY();
+    repaint();
+    <font color="#0000ff">super</font>.processMouseMotionEvent(e);
+  }
+}
+
+<font color="#0000ff">class</font> MyButton <font color="#0000ff">extends</font> Button {
+  <font color="#0000ff">int</font> clickCounter;
+  String label = "";
+  <font color="#0000ff">public</font> MyButton() {
+    enableEvents(AWTEvent.ACTION_EVENT_MASK);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics g) {
+    g.setColor(Color.green);
+    Dimension s = getSize();
+    g.fillRect(0, 0, s.width, s.height);
+    g.setColor(Color.black);
+    g.drawRect(0, 0, s.width - 1, s.height - 1);
+    drawLabel(g);
+  }
+  <font color="#0000ff">private</font> <font color="#0000ff">void</font> drawLabel(Graphics g) {
+    FontMetrics fm = g.getFontMetrics();
+    <font color="#0000ff">int</font> width = fm.stringWidth(label);
+    <font color="#0000ff">int</font> height = fm.getHeight();
+    <font color="#0000ff">int</font> ascent = fm.getAscent();
+    <font color="#0000ff">int</font> leading = fm.getLeading();
+    <font color="#0000ff">int</font> horizMargin = 
+      (getSize().width - width)/2;
+    <font color="#0000ff">int</font> verMargin = 
+      (getSize().height - height)/2;
+    g.setColor(Color.red);
+    g.drawString(label, horizMargin, 
+                 verMargin + ascent + leading);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processActionEvent(ActionEvent e) {
+    clickCounter++;
+    label = "click #" + clickCounter +
+      " " + e.toString();
+    repaint();
+    <font color="#0000ff">super</font>.processActionEvent(e);
+  }
+}
+  
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> BadTechnique <font color="#0000ff">extends</font> Frame {
+  BadTechnique() {
+    setLayout(<font color="#0000ff">new</font> GridLayout(2,2));
+    add(<font color="#0000ff">new</font> EnabledPanel(1, Color.cyan));
+    add(<font color="#0000ff">new</font> EnabledPanel(2, Color.lightGray));
+    add(<font color="#0000ff">new</font> EnabledPanel(3, Color.yellow));
+    <font color="#009900">// You can also do it for Windows:</font>
+    enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> processWindowEvent(WindowEvent e) {
+    System.out.println(e);
+    <font color="#0000ff">if</font>(e.getID() == WindowEvent.WINDOW_CLOSING) {
+      System.out.println("Window Closing");
+      System.exit(0);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> BadTechnique();
+    f.setTitle("Bad Technique");
+    f.setSize(700,700);
+    f.setVisible(<font color="#0000ff">true</font>);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Sure,
+it works. But it&#8217;s ugly and hard to write, read, debug, maintain, and
+reuse. So why bother when you can use inner listener classes?
+</FONT><a name="_Toc408018713"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn58" HREF="#fnB58">[58]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+There is no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>MouseMotionEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+even though it seems like there ought to be. Clicking and motion is combined
+into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>MouseEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">,
+so this second appearance of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>MouseEvent</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+in the table is not an error.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn59" HREF="#fnB59">[59]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+It also solves the problem of &#8220;callbacks&#8221; without adding any
+awkward &#8220;method pointer&#8221; feature to Java.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0147.html">Prev</a> | <a href="tij0149.html">Next</a>
+</div>
+</body></html>
+

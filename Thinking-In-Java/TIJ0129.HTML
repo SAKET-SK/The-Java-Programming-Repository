@@ -1,0 +1,1199 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0128.html">Prev</a> | <a href="tij0130.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Read-only
+classes
+<P><A NAME="Index1489"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">While
+the local copy produced by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">gives
+the desired results in the appropriate cases, it is an example of forcing the
+programmer (the author of the method) to be responsible for preventing the ill
+effects of aliasing. What if you&#8217;re making a library that&#8217;s so
+general purpose and commonly used that you cannot make the assumption that it
+will always be cloned in the proper places? Or more likely, what if you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>want</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to allow aliasing for efficiency &#8211; to prevent the needless duplication of
+objects &#8211; but you don&#8217;t want the negative side effects of aliasing?
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+solution is to create <A NAME="Index1490"></A><A NAME="Index1491"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>immutable
+objects
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which belong to read-only classes. You can define a class such that no methods
+in the class cause changes to the internal state of the object. In such a
+class, aliasing has no impact since you can read only the internal state, so if
+many pieces of code are reading the same object there&#8217;s no problem.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+a simple example of immutable objects, Java&#8217;s standard library contains <A NAME="Index1492"></A><A NAME="Index1493"></A>&#8220;wrapper&#8221;
+classes for all the primitive types. You might have already discovered that, if
+you want to store an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside a collection such as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which takes only 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handles), you can wrap your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+inside the standard library 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ImmutableInteger.java</font>
+<font color="#009900">// The Integer class cannot be changed</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ImmutableInteger {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++) 
+      v.addElement(<font color="#0000ff">new</font> Integer(i));
+    <font color="#009900">// But how do you change the int</font>
+    <font color="#009900">// inside the Integer?</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class (as well as all the primitive &#8220;wrapper&#8221; classes) implements
+immutability in a simple fashion: they have no methods that allow you to change
+the object.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you do need an object that holds a primitive type that can be modified, you
+must create it yourself. Fortunately, this is trivial:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: MutableInteger.java</font>
+<font color="#009900">// A changeable wrapper class</font>
+<font color="#0000ff">import</font> java.util.*;
+
+<font color="#0000ff">class</font> IntValue { 
+  <font color="#0000ff">int</font> n;
+  IntValue(<font color="#0000ff">int</font> x) { n = x; }
+  <font color="#0000ff">public</font> String toString() { 
+    <font color="#0000ff">return</font> Integer.toString(n);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> MutableInteger {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Vector v = <font color="#0000ff">new</font> Vector();
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 10; i++) 
+      v.addElement(<font color="#0000ff">new</font> IntValue(i));
+    System.out.println(v);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; v.size(); i++)
+      ((IntValue)v.elementAt(i)).n++;
+    System.out.println(v);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>n</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is friendly to simplify coding.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IntValue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be even simpler if the default initialization to zero is adequate (then you
+don&#8217;t need the constructor) and you don&#8217;t care about printing it
+out (then you don&#8217;t need the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">):</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">class
+IntValue { int n; }
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Fetching
+the element out and casting it is a bit awkward, but that&#8217;s a feature of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+not of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>IntValue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018670"></a><P></DIV>
+<A NAME="Heading384"></A><H3 ALIGN=LEFT>
+Creating
+read-only classes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+possible to create your own read-only class. Here&#8217;s an example:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Immutable1.java</font>
+<font color="#009900">// Objects that cannot be modified</font>
+<font color="#009900">// are immune to aliasing.</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Immutable1 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> data;
+  <font color="#0000ff">public</font> Immutable1(<font color="#0000ff">int</font> initVal) {
+    data = initVal;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> read() { <font color="#0000ff">return</font> data; }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> nonzero() { <font color="#0000ff">return</font> data != 0; }
+  <font color="#0000ff">public</font> Immutable1 quadruple() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Immutable1(data * 4);
+  }
+  <font color="#0000ff">static</font> <font color="#0000ff">void</font> f(Immutable1 i1) {
+    Immutable1 quad = i1.quadruple();
+    System.out.println("i1 = " + i1.read());
+    System.out.println("quad = " + quad.read());
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Immutable1 x = <font color="#0000ff">new</font> Immutable1(47);
+    System.out.println("x = " + x.read());
+    f(x);
+    System.out.println("x = " + x.read());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">All
+data is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you&#8217;ll see that none of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods modify that data. Indeed, the method that does appear to modify an
+object is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>quadruple(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but this creates a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and leaves the original one untouched.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>f(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+takes an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and performs various operations on it, and the output of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+demonstrates that there is no change to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Thus, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>x</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+object could be aliased many times without harm because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable1</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is designed to guarantee that objects cannot be changed.
+</FONT><a name="_Toc408018671"></a><P></DIV>
+<A NAME="Heading385"></A><H3 ALIGN=LEFT>
+The
+drawback to immutability
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Creating
+an immutable class seems at first to provide an elegant solution. However,
+whenever you do need a modified object of that new type you must suffer the
+overhead of a new object creation, as well as potentially causing more frequent
+garbage collections. For some classes this is not a problem, but for others
+(such as the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class) it is prohibitively expensive.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+solution is to create a companion class that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>can</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+be modified. Then when you&#8217;re doing a lot of modifications, you can
+switch to using the modifiable companion class and switch back to the immutable
+class when you&#8217;re done.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+example above can be modified to show this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Immutable2.java</font>
+<font color="#009900">// A companion class for making changes</font>
+<font color="#009900">// to immutable objects.</font>
+
+<font color="#0000ff">class</font> Mutable {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> data;
+  <font color="#0000ff">public</font> Mutable(<font color="#0000ff">int</font> initVal) {
+    data = initVal;
+  }
+  <font color="#0000ff">public</font> Mutable add(<font color="#0000ff">int</font> x) { 
+    data += x;
+    <font color="#0000ff">return</font> <font color="#0000ff">this</font>;
+  }
+  <font color="#0000ff">public</font> Mutable multiply(<font color="#0000ff">int</font> x) {
+    data *= x;
+    <font color="#0000ff">return</font> <font color="#0000ff">this</font>;
+  }
+  <font color="#0000ff">public</font> Immutable2 makeImmutable2() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Immutable2(data);
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Immutable2 {
+  <font color="#0000ff">private</font> <font color="#0000ff">int</font> data;
+  <font color="#0000ff">public</font> Immutable2(<font color="#0000ff">int</font> initVal) {
+    data = initVal;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">int</font> read() { <font color="#0000ff">return</font> data; }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> nonzero() { <font color="#0000ff">return</font> data != 0; }
+  <font color="#0000ff">public</font> Immutable2 add(<font color="#0000ff">int</font> x) { 
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Immutable2(data + x);
+  }
+  <font color="#0000ff">public</font> Immutable2 multiply(<font color="#0000ff">int</font> x) {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Immutable2(data * x);
+  }
+  <font color="#0000ff">public</font> Mutable makeMutable() {
+    <font color="#0000ff">return</font> <font color="#0000ff">new</font> Mutable(data);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Immutable2 modify1(Immutable2 y){
+    Immutable2 val = y.add(12);
+    val = val.multiply(3);
+    val = val.add(11);
+    val = val.multiply(2);
+    <font color="#0000ff">return</font> val;
+  }
+  <font color="#009900">// This produces the same result:</font>
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> Immutable2 modify2(Immutable2 y){
+    Mutable m = y.makeMutable();
+    m.add(12).multiply(3).add(11).multiply(2);
+    <font color="#0000ff">return</font> m.makeImmutable2();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Immutable2 i2 = <font color="#0000ff">new</font> Immutable2(47);
+    Immutable2 r1 = modify1(i2);
+    Immutable2 r2 = modify2(i2);
+    System.out.println("i2 = " + i2.read());
+    System.out.println("r1 = " + r1.read());
+    System.out.println("r2 = " + r2.read());
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">contains
+methods that, as before, preserve the immutability of the objects by producing
+new objects whenever a modification is desired. These are the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>multiply(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">methods.
+The companion class is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it also has 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>multiply(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods, but these modify the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object rather than making a new one. In addition, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a method to use its data to produce an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and vice versa. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+two static methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>modify1(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>modify2(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+show two different approaches to producing the same result. In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>modify1(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+everything is done within the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class and you can see that four new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects are created in the process. (And each time 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>val</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is reassigned, the previous object becomes garbage.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>modify2(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see that the first action is to take the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2
+y
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and produce a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from it. (This is just like calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as you saw earlier, but this time a different type of object is created.) Then
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is used to perform a lot of change operations 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>without</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+requiring the creation of many new objects. Finally, it&#8217;s turned back
+into an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Here, two new objects are created (the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Mutable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the result 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Immutable2</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+instead of four.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+approach makes sense, then, when:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+need immutable objects and
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+often need to make a lot of modifications or
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	It&#8217;s
+expensive to create new immutable objects
+</FONT><a name="_Toc408018672"></a></OL><A NAME="Heading386"></A><H3 ALIGN=LEFT>
+Immutable
+Strings
+<P><A NAME="Index1494"></A><A NAME="Index1495"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Consider
+the following code:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Stringer.java</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Stringer {
+  <font color="#0000ff">static</font> String upcase(String s) {
+    <font color="#0000ff">return</font> s.toUpperCase();
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    String q = <font color="#0000ff">new</font> String("howdy");
+    System.out.println(q); <font color="#009900">// howdy</font>
+    String qq = upcase(q);
+    System.out.println(qq); <font color="#009900">// HOWDY</font>
+    System.out.println(q); <font color="#009900">// howdy</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>q</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is passed in to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it&#8217;s actually a copy of the handle to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>q</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The object this handle is connected to stays put in a single physical location.
+The handles are copied as they are passed around.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Looking
+at the definition for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you can see that the handle that&#8217;s passed in has the name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and it exists for only as long as the body of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is being executed. When 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+completes, the local handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>s</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+vanishes. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns the result, which is the original string with all the characters set to
+uppercase. Of course, it actually returns a handle to the result. But it turns
+out that the handle that it returns is for a new object, and the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>q</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is left alone. How does this happen?
+</FONT><P></DIV>
+<A NAME="Heading387"></A><H4 ALIGN=LEFT>
+Implicit
+constants
+<P><A NAME="Index1496"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">If
+you say:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+s = "asdf";
+</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+x = Stringer.upcase(s);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">do
+you really want the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>upcase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>change</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the argument? In general, you don&#8217;t, because an argument usually looks to
+the reader of the code as a piece of information provided to the method, not
+something to be modified. This is an important guarantee, since it makes code
+easier to write and understand.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+C++, the availability of this guarantee was important enough to put in a
+special keyword, <A NAME="Index1497"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>const</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+to allow the programmer to ensure that a handle (pointer or reference in C++)
+could not be used to modify the original object. But then the C++ programmer
+was required to be diligent and remember to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>const</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+everywhere. It can be confusing and easy to forget.
+</FONT><a name="_Toc375545435"></a><P></DIV>
+<A NAME="Heading388"></A><H4 ALIGN=LEFT>
+Overloading
+&#8216;+&#8217; and the StringBuffer
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Objects
+of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class are designed to be immutable, using the technique shown previously. If
+you examine the online documentation
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">for
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class (which is summarized a little later in this chapter), you&#8217;ll see
+that every method in the class that appears to modify a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+really creates and returns a brand new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object containing the modification. The original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is left untouched. Thus, there&#8217;s no feature in Java like C++&#8217;s 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>const</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to make the compiler support the immutability of your objects. If you want it,
+you have to wire it in yourself, like 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Since
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects
+are immutable, you can <A NAME="Index1498"></A>alias
+to a particular 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">as
+many times as you want. Because it&#8217;s read-only there&#8217;s no
+possibility that one handle will change something that will affect the other
+handles. So a read-only object solves the aliasing problem nicely.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+also seems possible to handle all the cases in which you need a modified object
+by creating a brand new version of the object with the modifications, as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does. However, for some operations this isn&#8217;t efficient. A case in point
+is the <A NAME="Index1499"></A><A NAME="Index1500"></A>operator
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+that has been overloaded for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. <A NAME="Index1501"></A><A NAME="Index1502"></A>Overloading
+means that it has been given an extra meaning when used with a particular
+class. (The &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8216;
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are the only operators that are overloaded in Java and Java does not allow the
+programmer to overload any others
+</FONT><A NAME="fnB52" HREF="#fn52">[52]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+used with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+allows you to concatenate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+together:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">String
+s = "abc" + foo + "def" + Integer.toString(47);
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+could imagine how this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>might</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+work: the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+&#8220;abc&#8221; could have a method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that creates a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object containing &#8220;abc&#8221; concatenated with the contents of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>foo</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object would then create another new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that added &#8220;def&#8221; and so on.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+would certainly work, but it requires the creation of a lot of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects just to put together this new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and then you have a bunch of the intermediate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects that need to be garbage-collected. I suspect that the Java designers
+tried this approach first (which is a lesson in software design &#8211; you
+don&#8217;t really know anything about a system until you try it out in code
+and get something working). I also suspect they discovered that it delivered
+unacceptable performance.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+solution is a mutable companion class similar to the one shown previously. For 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+this companion class is called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the compiler automatically creates a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to evaluate certain expressions, in particular when the overloaded operators 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are used with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. This example shows what happens:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ImmutableStrings.java</font>
+<font color="#009900">// Demonstrating StringBuffer</font>
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ImmutableStrings {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    String foo = "foo";
+    String s = "abc" + foo +
+      "def" + Integer.toString(47);
+    System.out.println(s);
+    <font color="#009900">// The "equivalent" using StringBuffer:</font>
+    StringBuffer sb = 
+      <font color="#0000ff">new</font> StringBuffer("abc"); <font color="#009900">// Creates String!</font>
+    sb.append(foo);
+    sb.append("def"); <font color="#009900">// Creates String!</font>
+    sb.append(Integer.toString(47));
+    System.out.println(sb);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the creation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String
+s
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the compiler is doing the rough equivalent of the subsequent code that uses 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>sb</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is used to add new characters directly into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object (rather than making new copies each time). While this is more efficient,
+it&#8217;s worth noting that each time you create a quoted character string
+such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;abc&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8220;def&#8221;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the compiler turns those into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects. So there can be more objects created than you expect, despite the
+efficiency afforded through 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc375545438"></a><a name="_Toc408018673"></a><a name="_Toc375545436"></a><a name="_Toc375545434"></a><P></DIV>
+<A NAME="Heading389"></A><H3 ALIGN=LEFT>
+The
+String and StringBuffer classes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here
+is an overview of the methods available for both <A NAME="Index1503"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can get a feel for the way they interact. These tables don&#8217;t
+contain every single method, but rather the ones that are important to this
+discussion. Methods that are overloaded are summarized in a single row.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">First,
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="108">
+      <COL width="97">
+      <COL width="148">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method</FONT><P></DIV>
+</TH>
+<TH WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Arguments,
+Overloading
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor</FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+Default, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer,
+char
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+arrays, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byte</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+arrays.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Creating
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Number
+of characters in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>charAt()</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int
+Index
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at a location in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getChars(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getBytes(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+beginning and end from which to copy, the array to copy into, an index into the
+destination array.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Copy
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bytes</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+into an external array.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toCharArray(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing the characters in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals-IgnoreCase(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to compare with.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">An
+equality check on the contents of the two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>compareTo(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to compare with.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Result
+is negative, zero, or positive depending on the lexicographical ordering of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and the argument. Uppercase and lowercase are not equal!
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>regionMatches(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Offset
+into this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and its offset and length to compare. Overload adds &#8220;ignore case.&#8221;
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Boolean
+result indicates whether the region matches.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>startsWith(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that it might start with. Overload adds offset into argument.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Boolean
+result indicates whether the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+starts with the argument.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>endsWith(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that might be a suffix of this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Boolean
+result indicates whether the argument is a suffix.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>indexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lastIndexOf(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+starting index, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and starting index
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+-1 if the argument is not found within this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+otherwise returns the index where the argument starts. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>lastIndexOf(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+searches backward from end.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>substring(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+Starting index, starting index, and ending index.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object containing the specified character set.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>concat(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to concatenate
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object containing the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+characters followed by the characters in the argument.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>replace(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+old character to search for, the new character to replace it with.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object with the replacements made. Uses the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if no match is found.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toLowerCase(&#160;)
+toUpperCase(&#160;)
+</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object with the case of all letters changed. Uses the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if no changes need to be made.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trim(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object with the white space removed from each end. Uses the old 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+if no changes need to be made.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>valueOf(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and offset and count, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+containing a character representation of the argument.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=108 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>intern(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=97 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Produces
+one and only one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle for each unique character sequence.
+</FONT><P></DIV>
+</TD>
+</TR>
+<a name="_Toc375545437"></a></TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+can see that every 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method carefully returns a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object when it&#8217;s necessary to change the contents. Also notice that if
+the contents don&#8217;t need changing the method will just return a handle to
+the original 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This saves storage and overhead.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Here&#8217;s
+the <A NAME="Index1504"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class:
+</FONT><P></DIV>
+<DIV ALIGN=LEFT><TABLE BORDER>
+<COLGROUP>
+      <COL width="76">
+      <COL width="148">
+      <COL width="121">
+</COLGROUP>
+<TR VALIGN="TOP">
+<TH WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Method</FONT><P></DIV>
+</TH>
+<TH WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Arguments,
+overloading
+</FONT><P></DIV>
+</TH>
+<TH WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Use</FONT><P></DIV>
+</TH>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Constructor</FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+default, length of buffer to create, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to create from.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Create
+a new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>toString(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Creates
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from this 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>length(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Number
+of characters in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>capacity(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+current number of spaces allocated.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ensure-</B></FONT><P><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Capacity(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Integer
+indicating desired capacity.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Makes
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+hold at least the desired number of spaces.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setLength(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Integer
+indicating new length of character string in buffer.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Truncates
+or expands the previous character string. If expanding, pads with nulls.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>charAt(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Integer
+indicating the location of the desired element.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Returns
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at that location in the buffer.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setCharAt(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Integer
+indicating the location of the desired element and the new 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+value for the element.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Modifies
+the value at that location.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getChars(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+beginning and end from which to copy, the array to copy into, an index into the
+destination array.
+</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Copy
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+into an external array. There&#8217;s no 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getBytes(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded:
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with offset and length, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+argument is converted to a string and appended to the end of the current
+buffer, increasing the buffer if necessary.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>insert(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Overloaded,
+each with a first argument of the offset at which to start inserting: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>boolean</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>long</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>float</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>double</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+</TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+second argument is converted to a string and inserted into the current buffer
+beginning at the offset. The buffer is increased if necessary.
+</FONT><P></DIV>
+</TD>
+</TR>
+<TR VALIGN="TOP">
+<TD WIDTH=76 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>reverse(&#160;)</B></FONT><P></DIV>
+</TD>
+<TD WIDTH=148 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<P></TD>
+<TD WIDTH=121 COLSPAN=1 ROWSPAN=1 VALIGN=TOP>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+order of the characters in the buffer is reversed.
+</FONT><P></DIV>
+</TD>
+</TR>
+</TABLE></DIV>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+most commonly-used method is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>append(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used by the compiler when evaluating 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+expressions that contain the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8216;
+operators. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>insert(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method has a similar form, and both methods perform significant manipulations
+to the buffer instead of creating new objects.
+</FONT><a name="_Toc408018674"></a><P></DIV>
+<A NAME="Heading390"></A><H3 ALIGN=LEFT>
+Strings
+are special
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">By
+now you&#8217;ve seen that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is not just another class in Java. There are a lot of special cases in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+not the least of which is that it&#8217;s a built-in class and fundamental to
+Java. Then there&#8217;s the fact that a quoted character string is converted
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by the compiler and the special overloaded operators 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In this chapter you&#8217;ve seen the remaining special case: the
+carefully-built immutability using the companion 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>StringBuffer</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and some extra magic in the compiler.
+</FONT><a name="_Toc375545442"></a><a name="_Toc408018675"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn52" HREF="#fnB52">[52]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+C++ allows the programmer to overload operators at will. Because this can often
+be a complicated process (see Chapter 10 of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Thinking
+in C++
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Prentice-Hall, 1995), the Java designers deemed it a &#8220;bad&#8221; feature
+that shouldn&#8217;t be included in Java. It wasn&#8217;t so bad that they
+didn&#8217;t end up doing it themselves, and ironically enough, operator
+overloading would be much easier to use in Java than in C++.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0128.html">Prev</a> | <a href="tij0130.html">Next</a>
+</div>
+</body></html>
+

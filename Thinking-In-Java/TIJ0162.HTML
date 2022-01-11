@@ -1,0 +1,51 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0161.html">Prev</a> | <a href="tij0163.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+15:
+Network programming
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Historically,
+<A NAME="Index2613"></A>network
+programming has been error-prone, difficult, and complex.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+programmer had to know many details about the network and sometimes even the
+hardware. You usually needed to understand the various &#8220;layers&#8221; of
+the networking protocol, and there were a lot of different functions in each
+different networking library concerned with connecting, packing, and unpacking
+blocks of information; shipping those blocks back and forth; and handshaking.
+It was a daunting task.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+the concept of networking is not so difficult. You want to get some information
+from that machine over there and move it to this machine here, or vice versa.
+It&#8217;s quite similar to reading and writing files, except that the file
+exists on a remote machine and the remote machine can decide exactly what it
+wants to do about the information you&#8217;re requesting or sending.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of Java&#8217;s great strengths is painless networking. As much as possible,
+the underlying details of networking have been abstracted away and taken care
+of within the JVM and local machine installation of Java. The programming model
+you use is that of a file; in fact, you actually wrap the network connection (a
+&#8220;socket&#8221;) with stream objects, so you end up using the same method
+calls as you do with all other streams. In addition, Java&#8217;s built-in
+multithreading is exceptionally handy when dealing with another networking
+issue: handling multiple connections at once.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+chapter introduces Java&#8217;s networking support using easy-to-understand
+examples.
+</FONT><a name="_Toc375545492"></a><a name="_Toc408018765"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0161.html">Prev</a> | <a href="tij0163.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,1335 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0167.html">Prev</a> | <a href="tij0169.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Connecting
+Java to CGI
+<P><A NAME="Index2749"></A><A NAME="Index2750"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+Java program can send a CGI request to a server just like an HTML page can. As
+with HTML pages, this request can be either a <A NAME="Index2751"></A><A NAME="Index2752"></A>GET
+or a <A NAME="Index2753"></A><A NAME="Index2754"></A>POST.
+In addition, the Java program can intercept the output of the CGI program, so
+you don&#8217;t have to rely on the program to format a new page and force the
+user to back up from one page to another if something goes wrong. In fact, the
+appearance of the program can be the same as the previous version.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It
+also turns out that the code is simpler, and that CGI isn&#8217;t difficult to
+write after all. (An innocent statement that&#8217;s true of many things &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>after</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you understand them.) So in this section you&#8217;ll get a <A NAME="Index2755"></A><A NAME="Index2756"></A>crash
+course in CGI programming. To solve the general problem, some CGI tools will be
+created in C++ that will allow you to easily write a CGI program to solve any
+problem. The benefit to this approach is portability &#8211; the example you
+are about to see will work on any system that supports CGI, and there&#8217;s
+no problem with firewalls.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also works out the basics of creating any connection with applets and
+CGI programs, so you can easily adapt it to your own projects.
+</FONT><a name="_Toc408018777"></a><P></DIV>
+<A NAME="Heading528"></A><H3 ALIGN=LEFT>
+Encoding
+data for CGI
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this version, the name 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>and</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the email address will be collected and stored in the file in the form:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">First
+Last &lt;email@domain.com&gt;;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+is a convenient form for many mailers. Since two fields are being collected,
+there are no shortcuts because CGI has a particular format for encoding the
+data in fields. You can see this for yourself if you make an ordinary <A NAME="Index2757"></A><A NAME="Index2758"></A>HTML
+page and add the lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;Form method="GET" ACTION="/cgi-bin/Listmgr2.exe"&gt;
+&lt;P&gt;Name: &lt;INPUT TYPE = "text" NAME = "name" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Email Address: &lt;INPUT TYPE = "text" 
+NAME = "email" VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;input type = "submit" name = "submit" &gt; &lt;/p&gt;
+&lt;/Form&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+creates two data entry fields called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>email</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+along with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>submit</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+button that collects the data and sends it to a CGI program. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Listmgr2.exe</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the name of the executable program that resides in the directory
+that&#8217;s typically called &#8220;cgi-bin&#8221; on your Web server.
+</FONT><A NAME="fnB65" HREF="#fn65">[65]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(If the named program is not in the cgi-bin directory, you won&#8217;t see any
+results.) If you fill out this form and press the &#8220;submit&#8221; button,
+you will see in the URL address window of the browser something like:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">http://www.myhome.com/cgi-bin/Listmgr2.exe?</FONT></TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">name=First+Last&amp;email=email@domain.com&amp;submit=Submit</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Without
+the line break, of course). Here you see a little bit of the way that data is
+encoded to send to CGI. For one thing, spaces are not allowed (since spaces
+typically separate command-line arguments). Spaces are replaced by &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+signs. In addition, each field contains the field name (which is determined by
+the HTML page) followed by an &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and the field data, and terminated by a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, you might wonder about the &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+&#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+What if those are used in the field, as in &#8220;John &amp; Marsha
+Smith&#8221;? This is encoded to: 
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">John+%26+Marsha+Smith</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">That
+is, the special character is turned into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&#8216;%</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+followed by its ASCII value in hex.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Fortunately,
+Java has a tool to perform this encoding for you. It&#8217;s a static method of
+the class <A NAME="Index2759"></A><A NAME="Index2760"></A><A NAME="Index2761"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URLEncoder</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>encode(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+You can experiment with this method using the following program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: EncodeDemo.java</font>
+<font color="#009900">// Demonstration of URLEncoder.encode()</font>
+<font color="#0000ff">import</font> java.net.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> EncodeDemo {
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    String s = "";
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; args.length; i++)
+      s += args[i] + " ";
+    s = URLEncoder.encode(s.trim());
+    System.out.println(s);
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+takes the command-line arguments and combines them into a string of words
+separated by spaces (the final space is removed using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.trim(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+These are then encoded and printed.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+<A NAME="Index2762"></A><A NAME="Index2763"></A>invoke
+a CGI program, all the applet needs to do is collect the data from its fields
+(or wherever it needs to collect the data from), URL-encode each piece of data,
+and then assemble it into a single string, placing the name of each field
+followed by an &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;,
+followed by the data, followed by an &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+To form the entire CGI command, this string is placed after the URL of the CGI
+program and a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>?</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+That&#8217;s all it takes to invoke any CGI program, and as you&#8217;ll see
+you can easily do it within an applet.
+</FONT><a name="_Toc408018778"></a><P></DIV>
+<A NAME="Heading529"></A><H3 ALIGN=LEFT>
+The
+applet
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+applet is actually considerably simpler than 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+partly because it&#8217;s so easy to send a <A NAME="Index2764"></A><A NAME="Index2765"></A>GET
+request and also because no thread is required to wait for the reply. There are
+now two fields instead of one, but you&#8217;ll notice that much of the applet
+looks familiar, from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>NameSender.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: NameSender2.java</font>
+<font color="#009900">// An applet that sends an email address</font>
+<font color="#009900">// via a CGI GET, using Java 1.02.</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> NameSender2 <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">final</font> String CGIProgram = "Listmgr2.exe";
+  Button send = <font color="#0000ff">new</font> Button(
+    "Add email address to mailing list");
+  TextField name = <font color="#0000ff">new</font> TextField(
+    "type your name here", 40),
+    email = <font color="#0000ff">new</font> TextField(
+    "type your email address here", 40);
+  String str = <font color="#0000ff">new</font> String();
+  Label l = <font color="#0000ff">new</font> Label(), l2 = <font color="#0000ff">new</font> Label();
+  <font color="#0000ff">int</font> vcount = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    setLayout(<font color="#0000ff">new</font> BorderLayout());
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(3, 1));
+    p.add(name);
+    p.add(email);
+    p.add(send);
+    add("North", p);
+    Panel labels = <font color="#0000ff">new</font> Panel();
+    labels.setLayout(<font color="#0000ff">new</font> GridLayout(2, 1));
+    labels.add(l);
+    labels.add(l2);
+    add("Center", labels);
+    l.setText("Ready to send email address");
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(send)) {
+      l2.setText("");
+      <font color="#009900">// Check for errors in data:</font>
+      <font color="#0000ff">if</font>(name.getText().trim()
+         .indexOf(' ') == -1) {
+        l.setText(
+          "Please give first and last name");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      str = email.getText().trim();
+      <font color="#0000ff">if</font>(str.indexOf(' ') != -1) {
+        l.setText(
+          "Spaces not allowed in email name");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf(',') != -1) {
+        l.setText(
+          "Commas not allowed in email name");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf('@') == -1) {
+        l.setText("Email name must include '@'");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#0000ff">if</font>(str.indexOf('@') == 0) {
+        l.setText(
+          "Name must preceed '@' in email name");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      String end = 
+        str.substring(str.indexOf('@'));
+      <font color="#0000ff">if</font>(end.indexOf('.') == -1) {
+        l.setText("Portion after '@' must " +
+          "have an extension, such as '.com'");
+        l2.setText("");
+        <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+      }
+      <font color="#009900">// Build and encode the email data:</font>
+      String emailData = 
+        "name=" + URLEncoder.encode(
+          name.getText().trim()) +
+        "&amp;email=" + URLEncoder.encode(
+          email.getText().trim().toLowerCase()) +
+        "&amp;submit=Submit";
+      <font color="#009900">// Send the name using CGI's GET process:</font>
+      <font color="#0000ff">try</font> {
+        l.setText("Sending...");
+        URL u = <font color="#0000ff">new</font> URL(
+          getDocumentBase(), "cgi-bin/" +
+          CGIProgram + "?" + emailData);
+        l.setText("Sent: " + email.getText());
+        send.setLabel("Re-send");
+        l2.setText(
+          "Waiting <font color="#0000ff">for</font> reply " + ++vcount);
+        DataInputStream server =
+          <font color="#0000ff">new</font> DataInputStream(u.openStream());
+        String line;
+        <font color="#0000ff">while</font>((line = server.readLine()) != <font color="#0000ff">null</font>)
+          l2.setText(line);
+      } <font color="#0000ff">catch</font>(MalformedURLException e) {
+        l.setText("Bad URl");
+      } <font color="#0000ff">catch</font>(IOException e) {
+        l.setText("IO Exception");
+      } 
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+name of the CGI program (which you&#8217;ll see later) is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Listmgr2.exe</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Many Web servers are Unix machines (mine runs Linux) that don&#8217;t
+traditionally use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.exe</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+extension for their executable programs, but you can call the program anything
+you want under Unix. By using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.exe
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">extension
+the program can be tested without change under both Unix and Win32.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+before, the applet sets up its user interface (with two fields this time
+instead of one). The only significant difference occurs inside the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method,
+which handles the button press. After the name has been checked, you see the
+lines:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>      String emailData = 
+        "name=" + URLEncoder.encode(
+          name.getText().trim()) +
+        "&amp;email=" + URLEncoder.encode(
+          email.getText().trim().toLowerCase()) +
+        "&amp;submit=Submit";
+      <font color="#009900">// Send the name using CGI's GET process:</font>
+      <font color="#0000ff">try</font> {
+        l.setText("Sending...");
+        URL u = <font color="#0000ff">new</font> URL(
+          getDocumentBase(), "cgi-bin/" +
+          CGIProgram + "?" + emailData);
+        l.setText("Sent: " + email.getText());
+        send.setLabel("Re-send");
+        l2.setText(
+          "Waiting <font color="#0000ff">for</font> reply " + ++vcount);
+        DataInputStream server =
+          <font color="#0000ff">new</font> DataInputStream(u.openStream());
+        String line;
+        <font color="#0000ff">while</font>((line = server.readLine()) != <font color="#0000ff">null</font>)
+          l2.setText(line); </TT><P><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">        <font color="#009900">// ... </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>email</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+data are extracted from their respective text boxes, and the spaces are trimmed
+off both ends using <A NAME="Index2766"></A><A NAME="Index2767"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>trim(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>email</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+name is forced to lower case so all email addresses in the list can be
+accurately compared (to prevent accidental duplicates based on capitalization).
+The data from each field is URL-encoded, and then the GET string is assembled
+in the same way that an HTML page would do it. (This way you can use a Java
+applet in concert with any existing CGI program designed to work with regular
+HTML GET requests.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, some Java magic happens: if you want to connect to any URL, just
+create a <A NAME="Index2768"></A><A NAME="Index2769"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object and hand the address to the constructor. The constructor makes the
+connection with the server (and, with Web servers, all the action happens in
+making the connection, via the string used as the URL). In this case, the URL
+points to the cgi-bin directory of the current Web site (the base address of
+the current Web site is produced with <A NAME="Index2770"></A><A NAME="Index2771"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getDocumentBase(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+When the Web server sees &#8220;cgi-bin&#8221; in a URL, it expects that to be
+followed by the name of the program inside the cgi-bin directory that you want
+it to run. Following the program name is a question mark and the argument
+string that the CGI program will look for in the QUERY_STRING environment
+variable, as you&#8217;ll see.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Usually
+when you make any sort of request, you get back (you&#8217;re forced to accept
+in return) an HTML page. With Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects, however, you can intercept anything that comes back from the <A NAME="Index2772"></A><A NAME="Index2773"></A>CGI
+program by getting an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>InputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is performed with the <A NAME="Index2774"></A><A NAME="Index2775"></A><A NAME="Index2776"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>openStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which is in turn wrapped in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then you can read lines, and when 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>readLine(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the CGI program has finished its output.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+CGI program you&#8217;re about to see returns only one line, a string
+indicating success or failure (and the details of the failure). This line is
+captured and placed into the second 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Label</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+field so the user can see the results.
+</FONT><P></DIV>
+<A NAME="Heading530"></A><H4 ALIGN=LEFT>
+Displaying
+a Web page from within an applet
+<P><A NAME="Index2777"></A><A NAME="Index2778"></A><A NAME="Index2779"></A></H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+also possible for the applet to display the result of the CGI program as a Web
+page, just as if it were running in normal HTML mode. You can do this with the
+following line:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">getAppletContext().showDocument(u);</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><A NAME="Index2780"></A><A NAME="Index2781"></A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>u</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. Here&#8217;s a simple example that redirects you to another Web page.
+The page happens to be the output of a CGI program, but you can as easily go to
+an ordinary HTML page, so you could build on this applet to produce a
+password-protected gateway to a particular portion of your Web site:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ShowHTML.java</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ShowHTML <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> String CGIProgram = "MyCGIProgram";
+  Button send = <font color="#0000ff">new</font> Button("Go");
+  Label l = <font color="#0000ff">new</font> Label();
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(send);
+    add(l);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(send)) {
+      <font color="#0000ff">try</font> {
+        <font color="#009900">// This could be an HTML page instead of</font>
+        <font color="#009900">// a CGI program. Notice that this CGI </font>
+        <font color="#009900">// program doesn't use arguments, but </font>
+        <font color="#009900">// you can add them in the usual way.</font>
+        URL u = <font color="#0000ff">new</font> URL(
+          getDocumentBase(), 
+          "cgi-bin/" + CGIProgram);
+        <font color="#009900">// Display the output of the URL using</font>
+        <font color="#009900">// the Web browser, as an ordinary page:</font>
+        getAppletContext().showDocument(u);
+      } <font color="#0000ff">catch</font>(Exception e) {
+        l.setText(e.toString());
+      } 
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+beauty of the <A NAME="Index2782"></A><A NAME="Index2783"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URL</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is how much it shields you from. You can connect to Web servers without
+knowing much at all about what&#8217;s going on under the covers.
+</FONT><a name="_Toc408018779"></a><P></DIV>
+<A NAME="Heading531"></A><H3 ALIGN=LEFT>
+The
+CGI program in C++
+<P><A NAME="Index2784"></A><A NAME="Index2785"></A><A NAME="Index2786"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point you could follow the previous example and write the CGI program for
+the server using ANSI C. One argument for doing this is that ANSI C can be
+found virtually everywhere. However, C++ has become quite ubiquitous,
+especially in the form of the <A NAME="Index2787"></A><A NAME="Index2788"></A>GNU
+C++ Compiler
+</FONT><A NAME="fnB66" HREF="#fn66">[66]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>g++</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">that
+can be downloaded free from the Internet for virtually any platform (and often
+comes pre-installed with operating systems such as Linux). As you will see,
+this means that you can get the benefit of object-oriented programming in a CGI
+program.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+avoid throwing too many new concepts at you all at once, this program will not
+be a &#8220;pure&#8221; C++ program; some code will be written in plain C even
+though C++ alternatives exist. This isn&#8217;t a significant issue because the
+biggest benefit in using C++ for this program is the ability to create classes.
+Since what we&#8217;re concerned with when parsing the CGI information is the
+field name-value pairs, one class (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">will
+be used to represent a single name-value pair and a second class (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+will automatically parse the CGI string into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects that it will hold (as a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+so you can fetch each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+out at your leisure.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program is also interesting because it demonstrates some of the pluses and
+minuses of <A NAME="Index2789"></A><A NAME="Index2790"></A>C++
+in contrast with Java. You&#8217;ll see some similarities; for example the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>class</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword. Access control has identical keywords 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but they&#8217;re used differently: they control a block instead of a single
+method or field (that is, if you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+each following definition is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+until you say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public:</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Also, when you create a class, all the definitions automatically default to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the reasons for using C++ here is the convenience of the <A NAME="Index2791"></A><A NAME="Index2792"></A><A NAME="Index2793"></A>C++
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>Standard
+Template Library
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Among other things, the STL contains a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class. This is a C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>template</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which means that it will be configured at compile time so it will hold objects
+of only a particular type (in this case, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+objects). Unlike the Java 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which will accept anything, the C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+template will cause a compile-time error message if you try to put anything but
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object into the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and when you get something out of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it will automatically be a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, without casting. Thus, the checking happens at compile time and
+produces a more robust program. In addition, the program can run faster since
+you don&#8217;t have to perform run-time casts. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">also
+overloads the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator[]
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">so
+you have a convenient syntax for extracting 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">objects.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+template will be used in the creation of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which you&#8217;ll see is a fairly short definition considering how powerful it
+is.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">On
+the down side, look at the complexity of the definition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the following code. 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">has
+more method definitions than you&#8217;re used to seeing in Java code, because
+the C++ programmer must know how to control copying with the copy-constructor
+and assignment with the overloaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As described in Chapter 12, occasionally you need to concern yourself with
+similar things in Java, but in C++ you must be aware of them almost constantly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+project will start with a reusable portion, which consists of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a C++ header file. Technically, you shouldn&#8217;t cram this much into a
+header file, but for these examples it doesn&#8217;t hurt anything and it will
+also look more Java-like, so it will be easier for you to read:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: CGITools.h</font>
+<font color="#009900">// Automatically extracts and decodes data</font>
+<font color="#009900">// from CGI GETs and POSTs. Tested with GNU C++ </font>
+<font color="#009900">// (available for most server machines).</font>
+#include &lt;string.h&gt;
+#include &lt;vector&gt; <font color="#009900">// STL vector</font>
+using namespace std;
+
+<font color="#009900">// A class to hold a single name-value pair from</font>
+<font color="#009900">// a CGI query. CGI_vector holds Pair objects and</font>
+<font color="#009900">// returns them from its operator[].</font>
+<font color="#0000ff">class</font> Pair {
+  <font color="#0000ff">char</font>* nm;
+  <font color="#0000ff">char</font>* val;
+<font color="#0000ff">public</font>:
+  Pair() { nm = val = 0; }
+  Pair(<font color="#0000ff">char</font>* name, <font color="#0000ff">char</font>* value) {
+    <font color="#009900">// Creates new memory:</font>
+    nm = decodeURLString(name);
+    val = decodeURLString(value);
+  }
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font>* name() <font color="#0000ff">const</font> { <font color="#0000ff">return</font> nm; }
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font>* value() <font color="#0000ff">const</font> { <font color="#0000ff">return</font> val; }
+  <font color="#009900">// Test for "emptiness"</font>
+  bool empty() <font color="#0000ff">const</font> {
+    <font color="#0000ff">return</font> (nm == 0) || (val == 0);
+  }
+  <font color="#009900">// Automatic type conversion for boolean test:</font>
+  operator bool() <font color="#0000ff">const</font> {
+    <font color="#0000ff">return</font> (nm != 0) &amp;&amp; (val != 0);
+  }
+  <font color="#009900">// The following constructors &amp; destructor are</font>
+  <font color="#009900">// necessary for bookkeeping in C++.</font>
+  <font color="#009900">// Copy-constructor:</font>
+  Pair(<font color="#0000ff">const</font> Pair&amp; p) {
+    <font color="#0000ff">if</font>(p.nm == 0 || p.val == 0) {
+      nm = val = 0;
+    } <font color="#0000ff">else</font> {
+      <font color="#009900">// Create storage &amp; copy rhs values:</font>
+      nm = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[strlen(p.nm) + 1];
+      strcpy(nm, p.nm);
+      val = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[strlen(p.val) + 1];
+      strcpy(val, p.val);
+    }
+  }
+  <font color="#009900">// Assignment operator:</font>
+  Pair&amp; operator=(<font color="#0000ff">const</font> Pair&amp; p) {
+    <font color="#009900">// Clean up old lvalues:</font>
+    delete nm;
+    delete val;
+    <font color="#0000ff">if</font>(p.nm == 0 || p.val == 0) {
+      nm = val = 0;
+    } <font color="#0000ff">else</font> {
+      <font color="#009900">// Create storage &amp; copy rhs values:</font>
+      nm = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[strlen(p.nm) + 1];
+      strcpy(nm, p.nm);
+      val = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[strlen(p.val) + 1];
+      strcpy(val, p.val);
+    }
+    <font color="#0000ff">return</font> *<font color="#0000ff">this</font>;
+  } 
+  ~Pair() { <font color="#009900">// Destructor</font>
+    delete nm; <font color="#009900">// 0 value OK</font>
+    delete val;
+  }
+  <font color="#009900">// If you use this method outide this class, </font>
+  <font color="#009900">// you're responsible for calling 'delete' on</font>
+  <font color="#009900">// the pointer that's returned:</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">char</font>* 
+  decodeURLString(<font color="#0000ff">const</font> <font color="#0000ff">char</font>* URLstr) {
+    <font color="#0000ff">int</font> len = strlen(URLstr);
+    <font color="#0000ff">char</font>* result = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[len + 1];
+    memset(result, len + 1, 0);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0, j = 0; i &lt;= len; i++, j++) {
+      <font color="#0000ff">if</font>(URLstr[i] == '+')
+        result[j] = ' ';
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(URLstr[i] == '%') {
+        result[j] =
+          translateHex(URLstr[i + 1]) * 16 +
+          translateHex(URLstr[i + 2]);
+        i += 2; <font color="#009900">// Move past hex code</font>
+      } <font color="#0000ff">else</font> <font color="#009900">// An ordinary character</font>
+        result[j] = URLstr[i];
+    }
+    <font color="#0000ff">return</font> result;
+  }
+  <font color="#009900">// Translate a single hex character; used by</font>
+  <font color="#009900">// decodeURLString():</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">char</font> translateHex(<font color="#0000ff">char</font> hex) {
+    <font color="#0000ff">if</font>(hex &gt;= 'A')
+      <font color="#0000ff">return</font> (hex &amp; 0xdf) - 'A' + 10;
+    <font color="#0000ff">else</font>
+      <font color="#0000ff">return</font> hex - '0';
+  }
+};
+
+<font color="#009900">// Parses any CGI query and turns it</font>
+<font color="#009900">// into an STL vector of Pair objects:</font>
+<font color="#0000ff">class</font> CGI_vector : <font color="#0000ff">public</font> vector&lt;Pair&gt; {
+  <font color="#0000ff">char</font>* qry;
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font>* start; <font color="#009900">// Save starting position</font>
+  <font color="#009900">// Prevent assignment and copy-construction:</font>
+  <font color="#0000ff">void</font> operator=(CGI_vector&amp;);
+  CGI_vector(CGI_vector&amp;);
+<font color="#0000ff">public</font>:
+  <font color="#009900">// const fields must be initialized in the C++</font>
+  <font color="#009900">// "Constructor initializer list":</font>
+  CGI_vector(<font color="#0000ff">char</font>* query) :
+      start(<font color="#0000ff">new</font> <font color="#0000ff">char</font>[strlen(query) + 1]) {
+    qry = (<font color="#0000ff">char</font>*)start; <font color="#009900">// Cast to non-const</font>
+    strcpy(qry, query);
+    Pair p;
+    <font color="#0000ff">while</font>((p = nextPair()) != 0)
+      push_back(p);
+  }
+  <font color="#009900">// Destructor:</font>
+  ~CGI_vector() { delete start; }
+<font color="#0000ff">private</font>:
+  <font color="#009900">// Produces name-value pairs from the query </font>
+  <font color="#009900">// string. Returns an empty Pair when there's </font>
+  <font color="#009900">// no more query string left:</font>
+  Pair nextPair() {
+    <font color="#0000ff">char</font>* name = qry;
+    <font color="#0000ff">if</font>(name == 0 || *name == '\0')
+      <font color="#0000ff">return</font> Pair(); <font color="#009900">// End, return null Pair</font>
+    <font color="#0000ff">char</font>* value = strchr(name, '=');
+    <font color="#0000ff">if</font>(value == 0)
+      <font color="#0000ff">return</font> Pair(); <font color="#009900">// Error, return null Pair</font>
+    <font color="#009900">// Null-terminate name, move value to start</font>
+    <font color="#009900">// of its set of characters:</font>
+    *value = '\0';
+    value++;
+    <font color="#009900">// Look for end of value, marked by '&amp;':</font>
+    qry = strchr(value, '&amp;');
+    <font color="#0000ff">if</font>(qry == 0) qry = ""; <font color="#009900">// Last pair found</font>
+    <font color="#0000ff">else</font> {
+      *qry = '\0'; <font color="#009900">// Terminate value string</font>
+      qry++; <font color="#009900">// Move to next pair</font>
+    }
+    <font color="#0000ff">return</font> Pair(name, value);
+  }
+}; <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#include</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements, you see a line that says:
+</FONT><P></DIV><DIV ALIGN=LEFT><TT><FONT FACE="Courier New" SIZE=3 COLOR="Black">using
+namespace std;
+</FONT></TT><P></DIV><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Namespaces
+in C++ solve one of the problems taken care of by the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>package</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+scheme in Java: hiding library names. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>std</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+namespace refers to the Standard C++ library, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is in this library so the line is required.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class starts out looking pretty simple: it just holds two (
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">character
+pointers, one for the name and one for the value. The default constructor
+simply sets these pointers to zero, since in C++ an object&#8217;s memory
+isn&#8217;t automatically zeroed. The second constructor calls the method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>decodeURLString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that produces a decoded string in newly-allocated heap memory. This memory must
+be managed and destroyed by the object, as you will see in the destructor. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>name(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>value(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods produce read-only pointers to the respective fields. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>empty(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is a way for you to ask the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object whether either of its fields are empty; it returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>bool,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is C++&#8217;s built-in primitive Boolean data type. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator
+bool(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+uses a special case of <A NAME="Index2794"></A><A NAME="Index2795"></A>C++
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>operator
+overloading
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which allows you to control automatic type conversion. If you have a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>p</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and you use it in an expression in which a Boolean result is expected, such as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if(p)
+{ //...
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then the compiler will recognize that it has a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it needs a Boolean, so it will automatically call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator
+bool(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to perform the necessary conversion.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+next three methods are part of the bookkeeping that&#8217;s necessary when you
+create a class in C++. In the so-called &#8220;canonical form&#8221; for a C++
+class, you must define the necessary &#8220;ordinary&#8221; constructors as
+well as a copy-constructor and the assignment operator, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator=
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(and
+the destructor, to clean up the memory). You must define these because they can
+be quietly called by the compiler when you pass objects in and out of a
+function (this calls the copy-constructor) or when you assign objects (the
+assignment operator). Once you&#8217;ve gone through the trouble to understand
+how the copy-constructor and assignment operator work you can write robust
+classes in C++, but it is a bit of a learning experience.
+</FONT><A NAME="fnB67" HREF="#fn67">[67]</A><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index2796"></A><A NAME="Index2797"></A>copy-constructor
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair(const
+Pair&amp;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is automatically called whenever you pass an object into or out of a function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>by
+value
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+That is, you aren&#8217;t passing the address of the object you&#8217;re making
+a copy of the whole object inside the function frame. This isn&#8217;t an
+option in Java since you pass only handles, thus there&#8217;s no
+copy-constructor in Java. (If you want to make a local duplicate, you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+the object &#8211; see Chapter 12.) Likewise, if you assign a handle in Java,
+it&#8217;s simply copied. But assignment in C++ means that the entire object is
+copied. In the copy-constructor, you create new storage and copy the source
+data, but with the assignment operator you must release the old storage before
+allocating new storage. What you&#8217;re seeing is probably the worst-case
+complexity scenario for a C++ class, but it&#8217;s one of the reasons Java
+proponents can argue that Java is a lot simpler than C++. In Java you pass
+handles and there&#8217;s a garbage collector, so you don&#8217;t have to do
+this kind of thing.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+isn&#8217;t quite the whole story. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class is using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nm</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>val</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the worst-case complexity occurs primarily around pointers. If you use the
+more modern Standard C++ 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>string</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+things get much simpler (however, not all compilers have caught up enough to
+come with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>string</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Then, the first part of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+looks like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#0000ff">class</font> Pair {
+  string nm;
+  string val;
+<font color="#0000ff">public</font>:
+  Pair() { }
+  Pair(<font color="#0000ff">char</font>* name, <font color="#0000ff">char</font>* value) {
+    <font color="#009900">// Creates new memory:</font>
+    nm = decodeURLString(name);
+    val = decodeURLString(value);
+  }
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font>* name() <font color="#0000ff">const</font> { <font color="#0000ff">return</font> nm.c_str(); }
+  <font color="#0000ff">const</font> <font color="#0000ff">char</font>* value() <font color="#0000ff">const</font> { <font color="#0000ff">return</font> val.c_str(); }
+  <font color="#009900">// Test for "emptiness"</font>
+  bool empty() <font color="#0000ff">const</font> {
+    <font color="#0000ff">return</font> (nm.length() == 0) || (val.length() == 0);
+  }
+  <font color="#009900">// Automatic type conversion for boolean test:</font>
+  operator bool() <font color="#0000ff">const</font> {
+    <font color="#0000ff">return</font> (nm.length() != 0) &amp;&amp; (val.length() != 0);
+  } </PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(Also,
+for this case 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>decodeURLString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>string</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+instead of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>char*</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.)
+You don&#8217;t need to define a copy-constructor, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator=,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or destructor because the compiler does that for you, and does it correctly.
+But even if it sometimes works automatically, C++ programmers must still know
+the details of copy-construction and assignment.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+remainder of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class consists of the two methods 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>decodeURLString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and a helper method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>translateHex(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is used by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>decodeURLString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+(Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>translateHex(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+does not guard against bad user input such as &#8220;%1H.&#8221;) After
+allocating adequate storage (which must be released by the destructor), 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>decodeURLString(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+moves through and replaces each &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+with a space and each hex code (beginning with a &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>%</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;)
+with the appropriate character.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+parses and holds an entire CGI GET command. It is inherited from the STL 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is instantiated to hold 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+Inheritance in C++ is denoted by using a colon at the point you&#8217;d say 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>extends</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in Java. In addition, inheritance defaults to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you&#8217;ll almost always need to use the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>public</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+keyword as was done here. You can also see that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has a copy-constructor and an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but they&#8217;re both declared as 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>private</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is to prevent the compiler from synthesizing the two functions (which it
+will do if you don&#8217;t declare them yourself), but it also prevents the
+client programmer from passing a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by value or from using assignment.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;s
+job is to take the QUERY_STRING and parse it into name-value pairs, which it
+will do with the aid of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+First it copies the string into locally-allocated memory and keeps track of the
+starting address with the constant pointer 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>start.
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(This
+is later used in the destructor to release the memory.)
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Then
+it uses its method 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextPair(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to parse the string into raw name-value pairs, delimited by &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>=</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+and
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8216;</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&amp;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+signs. These are handed by 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextPair(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+constructor so 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextPair(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can return the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object, which is then added to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>push_back(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+When 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>nextPair(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+runs out of QUERY_STRING, it returns zero.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+that the basic tools are defined, they can easily be used in a CGI program,
+like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Listmgr2.cpp</font>
+<font color="#009900">// CGI version of Listmgr.c in C++, which </font>
+<font color="#009900">// extracts its input via the GET submission </font>
+<font color="#009900">// from the associated applet. Also works as</font>
+<font color="#009900">// an ordinary CGI program with HTML forms.</font>
+#include &lt;stdio.h&gt;
+#include "CGITools.h"
+<font color="#0000ff">const</font> <font color="#0000ff">char</font>* dataFile = "list2.txt";
+<font color="#0000ff">const</font> <font color="#0000ff">char</font>* notify = "Bruce@EckelObjects.com";
+#undef DEBUG
+
+<font color="#009900">// Similar code as before, except that it looks</font>
+<font color="#009900">// for the email name inside of '&lt;&gt;':</font>
+<font color="#0000ff">int</font> inList(FILE* list, <font color="#0000ff">const</font> <font color="#0000ff">char</font>* emailName) {
+  <font color="#0000ff">const</font> <font color="#0000ff">int</font> BSIZE = 255;
+  <font color="#0000ff">char</font> lbuf[BSIZE];
+  <font color="#0000ff">char</font> emname[BSIZE];
+  <font color="#009900">// Put the email name in '&lt;&gt;' so there's no</font>
+  <font color="#009900">// possibility of a match within another name:</font>
+  sprintf(emname, "&lt;%s&gt;", emailName);
+  <font color="#009900">// Go to the beginning of the list:</font>
+  fseek(list, 0, SEEK_SET);
+  <font color="#009900">// Read each line in the list:</font>
+  <font color="#0000ff">while</font>(fgets(lbuf, BSIZE, list)) {
+    <font color="#009900">// Strip off the newline: </font>
+    <font color="#0000ff">char</font> * newline = strchr(lbuf, '\n');
+    <font color="#0000ff">if</font>(newline != 0) 
+      *newline = '\0';
+    <font color="#0000ff">if</font>(strstr(lbuf, emname) != 0)
+      <font color="#0000ff">return</font> 1;
+  }
+  <font color="#0000ff">return</font> 0;
+}
+
+<font color="#0000ff">void</font> main() {
+  <font color="#009900">// You MUST print this out, otherwise the </font>
+  <font color="#009900">// server will not send the response:</font>
+  printf("Content-type: text/plain\n\n");
+  FILE* list = fopen(dataFile, "a+t");
+  <font color="#0000ff">if</font>(list == 0) {
+    printf("error: could not open database. ");
+    printf("Notify %s", notify);
+    <font color="#0000ff">return</font>;
+  }
+  <font color="#009900">// For a CGI "GET," the server puts the data</font>
+  <font color="#009900">// in the environment variable QUERY_STRING:</font>
+  CGI_vector query(getenv("QUERY_STRING"));
+  #<font color="#0000ff">if</font> defined(DEBUG)
+  <font color="#009900">// Test: dump all names and values</font>
+  <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; query.size(); i++) {
+    printf("query[%d].name() = [%s], ", 
+      i, query[i].name());
+    printf("query[%d].value() = [%s]\n", 
+      i, query[i].value());
+  }
+  #endif(DEBUG)
+  Pair name = query[0];
+  Pair email = query[1];
+  <font color="#0000ff">if</font>(name.empty() || email.empty()) {
+    printf("error: <font color="#0000ff">null</font> name or email");
+    <font color="#0000ff">return</font>;
+  } 
+  <font color="#0000ff">if</font>(inList(list, email.value())) {
+    printf("Already in list: %s", email.value());
+    <font color="#0000ff">return</font>;
+  }
+  <font color="#009900">// It's not in the list, add it:</font>
+  fseek(list, 0, SEEK_END);
+  fprintf(list, "%s &lt;%s&gt;;\n", 
+    name.value(), email.value());
+  fflush(list);
+  fclose(list);
+  printf("%s &lt;%s&gt; added to list\n", 
+    name.value(), email.value());
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>alreadyInList(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function is almost identical to the previous version, except that it assumes
+all email names are inside &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&lt;&gt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you use the <A NAME="Index2798"></A><A NAME="Index2799"></A><A NAME="Index2800"></A>GET
+approach (which is normally done in the HTML METHOD tag of the FORM directive,
+but which is controlled here by the way the data is sent), the Web server grabs
+everything after the &#8216;?&#8217; and puts in into the environment variable <A NAME="Index2801"></A><A NAME="Index2802"></A>QUERY_STRING.
+So to read that information you have to get the value of QUERY_STRING, which
+you do using the standard C library function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getenv(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+In 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">notice
+how simple the act of parsing the QUERY_STRING is: you just hand it to the
+constructor for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>query
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and
+all the work is done for you. From then on you can pull out the names and
+values from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>query</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as if it were an array. (This is because the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>operator[]</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is overloaded in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>vector.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+You can see how this works in the debug code, which is surrounded by the
+preprocessor directives 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#if
+defined(DEBUG)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>#endif(DEBUG)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Now
+it&#8217;s important to understand something about CGI. A CGI program is handed
+its input in one of two ways: through QUERY_STRING during a GET (as in this
+case) or through standard input during a POST. But a CGI program sends its
+output through standard output, typically using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>printf(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">in
+a C program. Where does this output go? Back to the Web server, which decides
+what to do with it. The server makes this decision based on the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>content-type</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+header, which means that if the <A NAME="Index2803"></A><A NAME="Index2804"></A><A NAME="Index2805"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>content-type</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+header isn&#8217;t the first thing it sees, it won&#8217;t know what to do with
+the data. Thus, it&#8217;s essential that you start the output of all CGI
+programs with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>content-type</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+header.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this case, we want the server to feed all the information directly back to the
+client program (which is our applet, waiting for its reply). The information
+should be unchanged, so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>content-type</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>text/plain</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Once the server sees this, it will echo all strings right back to the client.
+So each of the strings you see, three for error conditions and one for a
+successful add, will end up back at the applet.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Adding
+the email name uses the same code. In the case of the CGI script, however,
+there isn&#8217;t an infinite loop &#8211; the program just responds and then
+terminates. Each time a CGI request comes in, the program is started in
+response to that request, and then it shuts down. Thus there is no possibility
+of CPU hogging, and the only performance issue concerns starting the program up
+and opening the file, which are dwarfed by the overhead of the Web server as it
+handles the CGI request.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">One
+of the advantages of this design is that, now that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are defined, most of the work is done for you so you can easily create your own
+CGI program simply by modifying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Eventually, servlet servers will probably be ubiquitous, but in the meantime
+C++ is still handy for creating fast CGI programs.
+</FONT><a name="_Toc408018780"></a><P></DIV>
+<A NAME="Heading532"></A><H3 ALIGN=LEFT>
+What
+about POST?
+<P><A NAME="Index2806"></A><A NAME="Index2807"></A><A NAME="Index2808"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Using
+a GET is fine for many applications. However, GET passes its data to the CGI
+program through an environment variable, and some Web servers can run out of
+environment space with long GET strings (you should start worrying at about 200
+characters). CGI provides a solution for this: POST. With POST, the data is
+encoded and concatenated the same way as a GET, but POST uses standard input to
+pass the encoded query string to the CGI program. All you have to do is
+determine the length of the query string, and this length is stored in the
+environment variable CONTENT_LENGTH. Once you know the length, you can allocate
+storage and read the precise number of bytes from standard input.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Pair</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGITools.h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used as is for a CGI program that handles POSTs. The following listing
+shows how simple it is to write such a CGI program. In this example,
+&#8220;pure&#8221; C++ will be used so the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>stdio.h</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+library will be dropped in favor of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iostream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.
+With 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>iostream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+two predefined objects are available: 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cin,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which connects to standard input, and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cout,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which connects to standard output. There are several ways to read from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and write to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but the following program take the common approach of using &#8216;
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>&lt;&lt;</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">&#8217;
+to send information to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the use of a member function (in this case, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+to read from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: POSTtest.cpp</font>
+<font color="#009900">// CGI_vector works as easily with POST as it</font>
+<font color="#009900">// does with GET. Written in "pure" C++.</font>
+#include &lt;iostream.h&gt;
+#include "CGITools.h"
+
+<font color="#0000ff">void</font> main() {
+  cout &lt;&lt; "Content-type: text/plain\n" &lt;&lt; endl;
+  <font color="#009900">// For a CGI "POST," the server puts the length</font>
+  <font color="#009900">// of the content string in the environment </font>
+  <font color="#009900">// variable CONTENT_LENGTH:</font>
+  <font color="#0000ff">char</font>* clen = getenv("CONTENT_LENGTH");
+  <font color="#0000ff">if</font>(clen == 0) {
+    cout &lt;&lt; "Zero CONTENT_LENGTH" &lt;&lt; endl;
+    <font color="#0000ff">return</font>;
+  }
+  <font color="#0000ff">int</font> len = atoi(clen);
+  <font color="#0000ff">char</font>* query_str = <font color="#0000ff">new</font> <font color="#0000ff">char</font>[len + 1];
+  cin.read(query_str, len);
+  query_str[len] = '\0';
+  CGI_vector query(query_str);
+  <font color="#009900">// Test: dump all names and values</font>
+  <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; query.size(); i++)
+    cout &lt;&lt; "query[" &lt;&lt; i &lt;&lt; "].name() = [" &lt;&lt;
+      query[i].name() &lt;&lt; "], " &lt;&lt;
+      "query[" &lt;&lt; i &lt;&lt; "].value() = [" &lt;&lt;
+      query[i].value() &lt;&lt; "]" &lt;&lt; endl;
+  delete query_str; <font color="#009900">// Release storage</font>
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getenv(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function returns a pointer to a character string representing the content
+length. If this pointer is zero, the CONTENT_LENGTH environment variable has
+not been set, so something is wrong. Otherwise, the character string must be
+converted to an integer using the ANSI C library function 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>atoi(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The length is used with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>new
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">to
+allocate enough storage to hold the query string (plus its null terminator),
+and then 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is called for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>cin</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>read(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+function takes a pointer to the destination buffer and the number of bytes to
+read. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>query_str</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is then null-terminated to indicate the end of the character string.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">At
+this point, the query string is no different from a GET query string, so it is
+handed to the constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CGI_vector</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The different fields in the vector are then available just as in the previous
+example.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+test this program, you must compile it in the cgi-bin directory of your host
+Web server. Then you can perform a simple test by writing an HTML page like this:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE>&lt;HTML&gt;
+&lt;HEAD&gt;
+&lt;META CONTENT="text/html"&gt;
+&lt;TITLE&gt;A test of standard HTML POST&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+Test, uses standard html POST
+&lt;Form method="POST" ACTION="/cgi-bin/POSTtest"&gt;
+&lt;P&gt;Field1: &lt;INPUT TYPE = "text" NAME = "Field1" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Field2: &lt;INPUT TYPE = "text" NAME = "Field2" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Field3: &lt;INPUT TYPE = "text" NAME = "Field3" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Field4: &lt;INPUT TYPE = "text" NAME = "Field4" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Field5: &lt;INPUT TYPE = "text" NAME = "Field5" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;P&gt;Field6: &lt;INPUT TYPE = "text" NAME = "Field6" 
+VALUE = "" size = "40"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;input type = "submit" name = "submit" &gt; &lt;/p&gt;
+&lt;/Form&gt;
+&lt;/HTML&gt;</PRE></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you fill this out and submit it, you&#8217;ll get back a simple text page
+containing the parsed results, so you can see that the CGI program works
+correctly.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Of
+course, it&#8217;s a little more interesting to submit the data using an
+applet. Submitting <A NAME="Index2809"></A><A NAME="Index2810"></A><A NAME="Index2811"></A>POST
+data is a different process, however. After you invoke the CGI program in the
+usual way, you must make a direct connection to the server so you can feed it
+the query string. The server then turns around and feeds the query string to
+the CGI program via standard input.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+make a direct connection to the server, you must take the URL you&#8217;ve
+created and call <A NAME="Index2812"></A><A NAME="Index2813"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>openConnection(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce a <A NAME="Index2814"></A><A NAME="Index2815"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URLConnection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Then, because a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>URLConnection</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+doesn&#8217;t usually allow you to send data to it, you must call the magic
+function <A NAME="Index2816"></A><A NAME="Index2817"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setDoOutput(true)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+along with <A NAME="Index2818"></A><A NAME="Index2819"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setDoInput(true)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">and</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+<A NAME="Index2820"></A><A NAME="Index2821"></A>setAllowUserInteraction(false)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><A NAME="fnB68" HREF="#fn68">[68]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+Finally, you can call <A NAME="Index2822"></A><A NAME="Index2823"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getOutputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to produce an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>OutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which you wrap inside a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataOutputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so you can talk to it conveniently. Here&#8217;s an applet that does just that,
+after collecting data from its various fields:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: POSTtest.java</font>
+<font color="#009900">// An applet that sends its data via a CGI POST</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+<font color="#0000ff">import</font> java.net.*;
+<font color="#0000ff">import</font> java.io.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> POSTtest <font color="#0000ff">extends</font> Applet {
+  <font color="#0000ff">final</font> <font color="#0000ff">static</font> <font color="#0000ff">int</font> SIZE = 10;
+  Button submit = <font color="#0000ff">new</font> Button("Submit");
+  TextField[] t = <font color="#0000ff">new</font> TextField[SIZE];
+  String query = "";
+  Label l = <font color="#0000ff">new</font> Label();
+  TextArea ta = <font color="#0000ff">new</font> TextArea(15, 60);
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(t.length + 2, 2));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; t.length; i++) {
+      p.add(<font color="#0000ff">new</font> Label(
+        "Field " + i + "  ", Label.RIGHT));
+      p.add(t[i] = <font color="#0000ff">new</font> TextField(30));
+    }
+    p.add(l);
+    p.add(submit);
+    add("North", p);
+    add("South", ta);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(submit)) {
+      query = "";
+      ta.setText("");
+      <font color="#009900">// Encode the query from the field data:</font>
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; t.length; i++)
+         query += "Field" + i + "=" +
+           URLEncoder.encode(
+             t[i].getText().trim()) +
+           "&amp;";
+      query += "submit=Submit";
+      <font color="#009900">// Send the name using CGI's POST process:</font>
+      <font color="#0000ff">try</font> {
+        URL u = <font color="#0000ff">new</font> URL(
+          getDocumentBase(), "cgi-bin/POSTtest");
+        URLConnection urlc = u.openConnection();
+        urlc.setDoOutput(<font color="#0000ff">true</font>);
+        urlc.setDoInput(<font color="#0000ff">true</font>);
+        urlc.setAllowUserInteraction(<font color="#0000ff">false</font>);
+        DataOutputStream server = 
+          <font color="#0000ff">new</font> DataOutputStream(
+            urlc.getOutputStream());
+        <font color="#009900">// Send the data</font>
+        server.writeBytes(query);
+        server.close();
+        <font color="#009900">// Read and display the response. You</font>
+        <font color="#009900">// cannot use </font>
+        <font color="#009900">// getAppletContext().showDocument(u);</font>
+        <font color="#009900">// to display the results as a Web page!</font>
+        DataInputStream in = 
+          <font color="#0000ff">new</font> DataInputStream(
+            urlc.getInputStream());
+        String s;
+        <font color="#0000ff">while</font>((s = in.readLine()) != <font color="#0000ff">null</font>) {
+          ta.appendText(s + "\n");
+        }
+        in.close();
+      }
+      <font color="#0000ff">catch</font> (Exception e) {
+        l.setText(e.toString());
+      }
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Once
+the information is sent to the server, you can call <A NAME="Index2824"></A><A NAME="Index2825"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getInputStream(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and wrap the return value in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>DataInputStream</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so that you can read the results. One thing you&#8217;ll notice is that the
+results are displayed as lines of text in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextArea</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Why not simply use <A NAME="Index2826"></A><A NAME="Index2827"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAppletContext().showDocument(u)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">?
+Well, this is one of those mysteries. The code above works fine, but if you try
+to use 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>showDocument(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">instead,
+everything stops working &#8211; almost. That is, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>showDocument(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+work, but what you get back from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>POSTtest</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is &#8220;Zero CONTENT_LENGTH.&#8221; So somehow, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>showDocument(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+prevents the POST query from being passed on to the CGI program. It&#8217;s
+difficult to know whether this is a bug that will be fixed, or some lack of
+understanding on my part (the books I looked at were equally abstruse). In any
+event, if you can stand to limit yourself to looking at the text that comes
+back from the CGI program, the above applet works fine.
+</FONT><a name="_Toc408018781"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn65" HREF="#fnB65">[65]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+You can test this under Windows32 using the Microsoft Personal Web Server that
+comes with Microsoft Office 97 and some of their other products. This is a nice
+way to experiment since you can perform local tests (and it's also fast). If
+you're on a different platform or if you don't have Office 97, you might be
+able to find a freeware Web server for testing by searching the Internet.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn66" HREF="#fnB66">[66]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+GNU stands for &#8220;Gnu&#8217;s Not Unix.&#8221; The project, created by the
+Free Software Foundation, was originally intended to replace the Unix operating
+system with a free version of that OS. Linux appears to have replaced this
+initiative, but the GNU tools have played an integral part in the development
+of Linux, which comes packaged with many GNU components.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn67" HREF="#fnB67">[67]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+My book 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Thinking
+in C++
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+(Prentice-Hall, 1995) devotes an entire chapter to this subject. Refer to this
+if you need further information on the subject.
+</FONT><P></DIV><DIV ALIGN=LEFT><A NAME="fn68" HREF="#fnB68">[68]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+I can&#8217;t say I really understand what&#8217;s going on here, but I managed
+to get it working by studying 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><I>Java
+Network Programming
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+by Elliotte Rusty Harold (O&#8217;Reilly 1997). He alludes to a number of
+confusing bugs in the Java networking libraries, so this is an area in which
+you can&#8217;t just write code and have it work right away. Be warned.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0167.html">Prev</a> | <a href="tij0169.html">Next</a>
+</div>
+</body></html>
+

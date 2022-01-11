@@ -1,0 +1,95 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0129.html">Prev</a> | <a href="tij0131.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Summary</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Because
+everything is a handle in Java, and because every object is created on the heap
+and garbage collected only when it is no longer used, the flavor of object
+manipulation changes, especially when passing and returning objects. For
+example, in C or C++, if you wanted to initialize some piece of storage in a
+method, you&#8217;d probably request that the user pass the address of that
+piece of storage into the method. Otherwise you&#8217;d have to worry about who
+was responsible for destroying that storage. Thus, the interface and
+understanding of such methods is more complicated. But in Java, you never have
+to worry about responsibility or whether an object will still exist when it is
+needed, since that is always taken care of for you. Your programs can create an
+object at the point that it is needed, and no sooner, and never worry about the
+mechanics of passing around responsibility for that object: you simply pass the
+handle. Sometimes the simplification that this provides is unnoticed, other
+times it is staggering.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+downside to all this underlying magic is twofold:
+</FONT><P></DIV>
+<OL>
+<LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	You
+always take the efficiency hit for the extra memory management (although this
+can be quite small), and there&#8217;s always a slight amount of uncertainty
+about the time something can take to run (since the garbage collector can be
+forced into action whenever you get low on memory). For most applications, the
+benefits outweigh the drawbacks, and particularly time-critical sections can be
+written using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>native</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods (see Appendix A). 
+</FONT><LI><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">	Aliasing:
+sometimes you can accidentally end up with two handles to the same object,
+which is a problem only if both handles are assumed to point to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>distinct</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. This is where you need to pay a little closer attention and, when
+necessary, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+an object to prevent the other handle from being surprised by an unexpected
+change. Alternatively, you can support aliasing for efficiency by creating
+immutable objects whose operations can return a new object of the same type or
+some different type, but never change the original object so that anyone
+aliased to that object sees no change.
+</FONT></OL><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+people say that cloning in Java is a botched design, and to heck with it, so
+they implement their own version of cloning
+</FONT><A NAME="fnB53" HREF="#fn53">[53]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and never call the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, thus eliminating the need to implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and catch the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CloneNotSupportedException</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is certainly a reasonable approach and since 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is supported so rarely within the standard Java library, it is apparently a
+safe one as well. But as long as you don&#8217;t call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Object.clone(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you don&#8217;t need to implement 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Cloneable</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or catch the exception, so that would seem acceptable as well.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+interesting to notice that one of the &#8220;reserved but not
+implemented&#8221; keywords in Java is 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byvalue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+After seeing the issues of aliasing and cloning, you can imagine that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>byvalue</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+might someday be used to implement an automatic local copy in Java. This could
+eliminate the more complex issues of cloning and make coding in these
+situations simpler and more robust.
+</FONT><a name="_Toc375545443"></a><a name="_Toc408018676"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn53" HREF="#fnB53">[53]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+Doug Lea, who was helpful in resolving this issue, suggested this to me, saying
+that he simply creates a function called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>duplicate(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+for each class.
+</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0129.html">Prev</a> | <a href="tij0131.html">Next</a>
+</div>
+</body></html>
+

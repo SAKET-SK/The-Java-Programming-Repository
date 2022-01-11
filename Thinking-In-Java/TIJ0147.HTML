@@ -1,0 +1,634 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0146.html">Prev</a> | <a href="tij0148.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Windowed
+applications
+<P><A NAME="Index1759"></A><A NAME="Index1760"></A><A NAME="Index1761"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+possible to see that for safety&#8217;s sake you can have only limited behavior
+within an applet. In a real sense, the applet is a temporary extension to the
+Web browser so its functionality must be limited along with its knowledge and
+control. There are times, however, when you&#8217;d like to make a windowed
+program do something else than sit on a Web page, and perhaps you&#8217;d like
+it to do some of the things a &#8220;regular&#8221; application can do and yet
+have the vaunted instant portability provided by Java. In previous chapters in
+this book we&#8217;ve made command-line applications, but in some operating
+environments (the Macintosh, for example) there isn&#8217;t a command line. So
+for any number of reasons you&#8217;d like to build a windowed, non-applet
+program using Java. This is certainly a reasonable desire.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+Java windowed application can have menus and dialog boxes (impossible or
+difficult with an applet), and yet if you&#8217;re using an older version of
+Java you sacrifice the native operating environment&#8217;s look and feel. The
+JFC/Swing library allows you to make an application that preserves the look and
+feel of the underlying operating environment. If you want to build windowed
+applications, it makes sense to do so only if you can use the latest version of
+Java and associated tools so you can deliver applications that won&#8217;t
+confound your users. If for some reason you&#8217;re forced to use an older
+version of Java, think hard before committing to building a significant
+windowed application.
+</FONT><a name="_Toc375545467"></a><a name="_Toc408018703"></a><P></DIV>
+<A NAME="Heading420"></A><H3 ALIGN=LEFT>
+Menus<P><A NAME="Index1762"></A></H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+impossible to put a menu directly on an applet (in Java 1.0 and Java 1.1; the
+Swing library 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>does
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">allow
+it), so they&#8217;re for applications. Go ahead, try it if you don&#8217;t
+believe me and you&#8217;re sure that it would make sense to have menus on
+applets. There&#8217;s no <A NAME="Index1763"></A><A NAME="Index1764"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setMenuBar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and that&#8217;s the way a menu is attached. (You&#8217;ll see later that
+it&#8217;s possible to spawn a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+from within an 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can contain menus.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are four different types of <A NAME="Index1765"></A><A NAME="Index1766"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuComponent</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+all derived from that abstract class: <A NAME="Index1767"></A><A NAME="Index1768"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(you can have one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+only on a particular <A NAME="Index1769"></A><A NAME="Index1770"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">),
+<A NAME="Index1771"></A><A NAME="Index1772"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to hold one individual drop-down menu or submenu, <A NAME="Index1773"></A><A NAME="Index1774"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to represent one single element on a menu, and <A NAME="Index1775"></A><A NAME="Index1776"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem,</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+which is derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and produces a checkmark to indicate whether that menu item is selected.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Unlike
+a system that uses resources, with Java and the AWT you must hand assemble all
+the menus in source code. Here are the ice cream flavors again, used to create
+menus:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Menu1.java</font>
+<font color="#009900">// Menus work only with Frames.</font>
+<font color="#009900">// Shows submenus, checkbox menu items</font>
+<font color="#009900">// and swapping menus.</font>
+<font color="#0000ff">import</font> java.awt.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Menu1 <font color="#0000ff">extends</font> Frame {
+  String[] flavors = { "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip", 
+    "Mocha Almond Fudge", "Rum Raisin", 
+    "Praline Cream", "Mud Pie" };
+  TextField t = <font color="#0000ff">new</font> TextField("No flavor", 30);
+  MenuBar mb1 = <font color="#0000ff">new</font> MenuBar();
+  Menu f = <font color="#0000ff">new</font> Menu("File");
+  Menu m = <font color="#0000ff">new</font> Menu("Flavors");
+  Menu s = <font color="#0000ff">new</font> Menu("Safety");
+  <font color="#009900">// Alternative approach:</font>
+  CheckboxMenuItem[] safety = {
+    <font color="#0000ff">new</font> CheckboxMenuItem("Guard"),
+    <font color="#0000ff">new</font> CheckboxMenuItem("Hide")
+  };
+  MenuItem[] file = {
+    <font color="#0000ff">new</font> MenuItem("Open"),
+    <font color="#0000ff">new</font> MenuItem("Exit")
+  };
+  <font color="#009900">// A second menu bar to swap to:</font>
+  MenuBar mb2 = <font color="#0000ff">new</font> MenuBar();
+  Menu fooBar = <font color="#0000ff">new</font> Menu("fooBar");
+  MenuItem[] other = {
+    <font color="#0000ff">new</font> MenuItem("Foo"),
+    <font color="#0000ff">new</font> MenuItem("Bar"),
+    <font color="#0000ff">new</font> MenuItem("Baz"),
+  };
+  Button b = <font color="#0000ff">new</font> Button("Swap Menus");
+  <font color="#0000ff">public</font> Menu1() {
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; flavors.length; i++) {
+      m.add(<font color="#0000ff">new</font> MenuItem(flavors[i]));
+      <font color="#009900">// Add separators at intervals:</font>
+      <font color="#0000ff">if</font>((i+1) % 3 == 0) 
+        m.addSeparator();
+    }
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; safety.length; i++)
+      s.add(safety[i]);
+    f.add(s);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; file.length; i++)
+      f.add(file[i]);
+    mb1.add(f);
+    mb1.add(m);
+    setMenuBar(mb1);
+    t.setEditable(<font color="#0000ff">false</font>);
+    add("Center", t);
+    <font color="#009900">// Set up the system for swapping menus:</font>
+    add("North", b);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; other.length; i++)
+      fooBar.add(other[i]);
+    mb2.add(fooBar);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> handleEvent(Event evt) {
+    <font color="#0000ff">if</font>(evt.id == Event.WINDOW_DESTROY) 
+      System.exit(0);
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b)) {
+      MenuBar m = getMenuBar();
+      <font color="#0000ff">if</font>(m == mb1) setMenuBar(mb2);
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font> (m == mb2) setMenuBar(mb1);
+    } 
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target <font color="#0000ff">instanceof</font> MenuItem) {
+      <font color="#0000ff">if</font>(arg.equals("Open")) {
+        String s = t.getText();
+        <font color="#0000ff">boolean</font> chosen = <font color="#0000ff">false</font>;
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; flavors.length; i++)
+          <font color="#0000ff">if</font>(s.equals(flavors[i])) chosen = <font color="#0000ff">true</font>;
+        <font color="#0000ff">if</font>(!chosen)
+          t.setText("Choose a flavor first!");
+        <font color="#0000ff">else</font>
+          t.setText("Opening "+ s +". Mmm, mm!");
+      }
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(file[1]))
+        System.exit(0);
+      <font color="#009900">// CheckboxMenuItems cannot use String </font>
+      <font color="#009900">// matching; you must match the target:</font>
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(safety[0]))
+        t.setText("Guard the Ice Cream! " +
+          "Guarding is " + safety[0].getState());
+      <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(safety[1]))
+        t.setText("Hide the Ice Cream! " +
+          "Is it cold? " + safety[1].getState());
+      <font color="#0000ff">else</font> 
+        t.setText(arg.toString());
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Menu1 f = <font color="#0000ff">new</font> Menu1();
+    f.resize(300,200);
+    f.show();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+this program I avoided the typical long lists of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+calls for each menu because that seemed like a lot of unnecessary typing.
+Instead, I placed the menu items into arrays and then simply stepped through
+each array calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>for</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+loop. This makes adding or subtracting a menu item less tedious.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">As
+an alternative approach (which I find less desirable since it requires more
+typing), the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+are created in an array of handles called 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>safety</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">;
+this is true for the arrays 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>file</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>other</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as well.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+program creates not one but two 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+to demonstrate that menu bars can be actively swapped while the program is
+running. You can see how a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is made up of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+and each 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is made up of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s,
+or even other 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Menu</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+(which produce submenus). When a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is assembled it can be installed into the current program with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setMenuBar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Note that when the button is pressed, it checks to see which menu is
+currently installed using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getMenuBar(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+then puts the other menu bar in its place.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+testing for &#8220;Open,&#8221; notice that spelling and capitalization are
+critical, but Java signals no error if there is no match with
+&#8220;Open.&#8221; This kind of string comparison is a clear source of
+programming errors.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+checking and un-checking of the menu items is taken care of automatically, but
+dealing with CheckboxMenuItems can be a bit surprising since for some reason
+they don&#8217;t allow string matching. (Although string matching isn&#8217;t a
+good approach, this seems inconsistent.) So you can match only the target
+object and not its label. As shown, the <A NAME="Index1777"></A><A NAME="Index1778"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getState(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">method
+can be used to reveal the state. You can also change the state of a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>CheckboxMenuItem</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setState(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You
+might think that one menu could reasonably reside on more than one menu bar.
+This does seem to make sense because all you&#8217;re passing to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>MenuBar</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>add(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is a handle. However, if you try this, the behavior will be strange and
+not what you expect. (It&#8217;s difficult to know if this is a bug or if they
+intended it to work this way.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">This
+example also shows what you need to do to create an application instead of an
+applet. (Again, because an application can support menus and an applet cannot
+directly have a menu.) Instead of inheriting from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+you inherit from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Instead of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>init(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to set things up, you make a constructor for your class. Finally, you create a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>main(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and in that you build an object of your new type, resize it, and then call 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+It&#8217;s different from an applet in only a few small places, but it&#8217;s
+now a <A NAME="Index1779"></A><A NAME="Index1780"></A><A NAME="Index1781"></A>standalone
+windowed application and you&#8217;ve got menus.
+</FONT><a name="_Toc375545468"></a><a name="_Toc408018704"></a><P></DIV>
+<A NAME="Heading421"></A><H3 ALIGN=LEFT>
+Dialog
+boxes
+</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+<A NAME="Index1782"></A><A NAME="Index1783"></A>dialog
+box is a window that pops up out of another window. Its purpose is to deal with
+some specific issue without cluttering the original window with those details.
+Dialog boxes are heavily used in windowed programming environments, but as
+mentioned previously, rarely used in applets.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+create a dialog box, you inherit from <A NAME="Index1784"></A><A NAME="Index1785"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+which is just another kind of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+like a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Unlike a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Frame</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+cannot have a menu bar or change the cursor, but other than that they&#8217;re
+quite similar. A dialog has a layout manager (which defaults to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>BorderLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+and you override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+etc., or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to deal with events. One significant difference you&#8217;ll want to note in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:
+when the <A NAME="Index1786"></A><A NAME="Index1787"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WINDOW_DESTROY</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+event occurs, you don&#8217;t want to shut down the application! Instead, you
+release the resources used by the dialog&#8217;s window by calling <A NAME="Index1788"></A><A NAME="Index1789"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dispose(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+the following example, the dialog box is made up of a grid (using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+of a special kind of button that is defined here as class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This button draws a frame around itself and, depending on its state, a blank,
+an &#8220;x,&#8221; or an &#8220;o&#8221; in the middle. It starts out blank,
+and then depending on whose turn it is, changes to an &#8220;x&#8221; or an
+&#8220;o.&#8221; However, it will also flip back and forth between
+&#8220;x&#8221; and &#8220;o&#8221; when you click on the button. (This makes
+the tic-tac-toe concept only slightly more annoying than it already is.) In
+addition, the dialog box can be set up for any number of rows and columns by
+changing numbers in the main application window.
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: ToeTest.java</font>
+<font color="#009900">// Demonstration of dialog boxes</font>
+<font color="#009900">// and creating your own components</font>
+<font color="#0000ff">import</font> java.awt.*;
+
+<font color="#0000ff">class</font> ToeButton <font color="#0000ff">extends</font> Canvas {
+  <font color="#0000ff">int</font> state = ToeDialog.BLANK;
+  ToeDialog parent;
+  ToeButton(ToeDialog parent) {
+    <font color="#0000ff">this</font>.parent = parent;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> paint(Graphics  g) {
+    <font color="#0000ff">int</font> x1 = 0;
+    <font color="#0000ff">int</font> y1 = 0;
+    <font color="#0000ff">int</font> x2 = size().width - 1;
+    <font color="#0000ff">int</font> y2 = size().height - 1;
+    g.drawRect(x1, y1, x2, y2);
+    x1 = x2/4;
+    y1 = y2/4;
+    <font color="#0000ff">int</font> wide = x2/2;
+    <font color="#0000ff">int</font> high = y2/2;
+    <font color="#0000ff">if</font>(state == ToeDialog.XX) {
+      g.drawLine(x1, y1, x1 + wide, y1 + high);
+      g.drawLine(x1, y1 + high, x1 + wide, y1);
+    }
+    <font color="#0000ff">if</font>(state == ToeDialog.OO) {
+      g.drawOval(x1, y1, x1+wide/2, y1+high/2);
+    }
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> 
+  mouseDown(Event evt, <font color="#0000ff">int</font> x, <font color="#0000ff">int</font> y) {
+    <font color="#0000ff">if</font>(state == ToeDialog.BLANK) {
+      state = parent.turn;
+      parent.turn= (parent.turn == ToeDialog.XX ?
+        ToeDialog.OO : ToeDialog.XX);
+    } 
+    <font color="#0000ff">else</font>
+      state = (state == ToeDialog.XX ? 
+        ToeDialog.OO : ToeDialog.XX);
+    repaint();
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+}
+
+<font color="#0000ff">class</font> ToeDialog <font color="#0000ff">extends</font> Dialog {
+  <font color="#009900">// w = number of cells wide</font>
+  <font color="#009900">// h = number of cells high</font>
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> BLANK = 0;
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> XX = 1;
+  <font color="#0000ff">static</font> <font color="#0000ff">final</font> <font color="#0000ff">int</font> OO = 2;
+  <font color="#0000ff">int</font> turn = XX; <font color="#009900">// Start with x's turn</font>
+  <font color="#0000ff">public</font> ToeDialog(Frame parent, <font color="#0000ff">int</font> w, <font color="#0000ff">int</font> h) {
+    <font color="#0000ff">super</font>(parent, "The game itself", <font color="#0000ff">false</font>);
+    setLayout(<font color="#0000ff">new</font> GridLayout(w, h));
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; w * h; i++)
+      add(<font color="#0000ff">new</font> ToeButton(<font color="#0000ff">this</font>));
+    resize(w * 50, h * 50);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> handleEvent(Event evt) {
+    <font color="#0000ff">if</font>(evt.id == Event.WINDOW_DESTROY) 
+      dispose();
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+}
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> ToeTest <font color="#0000ff">extends</font> Frame {
+  TextField rows = <font color="#0000ff">new</font> TextField("3");
+  TextField cols = <font color="#0000ff">new</font> TextField("3");
+  <font color="#0000ff">public</font> ToeTest() {
+    setTitle("Toe Test");
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(2,2));
+    p.add(<font color="#0000ff">new</font> Label("Rows", Label.CENTER));
+    p.add(rows);
+    p.add(<font color="#0000ff">new</font> Label("Columns", Label.CENTER));
+    p.add(cols);
+    add("North", p);
+    add("South", <font color="#0000ff">new</font> Button("go"));
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> handleEvent(Event evt) {
+    <font color="#0000ff">if</font>(evt.id == Event.WINDOW_DESTROY) 
+      System.exit(0);
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font>(arg.equals("go")) {
+      Dialog d = <font color="#0000ff">new</font> ToeDialog(
+        <font color="#0000ff">this</font>, 
+        Integer.parseInt(rows.getText()),
+        Integer.parseInt(cols.getText()));
+      d.show();
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> ToeTest();
+    f.resize(200,100);
+    f.show();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+class keeps a handle to its parent, which must be of type 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+As before, this introduces high coupling because a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+can be used only with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but it solves a number of problems, and in truth it doesn&#8217;t seem like
+such a bad solution because there&#8217;s no other kind of dialog that&#8217;s
+keeping track of whose turn it is. Of course, you can take another approach,
+which is to make 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog.turn</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeButton</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This eliminates the coupling, but prevents you from having more than one 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+at a time. (More than one that works properly, anyway.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1790"></A><A NAME="Index1791"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>paint(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is concerned with the <A NAME="Index1792"></A><A NAME="Index1793"></A>graphics:
+drawing the square around the button and drawing the &#8220;x&#8221; or the
+&#8220;o.&#8221; This is full of tedious calculations, but it&#8217;s
+straightforward. 
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+mouse click is captured by the overridden <A NAME="Index1794"></A><A NAME="Index1795"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>mouseDown(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method, which first checks to see if the button has anything written on it. If
+not, the parent window is queried to find out whose turn it is and that is used
+to establish the state of the button. Note that the button then reaches back
+into the parent and changes the turn. If the button is already displaying an
+&#8220;x&#8221; or an &#8220;o&#8221; then that is flopped. You can see in
+these calculations the convenient use of the ternary if-else described in
+Chapter 3. After a button state change, the button is repainted.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+constructor for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is quite simple: it adds into a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>GridLayout</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as many buttons as you request, then resizes it for 50 pixels on a side for
+each button. (If you don&#8217;t resize a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Window</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+it won&#8217;t show up!) Note that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+just calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>dispose(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>WINDOW_DESTROY</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+so the whole application doesn&#8217;t go away.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeTest</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+sets up the whole application by creating the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+(for inputting the rows and columns of the button grid) and the
+&#8220;go&#8221; button. You&#8217;ll see in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that this program uses the less-desirable &#8220;string match&#8221; technique
+for detecting the button press (make sure you get spelling and capitalization
+right!). When the button is pressed, the data in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+must be fetched, and, since they are in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+form, turned into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>int</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s
+using the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>static</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+<A NAME="Index1796"></A><A NAME="Index1797"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Integer.parseInt(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method. Once the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is created, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method must be called to display and activate it.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is assigned to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Dialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>d</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is an example of upcasting, although it really doesn&#8217;t make much
+difference here since all that&#8217;s happening is the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called. However, if you wanted to call some method that existed only
+in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you would want to assign to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>ToeDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+handle and not lose the information in an upcast.
+</FONT><P></DIV>
+<A NAME="Heading422"></A><H4 ALIGN=LEFT>
+File
+dialogs
+</H4>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+operating systems have a number of special built-in dialog boxes to handle the
+selection of things such as fonts, colors, printers, and the like. Virtually
+all graphical operating systems support the opening and saving of files,
+however, and so Java&#8217;s <A NAME="Index1798"></A><A NAME="Index1799"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+encapsulates these for easy use. This, of course, makes no sense at all to use
+from an applet since an applet can neither read nor write files on the local
+disk. (This will change for trusted applets in newer browsers.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+following application exercises the two forms of file dialogs, one for opening
+and one for saving. Most of the code should by now be familiar, and all the
+interesting activities happen in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the two different button clicks:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: FileDialogTest.java</font>
+<font color="#009900">// Demonstration of File dialog boxes</font>
+<font color="#0000ff">import</font> java.awt.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> FileDialogTest <font color="#0000ff">extends</font> Frame {
+  TextField filename = <font color="#0000ff">new</font> TextField();
+  TextField directory = <font color="#0000ff">new</font> TextField();
+  Button open = <font color="#0000ff">new</font> Button("Open");
+  Button save = <font color="#0000ff">new</font> Button("Save");
+  <font color="#0000ff">public</font> FileDialogTest() {
+    setTitle("File Dialog Test");
+    Panel p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> FlowLayout());
+    p.add(open);
+    p.add(save);
+    add("South", p);
+    directory.setEditable(<font color="#0000ff">false</font>);
+    filename.setEditable(<font color="#0000ff">false</font>);
+    p = <font color="#0000ff">new</font> Panel();
+    p.setLayout(<font color="#0000ff">new</font> GridLayout(2,1));
+    p.add(filename);
+    p.add(directory);
+    add("North", p);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> handleEvent(Event evt) {
+    <font color="#0000ff">if</font>(evt.id == Event.WINDOW_DESTROY) 
+      System.exit(0);
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(open)) {
+      <font color="#009900">// Two arguments, defaults to open file:</font>
+      FileDialog d = <font color="#0000ff">new</font> FileDialog(<font color="#0000ff">this</font>,
+        "What file <font color="#0000ff">do</font> you want to open?");
+      d.setFile("*.java"); <font color="#009900">// Filename filter</font>
+      d.setDirectory("."); <font color="#009900">// Current directory</font>
+      d.show();
+      String openFile;
+      <font color="#0000ff">if</font>((openFile = d.getFile()) != <font color="#0000ff">null</font>) {
+        filename.setText(openFile);
+        directory.setText(d.getDirectory());
+      } <font color="#0000ff">else</font> {
+        filename.setText("You pressed cancel");
+        directory.setText("");
+      }
+    } 
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(save)) {
+      FileDialog d = <font color="#0000ff">new</font> FileDialog(<font color="#0000ff">this</font>,
+        "What file <font color="#0000ff">do</font> you want to save?",
+        FileDialog.SAVE);
+      d.setFile("*.java");
+      d.setDirectory(".");
+      d.show();
+      String saveFile;
+      <font color="#0000ff">if</font>((saveFile = d.getFile()) != <font color="#0000ff">null</font>) {
+        filename.setText(saveFile);
+        directory.setText(d.getDirectory());
+      } <font color="#0000ff">else</font> {
+        filename.setText("You pressed cancel");
+        directory.setText("");
+      }
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">static</font> <font color="#0000ff">void</font> main(String[] args) {
+    Frame f = <font color="#0000ff">new</font> FileDialogTest();
+    f.resize(250,110);
+    f.show();
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+an &#8220;open file&#8221; dialog, you use the constructor that takes two
+arguments; the first is the parent window handle and the second is the title
+for the title bar of the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The method <A NAME="Index1800"></A><A NAME="Index1801"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+provides an initial file name &#8211; presumably the native OS supports
+wildcards, so in this example all the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>.java</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+files will initially be displayed. The <A NAME="Index1802"></A><A NAME="Index1803"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>setDirectory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method chooses the directory where the file selection will begin. (In general,
+the OS allows the user to change directories.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+<A NAME="Index1804"></A><A NAME="Index1805"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>show(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+command doesn&#8217;t return until the dialog is closed. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object still exists, so you can read data from it. If you call <A NAME="Index1806"></A><A NAME="Index1807"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getFile(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and it returns 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>null</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it means the user canceled out of the dialog. Both the file name and the
+results of <A NAME="Index1808"></A><A NAME="Index1809"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getDirectory(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+are displayed in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>TextField</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">s.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+button for saving works the same way, except that it uses a different
+constructor for the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This constructor takes three arguments and the third argument must be either 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog.SAVE</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+or 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>FileDialog.OPEN</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><a name="_Toc408018705"></a><a name="_Toc375545469"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0146.html">Prev</a> | <a href="tij0148.html">Next</a>
+</div>
+</body></html>
+

@@ -1,0 +1,279 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0142.html">Prev</a> | <a href="tij0144.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+List
+boxes
+<P><A NAME="Index1651"></A><A NAME="Index1652"></A></H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">List
+boxes are significantly different from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+boxes, and not just in appearance. While a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box drops down when you activate it, a <A NAME="Index1653"></A><A NAME="Index1654"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+occupies some fixed number of lines on a screen all the time and doesn&#8217;t
+change. In addition, a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+allows multiple selection: if you click on more than one item the original item
+stays highlighted and you can select as many as you want. If you want to see
+the items in a list, you simply call <A NAME="Index1655"></A><A NAME="Index1656"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getSelectedItems(&#160;),
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">which
+produces an array of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the items that have been selected. To remove an item from a group you have
+to click it again.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">A
+problem with a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is that the default action is double clicking, not single clicking. A single
+click adds or removes elements from the selected group and a double click calls 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+One way around this is to re-educate your user, which is the assumption made in
+the following program:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: List1.java</font>
+<font color="#009900">// Using lists with action()</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> List1 <font color="#0000ff">extends</font> Applet {
+  String[] flavors = { "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip", 
+    "Mocha Almond Fudge", "Rum Raisin", 
+    "Praline Cream", "Mud Pie" };
+  <font color="#009900">// Show 6 items, allow multiple selection:</font>
+  List lst = <font color="#0000ff">new</font> List(6, <font color="#0000ff">true</font>);
+  TextArea t = <font color="#0000ff">new</font> TextArea(flavors.length, 30);
+  Button b = <font color="#0000ff">new</font> Button("test");
+  <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      lst.addItem(flavors[count++]);
+    add(t);
+    add(lst);
+    add(b);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(lst)) {
+      t.setText("");
+      String[] items = lst.getSelectedItems();
+      <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; items.length; i++)
+        t.appendText(items[i] + "\n");
+    }
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b)) {
+      <font color="#0000ff">if</font>(count &lt; flavors.length)
+        lst.addItem(flavors[count++], 0);
+    }
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">When
+you press the button it adds items to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>top</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the list (because of the second argument 0 to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>addItem(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+Adding elements to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+more reasonable than the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Choice</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+box because users expect to scroll a list box (for one thing, it has a built-in
+scroll bar) but they don&#8217;t expect to have to figure out how to get a
+drop-down list to scroll, as in the previous example.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">However,
+the only way for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to be called is through a double-click. If you need to monitor other activities
+that the user is doing on your 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(in particular, single clicks) you must take an alternative approach.
+</FONT><a name="_Toc375545456"></a><a name="_Toc408018692"></a><P></DIV>
+<A NAME="Heading408"></A><H3 ALIGN=LEFT>
+handleEvent(&#160;)</H3>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">So
+far we&#8217;ve been using 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but there&#8217;s another method that gets first crack at everything: <A NAME="Index1657"></A><A NAME="Index1658"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Any time an event happens, it happens &#8220;over&#8221; or &#8220;to&#8221; a
+particular object. The 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method for that object is automatically called and an <A NAME="Index1659"></A><A NAME="Index1660"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object is created and passed to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+The default 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+(which is defined in <A NAME="Index1661"></A><A NAME="Index1662"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Component</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+the base class for virtually all the &#8220;controls&#8221; in the AWT) will
+call either <A NAME="Index1663"></A><A NAME="Index1664"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;),</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as we&#8217;ve been using, or other similar methods to indicate mouse activity,
+keyboard activity, or to indicate that the focus has moved. We&#8217;ll look at
+those later in this chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">What
+if these other methods &#8211; 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in particular &#8211; don&#8217;t satisfy your needs? In the case of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+for example, what if you want to catch single mouse clicks but 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+responds to only double clicks? The solution is to override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for your applet, which after all is derived from 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and can therefore override any non-
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>final</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+methods. When you override 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+for the applet you&#8217;re getting all the applet events before they are
+routed, so you cannot just assume &#8220;This has to do with my button so I can
+assume it&#8217;s been pressed,&#8221; since that&#8217;s true only for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Inside 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it&#8217;s possible that the button has the focus and someone is typing to it.
+Whether it makes sense or not, those are events that you can detect and act
+upon in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+modify the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+example so that it will react to single mouse clicks, the button detection will
+be left in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+but the code to handle the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+will be moved into 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+as follows:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: List2.java</font>
+<font color="#009900">// Using lists with handleEvent()</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> List2 <font color="#0000ff">extends</font> Applet {
+  String[] flavors = { "Chocolate", "Strawberry",
+    "Vanilla Fudge Swirl", "Mint Chip", 
+    "Mocha Almond Fudge", "Rum Raisin", 
+    "Praline Cream", "Mud Pie" };
+  <font color="#009900">// Show 6 items, allow multiple selection:</font>
+  List lst = <font color="#0000ff">new</font> List(6, <font color="#0000ff">true</font>);
+  TextArea t = <font color="#0000ff">new</font> TextArea(flavors.length, 30);
+  Button b = <font color="#0000ff">new</font> Button("test");
+  <font color="#0000ff">int</font> count = 0;
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    t.setEditable(<font color="#0000ff">false</font>);
+    <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; 4; i++)
+      lst.addItem(flavors[count++]);
+    add(t);
+    add(lst);
+    add(b);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> handleEvent(Event evt) {
+    <font color="#0000ff">if</font>(evt.id == Event.LIST_SELECT ||
+       evt.id == Event.LIST_DESELECT) {
+      <font color="#0000ff">if</font>(evt.target.equals(lst)) {
+        t.setText("");
+        String[] items = lst.getSelectedItems();
+        <font color="#0000ff">for</font>(<font color="#0000ff">int</font> i = 0; i &lt; items.length; i++)
+          t.appendText(items[i] + "\n");
+      }
+      <font color="#0000ff">else</font> 
+        <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    } 
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.handleEvent(evt);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b)) {
+      <font color="#0000ff">if</font>(count &lt; flavors.length)
+        lst.addItem(flavors[count++], 0);
+    }
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>;
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+example is the same as before except for the addition of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Inside, a check is made to see whether a list selection or deselection has
+occurred. Now remember, 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+being overridden for the applet, so this occurrence could be anywhere on the
+form and it could be happening to another list. Thus, you must also check to
+see what the target is. (Although in this case there&#8217;s only one list on
+the applet so we could have made the assumption that all list events must be
+about that list. This is bad practice since it&#8217;s going to be a problem as
+soon as another list is added.) If the list matches the one we&#8217;re
+interested in, the same code as before will do the trick.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Note
+that the form for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">is
+similar to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">:</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">if
+you deal with a particular event you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+but if you&#8217;re not interested in any of the other events via 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+you must 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return
+<A NAME="Index1665"></A><A NAME="Index1666"></A>super.handleEvent(evt)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+This is vital because if you don&#8217;t do this, none of the other
+event-handling code will get called. For example, try commenting out the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>return
+super.handleEvent(evt)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the code above. You&#8217;ll discover that 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+never gets called, certainly not what you want. For both 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+it&#8217;s important to follow the format above and always return the
+base-class version of the method when you do not handle the event yourself (in
+which case you should return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">).
+(Fortunately, these kinds of bug-prone details are relegated to Java 1.0<A NAME="Index1667"></A>.
+The new design in Java 1.1<A NAME="Index1668"></A>
+that you will see later in the chapter eliminates these kinds of issues.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">In
+Windows, a list box automatically allows <A NAME="Index1669"></A><A NAME="Index1670"></A><A NAME="Index1671"></A>multiple
+selections if you hold down the shift key. This is nice because it allows the
+user to choose a single or multiple selection rather than fixing it during
+programming. You might think you&#8217;ll be clever and implement this yourself
+by checking to see if the shift key is held down when a mouse click was made by
+testing for 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>evt.shiftDown(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Alas, the design of the AWT stymies you &#8211; you&#8217;d have to be able to
+know which item was clicked on if the shift key 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>wasn&#8217;t
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">pressed
+so you could deselect all the rest and select only that one. However, you
+cannot figure that out in Java 1.0.<A NAME="Index1672"></A>
+(Java 1.1<A NAME="Index1673"></A>
+sends all mouse, keyboard, and focus events to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>List</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+so you&#8217;ll be able to accomplish this.)
+</FONT><a name="_Toc375545457"></a><a name="_Toc408018693"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0142.html">Prev</a> | <a href="tij0144.html">Next</a>
+</div>
+</body></html>
+

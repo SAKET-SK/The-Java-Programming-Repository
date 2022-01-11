@@ -1,0 +1,52 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0153.html">Prev</a> | <a href="tij0155.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H1 ALIGN=LEFT>
+14:
+Multiple threads
+</H1>
+<DIV ALIGN=LEFT><FONT FACE="Calligraph421 BT" SIZE=4 COLOR="Black">Objects
+provide a way to divide a program up into independent sections. Often, you also
+need to turn a program into separate, independently-running subtasks.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Each
+of these independent subtasks is called a <A NAME="Index2449"></A><A NAME="Index2450"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>thread</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+and you program as if each thread runs by itself and has the CPU to itself.
+Some underlying mechanism is actually dividing up the CPU time for you, but in
+general, you don&#8217;t have to think about it, which makes programming with
+multiple threads a much easier task.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Some
+definitions are useful at this point. A <A NAME="Index2451"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>process</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+is a self-contained running program with its own address space. A <A NAME="Index2452"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>multitasking</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+operating system is capable of running more than one process (program) at a
+time, while making it look like each one is chugging along by periodically
+providing CPU cycles to each process. A thread is a single sequential flow of
+control within a process. A single process can thus have multiple concurrently
+executing threads.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">There
+are many possible uses for multithreading, but in general, you&#8217;ll have
+some part of your program tied to a particular event or resource, and you
+don&#8217;t want to hang up the rest of your program because of that. So you
+create a thread associated with that event or resource and let it run
+independently of the main program. A good example is a &#8220;quit&#8221;
+button &#8211; you don&#8217;t want to be forced to poll the quit button in
+every piece of code you write in your program and yet you want the quit button
+to be responsive, as if you 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>were</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+checking it regularly. In fact, one of the most immediately compelling reasons
+for multithreading is to produce a responsive user interface.
+</FONT><a name="_Toc375545472"></a><a name="_Toc408018745"></a><P></DIV>
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0153.html">Prev</a> | <a href="tij0155.html">Next</a>
+</div>
+</body></html>
+

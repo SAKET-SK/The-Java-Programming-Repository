@@ -1,0 +1,226 @@
+<html><body>
+
+<table width="100%"><tr>
+<td>
+<a href="http://www.bruceeckel.com/javabook.html">Bruce Eckel's Thinking in Java</a>
+</td>
+<td align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0135.html">Prev</a> | <a href="tij0137.html">Next</a>
+</td>
+</tr></table>
+<hr>
+
+<H2 ALIGN=LEFT>
+Capturing
+an event
+</H2>
+<DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">You&#8217;ll
+notice that if you compile and run the applet above, nothing happens when you
+press the buttons. This is where you must step in and write some code to
+determine what will happen. The basis of <A NAME="Index1576"></A><A NAME="Index1577"></A><A NAME="Index1578"></A>event-driven
+programming, which comprises a lot of what a GUI is about, is tying events to
+code that responds to those events.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">After
+working your way this far through the book and grasping some of the
+fundamentals of object-oriented programming, you might think that of course
+there will be some sort of object-oriented approach to handling events. For
+example, you might have to inherit each button and override some &#8220;button
+pressed&#8221; method (this, it turns out, is too tedious and restrictive). You
+might also think there&#8217;s some master &#8220;event&#8221; class that
+contains a method for each event you want to respond to.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Before
+objects, the typical approach to handling events was the &#8220;giant switch
+statement.&#8221; Each event would have a unique integer value and inside the
+master event handling method you&#8217;d write a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+on that value.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+AWT in Java 1.0<A NAME="Index1579"></A>
+doesn&#8217;t use any object-oriented approach. Neither does it use a giant 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>switch</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement that relies on the assignment of numbers to events. Instead, you must
+create a cascaded set of 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements. What you&#8217;re trying to do with the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statements is detect the object that was the <A NAME="Index1580"></A><A NAME="Index1581"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>target</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+of the event. That is, if you click on a button, then that particular button is
+the target. Normally, that&#8217;s all you care about &#8211; if a button is
+the target of an event, then it was most certainly a mouse click and you can
+continue based on that assumption. However, events can contain other
+information as well. For example, if you want to find out the pixel location
+where a mouse click occurred so you can draw a line to that location, the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object will contain the location. (You should also be aware that Java 1.0
+components can be limited in the kinds of events they generate, while Java 1.1
+and Swing/JFC components produce a full set of events.)
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+Java 1.0<A NAME="Index1582"></A>
+AWT method where your cascaded 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>if</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement resides is called <A NAME="Index1583"></A><A NAME="Index1584"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Although the whole Java 1.0<A NAME="Index1585"></A>
+Event model has been deprecated in Java 1.1<A NAME="Index1586"></A>,
+it is still widely used for simple applets and in systems that do not yet
+support Java 1.1, so I recommend you become comfortable with it, including the
+use of the following 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action()</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method approach.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+has two arguments: the first is of type <A NAME="Index1587"></A><A NAME="Index1588"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+and contains all the information about the event that triggered this call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+For example, it could be a mouse click, a normal keyboard press or release, a
+special key press or release, the fact that the component got or lost the
+focus, mouse movements, or drags, etc. The second argument is usually the
+target of the event, which you&#8217;ll often ignore. The second argument is
+also encapsulated in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object so it is redundant as an argument.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+situations in which 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">gets
+called are extremely limited: When you place controls on a form, some types of
+controls (buttons, check boxes, drop-down lists, menus) have a &#8220;standard
+action&#8221; that occurs, which causes the call to 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+with the appropriate 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object. For example, with a button the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>action(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is called when the button is pressed and at no other time. Usually this
+is just fine, since that&#8217;s what you ordinarily look for with a button.
+However, it&#8217;s possible to deal with many other types of events via the <A NAME="Index1589"></A><A NAME="Index1590"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>handleEvent(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method as we will see later in this chapter.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">The
+previous example can be extended to handle button clicks as follows:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Button2.java</font>
+<font color="#009900">// Capturing button presses</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Button2 <font color="#0000ff">extends</font> Applet {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action(Event evt, Object arg) {
+    <font color="#0000ff">if</font>(evt.target.equals(b1))
+      getAppletContext().showStatus("Button 1");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(evt.target.equals(b2))
+      getAppletContext().showStatus("Button 2");
+    <font color="#009900">// Let the base class handle it:</font>
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>; <font color="#009900">// We've handled it here</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">To
+see what the <A NAME="Index1591"></A><A NAME="Index1592"></A>target
+is, ask the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Event</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+object what its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>target</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+member is and then use the <A NAME="Index1593"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method to see if it matches the target object handle you&#8217;re interested
+in. When you&#8217;ve written handlers for all the objects you&#8217;re
+interested in you must call <A NAME="Index1594"></A><A NAME="Index1595"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>super.action(evt,
+arg)
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+in the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>else</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+statement at the end, as shown above. Remember from Chapter 7 (polymorphism)
+that your overridden method is called instead of the base class version.
+However, the base-class version contains code to handle all of the cases that
+you&#8217;re not interested in, and it won&#8217;t get called unless you call
+it explicitly. The return value indicates whether you&#8217;ve handled it or
+not, so if you do match an event you should return 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>true</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">,
+otherwise return whatever the base-class 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>event(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+returns.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">For
+this example, the simplest action is to print what button is pressed. Some
+systems allow you to pop up a little window with a message in it, but applets
+discourage this. However, you can put a message at the bottom of the <A NAME="Index1596"></A><A NAME="Index1597"></A><A NAME="Index1598"></A><A NAME="Index1599"></A>Web
+browser window on its 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>status
+line
+</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+by calling the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>Applet</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method <A NAME="Index1600"></A><A NAME="Index1601"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAppletContext(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to get access to the browser and then <A NAME="Index1602"></A><A NAME="Index1603"></A></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>showStatus(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to put a string on the status line.
+</FONT><A NAME="fnB56" HREF="#fn56">[56]</A><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+You can print out a complete description of an event the same way, with 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>getAppletContext().showStatus(evt
++ "" ). 
+</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">(The
+empty 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+forces the compiler to convert 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>evt</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+to a 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>String.</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">)
+Both of these reports are really useful only for testing and debugging since
+the browser might overwrite your message.
+</FONT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">Strange
+as it might seem, you can also <A NAME="Index1604"></A><A NAME="Index1605"></A>match
+an event to the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><I>text</I></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+that&#8217;s on a button through the second argument in 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>event(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">.
+Using this technique, the example above becomes:
+</FONT><P></DIV>
+
+<font color="#990000"><PRE><font color="#009900">//: Button3.java</font>
+<font color="#009900">// Matching events on button text</font>
+<font color="#0000ff">import</font> java.awt.*;
+<font color="#0000ff">import</font> java.applet.*;
+
+<font color="#0000ff">public</font> <font color="#0000ff">class</font> Button3 <font color="#0000ff">extends</font> Applet {
+  Button 
+    b1 = <font color="#0000ff">new</font> Button("Button 1"), 
+    b2 = <font color="#0000ff">new</font> Button("Button 2");
+  <font color="#0000ff">public</font> <font color="#0000ff">void</font> init() {
+    add(b1);
+    add(b2);
+  }
+  <font color="#0000ff">public</font> <font color="#0000ff">boolean</font> action (Event evt, Object arg) {
+    <font color="#0000ff">if</font>(arg.equals("Button 1"))
+      getAppletContext().showStatus("Button 1");
+    <font color="#0000ff">else</font> <font color="#0000ff">if</font>(arg.equals("Button 2"))
+      getAppletContext().showStatus("Button 2");
+    <font color="#009900">// Let the base class handle it:</font>
+    <font color="#0000ff">else</font> 
+      <font color="#0000ff">return</font> <font color="#0000ff">super</font>.action(evt, arg);
+    <font color="#0000ff">return</font> <font color="#0000ff">true</font>; <font color="#009900">// We've handled it here</font>
+  }
+} <font color="#009900">///:~ </PRE></font></font><DIV ALIGN=LEFT><P></DIV><DIV ALIGN=LEFT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">It&#8217;s
+difficult to know exactly what the 
+</FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black"><B>equals(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=3 COLOR="Black">
+method is doing here. The biggest problem with this approach is that most new
+Java programmers who start with this technique spend at least one frustrating
+session discovering that they&#8217;ve gotten the capitalization or spelling
+wrong when comparing to the text on a button. (I had this experience.) Also, if
+you change the text of the button, the code will no longer work (but you
+won&#8217;t get any compile-time or run-time error messages). You should avoid
+this approach if possible.
+</FONT><a name="_Toc375545449"></a><a name="_Toc408018685"></a><P></DIV>
+<HR><DIV ALIGN=LEFT><A NAME="fn56" HREF="#fnB56">[56]</A><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>ShowStatus(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">
+is also a method of Applet, so you can call it directly, without calling 
+</FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black"><B>getAppletContext(&#160;)</B></FONT><FONT FACE="Carmina Md BT" SIZE=2 COLOR="Black">.</FONT><P></DIV>
+
+
+<div align="right">
+<a href="tij_c.html">Contents</a> | <a href="tij0135.html">Prev</a> | <a href="tij0137.html">Next</a>
+</div>
+</body></html>
+
