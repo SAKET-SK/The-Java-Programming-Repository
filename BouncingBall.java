@@ -1,3 +1,5 @@
+// The program outputs a Ball bouncing inside the Output window. Try varying the size of the Output window for dynamic results.
+
 import java.awt.*;
 import javax.swing.*;
  
