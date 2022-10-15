@@ -1,3 +1,5 @@
+// Prints random color bars
+
 package colorbars;
 import java.applet.*;
 import java.awt.*;
