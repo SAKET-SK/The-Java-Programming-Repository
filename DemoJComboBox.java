@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 // Demonstrating JComboBox
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 /**
  *
- * @author Axiom Director
+ * @author Saket
  */
 public class DemoJComboBox extends JFrame implements ActionListener{
     
