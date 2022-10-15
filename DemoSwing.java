@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 // Demonstrating Swing in JAVA 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,7 +13,7 @@ import javax.swing.border.*;
 
 /**
  *
- * @author Axiom Director
+ * @author Saket
  */
 public class DemoSwing extends JFrame implements ActionListener{
     // Declaration of GUI Components 
