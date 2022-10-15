@@ -1,4 +1,6 @@
-package checkinternet;
+// Program to check internet connection to various URL's
+
+package checkinternet; //Performed in NetBeans IDE, that's why package is used. 
 import java.net.*;
 public class CheckInternet 
 {
