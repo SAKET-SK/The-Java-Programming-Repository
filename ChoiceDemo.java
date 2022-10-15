@@ -1,3 +1,5 @@
+// A program like calcualtor, we make choice of which operation to perform on two numbers
+
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.*;
