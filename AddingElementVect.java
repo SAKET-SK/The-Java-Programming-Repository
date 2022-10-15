@@ -1,3 +1,4 @@
+// Adding element in Vector and Searching them and  later removing them
 import java.util.*;
 import java.io.*;
 class AddingElementVect
