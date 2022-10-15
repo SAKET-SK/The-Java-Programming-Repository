@@ -1,3 +1,5 @@
+// Demonstarting the comparison of Strings
+
 class CompareStrings
 {
 	public static void main(String args[])
