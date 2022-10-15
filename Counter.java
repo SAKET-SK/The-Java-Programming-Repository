@@ -1,4 +1,4 @@
-
+// A counter application, a NetBeans project  
 package counter;
 /*@author Saket*/
 import java.applet.*;
