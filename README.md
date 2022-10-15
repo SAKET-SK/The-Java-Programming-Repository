@@ -1,5 +1,5 @@
 ## The-Java-Programming-Repository
-### Misc Java Programs I implemented. <br>
+### Misc Java Programs I implemented. If missed, check the program up and refer its use given in comments <br>
 ### Recommended IDE :- NetBeans 8.2
 1) AbsClassDemo -> Demonstration of Abstarct Class.
 2) DemoInterface -> Demonstartion of Interface.
