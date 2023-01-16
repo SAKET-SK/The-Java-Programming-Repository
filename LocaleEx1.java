@@ -1,3 +1,4 @@
+// In this example, we are displaying english language in different language. Let's see how english is written in french and spanish languages.
 import java.util.*;  
 public class LocaleEx1 {  
     public static void main(String[] args) {  
