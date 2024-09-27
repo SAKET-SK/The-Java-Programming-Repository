@@ -1,6 +1,6 @@
 # The Java Programming Repository
 
-A collection of all the Java programs I've implemented over the years. If a program is missing from the list below, check the corresponding file and refer to the comments for further details.
+A collection of all the Java programs I've implemented over the years. If a program is missing from the list below, check the corresponding file and refer to the comments for further details. Raise a Pull Request in case of new addition.
 
 ### Recommended IDE: NetBeans 8.2
 
